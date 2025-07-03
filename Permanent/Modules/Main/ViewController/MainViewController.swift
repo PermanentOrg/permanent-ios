@@ -18,6 +18,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var fabView: FABView!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
     @IBOutlet weak var switchViewButton: UIButton!
+    @IBOutlet weak var bottomButtonsConstrainHeight: NSLayoutConstraint!
     
     private var isGridView = false
     
@@ -122,9 +123,28 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         NotificationCenter.default.addObserver(forName: ArchivesViewModel.didChangeArchiveNotification, object: nil, queue: nil) { [weak self] _ in
             guard let _ = self?.viewModel?.removeCurrentFolderFromHierarchy() else { return }
+            
+            // Reset collection view scroll position and refresh control state
+            self?.resetCollectionViewState()
+            
+            // Update FAB view visibility based on new archive permissions
+            self?.updateFABViewVisibility()
+            
+            // Refresh member checklist button as permissions might have changed
+            self?.showMemberChecklistButton()
+            
+            // Update navigation title with new archive name
+            self?.navigationItem.title = self?.viewModel?.rootFolderName
+            
+            // Refresh workspace to new archive's root
             self?.getRootFolder()
             self?.backButton.isHidden = true
             self?.directoryLabel.text = self?.viewModel?.rootFolderName
+            
+            // Additional delayed reset to ensure refresh control works after data loading
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self?.resetCollectionViewState()
+            }
         }
         
         NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
@@ -135,6 +155,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         NotificationCenter.default.addObserver(forName: AppDelegate.navigateToFolderNotifName, object: nil, queue: nil) { [weak self] _ in
             self?.navigationToShareFolderLink()
+        }
+        
+        NotificationCenter.default.addObserver(forName: SettingsRouter.showMemberChecklistNotifName, object: nil, queue: nil) { [weak self] _ in
+            self?.didTapChecklist()
         }
         
         showBanner()
@@ -185,7 +209,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
-        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
+        showMemberChecklistButton()
+
+        updateFABViewVisibility()
         
         viewModel?.trackOpenFiles()
     }
@@ -197,9 +223,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
-        
         collectionView.refreshControl = refreshControl
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
         flowLayout.minimumLineSpacing = 0
@@ -315,6 +341,56 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         collectionView?.reloadData()
+    }
+    
+    func showMemberChecklistButton() {
+        viewModel?.showMemberChecklist({ [weak self] showChecklist in
+            self?.fabView.showsChecklistButton = showChecklist ?? false
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 140 : 64
+                self?.view.layoutIfNeeded()
+            })
+        })
+    }
+    
+    func updateFABViewVisibility() {
+        // Update FAB view visibility based on current archive permissions
+        guard let viewModel = viewModel else { return }
+        
+        let hasCreatePermission = viewModel.archivePermissions.contains(.create)
+        let hasUploadPermission = viewModel.archivePermissions.contains(.upload)
+        let shouldShowFAB = hasCreatePermission && hasUploadPermission && !viewModel.isPickingImage
+        
+        fabView.isHidden = !shouldShowFAB
+    }
+    
+    func resetCollectionViewState() {
+        // Reset collection view scroll position to top
+        collectionView.setContentOffset(.zero, animated: false)
+        
+        // End any ongoing refresh control animation
+        if refreshControl.isRefreshing {
+            refreshControl.endRefreshing()
+        }
+        
+        // Completely re-establish refresh control connection
+        collectionView.refreshControl = nil
+        collectionView.refreshControl = refreshControl
+        
+        // Ensure refresh control is enabled and ready
+        refreshControl.isEnabled = true
+        
+        // Reset collection view properties that might affect pull-to-refresh
+        collectionView.alwaysBounceVertical = true
+        collectionView.isScrollEnabled = true
+        collectionView.showsVerticalScrollIndicator = false
+        
+        // Force collection view layout update
+        collectionView.setNeedsLayout()
+        collectionView.layoutIfNeeded()
+        
+        // Re-establish content insets to ensure proper scroll behavior
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width, right: 6)
     }
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
@@ -606,6 +682,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private func onFilesFetchCompletion(_ status: RequestStatus) {
         DispatchQueue.main.async {
             self.hideSpinner()
+            
+            // Ensure refresh control is properly ended
+            if self.refreshControl.isRefreshing {
+                self.refreshControl.endRefreshing()
+            }
         }
         
         viewModel?.refreshUploadQueue()
@@ -1067,13 +1148,33 @@ extension MainViewController: FABViewDelegate {
             return
         }
 
-        ///To Do: for iPad another presentation mode for this menu should be implemented
+        actionSheet.delegate = self
+        
         if Constants.Design.currentPlatform == .phone {
-            actionSheet.delegate = self
             navigationController?.display(viewController: actionSheet, modally: true)
         } else {
-            return
+            // iPad presentation - use formSheet or pageSheet
+            actionSheet.modalPresentationStyle = .formSheet
+            present(actionSheet, animated: true)
         }
+    }
+    
+    func didTapChecklist() {
+        let checklistView = UIHostingController(rootView: ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel(showsChecklistButton: self.fabView.showsChecklistButton)), dismissAction: { [weak self] in
+            self?.fabView.showsChecklistButton = false
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: { [weak self] in
+                self?.bottomButtonsConstrainHeight.constant = 64
+                self?.view.layoutIfNeeded()
+            })
+        })
+            .edgesIgnoringSafeArea(.all)
+        )
+        
+        checklistView.modalPresentationStyle = .formSheet
+        checklistView.view.backgroundColor = .clear
+        checklistView.sheetPresentationController?.detents = [.large()]
+        
+        present(checklistView, animated: true)
     }
 }
 
@@ -1293,6 +1394,14 @@ extension MainViewController: FABActionSheetDelegate {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
+        // Configure for iPad
+        if let popover = actionSheet.popoverPresentationController {
+            // Present from the FAB view
+            popover.sourceView = fabView
+            popover.sourceRect = CGRect(x: fabView.bounds.midX, y: fabView.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = [.up, .down]
+        }
+        
         present(actionSheet, animated: true, completion: nil)
         viewModel?.trackEvent(action: RecordEventAction.initiateUpload)
     }
@@ -1339,7 +1448,13 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openFileBrowser() {
-        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String, kUTTypeContent as String], in: .import)
+        let docPicker: UIDocumentPickerViewController
+        
+        if #available(iOS 14.0, *) {
+            docPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item, .content], asCopy: true)
+        } else {
+            docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String, kUTTypeContent as String], in: .import)
+        }
         
         docPicker.delegate = self
         docPicker.allowsMultipleSelection = true

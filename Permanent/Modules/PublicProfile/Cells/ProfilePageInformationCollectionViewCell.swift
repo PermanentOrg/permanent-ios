@@ -97,6 +97,13 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
             titleLabel.text = ""
             contentLabel.text = ""
         }
+        
+        if let content = content,
+            content.isNotEmpty {
+            contentLabel.textColor = .black
+        } else {
+            contentLabel.textColor = .darkGray
+        }
     }
 
     static func nib() -> UINib {

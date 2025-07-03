@@ -156,6 +156,39 @@ class FilesViewModel: NSObject, ViewModelInterface {
         // delete from prefs
     }
     
+    func showMemberChecklist(_ completionBlock: @escaping ((Bool?) -> Void)) {
+        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
+            completionBlock(nil)
+            return
+        }
+        
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
+        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(nil)
+                    return
+                }
+                
+                if let hideChecklist = model.results[0].data?[0].accountVO?.hideChecklist,
+                   !hideChecklist {
+                    completionBlock(true)
+                } else {
+                    completionBlock(false)
+                }
+                return
+                
+            default:
+                completionBlock(nil)
+                return
+            }
+        }
+    }
+    
     @discardableResult
     func refreshUploadQueue() -> Bool {
         let savedFiles: [FileInfo]? = UploadManager.shared.queuedFiles()
@@ -576,7 +609,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 }
                 
                 if let archive = model.results[0].data?[0].archiveVO {
-                    AuthenticationManager.shared.session?.selectedArchive = archive
+                    AuthenticationManager.shared.updateSelectedArchive(archive)
                     
                     completion(true)
                 } else {

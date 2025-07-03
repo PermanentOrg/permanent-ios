@@ -22,6 +22,7 @@ enum ProfileCellType {
     case establishedLocation
     case milestone
     case archiveGallery
+    case archiveName
 }
 
 enum ProfileSection: Int {
@@ -48,11 +49,31 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     var readMoreAction: ButtonAction?
     var isEditDataEnabled = false
     
+    private var isHandlingArchiveNameChange = false
+    private var sessionSyncWorkItem: DispatchWorkItem?
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        // CRITICAL: Sync with session's selectedArchive if it exists and is different
+        // This handles the case where app was closed/reopened and session was restored from keychain
+        // but the passed archiveData is stale/wrong
+        if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive {
+            if let currentArchiveID = archiveData?.archiveID,
+               let sessionArchiveID = sessionArchive.archiveID,
+               currentArchiveID != sessionArchiveID {
+                
+                // Update to use the restored session archive
+                self.archiveData = sessionArchive
+            } else if archiveData == nil || archiveData?.archiveID == nil || archiveData?.archiveID == -1 {
+                
+                // Restore from session archive
+                self.archiveData = sessionArchive
+            }
+        }
+        
         viewModel = PublicProfilePageViewModel(archiveData)
         
         viewModel?.trackPageViewEvent()
@@ -62,14 +83,53 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         initButtonStates()
         initCollectionView()
         
-        NotificationCenter.default.addObserver(forName: PublicProfilePageViewModel.profileItemsUpdatedNotificationName, object: nil, queue: nil) { [weak self] notification in
-            self?.refreshProfileViewData()
-            self?.collectionView.reloadData()
+        NotificationCenter.default.addObserver(forName: PublicProfilePageViewModel.profileItemsUpdatedNotificationName, object: nil, queue: .main) { [weak self] notification in
+
+            // Safety check: if archiveData is missing, try to restore it from session
+            if self?.archiveData == nil || self?.archiveData?.archiveID == nil {
+                if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive {
+                    self?.archiveData = sessionArchive
+                    self?.viewModel?.archiveData = sessionArchive
+                }
+            }
+            
+            // Only handle archive name changes if we're not already processing one
+            if !(self?.isHandlingArchiveNameChange ?? false) {
+                self?.handleArchiveNameChange()
+            }
+            
+            // IMPORTANT: We need to fetch fresh data from server, not just refresh local view data
+            // The view model might have stale data after other screens make changes
+            if let currentArchiveData = self?.archiveData {
+                self?.getAllByArchiveNbr(currentArchiveData)
+            } else {
+                self?.refreshProfileViewData()
+                self?.collectionView.reloadData()
+            }
+        }
+        
+        // Add observer for when session sync completes after app restart
+        // This ensures we refresh profile data with the latest information
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("SessionSyncCompleted"), object: nil, queue: .main) { [weak self] _ in
+            
+            // Check if our current archive data matches the session after sync
+            if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive,
+               let currentArchive = self?.archiveData,
+               sessionArchive.archiveID == currentArchive.archiveID {
+                
+                // Update local archive data to match session
+                self?.archiveData = sessionArchive
+                self?.viewModel?.archiveData = sessionArchive
+                
+                // Refresh profile data to get latest information from server
+                self?.getAllByArchiveNbr(sessionArchive)
+            }
         }
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+        sessionSyncWorkItem?.cancel()
     }
     
     func initUI() {
@@ -136,13 +196,26 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     func getAllByArchiveNbr(_ archive: ArchiveVOData) {
         showSpinner()
         
+        // Clear existing data to prevent race conditions
+        profileViewData.removeAll()
+        
         viewModel?.getAllByArchiveNbr(archive, { [self] error in
             hideSpinner()
             
             if error == nil {
                 refreshProfileViewData()
                 
-                collectionView.reloadData()
+                // Update title after data is refreshed
+                DispatchQueue.main.async { [weak self] in
+                    if let archiveName = self?.viewModel?.basicProfileItem?.archiveName {
+                        let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+                        self?.title = newTitle
+                    }
+                }
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.collectionView.reloadData()
+                }
             } else {
                 showAlert(title: .error, message: .errorMessage)
             }
@@ -152,17 +225,135 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     func refreshProfileViewData() {
         profileViewData = viewModel?.getProfileViewData() ?? [:]
     }
+    
+    func handleArchiveNameChange() {
+        // Set flag to prevent infinite loops
+        isHandlingArchiveNameChange = true
+        defer { isHandlingArchiveNameChange = false }
+        
+        guard let updatedArchiveName = self.viewModel?.basicProfileItem?.archiveName,
+              let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
+              let localArchiveData = self.archiveData else {
+            return
+        }
+        
+        // Check if we're editing the currently selected archive
+        let isEditingSelectedArchive = currentArchive.archiveID == localArchiveData.archiveID
+        
+        if isEditingSelectedArchive {
+            
+            // First update local data immediately to prevent race conditions
+            let updatedLocalArchive = createUpdatedArchive(from: localArchiveData, withNewName: updatedArchiveName)
+            self.archiveData = updatedLocalArchive
+            self.viewModel?.archiveData = updatedLocalArchive
+            
+            // Also update the session's selectedArchive to keep it in sync with local changes
+            // This ensures the title and other UI elements show the updated name
+            AuthenticationManager.shared.session?.selectedArchive = updatedLocalArchive
+
+            // CRITICAL: Save the session to keychain to persist the archive name change
+            AuthenticationManager.shared.saveSession()
+
+            // Notify parent view controller to update title and other UI elements
+            if let parentVC = self.parent as? PublicArchiveViewController {
+                parentVC.handleLocalArchiveDataUpdate(updatedLocalArchive)
+    
+            }
+            
+            // Don't post delayed notification as it causes unwanted side effects
+            // The archives list should refresh naturally when users navigate back to it
+            // All the important UI elements (title, local data) are already updated correctly
+            // Skip session sync during profile editing to prevent unwanted archive switches
+            // The session sync is returning incorrect archive data and causing the app to switch archives
+
+        } else if localArchiveData.fullName != updatedArchiveName {
+
+            // Just update local data for non-selected archives
+            let updatedLocalArchive = createUpdatedArchive(from: localArchiveData, withNewName: updatedArchiveName)
+            self.archiveData = updatedLocalArchive
+            self.viewModel?.archiveData = updatedLocalArchive
+
+            // Notify parent for UI updates only
+            if let parentVC = self.parent as? PublicArchiveViewController {
+                parentVC.handleLocalArchiveDataUpdate(updatedLocalArchive)
+            }
+        }
+    }
+    
+    private func createUpdatedArchive(from currentArchive: ArchiveVOData, withNewName newName: String) -> ArchiveVOData {
+        return ArchiveVOData(
+            childFolderVOS: currentArchive.childFolderVOS,
+            folderSizeVOS: currentArchive.folderSizeVOS,
+            recordVOS: currentArchive.recordVOS,
+            accessRole: currentArchive.accessRole,
+            fullName: newName,
+            spaceTotal: currentArchive.spaceTotal,
+            spaceLeft: currentArchive.spaceLeft,
+            fileTotal: currentArchive.fileTotal,
+            fileLeft: currentArchive.fileLeft,
+            relationType: currentArchive.relationType,
+            homeCity: currentArchive.homeCity,
+            homeState: currentArchive.homeState,
+            homeCountry: currentArchive.homeCountry,
+            itemVOS: currentArchive.itemVOS,
+            birthDay: currentArchive.birthDay,
+            company: currentArchive.company,
+            archiveVODescription: currentArchive.archiveVODescription,
+            archiveID: currentArchive.archiveID,
+            publicDT: currentArchive.publicDT,
+            archiveNbr: currentArchive.archiveNbr,
+            view: currentArchive.view,
+            viewProperty: currentArchive.viewProperty,
+            archiveVOPublic: currentArchive.archiveVOPublic,
+            vaultKey: currentArchive.vaultKey,
+            thumbArchiveNbr: currentArchive.thumbArchiveNbr,
+            type: currentArchive.type,
+            thumbStatus: currentArchive.thumbStatus,
+            imageRatio: currentArchive.imageRatio,
+            thumbURL200: currentArchive.thumbURL200,
+            thumbURL500: currentArchive.thumbURL500,
+            thumbURL1000: currentArchive.thumbURL1000,
+            thumbURL2000: currentArchive.thumbURL2000,
+            thumbDT: currentArchive.thumbDT,
+            createdDT: currentArchive.createdDT,
+            updatedDT: currentArchive.updatedDT,
+            status: currentArchive.status
+        )
+    }
+    
+    func handleArchiveChange(newArchiveData: ArchiveVOData) {
+        // Update the archive data
+        self.archiveData = newArchiveData
+        self.viewModel?.archiveData = newArchiveData
+        
+        // Recalculate edit permissions for the new archive
+        if let isEditDataEnabled = viewModel?.isEditDataEnabled {
+            self.isEditDataEnabled = isEditDataEnabled
+        }
+        
+        // Clear existing profile view data to prevent inconsistencies
+        self.profileViewData.removeAll()
+        
+        // Reset button states for new archive
+        initButtonStates()
+        
+        // Refresh with new archive data
+        getAllByArchiveNbr(newArchiveData)
+    }
 }
 
 // MARK: - UICollectionViewDataSource
 extension PublicProfilePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        guard section < sections.count else {
+            return 0
+        }
         let currentSection = sections[section]
         
         switch currentSection {
         case .about:
-            return (readMoreIsEnabled[.about] ?? false) ? profileViewData[.about]!.count : min(profileViewData[.about]!.count, 1)
+            return (readMoreIsEnabled[.about] ?? false) ? profileViewData[.about]!.count : min(profileViewData[.about]!.count, viewModel?.isEditDataEnabled ?? true ? 2 : 1)
             
         case .onlinePresenceEmail:
             let rowCount = profileViewData[currentSection]?.count ?? 0
@@ -187,7 +378,12 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
+        guard indexPath.section < sections.count,
+              let sectionData = profileViewData[sections[indexPath.section]],
+              indexPath.row < sectionData.count else {
+            return UICollectionViewCell()
+        }
+        let currentCellType = sectionData[indexPath.row]
 
         let returnedCell: UICollectionViewCell
         
@@ -217,20 +413,30 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 })
             }
             returnedCell = cell
+        case .archiveName:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
+            let title = "Archive name"
+            let text = viewModel?.basicProfileItem?.archiveName ?? ""
             
+            cell.configure(title, text)
+
+            returnedCell = cell
+        
         case .blurb:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            let shortDescriptionValue = viewModel?.blurbProfileItem?.shortDescription
+            let title = "About this archive"
+            let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
             
-            cell.configure(shortDescriptionValue ?? viewModel?.archiveType.shortDescriptionHint)
+            cell.configure(title, text, hasNoContent: text == viewModel?.archiveType.shortDescriptionHint)
 
             returnedCell = cell
             
         case .longDescription:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            let longDescriptionValue = viewModel?.descriptionProfileItem?.longDescription
+            let title = "Archive purpose"
+            let text = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
             
-            cell.configure(longDescriptionValue ?? viewModel?.archiveType.longDescriptionHint)
+            cell.configure(title, text, hasNoContent: text == viewModel?.archiveType.longDescriptionHint)
 
             returnedCell = cell
             
@@ -310,6 +516,9 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
     // swiftlint:disable:next cyclomatic_complexity
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        guard indexPath.section < sections.count else {
+            return UICollectionReusableView()
+        }
         let currentSectionType = sections[indexPath.section]
         
         switch kind {
@@ -323,7 +532,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
                 
             case .about:
-                headerCell.configure(titleLabel: "About".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
+                headerCell.configure(titleLabel: "Archive Information".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
                 
                 headerCell.buttonAction = { [weak self] in
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
@@ -433,19 +642,31 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
 extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
+        guard indexPath.section < sections.count,
+              let sectionData = profileViewData[sections[indexPath.section]],
+              indexPath.row < sectionData.count else {
+            return CGSize(width: UIScreen.main.bounds.width, height: 80)
+        }
+        let currentCellType = sectionData[indexPath.row]
         
         switch currentCellType {
         case .profileVisibility:
             return CGSize(width: UIScreen.main.bounds.width, height: 80)
             
+        case .archiveName:
+            let title = "Archive name"
+            let text = viewModel?.basicProfileItem?.archiveName ?? ""
+            return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
+            
         case .blurb:
+            let title = "About this archive"
             let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
-            return ProfilePageAboutCollectionViewCell.size(withText: text, collectionView: collectionView)
+            return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
             
         case .longDescription:
+            let title = "Archive purpose"
             let text = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
-            return ProfilePageAboutCollectionViewCell.size(withText: text, collectionView: collectionView)
+            return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
 
         case .fullName, .nickName, .gender, .birthDate, .birthLocation, .establishedDate, .establishedLocation:
             return ProfilePageInformationCollectionViewCell.size(collectionView: collectionView)
@@ -469,7 +690,12 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
+        guard indexPath.section < sections.count,
+              let sectionData = profileViewData[sections[indexPath.section]],
+              indexPath.row < sectionData.count else {
+            return
+        }
+        let currentCellType = sectionData[indexPath.row]
         
         guard let viewModel = viewModel else { return }
         
@@ -554,7 +780,9 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Always try to pass scroll to parent first, let parent decide if it should handle it
         if delegate?.childVC(self, didScrollToOffset: scrollView.contentOffset) ?? false {
+            // Parent handled the scroll, reset our offset
             scrollView.contentOffset = .zero
         }
     }

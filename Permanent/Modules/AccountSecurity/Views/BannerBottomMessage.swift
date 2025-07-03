@@ -5,9 +5,11 @@
 //  Created by Lucian Cerbu on 26.02.2025.
 
 
-enum BannerBottomMessage {
+enum BannerBottomMessage: Equatable {
     case invalidData
     case invalidPassword
+    case passwordTooShort
+    case passwordMismatch
     case incorrectEmail
     case invalidPhoneNumber
     case emptyPinCode
@@ -25,6 +27,7 @@ enum BannerBottomMessage {
     case error
     case generalError
     case none
+    case custom(message: String, isErrorMessage: Bool)
     
     var text: String {
         switch self {
@@ -38,6 +41,10 @@ enum BannerBottomMessage {
             return "Invalid email entered."
         case .invalidPhoneNumber:
             return "Incorrect phone number."
+        case .passwordMismatch:
+            return "Passwords do not match."
+        case.passwordTooShort:
+            return "Your password must be at least 8 characters."
         case .emptyPinCode:
             return "The 4-digit code is incorrect."
         case .invalidPinCode:
@@ -66,6 +73,8 @@ enum BannerBottomMessage {
             return "Something went wrong."
         case .none:
             return ""
+        case .custom(let message, _):
+            return message
         }
     }
     
@@ -74,10 +83,12 @@ enum BannerBottomMessage {
         case .successResendCode, .successCodeSend, .successPasswordConfirmed,
              .successEmailAdded, .successSmsAdded, .successEmailDeleted, .successSmsDeleted, .none:
             return false
-        case .invalidData, .invalidPassword, .incorrectEmail,
+        case .invalidData, .invalidPassword, .passwordMismatch, .passwordTooShort, .incorrectEmail,
              .invalidPhoneNumber, .emptyPinCode, .invalidPinCode, .invalidEmail,
              .resentCodeError, .codeExpiredError, .error, .generalError:
             return true
+        case .custom(_, let isErrorMessage):
+            return isErrorMessage
         }
     }
 } 

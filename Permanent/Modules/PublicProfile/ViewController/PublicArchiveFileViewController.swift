@@ -290,7 +290,9 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Always try to pass scroll to parent first, let parent decide if it should handle it
         if delegate?.childVC(self, didScrollToOffset: scrollView.contentOffset) ?? false {
+            // Parent handled the scroll, reset our offset
             scrollView.contentOffset.y = 0
         }
     }

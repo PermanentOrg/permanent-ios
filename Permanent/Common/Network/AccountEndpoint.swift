@@ -33,6 +33,7 @@ enum AccountEndpoint {
     case getUserData(accountId: Int)
     /// Updates user data
     case updateUserData(accountId: Int, updateData: UpdateUserData)
+    case updateHideChecklist(accountId: AccountVOData, hideChecklist: Bool)
     /// Update Share request
     case updateShareRequest(shareVO: ShareVOData)
     case updateShareArchiveRequest(archiveVO: MinArchiveVO)
@@ -62,6 +63,8 @@ extension AccountEndpoint: RequestProtocol {
         case .getUserData:
             return "/account/get"
         case .updateUserData:
+            return "/account/update"
+        case .updateHideChecklist:
             return "/account/update"
         case .updateShareRequest, .updateShareArchiveRequest:
             return "/share/upsert"
@@ -104,6 +107,9 @@ extension AccountEndpoint: RequestProtocol {
             
         case .updateUserData(accountId: let accountId, updateData: let updateData):
             return updateUserData(accountId: accountId, updateUserData: updateData)
+            
+        case .updateHideChecklist(accountId: let accountId, hideChecklist: let hideChecklist):
+            return updateHideChecklist(accountId: accountId, hideChecklist: hideChecklist)
             
         case .updateShareRequest(let shareVO):
             return updateShareRequest(shareVO: shareVO)
@@ -327,6 +333,32 @@ extension AccountEndpoint {
                 ]
             ]
         ]
+    }
+    
+    func updateHideChecklist(accountId: AccountVOData, hideChecklist: Bool) -> RequestParameters {
+        
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId.accountID as Any,
+                            "fullName": accountId.fullName as Any,
+                            "primaryEmail": accountId.primaryEmail as Any,
+                            "primaryPhone": accountId.primaryPhone as Any,
+                            "address": accountId.address as Any,
+                            "address2": accountId.address2 as Any,
+                            "city": accountId.city as Any,
+                            "state": accountId.state as Any,
+                            "zip": accountId.zip as Any,
+                            "country": accountId.country as Any,
+                            "hideChecklist": hideChecklist
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
     }
     
     func updateShareRequest(shareVO: ShareVOData) -> RequestParameters {

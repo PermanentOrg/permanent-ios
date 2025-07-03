@@ -56,10 +56,10 @@
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Gmj-3H-vgN" userLabel="Table Stack View">
-                                <rect key="frame" x="0.0" y="103" width="414" height="759"/>
+                                <rect key="frame" x="0.0" y="103" width="414" height="793"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="IoJ-oA-nYL">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="699"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="733"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="gHs-53-iVO">
                                             <size key="itemSize" width="413" height="128"/>
@@ -75,7 +75,7 @@
                                         </connections>
                                     </collectionView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LaC-r3-AT6" userLabel="File Bottom Action View" customClass="BottomActionSheet" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="699" width="414" height="60"/>
+                                        <rect key="frame" x="0.0" y="733" width="414" height="60"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="qda-UB-Yz1"/>
@@ -85,12 +85,12 @@
                                 <gestureRecognizers/>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vvX-vX-KAP" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="346" y="734" width="48" height="48"/>
+                                <rect key="frame" x="330" y="752" width="64" height="64"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <accessibility key="accessibilityConfiguration" identifier="plusButton"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="48" id="aKB-cx-1Xq"/>
-                                    <constraint firstAttribute="height" constant="48" id="fep-Kh-irg"/>
+                                    <constraint firstAttribute="width" constant="64" id="aKB-cx-1Xq"/>
+                                    <constraint firstAttribute="height" constant="64" id="fep-Kh-irg"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -99,7 +99,7 @@
                         <constraints>
                             <constraint firstItem="Gmj-3H-vgN" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="bottom" constant="10" id="4re-qy-3fE"/>
                             <constraint firstItem="GgD-GW-QOd" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="20" id="94Y-4W-xs9"/>
-                            <constraint firstItem="Gmj-3H-vgN" firstAttribute="bottom" secondItem="olD-lK-dv0" secondAttribute="bottom" id="9gf-dj-76B"/>
+                            <constraint firstItem="Gmj-3H-vgN" firstAttribute="bottom" secondItem="b8K-hS-pB6" secondAttribute="bottom" id="9gf-dj-76B"/>
                             <constraint firstItem="rQx-Kj-4rK" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="top" id="Bab-S8-qqH"/>
                             <constraint firstItem="rQx-Kj-4rK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="Gmj-3H-vgN" secondAttribute="trailing" id="UKm-jQ-BTV"/>
@@ -114,6 +114,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="backButton" destination="pwt-jE-HrX" id="ufF-TV-9ZW"/>
+                        <outlet property="bottomButtonsConstrainHeight" destination="fep-Kh-irg" id="O33-9J-ncr"/>
                         <outlet property="collectionView" destination="IoJ-oA-nYL" id="L4v-ef-4UL"/>
                         <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
                         <outlet property="fabView" destination="vvX-vX-KAP" id="gMk-W1-ppL"/>

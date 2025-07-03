@@ -24,38 +24,12 @@ struct SimpleCustomNavigationView<Content: View, LeftButton: View, RightButton: 
         self.textColor = textColor
         self.textStyle = textStyle
         self.showLeftChevron = showLeftChevron
-        
-        UINavigationBar.appearance().backgroundColor = backgroundColor
-        UINavigationBar.appearance().titleTextAttributes = [
-            .foregroundColor: textColor,
-            NSAttributedString.Key.font: textStyle.font
-        ]
-        UINavigationBar.appearance().isTranslucent = false
-        UIScrollView.appearance().bounces = false
-        
-        if #available(iOS 15, *) {
-            let navigationBarAppearance = UINavigationBarAppearance()
-            navigationBarAppearance.configureWithOpaqueBackground()
-            navigationBarAppearance.titleTextAttributes = [
-                NSAttributedString.Key.foregroundColor : textColor,
-                NSAttributedString.Key.font: textStyle.font
-            ]
-            navigationBarAppearance.backgroundColor = backgroundColor
-            UINavigationBar.appearance().standardAppearance = navigationBarAppearance
-            UINavigationBar.appearance().compactAppearance = navigationBarAppearance
-            UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
-            
-            let tabBarApperance = UITabBarAppearance()
-            tabBarApperance.configureWithOpaqueBackground()
-            tabBarApperance.backgroundColor = backgroundColor
-            UITabBar.appearance().scrollEdgeAppearance = tabBarApperance
-            UITabBar.appearance().standardAppearance = tabBarApperance
-        }
     }
     
     var body: some View {
         ZStack {
             Color(uiColor: backgroundColor)
+                .ignoresSafeArea()
             
             NavigationView {
                 VStack {
@@ -82,7 +56,6 @@ struct SimpleCustomNavigationView<Content: View, LeftButton: View, RightButton: 
                         } else {
                             leftButtons
                         }
-                        
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         if !(rightButtons is EmptyView) {
@@ -90,17 +63,23 @@ struct SimpleCustomNavigationView<Content: View, LeftButton: View, RightButton: 
                         }
                     }
                 }
+                .toolbarBackground(Color(uiColor: backgroundColor), for: .navigationBar)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .navigationBarTitleDisplayMode(.inline)
             .navigationViewStyle(StackNavigationViewStyle())
-        }.onAppear {
+        }
+        .onAppear {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .portrait
+            ScrollViewAppearanceManager.shared.pushScrollViewBounce(enabled: false, identifier: "SimpleCustomNavigationView")
             #endif
-        }.onDisappear {
+        }
+        .onDisappear {
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .all
+            ScrollViewAppearanceManager.shared.popScrollViewBounce(identifier: "SimpleCustomNavigationView")
             #endif
         }
         .edgesIgnoringSafeArea(.all)

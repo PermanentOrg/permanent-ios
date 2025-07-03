@@ -28,14 +28,14 @@ struct GiftStorageView: View {
                             isKeyboardPresented = value.isFirstResponder
                         }
                 }
+                .onTapGesture {
+                    dismissKeyboard()
+                }
                 .ignoresSafeArea(.all)
             } leftButton: {
                 backButton
             } rightButton: {
                 EmptyView()
-            }
-            .onTapGesture {
-                dismissKeyboard()
             }
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "Are you sure you’d like to gift storage? This can't be undone!", message: nil, buttonTitle: "Yes, gift storage", addCornerRadius: true) {

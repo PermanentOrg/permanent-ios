@@ -8,6 +8,7 @@ import Foundation
 
 enum EventsEndpoint {
     case sendEvent(eventsPayload: EventsPayload)
+    case checklist
 }
 
 extension EventsEndpoint: RequestProtocol {
@@ -16,13 +17,20 @@ extension EventsEndpoint: RequestProtocol {
     }
     
     var method: RequestMethod {
-        return .post
+        switch self {
+        case .checklist:
+            return .get
+        case .sendEvent:
+            return .post
+        }
     }
     
     var parameters: RequestParameters? {
         switch self {
         case .sendEvent(let eventsPayload):
             getEventParameters(eventsPayload: eventsPayload)
+        case .checklist:
+            checklistMember()
         }
     }
     
@@ -45,17 +53,23 @@ extension EventsEndpoint: RequestProtocol {
         switch self {
         case .sendEvent(let eventsPayload):
             return encodePayload(eventsPayload)
+        default:
+            return nil
         }
     }
     
     var customURL: String? {
         let endpointPath = APIEnvironment.defaultEnv.apiServer
-        return "\(endpointPath)api/v2/event"
+        switch self {
+        case .sendEvent:
+            return "\(endpointPath)api/v2/event"
+        case .checklist:
+            return "\(endpointPath)api/v2/event/checklist"
+        }
     }
 }
 
 extension EventsEndpoint {
-    
     func getEventParameters(eventsPayload: EventsPayload) -> RequestParameters {
         let parameters: [String : Any] = [
             "entity": eventsPayload.entity,
@@ -83,5 +97,9 @@ extension EventsEndpoint {
             print("Encoding error: \(error)")
             return nil
         }
+    }
+    
+    func checklistMember() -> RequestParameters {
+        return []
     }
 }

@@ -30,7 +30,7 @@ enum ArchiveType: String, CaseIterable, Identifiable {
         }
     }
     
-    var archiveName: String {
+    var archiveTypeName: String {
         switch self {
         case .person, .individual, .other, .unsure: return "Person".localized()
         case .family, .familyHistory: return "Family".localized()
@@ -68,7 +68,7 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     }
     
     var aboutPublicPageTitle: String {
-        return "About This Archive".localized()
+        return "Archive information".localized()
     }
     var personalInformationPublicPageTitle: String {
         switch self {
@@ -84,26 +84,15 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     }
     
     var shortDescriptionTitle: String {
-        return "What is this Archive for?".localized()
+        return "About this archive:".localized()
     }
     var shortDescriptionHint: String {
-        return "Add a short description about the purpose of this Archive".localized()
+        return "Add a description about this Archive".localized()
     }
     
     var longDescriptionTitle: String {
-        switch self {
-        case .person, .individual, .other, .unsure:
-            return "Tell us about this Person".localized()
-            
-        case .family, .familyHistory:
-            return "Tell us about this Family".localized()
-            
-        case .organization, .community:
-            return "Tell us about this Organization".localized()
-            
-        case .nonProfit:
-            return "Tell us about this nonprofit Organization".localized()
-        }
+        return "Archive purpose:".localized()
+
     }
     var longDescriptionHint: String {
         switch self {

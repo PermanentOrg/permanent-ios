@@ -111,7 +111,7 @@ extension TagEndpoint {
         let data = tags.map {
             [
                 "TagVO": [
-                    "id": ($0.tagVO.tagId ?? Int() ) as Int
+                    "tagId": ($0.tagVO.tagId ?? Int() ) as Int
                 ]
             ]
         }

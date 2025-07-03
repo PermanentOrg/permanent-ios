@@ -3,7 +3,7 @@ name: Deploy Firebase Beta
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "feature/Onboarding-Redesign", "feature/Authentication-Redesign", "feature/2FA-Redesign"]
+    branches: [ "main","development","feature/PasswordChange-Redesign","feature/New-Member-Checklist"]
 
 jobs:
   build:
@@ -17,11 +17,11 @@ jobs:
       - name: Update Bundler
         uses: ruby/setup-ruby@v1
         with: 
-          ruby-version: '3.0.0'
+          ruby-version: '3.1.0'
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest
+          xcode-version: '16.2'
       - name: Run Fastlane Beta
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}

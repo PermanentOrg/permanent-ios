@@ -8,12 +8,15 @@ import SwiftUI
 
 struct GradientSemiCirclesLoaderView: View {
     @State private var rotate = false
+    var innerCicleWidth: CGFloat = 8
+    var innerCicleSize: CGFloat = 25
+    var outerCicleWidth: CGFloat = 8
 
     var body: some View {
         ZStack {
             SemiCircle()
-                .stroke(Gradient.purpleYellowGradient, style: StrokeStyle(lineWidth: 8, lineCap: .round))
-                .frame(width: 25, height: 25)
+                .stroke(Gradient.purpleYellowGradient, style: StrokeStyle(lineWidth: innerCicleWidth, lineCap: .round))
+                .frame(width: innerCicleSize, height: innerCicleSize)
                 .rotationEffect(.degrees(rotate ? 360 : 0))
                 .animation(Animation.linear(duration: 4).repeatForever(autoreverses: false), value: rotate)
                 .onAppear {
@@ -21,7 +24,7 @@ struct GradientSemiCirclesLoaderView: View {
                 }
             
             SemiCircle()
-                .stroke(Gradient.yellowPurpleGradient, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                .stroke(Gradient.yellowPurpleGradient, style: StrokeStyle(lineWidth: outerCicleWidth, lineCap: .round))
                 .frame(width: 50, height: 50)
                 .rotationEffect(.degrees(rotate ? 360 : 0))
                 .animation(Animation.linear(duration: 2).repeatForever(autoreverses: false), value: rotate)

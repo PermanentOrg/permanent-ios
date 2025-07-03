@@ -16,6 +16,8 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     @IBOutlet weak var shortDescriptionEmptyLabel: UILabel!
     @IBOutlet weak var longDescriptionEmptyLabel: UILabel!
     
+    @IBOutlet weak var archiveNameLabel: UILabel!
+    @IBOutlet weak var archiveNameTextField: UITextField!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -64,6 +66,12 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         longAboutDescriptionTextView.textColor = .middleGray
         longAboutDescriptionTextView.font = TextFontStyle.style7.font
         
+        archiveNameTextField.layer.borderColor = UIColor.lightGray.cgColor
+        archiveNameTextField.layer.borderWidth = 0.5
+        archiveNameTextField.layer.cornerRadius = 3
+        archiveNameTextField.textColor = .middleGray
+        archiveNameTextField.font = TextFontStyle.style7.font
+        
         shortDescriptionEmptyLabel.textColor = .lightGray
         shortDescriptionEmptyLabel.font = TextFontStyle.style8.font
         shortDescriptionEmptyLabel.textAlignment = .left
@@ -72,14 +80,22 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         longDescriptionEmptyLabel.font = TextFontStyle.style8.font
         longDescriptionEmptyLabel.textAlignment = .left
         
+        archiveNameLabel.textColor = .middleGray
+        archiveNameLabel.font = TextFontStyle.style12.font
+        
         shortAboutDescriptionTitleLabel.textColor = .middleGray
         shortAboutDescriptionTitleLabel.font = TextFontStyle.style12.font
         
         longAboutDescriptionTitleLabel.textColor = .middleGray
         longAboutDescriptionTitleLabel.font = TextFontStyle.style12.font
         
+        archiveNameLabel.text = "Archive name:"
         shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.blurbProfileItem?.shortDescription?.count ?? 0)")
         shortDescriptionEmptyLabel.text = viewModel?.archiveType.shortDescriptionHint
+        
+        if let archiveName = viewModel?.basicProfileItem?.archiveName {
+            archiveNameTextField.text = archiveName
+        }
         
         if let shortDescription = viewModel?.blurbProfileItem?.shortDescription {
             shortAboutDescriptionTextField.text = shortDescription
@@ -103,11 +119,39 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         dismiss(animated: true)
     }
     @objc func doneButtonAction(_ sender: Any) {
-        var publicProfileUpdateIsSuccessfully: (Bool, Bool) = (true, true)
+        var publicProfileUpdateIsSuccessfully: (Bool, Bool, Bool) = (true, true, true)
         
         let group = DispatchGroup()
         
         showSpinner()
+        
+        if let archiveNameTextField = archiveNameTextField.text {
+            if archiveNameTextField != viewModel?.archiveNameProfileItem?.archiveName && archiveNameTextField.count <= 30 {
+                if !archiveNameTextField.isEmpty {
+                        group.enter()
+                        viewModel?.renameArchiveNameProfileItem(profileItemId: viewModel?.archiveNameProfileItem?.profileItemId ,newValue: archiveNameTextField, { result, error, itemId in
+                            if result {
+                                self.viewModel?.archiveNameProfileItem?.profileItemId = itemId
+                                
+                                // Check if we're editing the currently selected archive
+                                if let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
+                                   let localArchiveData = self.viewModel?.archiveData,
+                                   currentArchive.archiveID == localArchiveData.archiveID {
+                
+                                    // Skip session sync and notification posting to prevent unwanted archive switching
+                                    // The main profile page (PublicProfilePageViewController) handles this correctly
+                                }
+                            } else {
+                                self.showErrorAlert(message: .errorMessage)
+                                publicProfileUpdateIsSuccessfully.2 = false
+                            }
+                            group.leave()
+                        })
+                } else {
+                    self.archiveNameTextField.text = viewModel?.archiveData.fullName
+                }
+            }
+        }
              
         if let shortTextField = shortAboutDescriptionTextField.text {
             if shortTextField != viewModel?.blurbProfileItem?.shortDescription {
@@ -175,7 +219,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
-            if publicProfileUpdateIsSuccessfully == (true, true) {
+            if publicProfileUpdateIsSuccessfully == (true, true, true) {
                 self.dismiss(animated: true)
             }
         }

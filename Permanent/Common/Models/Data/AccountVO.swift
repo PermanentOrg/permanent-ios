@@ -35,6 +35,7 @@ struct AccountVOData: Model {
     let fileLeft: Int?
     let changePrimaryEmail, changePrimaryPhone: JSONAny?
     let createdDT, updatedDT: String?
+    let hideChecklist: Bool?
 
     enum CodingKeys: String, CodingKey {
         case accountID = "accountId"
@@ -43,7 +44,7 @@ struct AccountVOData: Model {
         case level, apiToken, betaParticipant
         case facebookAccountID = "facebookAccountId"
         case googleAccountID = "googleAccountId"
-        case status, type, emailStatus, phoneStatus, notificationPreferences, agreed, optIn, emailArray, inviteCode, rememberMe, keepLoggedIn, accessRole, spaceTotal, spaceLeft, fileTotal, fileLeft, changePrimaryEmail, changePrimaryPhone, createdDT, updatedDT
+        case status, type, emailStatus, phoneStatus, notificationPreferences, agreed, optIn, emailArray, inviteCode, rememberMe, keepLoggedIn, accessRole, spaceTotal, spaceLeft, fileTotal, fileLeft, changePrimaryEmail, changePrimaryPhone, createdDT, updatedDT, hideChecklist
     }
 }
 
@@ -85,7 +86,8 @@ extension AccountVOData {
             changePrimaryEmail: nil,
             changePrimaryPhone: nil,
             createdDT: "2022-01-01T00:00:00Z",
-            updatedDT: "2022-01-01T00:00:00Z"
+            updatedDT: "2022-01-01T00:00:00Z",
+            hideChecklist: true
         )
     }
 }

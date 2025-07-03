@@ -44,20 +44,41 @@ class AuthenticationManager {
     }
     
     func reloadSession(_ completion: @escaping ((Bool) -> Void)) {
-        if let session = try? keychainHandler.savedSession(),
-            let selectedArchive = session.selectedArchive {
-            self.session = session
-            
-            changeArchive(selectedArchive) { result in
-                switch result {
-                case .success(_):
+        do {
+            if let session = try keychainHandler.savedSession() {
+                // Set the session first
+                self.session = session
+                
+                if let selectedArchive = session.selectedArchive {
+                    // Try to change to the saved archive on the server
+                    changeArchive(selectedArchive) { [weak self] result in
+                        switch result {
+                        case .success(_):
+                            // Server successfully changed to the archive, keep the selectedArchive
+                            self?.session?.selectedArchive = selectedArchive
+                            self?.saveSession()
+                        
+                            completion(true)
+                            
+                        case .failure:
+                            // Server call failed, but still keep the session with the saved selectedArchive
+                            // This ensures the user's last selected archive is preserved even if offline
+                            self?.session?.selectedArchive = selectedArchive
+                            self?.saveSession()
+                            
+                            completion(true)
+                        }
+                    }
+                } else {
+                    // No saved archive, session is still valid but will need to get default archive
+                    self.session = session
                     completion(true)
-                    
-                case .failure(_):
-                    completion(false)
                 }
+            } else {
+                logout()
+                completion(false)
             }
-        } else {
+        } catch {
             logout()
             completion(false)
         }
@@ -186,6 +207,7 @@ class AuthenticationManager {
 
         session = nil
         keychainHandler.clearSession()
+        UserDefaults.standard.set(false, forKey: Constants.Keys.StorageKeys.memberChecklistWasShown)
         
         Messaging.messaging().deleteFCMToken(forSenderID: googleServiceInfo.gcmSenderId) { _ in }
     }
@@ -195,7 +217,40 @@ class AuthenticationManager {
             refreshCurrentArchive { result in
                 switch result {
                 case .success(let archive):
-                    self.session?.selectedArchive = archive
+                    // Only update session if we don't have a current archive
+                    if self.session?.selectedArchive == nil {
+                        self.session?.selectedArchive = archive
+                    } else {
+                        // Check if the current archive is the same as default
+                        let currentArchive = self.session?.selectedArchive
+                        let refreshedArchive = archive
+                        
+                        if let currentArchive = currentArchive,
+                           let refreshedArchive = refreshedArchive,
+                           currentArchive.archiveID == refreshedArchive.archiveID {
+                            
+                            // CRITICAL FIX: Don't overwrite user's archive selection with server data
+                            // The user's local session contains their intended archive state
+                            // Check if server has different data
+                            if currentArchive.fullName != refreshedArchive.fullName {
+                                print("🔴 ARCHIVE_DEBUG: ⚠️⚠️⚠️ ARCHIVE NAME MISMATCH DETECTED!")
+                            } else {
+            
+                                // Only update with server data if names match (safe update for other fields)
+                                self.session?.selectedArchive = refreshedArchive
+                            }
+                        } else {
+                            print("🔴 ARCHIVE_DEBUG: User has different archive selected (not default), preserving user's choice")
+                            print("🔴 ARCHIVE_DEBUG: - NOT updating session selectedArchive to preserve user's current selection")
+                            print("🔴 ARCHIVE_DEBUG: - This prevents overriding user's active editing session")
+                        }
+                    }
+                    
+                    // Notify that session sync is complete so UI can refresh
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: NSNotification.Name("SessionSyncCompleted"), object: nil)
+                    }
+                    
                     handler(.success)
                     
                 case .failure(_):
@@ -203,6 +258,11 @@ class AuthenticationManager {
                 }
             }
         } else {
+            // Still post notification even when no default archive
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: NSNotification.Name("SessionSyncCompleted"), object: nil)
+            }
+            
             handler(.success)
         }
     }
@@ -246,9 +306,25 @@ class AuthenticationManager {
             return
         }
 
-        archivesRepository.changeArchive(archiveId: archiveId, archiveNbr: archiveNbr) { result in
-            completionBlock(result)
+        archivesRepository.changeArchive(archiveId: archiveId, archiveNbr: archiveNbr) { [weak self] result in
+            switch result {
+            case .success(_):
+                // Update session and save when server confirms the change
+                self?.updateSelectedArchive(archive)
+                completionBlock(.success(true))
+                
+            case .failure(let error):
+                completionBlock(.failure(error))
+            }
         }
+    }
+    
+    func updateSelectedArchive(_ archive: ArchiveVOData) {
+        session?.selectedArchive = archive
+        saveSession()
+        
+        // Post notification for UI updates
+        NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil)
     }
 
 }

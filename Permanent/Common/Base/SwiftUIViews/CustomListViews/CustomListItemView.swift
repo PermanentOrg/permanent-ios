@@ -58,11 +58,14 @@ struct CustomListItemView: View {
     var badgeText: String?
     var badgeColor: Color?
     var showToggle: Bool = false
+    var showRectangle: Bool
+    
+    @Binding var isSelected: Bool
     @Binding var isToggleOn: Bool
     
     init(image: Image, titleText: String, descText: String,
          showBadge: Bool = false, badgeText: String? = nil, badgeColor: Color? = nil,
-         showToggle: Bool = false, isToggleOn: Binding<Bool> = .constant(false)) {
+         showToggle: Bool = false, isToggleOn: Binding<Bool> = .constant(false), isSelected: Binding<Bool> = .constant(false), showRectangle: Bool = true) {
         self.image = image
         self.titleText = titleText
         self.descText = descText
@@ -71,10 +74,17 @@ struct CustomListItemView: View {
         self.badgeColor = badgeColor
         self.showToggle = showToggle
         self._isToggleOn = isToggleOn
+        self._isSelected = isSelected
+        self.showRectangle = showRectangle
     }
     
     var body: some View {
-        VStack {
+        HStack(spacing: 0) {
+            if !(Constants.Design.isPhone) && showRectangle {
+                Rectangle()
+                    .frame(width: 4)
+                    .foregroundColor(isSelected ? Color.blue900 : Color.clear)
+            }
             HStack(alignment: .top, spacing: 24) {
                 image
                     .resizable()
