@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build and deploy a beta build to Firebase Distribution
-    runs-on: macos-13
+    runs-on: macos-15
     environment: staging
 
     steps:
