@@ -38,10 +38,19 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     var isPickingProfilePicture: Bool = false
     var isViewingPublicProfile: Bool = false
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         viewModel = PublicProfilePicturesViewModel()
+        
+        // Listen for archive name changes to update title
+        NotificationCenter.default.addObserver(forName: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, queue: .main) { [weak self] notification in
+            self?.handleArchiveNameUpdate()
+        }
         
         if archiveData == nil {
             showSpinner()
@@ -61,6 +70,35 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             })
         } else {
             initUI()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Reset header to fully visible state
+        headerViewTopConstraint.constant = 0
+        
+        // Reset child scroll views to top
+        if let profilePageVC = profilePageVC, profilePageVC.isViewLoaded {
+            profilePageVC.collectionView.setContentOffset(.zero, animated: false)
+        }
+        
+        if let archiveVC = archiveVC, archiveVC.isViewLoaded {
+            archiveVC.collectionView.setContentOffset(.zero, animated: false)
+        }
+        
+        // Force layout update
+        view.layoutIfNeeded()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Ensure header is in the correct initial state
+        if headerViewTopConstraint.constant != 0 {
+            headerViewTopConstraint.constant = 0
+            view.layoutIfNeeded()
         }
     }
 
@@ -203,23 +241,170 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     @objc func closeButtonAction(_ sender: Any) {
         dismiss(animated: true)
     }
+    
+    func handleArchiveNameUpdate() {
+        // Called when user switches their selected archive (full archive change)
+        // This triggers a complete refresh with scroll to top
+        
+        guard let sessionArchive = AuthenticationManager.shared.session?.selectedArchive,
+              let currentArchive = self.archiveData else {
+            return
+        }
+        
+        // Only switch archives if the session archive ID is actually different from current
+        // This prevents unwanted switches when session sync returns stale/wrong data
+        if sessionArchive.archiveID != currentArchive.archiveID {
+            let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sessionArchive.fullName ?? "")
+            self.title = newTitle
+            
+            // Update local archiveData to keep it in sync
+            self.archiveData = sessionArchive
+            self.viewModel?.archiveData = sessionArchive
+            
+            // Update child view controllers with new archive data
+            self.profilePageVC?.archiveData = sessionArchive
+            self.profilePageVC?.viewModel?.archiveData = sessionArchive
+            self.archiveVC?.archiveData = sessionArchive
+            
+            // Refresh the profile page data to prevent collection view crashes
+            DispatchQueue.main.async { [weak self] in
+                if let profilePageVC = self?.profilePageVC, profilePageVC.isViewLoaded {
+                    profilePageVC.handleArchiveChange(newArchiveData: sessionArchive)
+                }
+                
+                // Scroll both views to top for new archive content
+                self?.scrollChildViewsToTop()
+            }
+            
+            // Update header view (banner and profile photos) for new archive
+            updateHeaderForNewArchive(sessionArchive)
+        } else {
+            // If it's the same archive but the name changed, just update the title locally
+            if sessionArchive.fullName != currentArchive.fullName {
+                let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sessionArchive.fullName ?? "")
+                self.title = newTitle
+            }
+        }
+    }
+    
+    private func updateHeaderForNewArchive(_ newArchiveData: ArchiveVOData) {
+        // Update profile photo from new archive data
+        if let archiveThumb200 = newArchiveData.thumbURL200 {
+            profilePhotoImageView.sd_setImage(with: URL(string: archiveThumb200))
+        } else {
+            profilePhotoImageView.image = UIColor.lightGray.imageWithColor(width: 48, height: 48)
+        }
+        
+        // Refresh banner image for new archive
+        viewModel?.getPublicRoot(then: { [weak self] status in
+            if status == .success, let bannerURL = self?.viewModel?.bannerURL {
+                self?.profileBannerImageView.sd_setImage(with: bannerURL)
+            }
+        })
+    }
+    
+    private func scrollChildViewsToTop() {
+        // Scroll profile page to top
+        if let profilePageVC = profilePageVC, profilePageVC.isViewLoaded {
+            profilePageVC.collectionView.setContentOffset(.zero, animated: false)
+        }
+        
+        // Scroll archive file browser to top
+        if let archiveVC = archiveVC, archiveVC.isViewLoaded {
+            archiveVC.collectionView.setContentOffset(.zero, animated: false)
+        }
+        
+        // Also reset the header scroll position
+        headerViewTopConstraint.constant = 0
+    }
+    
+    func handleLocalArchiveDataUpdate(_ updatedArchive: ArchiveVOData) {
+        // Called when current archive's profile data is updated (local changes only)
+        // Updates UI without scrolling or session changes
+        // Update title with new archive name
+        let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: updatedArchive.fullName ?? "")
+        self.title = newTitle
+        
+        // Update local archiveData to keep it in sync
+        self.archiveData = updatedArchive
+        self.viewModel?.archiveData = updatedArchive
+        
+        // Update child view controllers with new archive data
+        self.profilePageVC?.archiveData = updatedArchive
+        self.profilePageVC?.viewModel?.archiveData = updatedArchive
+        self.archiveVC?.archiveData = updatedArchive
+        
+        // Ensure edit permissions are recalculated for the updated archive
+        if let profilePageVC = self.profilePageVC,
+           let isEditDataEnabled = profilePageVC.viewModel?.isEditDataEnabled {
+            profilePageVC.isEditDataEnabled = isEditDataEnabled
+            
+            // Refresh the collection view to reflect the new edit state
+            DispatchQueue.main.async {
+                profilePageVC.collectionView.reloadData()
+            }
+        }
+        
+        // Update header view (banner and profile photos) for updated archive
+        updateHeaderForNewArchive(updatedArchive)
+        
+        // No need to scroll to top or fully refresh for local data updates
+    }
 }
 
 extension PublicArchiveViewController: PublicArchiveChildDelegate {
     func childVC(_ vc: UIViewController, didScrollToOffset offset: CGPoint) -> Bool {
-        if (-headerViewTopConstraint.constant >= headerContainerView.bounds.height && offset.y > 0) ||
-            (headerViewTopConstraint.constant >= 0 && offset.y < 0) {
+        // Safety checks - ensure view is properly initialized
+        guard isViewLoaded,
+              headerViewTopConstraint != nil,
+              headerContainerView != nil else {
             return false
-        } else {
-            headerViewTopConstraint.constant -= offset.y
-            if headerViewTopConstraint.constant > 0 {
-                headerViewTopConstraint.constant = 0
-            } else if -headerViewTopConstraint.constant > headerContainerView.bounds.height {
-                headerViewTopConstraint.constant = -headerContainerView.bounds.height
-            }
-            
-            return true
         }
+        
+        let currentHeaderOffset = -headerViewTopConstraint.constant
+        let maxHeaderOffset = headerContainerView.bounds.height
+        
+        // Ensure we have valid bounds
+        guard maxHeaderOffset > 0 else {
+            return false
+        }
+        
+        // Scrolling UP - always try to reveal header first if it's hidden
+        if offset.y < 0 {
+            if currentHeaderOffset > 0 {
+                // Header is hidden, reveal it first
+                headerViewTopConstraint.constant -= offset.y
+                
+                // Clamp to fully visible
+                if headerViewTopConstraint.constant > 0 {
+                    headerViewTopConstraint.constant = 0
+                }
+                
+                return true
+            }
+            // Header is fully visible, let child handle scroll
+            return false
+        }
+        
+        // Scrolling DOWN - always try to hide header first if it's visible
+        if offset.y > 0 {
+            if currentHeaderOffset < maxHeaderOffset {
+                // Header is visible, hide it first
+                headerViewTopConstraint.constant -= offset.y
+                
+                // Clamp to fully hidden
+                if -headerViewTopConstraint.constant > maxHeaderOffset {
+                    headerViewTopConstraint.constant = -maxHeaderOffset
+                }
+                
+                return true
+            }
+            // Header is fully hidden, let child handle scroll
+            return false
+        }
+        
+        // No scroll or zero offset
+        return false
     }
 }
 

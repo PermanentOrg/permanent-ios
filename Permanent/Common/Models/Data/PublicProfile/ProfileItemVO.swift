@@ -16,11 +16,12 @@ struct ProfileItemVO: Model {
     
     enum ItemCodingKeys: String, CodingKey {
         case fieldNameUI
+        case type
     }
     
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Self.CodingKeys)
-        let profileItemContainer = try container.nestedContainer(keyedBy: Self.ItemCodingKeys, forKey: .profileItemVO)
+        let container = try decoder.container(keyedBy: Self.CodingKeys.self)
+        let profileItemContainer = try container.nestedContainer(keyedBy: Self.ItemCodingKeys.self, forKey: .profileItemVO)
         let fieldNameUI = try profileItemContainer.decode(String?.self, forKey: .fieldNameUI)
         
         switch fieldNameUI {

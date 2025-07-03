@@ -24,8 +24,6 @@ struct SimpleCustomNavigationView<Content: View, LeftButton: View, RightButton: 
         self.textColor = textColor
         self.textStyle = textStyle
         self.showLeftChevron = showLeftChevron
-        
-        UIScrollView.appearance().bounces = false
     }
     
     var body: some View {
@@ -75,11 +73,13 @@ struct SimpleCustomNavigationView<Content: View, LeftButton: View, RightButton: 
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .portrait
+            ScrollViewAppearanceManager.shared.pushScrollViewBounce(enabled: false, identifier: "SimpleCustomNavigationView")
             #endif
         }
         .onDisappear {
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .all
+            ScrollViewAppearanceManager.shared.popScrollViewBounce(identifier: "SimpleCustomNavigationView")
             #endif
         }
         .edgesIgnoringSafeArea(.all)

@@ -15,7 +15,7 @@ class RootViewController: UIViewController {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return [.portrait]
         } else {
-            return [.all]
+            return [.landscape]
         }
     }
     

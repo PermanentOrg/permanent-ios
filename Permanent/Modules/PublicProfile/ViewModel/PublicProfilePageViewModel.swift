@@ -18,6 +18,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
     
     var profileItems = [ProfileItemModel]()
     
+    var archiveNameProfileItem: BasicProfileItem? {
+        return profileItems.first(where: {$0 is BasicProfileItem && ($0 as! BasicProfileItem).archiveName != nil}) as? BasicProfileItem
+    }
     var blurbProfileItem: BlurbProfileItem? {
         return profileItems.first(where: {$0 is BlurbProfileItem}) as? BlurbProfileItem
     }
@@ -82,13 +85,14 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
         
         var aboutCells = [ProfileCellType]()
+
         if blurbProfileItem?.shortDescription?.isNotEmpty ?? false {
             aboutCells.append(.blurb)
         }
         if descriptionProfileItem?.longDescription?.isNotEmpty ?? false {
             aboutCells.append(.longDescription)
         }
-        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
+        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.archiveName,  ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
         
         var informationCells = [ProfileCellType]()
         if basicProfileItem?.fullName?.isNotEmpty ?? false {
@@ -199,6 +203,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+
         let apiOperation: APIOperation
         
         switch operationType {
@@ -269,6 +274,25 @@ class PublicProfilePageViewModel: ViewModelInterface {
         modifyPublicProfileItem(newBlurbItem, operationType, completionBlock)
     }
     
+    func renameArchiveNameProfileItem(profileItemId: Int? = nil, newValue: String, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        // Use BasicProfileItem with archive name, preserving existing full name and nickname
+        let newBasicItem = BasicProfileItem()
+        newBasicItem.archiveName = newValue
+        newBasicItem.fullName = basicProfileItem?.fullName
+        newBasicItem.nickname = basicProfileItem?.nickname
+        newBasicItem.archiveId = archiveData.archiveID
+        newBasicItem.profileItemId = profileItemId ?? basicProfileItem?.profileItemId
+        
+        // Basic item is always public
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        
+        newBasicItem.publicDT = dateFormatter.string(from: Date())
+        
+        modifyPublicProfileItem(newBasicItem, .update, completionBlock)
+    }
+    
     func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
         let newProfileItem = DescriptionProfileItem()
         newProfileItem.longDescription = newValue
@@ -286,7 +310,10 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyBasicProfileItem(profileItemId: Int? = nil, newValueFullname: String? = nil, newValueNickName: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+
         let newProfileItem = BasicProfileItem()
+        // Preserve existing archive name when updating full name/nickname
+        newProfileItem.archiveName = basicProfileItem?.archiveName
         newProfileItem.fullName = newValueFullname
         newProfileItem.nickname = newValueNickName
         newProfileItem.archiveId = archiveData.archiveID
@@ -420,32 +447,21 @@ class PublicProfilePageViewModel: ViewModelInterface {
             return
         }
         
-        if textFieldHaveNewValue.0 || textFieldHaveNewValue.1,
-           textFieldIsEmpty == (true, true) {
-            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
-                if result {
-                    self.basicProfileItem?.profileItemId = nil
-                    completion(true)
-                    return
-                } else {
-                    completion(false)
-                    return
+        // Always use update operation for basic profile item since it contains the archive name
+        // and cannot be deleted. Even if both full name and nickname are empty, we should
+        // update with empty values rather than attempting to delete.
+        modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
+            if result {
+                if self.basicProfileItem?.profileItemId == nil {
+                    self.basicProfileItem?.profileItemId = itemId
                 }
-            })
-        } else {
-            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
-                if result {
-                    if self.basicProfileItem?.profileItemId == nil {
-                        self.basicProfileItem?.profileItemId = itemId
-                    }
-                    completion(true)
-                    return
-                } else {
-                    completion(false)
-                    return
-                }
-            })
-        }
+                completion(true)
+                return
+            } else {
+                completion(false)
+                return
+            }
+        })
     }
     
     func updateGenderProfileItem(genderNewValue: String?, _ completion: @escaping (Bool) -> Void ) {

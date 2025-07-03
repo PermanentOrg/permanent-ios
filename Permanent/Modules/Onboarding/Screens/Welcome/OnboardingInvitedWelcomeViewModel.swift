@@ -108,7 +108,7 @@ class OnboardingInvitedWelcomeViewModel: ObservableObject {
     }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
-        AuthenticationManager.shared.session?.selectedArchive = archive
+        AuthenticationManager.shared.updateSelectedArchive(archive)
     }
     
     func trackEvents() {

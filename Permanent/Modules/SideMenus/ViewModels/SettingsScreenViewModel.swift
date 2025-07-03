@@ -28,6 +28,7 @@ class SettingsScreenViewModel: ObservableObject {
     @Published var twoFactorAuthenticationEnabled: Bool? = true
     @Published var isLoading2FAStatus: Bool = false
     @Published var twoFactorMethods: [TwoFactorMethod] = []
+    @Published var showFinishSetUpAccount: Bool = false
     
     init() {
         getAccountInfo { error in
@@ -37,6 +38,7 @@ class SettingsScreenViewModel: ObservableObject {
                 self.getAccountDetails()
                 self.getStorageSpaceDetails()
                 self.getCurrentArchiveThumbnail()
+                self.getMemberChecklist()
             }
         }
             getTwoFAStatus()
@@ -70,6 +72,34 @@ class SettingsScreenViewModel: ObservableObject {
             default:
                 completionBlock(APIError.invalidResponse)
                 return
+            }
+        }
+    }
+    
+    func getMemberChecklist() {
+        let getMemberChecklistOperation = APIOperation(EventsEndpoint.checklist)
+        getMemberChecklistOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: ChecklistResponse = JSONHelper.convertToModel(from: response)
+                else {
+                    self.showFinishSetUpAccount = false
+                    return
+                }
+                guard !model.checklistItems.isEmpty, model.checklistItems.count(where: {$0.completed == false}) > 0 else {
+                    self.showFinishSetUpAccount = false
+                    return
+                }
+                withAnimation {
+                    self.showFinishSetUpAccount = true
+                }
+                
+                
+            default:
+                self.showFinishSetUpAccount = false
             }
         }
     }

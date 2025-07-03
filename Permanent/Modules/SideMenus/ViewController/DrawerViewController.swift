@@ -60,6 +60,8 @@ class DrawerViewController: UIViewController {
     
     func toggleMenu(animateBg: Bool = true) {
         let offset: CGFloat = view.safeAreaInsets.top > 47 ? 6 : 0
+        let menuWidth: CGFloat = view.bounds.width * (Constants.Design.isPhone ? 0.75 : 0.33)
+        
         
         isLeftMenuExpanded.toggle()
         rootViewController.view.hideKeyboard()
@@ -75,19 +77,19 @@ class DrawerViewController: UIViewController {
         }
         
         leftSideMenuController.view.frame = CGRect(
-            origin: CGPoint(x: isLeftMenuExpanded ? -(view.bounds.width * 0.75) : 0, y: leftSideMenuOrigin.y - offset),
-            size: CGSize(width: view.bounds.width * 0.75, height: leftSideMenuHeight + offset)
+            origin: CGPoint(x: isLeftMenuExpanded ? -(menuWidth) : 0, y: leftSideMenuOrigin.y - offset),
+            size: CGSize(width: menuWidth, height: leftSideMenuHeight + offset)
         )
         leftSideMenuController.adjustUIForAnimation(isOpening: isLeftMenuExpanded)
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: { [self] in
             leftSideMenuController.view.frame = CGRect(
-                origin: CGPoint(x: isLeftMenuExpanded ? 0 : -(view.bounds.width * 0.75), y: leftSideMenuOrigin.y - offset),
-                size: CGSize(width: view.bounds.width * 0.75, height: leftSideMenuHeight + offset)
+                origin: CGPoint(x: isLeftMenuExpanded ? 0 : -(menuWidth), y: leftSideMenuOrigin.y - offset),
+                size: CGSize(width: menuWidth, height: leftSideMenuHeight + offset)
             )
             
             if animateBg {
-                backgroundView.alpha = (isLeftMenuExpanded) ? 0.5 : 0.0
+                backgroundView.alpha = (isLeftMenuExpanded) ? (Constants.Design.isPhone ? 0.5 : 0.2) : 0.0
             }
         }, completion: { [self] finished in
             if isLeftMenuExpanded == false {

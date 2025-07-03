@@ -119,11 +119,27 @@ class ArchivesViewModel: ViewModelInterface {
                 let accountArchives = model.results.first?.data
                 
                 self.allArchives.removeAll()
+                var archiveMap: [Int: ArchiveVOData] = [:]
+                
                 accountArchives?.forEach { archive in
-                    if let archiveVOData = archive.archiveVO, archiveVOData.status != .pending || archiveVOData.status != .unknown {
-                        self.allArchives.append(archiveVOData)
+                    if let archiveVOData = archive.archiveVO, 
+                       archiveVOData.status != .pending && archiveVOData.status != .unknown,
+                       let archiveID = archiveVOData.archiveID {
+                        
+                        // Handle server-side data corruption by preferring archives with valid names
+                        if let existingArchive = archiveMap[archiveID] {
+                            // Prefer the archive with a valid (non-nil) name
+                            if existingArchive.fullName == nil && archiveVOData.fullName != nil {
+                                archiveMap[archiveID] = archiveVOData
+                            }
+                        } else {
+                            archiveMap[archiveID] = archiveVOData
+                        }
                     }
                 }
+                
+                // Convert map back to array
+                self.allArchives = Array(archiveMap.values)
                 completionBlock(accountArchives, nil)
                 return
                 
@@ -144,6 +160,18 @@ class ArchivesViewModel: ViewModelInterface {
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
         PermSession.currentSession?.selectedArchive = archive
+        
+        // Save the session to persist the archive selection
+        if let session = PermSession.currentSession {
+            do {
+                try SessionKeychainHandler().saveSession(session)
+            } catch {
+                print("Failed to save session after archive change")
+            }
+        }
+        
+        // Post notification for UI updates
+        NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
         
         UploadManager.shared.timer?.fire()
     }

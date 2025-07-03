@@ -102,7 +102,6 @@ struct AuthVerifyIdentityView: View {
                                     .lineLimit(1)
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(Color(red: 0.72, green: 0.73, blue: 0.79))
-                                //                    .layoutPriority(1)
                                 Button(action: {
                                     UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/newticket/")!)
                                 }, label: {
