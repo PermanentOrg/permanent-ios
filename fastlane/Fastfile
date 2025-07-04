@@ -104,18 +104,21 @@ platform :ios do
     # resolve the provisioning profiles and certs from private repo
     match(type: "appstore",
           readonly: false,
+          platform: "ios",
           app_identifier: "org.permanent.PermanentArchive",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
     match(type: "appstore",
           readonly: false,
+          platform: "ios",
           app_identifier: "org.permanent.PermanentArchive.PushExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
     match(type: "appstore",
           readonly: false,
+          platform: "ios",
           app_identifier: "org.permanent.PermanentArchive.ShareExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
