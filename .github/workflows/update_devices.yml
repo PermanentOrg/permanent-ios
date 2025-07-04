@@ -42,4 +42,4 @@ jobs:
           FASTLANE_MATCH_TOKEN: ${{ secrets.FASTLANE_MATCH_TOKEN }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
-        run: bundle lock --add-platform x86_64-darwin-19 bundle exec fastlane update_devices
+        run: bundle exec fastlane update_devices
