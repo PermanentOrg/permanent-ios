@@ -32,6 +32,12 @@ platform :ios do
 	            reset_simulator: true)
   end
 
+  lane :cocopods do
+    # resolve cocoapods
+    cocoapods(use_bundle_exec: true,
+              podfile: "./Podfile")
+  end
+
   lane :beta do
     setup_ci
 
