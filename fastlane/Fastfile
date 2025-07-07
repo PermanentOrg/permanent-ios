@@ -104,18 +104,21 @@ platform :ios do
     # resolve the provisioning profiles and certs from private repo
     match(type: "appstore",
           readonly: true,
+          platform: "ios",
           app_identifier: "org.permanent.PermanentArchive",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
     match(type: "appstore",
           readonly: true,
+          platform: "ios",
           app_identifier: "org.permanent.PermanentArchive.PushExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
     match(type: "appstore",
           readonly: true,
+          platform: "ios",
           app_identifier: "org.permanent.PermanentArchive.ShareExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
@@ -177,6 +180,7 @@ platform :ios do
     # resolve the provisioning profiles and certs from private repo
     match(type: "adhoc",
           readonly: false,
+          platform: "ios",
           app_identifier: "org.permanent.permanent.staging",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           force_for_new_devices: true,
@@ -184,12 +188,14 @@ platform :ios do
           )
     match(type: "adhoc",
           readonly: false,
+          platform: "ios",
           app_identifier: "org.permanent.permanent.staging.PushExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           force_for_new_devices: true
           )
     match(type: "adhoc",
           readonly: false,
+          platform: "ios",
           app_identifier: "org.permanent.permanent.staging.ShareExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           force_for_new_devices: true
