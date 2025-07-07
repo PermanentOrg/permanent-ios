@@ -178,7 +178,7 @@ platform :ios do
       )
 
     # resolve the provisioning profiles and certs from private repo
-    match(type: "adhoc",
+    match(type: "appstore",
           readonly: false,
           platform: "ios",
           app_identifier: "org.permanent.permanent.staging",
@@ -186,14 +186,14 @@ platform :ios do
           force_for_new_devices: true,
           verbose: true
           )
-    match(type: "adhoc",
+    match(type: "appstore",
           readonly: false,
           platform: "ios",
           app_identifier: "org.permanent.permanent.staging.PushExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           force_for_new_devices: true
           )
-    match(type: "adhoc",
+    match(type: "appstore",
           readonly: false,
           platform: "ios",
           app_identifier: "org.permanent.permanent.staging.ShareExtension",
