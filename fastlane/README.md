@@ -23,6 +23,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Description of what the lane does
 
+### ios cocopods
+
+```sh
+[bundle exec] fastlane ios cocopods
+```
+
+
+
 ### ios beta
 
 ```sh
@@ -39,10 +47,10 @@ Description of what the lane does
 
 
 
-### ios manual
+### ios update_devices
 
 ```sh
-[bundle exec] fastlane ios manual
+[bundle exec] fastlane ios update_devices
 ```
 
 
