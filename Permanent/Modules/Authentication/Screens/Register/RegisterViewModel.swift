@@ -41,7 +41,9 @@ class RegisterViewModel: ObservableObject {
     }
     
     func signUp(then handler: @escaping (RegisterStatus) -> Void) {
-        let credentials: SignUpV2Credentials = (fullname, email, password, agreeUpdates)
+        let inviteCode = InviteCodeManager.shared.getAndConsumeInviteCode()
+        
+        let credentials: SignUpV2Credentials = (fullname, email, password, agreeUpdates, inviteCode)
         AuthenticationManager.shared.signUp(with: credentials) {[weak self] status in
             switch status {
             case .success:
