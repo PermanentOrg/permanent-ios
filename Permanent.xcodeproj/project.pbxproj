@@ -85,7 +85,6 @@
 		5E187FA22A0CE3A800DCD52F /* LegacyPlanningSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */; };
 		5E187FA32A0CE3CE00DCD52F /* LegacyPlanningSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */; };
 		5E1C3C4C28ECA77A007C1A63 /* TagsLocalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */; };
-		5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */; };
 		5E1C3C5028ED7828007C1A63 /* TagsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */; };
 		5E1C3C5228F0772A007C1A63 /* ManageTagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */; };
 		5E1C3C5428F59703007C1A63 /* TagManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C5328F59703007C1A63 /* TagManagementViewController.swift */; };
@@ -155,6 +154,18 @@
 		5E328DEB2D59FF0F00EE2307 /* Add2FAFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */; };
 		5E37F2D52AA75248004F00E8 /* CustomDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */; };
 		5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */; };
+		5E390B442E1FEF1F00F623D3 /* TagsRemoteDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B432E1FEF1F00F623D3 /* TagsRemoteDataSourceInterface.swift */; };
+		5E390B452E1FEF1F00F623D3 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B3E2E1FEF1F00F623D3 /* ArchivesRemoteDataSource.swift */; };
+		5E390B462E1FEF1F00F623D3 /* ShareManagementRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B422E1FEF1F00F623D3 /* ShareManagementRemoteDataSource.swift */; };
+		5E390B472E1FEF1F00F623D3 /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B3F2E1FEF1F00F623D3 /* AuthRemoteDataSource.swift */; };
+		5E390B482E1FEF1F00F623D3 /* LegacyPlanningDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B412E1FEF1F00F623D3 /* LegacyPlanningDataSourceInterface.swift */; };
+		5E390B492E1FEF1F00F623D3 /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B3D2E1FEF1F00F623D3 /* AccountRemoteDataSource.swift */; };
+		5E390B4A2E1FEF1F00F623D3 /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B402E1FEF1F00F623D3 /* FilesRemoteDataSource.swift */; };
+		5E390B4B2E1FEF6B00F623D3 /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B3D2E1FEF1F00F623D3 /* AccountRemoteDataSource.swift */; };
+		5E390B4C2E1FEF7100F623D3 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B3E2E1FEF1F00F623D3 /* ArchivesRemoteDataSource.swift */; };
+		5E390B4D2E1FEF7700F623D3 /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B3F2E1FEF1F00F623D3 /* AuthRemoteDataSource.swift */; };
+		5E390B4E2E1FEF7D00F623D3 /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B402E1FEF1F00F623D3 /* FilesRemoteDataSource.swift */; };
+		5E390B4F2E1FEF8200F623D3 /* LegacyPlanningDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B412E1FEF1F00F623D3 /* LegacyPlanningDataSourceInterface.swift */; };
 		5E3A060029E44D7900A6C531 /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A05FF29E44D7900A6C531 /* Workspace.swift */; };
 		5E3A060129E44D8600A6C531 /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A05FF29E44D7900A6C531 /* Workspace.swift */; };
 		5E3A060329E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A060229E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift */; };
@@ -165,13 +176,6 @@
 		5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */; };
 		5E3CEA9D2D14A0150029353E /* CustomPasswordFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */; };
 		5E3CEA9F2D14A4630029353E /* TwoStepConfirmPasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */; };
-		5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */; };
-		5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */; };
-		5E3E121E2A41902C00682DE5 /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */; };
-		5E3E121F2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E121B2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift */; };
-		5E3E12202A41904200682DE5 /* LegacyPlanningDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E121B2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift */; };
-		5E3E12212A41904D00682DE5 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */; };
-		5E3E12232A41906700682DE5 /* ShareManagementRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12222A41906700682DE5 /* ShareManagementRemoteDataSource.swift */; };
 		5E3E12452A41F16500682DE5 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
 		5E3E12462A41F3B700682DE5 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C37D4628AD62060062D9EB /* FileCollectionViewCell.swift */; };
 		5E3E124B2A431F9600682DE5 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */; };
@@ -520,6 +524,8 @@
 		5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE9D8C327A188C100CE5F9C /* ProfilePageData.swift */; };
 		5EE9D8C627A1EE8100CE5F9C /* EstablishedInfoProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE9D8C527A1EE8100CE5F9C /* EstablishedInfoProfileItem.swift */; };
 		5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EEC8E13286DCE3E00603FC4 /* FileDetailsTableViewCell.xib */; };
+		5EEEA00F2E1E92CF00777E2C /* InviteCodeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEEA00E2E1E92CF00777E2C /* InviteCodeManager.swift */; };
+		5EEEA0102E1E92CF00777E2C /* InviteCodeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEEA00E2E1E92CF00777E2C /* InviteCodeManager.swift */; };
 		5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF0B6E627F43CFA000CBAF6 /* PublicGalleryViewController.swift */; };
 		5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */; };
 		5EF15DB22A77E0B600E9A7CA /* CustomSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */; };
@@ -527,7 +533,6 @@
 		5EF300382D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */; };
 		5EF3003A2D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */; };
 		5EF3003C2D4AC773001FFEE7 /* TwoStepChoosePhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */; };
-		5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		5EFC5B3B2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */; };
 		5EFCE3E52CFE022100D7E802 /* TwoFactorMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */; };
 		5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */; };
@@ -792,7 +797,6 @@
 		F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FB2742E265007E4594 /* SearchViewController.swift */; };
 		F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */; };
 		F50E135528F43359003DF4CC /* FilesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135428F43359003DF4CC /* FilesRepository.swift */; };
-		F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		F518DDA027CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F518DD9E27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift */; };
 		F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */; };
 		F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */; };
@@ -1095,7 +1099,6 @@
 		5E181B862AF2EAF5002DE69A /* CustomStepperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomStepperView.swift; sourceTree = "<group>"; };
 		5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningSteward.swift; sourceTree = "<group>"; };
 		5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsLocalDataSource.swift; sourceTree = "<group>"; };
-		5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRemoteDataSourceInterface.swift; sourceTree = "<group>"; };
 		5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRepository.swift; sourceTree = "<group>"; };
 		5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsViewModel.swift; sourceTree = "<group>"; };
 		5E1C3C5328F59703007C1A63 /* TagManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagManagementViewController.swift; sourceTree = "<group>"; };
@@ -1149,6 +1152,13 @@
 		5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Add2FAFieldView.swift; sourceTree = "<group>"; };
 		5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogView.swift; sourceTree = "<group>"; };
 		5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesTableViewCell.swift; sourceTree = "<group>"; };
+		5E390B3D2E1FEF1F00F623D3 /* AccountRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRemoteDataSource.swift; sourceTree = "<group>"; };
+		5E390B3E2E1FEF1F00F623D3 /* ArchivesRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesRemoteDataSource.swift; sourceTree = "<group>"; };
+		5E390B3F2E1FEF1F00F623D3 /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRemoteDataSource.swift; sourceTree = "<group>"; };
+		5E390B402E1FEF1F00F623D3 /* FilesRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesRemoteDataSource.swift; sourceTree = "<group>"; };
+		5E390B412E1FEF1F00F623D3 /* LegacyPlanningDataSourceInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningDataSourceInterface.swift; sourceTree = "<group>"; };
+		5E390B422E1FEF1F00F623D3 /* ShareManagementRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementRemoteDataSource.swift; sourceTree = "<group>"; };
+		5E390B432E1FEF1F00F623D3 /* TagsRemoteDataSourceInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRemoteDataSourceInterface.swift; sourceTree = "<group>"; };
 		5E3A05FF29E44D7900A6C531 /* Workspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspace.swift; sourceTree = "<group>"; };
 		5E3A060229E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSegmentedControlView.swift; sourceTree = "<group>"; };
 		5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNameUI.swift; sourceTree = "<group>"; };
@@ -1157,11 +1167,6 @@
 		5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Debug.entitlements"; sourceTree = "<group>"; };
 		5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPasswordFieldView.swift; sourceTree = "<group>"; };
 		5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordViewModel.swift; sourceTree = "<group>"; };
-		5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ArchivesRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ArchivesRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
-		5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AccountRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
-		5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
-		5E3E121B2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LegacyPlanningDataSourceInterface.swift; path = Permanent/Services/Repositories/Datasources/Remote/LegacyPlanningDataSourceInterface.swift; sourceTree = SOURCE_ROOT; };
-		5E3E12222A41906700682DE5 /* ShareManagementRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareManagementRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ShareManagementRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E12492A42EEA900682DE5 /* ShareExtensionDEV-Release.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Release.entitlements"; sourceTree = "<group>"; };
 		5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
 		5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustedStewardViewController.swift; sourceTree = "<group>"; };
@@ -1427,6 +1432,7 @@
 		5EE9D8C527A1EE8100CE5F9C /* EstablishedInfoProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstablishedInfoProfileItem.swift; sourceTree = "<group>"; };
 		5EEC8E12286DCE3E00603FC4 /* FileDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EEC8E13286DCE3E00603FC4 /* FileDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsTableViewCell.xib; sourceTree = "<group>"; };
+		5EEEA00E2E1E92CF00777E2C /* InviteCodeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteCodeManager.swift; sourceTree = "<group>"; };
 		5EF0B6E627F43CFA000CBAF6 /* PublicGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryViewController.swift; sourceTree = "<group>"; };
 		5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryViewModel.swift; sourceTree = "<group>"; };
 		5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegmentedControl.swift; sourceTree = "<group>"; };
@@ -1688,7 +1694,6 @@
 		F509D6FB2742E265007E4594 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilesViewModel.swift; sourceTree = "<group>"; };
 		F50E135428F43359003DF4CC /* FilesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesRepository.swift; sourceTree = "<group>"; };
-		F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesRemoteDataSource.swift; sourceTree = "<group>"; };
 		F518DD9E27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageVisibilityCollectionViewCell.swift; sourceTree = "<group>"; };
 		F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageVisibilityCollectionViewCell.xib; sourceTree = "<group>"; };
 		F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionKeychainHandler.swift; sourceTree = "<group>"; };
@@ -3541,13 +3546,13 @@
 		5EFC4048292D71CC00FD244B /* Remote */ = {
 			isa = PBXGroup;
 			children = (
-				5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */,
-				5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */,
-				5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */,
-				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
-				5E3E121B2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift */,
-				5E3E12222A41906700682DE5 /* ShareManagementRemoteDataSource.swift */,
-				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
+				5E390B3D2E1FEF1F00F623D3 /* AccountRemoteDataSource.swift */,
+				5E390B3E2E1FEF1F00F623D3 /* ArchivesRemoteDataSource.swift */,
+				5E390B3F2E1FEF1F00F623D3 /* AuthRemoteDataSource.swift */,
+				5E390B402E1FEF1F00F623D3 /* FilesRemoteDataSource.swift */,
+				5E390B412E1FEF1F00F623D3 /* LegacyPlanningDataSourceInterface.swift */,
+				5E390B422E1FEF1F00F623D3 /* ShareManagementRemoteDataSource.swift */,
+				5E390B432E1FEF1F00F623D3 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
 			sourceTree = "<group>";
@@ -4136,6 +4141,7 @@
 		BCE8DA6F25652C1B00842ABD /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				5EEEA00E2E1E92CF00777E2C /* InviteCodeManager.swift */,
 				F5B3F12F266689A30040E5C4 /* Upload */,
 				BCEECDAD25B0591B00A4520E /* Download */,
 				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
@@ -5006,8 +5012,6 @@
 				5ED428892A12D0E1001F88FB /* LegacyPlanningRepository.swift in Sources */,
 				5E5DFA702746361D000D9924 /* ProfilePageFooterCollectionViewCell.swift in Sources */,
 				F559F87728F99D120015A522 /* FolderSortViewModel.swift in Sources */,
-				5E3E12232A41906700682DE5 /* ShareManagementRemoteDataSource.swift in Sources */,
-				5E3E121E2A41902C00682DE5 /* AuthRemoteDataSource.swift in Sources */,
 				5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */,
 				5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
@@ -5040,7 +5044,6 @@
 				5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */,
 				92B9886E2A9783F30040941E /* MapView.swift in Sources */,
 				F502C48826D6132F00657D37 /* AssetGridViewController.swift in Sources */,
-				5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */,
 				5E3CEA9F2D14A4630029353E /* TwoStepConfirmPasswordViewModel.swift in Sources */,
 				5E59B9B82C9AED930089A824 /* AuthVerifyIdentityView.swift in Sources */,
 				5E048FCF292308720023C929 /* ShareManagementNumberOfUsesCollectionViewCell.swift in Sources */,
@@ -5058,7 +5061,6 @@
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */,
 				5E548E862B29F9F000DD2C59 /* RedeemCodeView.swift in Sources */,
-				5E3E121F2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift in Sources */,
 				5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */,
 				BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */,
 				924F16372A45CC6200B75D4E /* TextViewModifiers.swift in Sources */,
@@ -5147,7 +5149,6 @@
 				5E9C8E8F2CC2A7A9004C058F /* RegisterView.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
-				5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				5E051C0C2B6BB90C00274657 /* CustomHeaderView.swift in Sources */,
 				5E71E5F12C9C60D600B7A315 /* Login2FAFieldView.swift in Sources */,
@@ -5169,6 +5170,7 @@
 				5E0950862D6F58EE0002EFC5 /* BannerBottomMessage.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
+				5EEEA00F2E1E92CF00777E2C /* InviteCodeManager.swift in Sources */,
 				F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */,
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
@@ -5190,7 +5192,6 @@
 				F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */,
 				5ED966B62DA572D900D5BE88 /* CustomPasswordFieldWithPreviewView.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
-				F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				5E328DEB2D59FF0F00EE2307 /* Add2FAFieldView.swift in Sources */,
 				5EBAFCE42A154606005DB527 /* LegacyPlanningLoadingViewController.swift in Sources */,
@@ -5293,7 +5294,6 @@
 				5E559EC829BF438200F129BF /* IntExtension.swift in Sources */,
 				5EAF8AEB2D82165900824909 /* TwoStepTabletModalAlertView.swift in Sources */,
 				5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */,
-				5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
 				5E9C8E932CC63D74004C058F /* CustomRegisterFormView.swift in Sources */,
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
@@ -5303,6 +5303,13 @@
 				BC0D99CC256E5BF000D29041 /* TableViewData.swift in Sources */,
 				BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */,
 				F5AA5E0D27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift in Sources */,
+				5E390B442E1FEF1F00F623D3 /* TagsRemoteDataSourceInterface.swift in Sources */,
+				5E390B452E1FEF1F00F623D3 /* ArchivesRemoteDataSource.swift in Sources */,
+				5E390B462E1FEF1F00F623D3 /* ShareManagementRemoteDataSource.swift in Sources */,
+				5E390B472E1FEF1F00F623D3 /* AuthRemoteDataSource.swift in Sources */,
+				5E390B482E1FEF1F00F623D3 /* LegacyPlanningDataSourceInterface.swift in Sources */,
+				5E390B492E1FEF1F00F623D3 /* AccountRemoteDataSource.swift in Sources */,
+				5E390B4A2E1FEF1F00F623D3 /* FilesRemoteDataSource.swift in Sources */,
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				5ED9A7B62BBF3294009BDD70 /* OnboardingSelectArchiveTypeView.swift in Sources */,
 				5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */,
@@ -5450,6 +5457,7 @@
 				F5ADBF38290BBD110007A516 /* AccountEndpoint.swift in Sources */,
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
+				5E390B4E2E1FEF7D00F623D3 /* FilesRemoteDataSource.swift in Sources */,
 				5E473A062A41886A00A20D85 /* ArrayExtension.swift in Sources */,
 				F561F846299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift in Sources */,
 				92E3FB522A17686E00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
@@ -5463,14 +5471,16 @@
 				5ED3B3B329F7E945000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
 				5E473A022A41880A00A20D85 /* FileDownloadInfo.swift in Sources */,
 				5ECBAF9E2A1B5EF500FACFDF /* ArchiveSteward.swift in Sources */,
+				5EEEA0102E1E92CF00777E2C /* InviteCodeManager.swift in Sources */,
 				5E4739E82A4186EB00A20D85 /* VerifyCodeResponse.swift in Sources */,
 				F559F8AB28FF02A10015A522 /* FileListType.swift in Sources */,
 				F51B3321288B0A8500EA15DA /* FileAction.swift in Sources */,
 				5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */,
 				5ECBAFA52A1B643400FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */,
 				925FF46E2D006899000B44D4 /* EventsPayloadBuilder.swift in Sources */,
+				5E390B4D2E1FEF7700F623D3 /* AuthRemoteDataSource.swift in Sources */,
+				5E390B4F2E1FEF8200F623D3 /* LegacyPlanningDataSourceInterface.swift in Sources */,
 				F559F8B028FF032A0015A522 /* SerialInputStream.swift in Sources */,
-				5E3E12202A41904200682DE5 /* LegacyPlanningDataSourceInterface.swift in Sources */,
 				F5ADBF44290BC4100007A516 /* StoryboardName.swift in Sources */,
 				F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */,
 				F559F89328FEE9740015A522 /* FilesRepository.swift in Sources */,
@@ -5502,6 +5512,7 @@
 				5ED4B9CD2876E02200CF044B /* TimezoneVO.swift in Sources */,
 				F559F8A128FEEAED0015A522 /* RelocateRecordPayload.swift in Sources */,
 				5E4739FC2A4187C200A20D85 /* SocialMediaProfileItem.swift in Sources */,
+				5E390B4B2E1FEF6B00F623D3 /* AccountRemoteDataSource.swift in Sources */,
 				F5ADBF37290ADB800007A516 /* ArchivesViewModel.swift in Sources */,
 				F559F8AF28FF030B0015A522 /* GetPresignedUrlResponse.swift in Sources */,
 				5ED4B9C12875376000CF044B /* Constants.swift in Sources */,
@@ -5538,7 +5549,6 @@
 				F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
 				92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */,
-				5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */,
 				F5A87F9A2996C51100C4272B /* WorkspacesContentViewModel.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
@@ -5565,7 +5575,6 @@
 				F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */,
 				5E4739CE2A410B9600A20D85 /* BaseViewController.swift in Sources */,
 				F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */,
-				5E3E12212A41904D00682DE5 /* ArchivesRemoteDataSource.swift in Sources */,
 				5E3A060429E73B2100A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
 				5ED4B9CC2876E01E00CF044B /* FolderLinkVO.swift in Sources */,
 				5E1CCC1E287F04F100913EEA /* RoundedButton.swift in Sources */,
@@ -5575,6 +5584,7 @@
 				F559F89428FEE9950015A522 /* GetRootResponse.swift in Sources */,
 				5EBAFCEB2A1573F0005DB527 /* LegacyPlanningSetUpButton.swift in Sources */,
 				F51B331F288AF57B00EA15DA /* SessionKeychainHandler.swift in Sources */,
+				5E390B4C2E1FEF7100F623D3 /* ArchivesRemoteDataSource.swift in Sources */,
 				F559F8A628FF023C0015A522 /* EnvironmentProtocol.swift in Sources */,
 				5E83CC4B286C602500A5775B /* FolderInfo.swift in Sources */,
 				5ED4B9D22876E04300CF044B /* AccountVO.swift in Sources */,

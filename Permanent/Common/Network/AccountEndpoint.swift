@@ -9,7 +9,7 @@ import Foundation
 
 typealias LoginCredentials = (email: String, password: String)
 typealias SignUpCredentials = (name: String, loginCredentials: LoginCredentials)
-typealias SignUpV2Credentials = (name: String, email: String, password: String, optIn: Bool)
+typealias SignUpV2Credentials = (name: String, email: String, password: String, optIn: Bool, inviteCode: String?)
 typealias ChangePasswordCredentials = (password: String, passwordVerify: String, passwordOld: String)
 typealias UpdateData = (email: String, phone: String)
 typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPhone: String?, address: String?, address2: String?, city: String?, state: String?, zip: String?, country: String?)
@@ -204,7 +204,7 @@ extension AccountEndpoint {
     }
     
     func signUpV2Payload(for credentials: SignUpV2Credentials) -> RequestParameters {
-        return [
+        var payload: [String: Any] = [
             "agreed": true,
             "createArchive": false,
             "fullName": credentials.name,
@@ -213,6 +213,12 @@ extension AccountEndpoint {
             "password": credentials.password,
             "passwordVerify": credentials.password
         ]
+        
+        if let inviteCode = credentials.inviteCode, !inviteCode.isEmpty {
+            payload["inviteCode"] = inviteCode
+        }
+        
+        return payload
     }
     
     func deleteAccountPayload(accountId: Int) -> RequestParameters {

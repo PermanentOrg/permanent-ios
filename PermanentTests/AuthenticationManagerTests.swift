@@ -183,7 +183,7 @@ class AuthenticationManagerTests: XCTestCase {
         
         authManager = AuthenticationManager(authRepo: mockAuthRepo, accountRepository: mockAccountRepo)
 
-        let credentials = SignUpV2Credentials(name: "Test User", email: "test@example.com", password: "test1234", optIn: true)
+        let credentials = SignUpV2Credentials(name: "Test User", email: "test@example.com", password: "test1234", optIn: true, inviteCode: nil)
 
         let expectation = XCTestExpectation(description: "Sign Up Success")
 
@@ -209,7 +209,7 @@ class AuthenticationManagerTests: XCTestCase {
         
         authManager = AuthenticationManager(authRepo: mockAuthRepo, accountRepository: mockAccountRepo)
 
-        let credentials = SignUpV2Credentials(name: "Test User", email: "test@example.com", password: "test1234", optIn: true)
+        let credentials = SignUpV2Credentials(name: "Test User", email: "test@example.com", password: "test1234", optIn: true, inviteCode: nil)
 
         let expectation = XCTestExpectation(description: "Sign Up Failure")
 

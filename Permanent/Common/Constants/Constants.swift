@@ -173,6 +173,7 @@ extension Constants.Keys.StorageKeys {
     static let modelVersion = "modelVersion"
     static let minAppVersion = "minAppVersion"
     static let memberChecklistWasShown = "memberChecklistWasShown"
+    static let pendingInviteCode = "pendingInviteCodeKey"
 }
 
 extension Constants.API.Locations {

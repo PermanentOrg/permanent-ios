@@ -196,6 +196,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         case "app":
             if let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
             {
+                if components.path == "/app/auth/signup",
+                   let inviteCode = components.queryItems?.first(where: { $0.name == "inviteCode" })?.value {
+                    
+                    // Check if user is already logged in
+                    if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
+                       let session = try? JSONDecoder().decode(PermSession.self, from: authData),
+                       let archiveId = session.selectedArchive?.archiveID,
+                       archiveId != .zero {
+                        
+                        // User is logged in - show popup that they can't create an account
+                        DispatchQueue.main.async {
+                            self.showAlreadyLoggedInAlert()
+                        }
+                        return true
+                    } else {
+                        // User is not logged in - store invite code for later use during signup
+                        InviteCodeManager.shared.storeInviteCode(inviteCode)
+                        
+                        // Always navigate to signup screen when we have an invite code and user is not logged in
+                        DispatchQueue.main.async {
+                            // If user was in main flow, logout first
+                            if self.rootViewController.isDrawerRootActive {
+                                AuthenticationManager.shared.logout()
+                            }
+                            // Navigate directly to signup screen
+                            self.rootViewController.setRoot(named: .signUp, from: .authentication, showRegisterView: true)
+                        }
+                        return true
+                    }
+                }
+                
                 if let redeemCode = components.queryItems?.first(where: { $0.name == "promoCode" })?.value {
                     if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
                        let session = try? JSONDecoder().decode(PermSession.self, from: authData),
@@ -544,9 +575,39 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             Constants.Keys.StorageKeys.requestLinkAccess,
             Constants.Keys.StorageKeys.shareURLToken,
             Constants.Keys.StorageKeys.publicURLToken,
-            Constants.Keys.StorageKeys.sharedArchiveToken
+            Constants.Keys.StorageKeys.sharedArchiveToken,
+            Constants.Keys.StorageKeys.pendingInviteCode
             ]
         )
+    }
+    
+    fileprivate func showAlreadyLoggedInAlert() {
+        let alert = UIAlertController(
+            title: "Already Signed In",
+            message: "You are already signed in to Permanent. To create a new account with this invite code, please sign out first.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        if let topViewController = getTopMostViewController() {
+            topViewController.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    fileprivate func getTopMostViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            return self.window?.rootViewController
+        }
+        
+        var topViewController = window.rootViewController
+        
+        while let presentedViewController = topViewController?.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        return topViewController
     }
 }
 

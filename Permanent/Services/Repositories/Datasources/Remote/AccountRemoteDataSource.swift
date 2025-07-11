@@ -9,12 +9,12 @@
 import Foundation
 
 protocol AccountRemoteDataSourceInterface {
-    func createAccount(fullName: String, primaryEmail: String, password: String, optIn: Bool, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void)
+    func createAccount(fullName: String, primaryEmail: String, password: String, optIn: Bool, inviteCode: String?, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void)
 }
 
 class AccountRemoteDataSource: AccountRemoteDataSourceInterface {
-    func createAccount(fullName: String, primaryEmail: String, password: String, optIn: Bool, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
-        let credentials = SignUpV2Credentials(fullName, primaryEmail, password, optIn)
+    func createAccount(fullName: String, primaryEmail: String, password: String, optIn: Bool, inviteCode: String?, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
+        let credentials = SignUpV2Credentials(fullName, primaryEmail, password, optIn, inviteCode)
         let operation = APIOperation(AccountEndpoint.signUpV2(credentials: credentials))
         
         operation.execute(in: APIRequestDispatcher()) { result in
@@ -45,7 +45,7 @@ class AccountRemoteDataSource: AccountRemoteDataSourceInterface {
 class MockAccountRemoteDataSource: AccountRemoteDataSourceInterface {
     var createAccountResponse: Result<(SignUpResponse, AccountVOData), Error>?
 
-    func createAccount(fullName: String, primaryEmail: String, password: String, optIn: Bool, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
+    func createAccount(fullName: String, primaryEmail: String, password: String, optIn: Bool, inviteCode: String?, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
         if let response = createAccountResponse {
             handler(response)
         } else {

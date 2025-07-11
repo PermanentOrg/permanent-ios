@@ -116,7 +116,8 @@ class AuthViewModel: ViewModelInterface, LoginEventProtocol {
     }
     
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
-        AuthenticationManager.shared.signUp(with: (credentials.loginCredentials.email, credentials.loginCredentials.password, credentials.loginCredentials.email, false)) { status in
+        let signUpV2Credentials: SignUpV2Credentials = (credentials.name, credentials.loginCredentials.email, credentials.loginCredentials.password, false, nil)
+        AuthenticationManager.shared.signUp(with: signUpV2Credentials) { status in
             switch status {
             case .success:
                 handler(.success)

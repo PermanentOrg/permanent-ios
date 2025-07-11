@@ -92,17 +92,17 @@ struct ChecklistItemView: View {
                 Image(imageName)
                     .renderingMode(.template)
                     .frame(width: 24, height: 24, alignment: .center)
-                    .foregroundColor(item.completed ? Color(red: 0.54, green: 0.55, blue: 0.64) : Color(red: 0.07, green: 0.11, blue: 0.29))
+                    .foregroundColor(item.completed || item.type == .archiveCreated ? Color(red: 0.54, green: 0.55, blue: 0.64) : Color(red: 0.07, green: 0.11, blue: 0.29))
             }
             if let type = item.type {
                 Text(item.title)
                     .strikethrough(item.completed || type == ChecklistItemType.archiveCreated)
                     .font(.custom("Usual-Regular", size: 14))
-                    .foregroundColor(item.completed ? Color(red: 0.54, green: 0.55, blue: 0.64) : Color(red: 0.07, green: 0.11, blue: 0.29))
+                    .foregroundColor(item.completed || type == ChecklistItemType.archiveCreated ? Color(red: 0.54, green: 0.55, blue: 0.64) : Color(red: 0.07, green: 0.11, blue: 0.29))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
-            Image(item.completed ? .memberchecklistCheckedSign : .memberchecklistRightArrow)
+            Image(item.completed || item.type == .archiveCreated ? .memberchecklistCheckedSign : .memberchecklistRightArrow)
                 .frame(width: 24, height: 24, alignment: .center)
         }
     }
