@@ -405,6 +405,7 @@
 		5EC043A82924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */; };
 		5EC20FCF2CA58FE000CCE8EF /* AuthBannerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC20FCE2CA58FE000CCE8EF /* AuthBannerMessage.swift */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
+		5EC7CD292E26A74E00D80AE4 /* SwiftUIFileMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC7CD262E26A74E00D80AE4 /* SwiftUIFileMenuView.swift */; };
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
@@ -1351,6 +1352,7 @@
 		5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementEmptyHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 		5EC20FCE2CA58FE000CCE8EF /* AuthBannerMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBannerMessage.swift; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
+		5EC7CD262E26A74E00D80AE4 /* SwiftUIFileMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIFileMenuView.swift; sourceTree = "<group>"; };
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
@@ -2982,6 +2984,7 @@
 		5E4739CB2A41094700A20D85 /* FileOperations */ = {
 			isa = PBXGroup;
 			children = (
+				5EC7CD282E26A74E00D80AE4 /* Views */,
 				5E3E12382A41EB0000682DE5 /* Cells */,
 				BC6358BA25371FB400EEC48C /* ViewModel */,
 				5E4739CC2A41095C00A20D85 /* ViewController */,
@@ -3404,6 +3407,14 @@
 				5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */,
 			);
 			path = LeftSideView;
+			sourceTree = "<group>";
+		};
+		5EC7CD282E26A74E00D80AE4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5EC7CD262E26A74E00D80AE4 /* SwiftUIFileMenuView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		5ECBAF9F2A1B5F0200FACFDF /* LegacyPlanning */ = {
@@ -5219,6 +5230,7 @@
 				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
 				5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */,
 				5E6CCEEB2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift in Sources */,
+				5EC7CD292E26A74E00D80AE4 /* SwiftUIFileMenuView.swift in Sources */,
 				5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
