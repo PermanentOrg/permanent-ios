@@ -33,6 +33,7 @@ struct SwiftUIFileMenuView: View {
     @State private var imageOpacity: Double = 0.0
     @State private var isDragging: Bool = false
     @State private var dragStartTime: Date = Date()
+    @State private var skeletonOffset: CGFloat = -200
     
     // Cache formatted values to avoid repeated calculations
     private let cachedFormattedFileSize: String?
@@ -61,6 +62,32 @@ struct SwiftUIFileMenuView: View {
     private var thumbnailPlaceholder: some View {
         RoundedRectangle(cornerRadius: 6)
             .fill(Color.gray.opacity(0.3))
+            .overlay(
+                // Skeleton loading animation - only for files that have thumbnails
+                Group {
+                    if !fileViewModel.type.isFolder && fileViewModel.thumbnailURL != nil && !fileViewModel.thumbnailURL!.isEmpty {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.clear,
+                                        Color.white.opacity(0.4),
+                                        Color.clear
+                                    ]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: skeletonOffset)
+                            .mask(RoundedRectangle(cornerRadius: 6))
+                            .onAppear {
+                                withAnimation(Animation.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                                    skeletonOffset = 200
+                                }
+                            }
+                    }
+                }
+            )
             .overlay(
                 Image(systemName: fileViewModel.type.isFolder ? "folder.fill" : "doc.fill")
                     .foregroundColor(.white.opacity(0.7))
@@ -156,10 +183,14 @@ struct SwiftUIFileMenuView: View {
                             ZStack {
                                 // Always show placeholder as background
                                 thumbnailPlaceholder
+                                    .frame(width: 40, height: 40)
                                     .opacity(1.0 - imageOpacity) // Fade out as image fades in
                                 
-                                // Show WebImage only when ready to load
-                                if let thumbnailURL = fileViewModel.thumbnailURL, !thumbnailURL.isEmpty, shouldLoadImage {
+                                // Show WebImage only for files (not folders) when ready to load
+                                if !fileViewModel.type.isFolder,
+                                   let thumbnailURL = fileViewModel.thumbnailURL, 
+                                   !thumbnailURL.isEmpty, 
+                                   shouldLoadImage {
                                     WebImage(url: URL(string: thumbnailURL))
                                         .onSuccess { _, _, _ in
                                             let elapsed = Date().timeIntervalSince(initStartTime) * 1000
@@ -170,10 +201,10 @@ struct SwiftUIFileMenuView: View {
                                         }
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
+                                        .frame(width: 40, height: 40)
                                         .opacity(imageOpacity)
                                 }
                             }
-                            .frame(width: 40, height: 40)
                             .clipShape(RoundedRectangle(cornerRadius: 6))
                             
                             // File details
@@ -181,26 +212,26 @@ struct SwiftUIFileMenuView: View {
                                 Text(displayTitle)
                                     .font(.custom("Inter", size: 16))
                                     .fontWeight(.medium)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.primary)
                                     .lineLimit(1)
                                 
                                 HStack(spacing: 8) {
                                     if let size = cachedFormattedFileSize {
                                         Text(size)
                                             .font(.custom("Inter", size: 12))
-                                            .foregroundColor(.white.opacity(0.8))
+                                            .foregroundColor(Color.primary.opacity(0.8))
                                     }
                                     
                                     if cachedFormattedFileSize != nil && !cachedFormattedDate.isEmpty {
                                         Text("•")
                                             .font(.custom("Inter", size: 12))
-                                            .foregroundColor(.white.opacity(0.6))
+                                            .foregroundColor(Color.primary.opacity(0.6))
                                     }
                                     
                                     if !cachedFormattedDate.isEmpty {
                                         Text(cachedFormattedDate)
                                             .font(.custom("Inter", size: 12))
-                                            .foregroundColor(.white.opacity(0.8))
+                                            .foregroundColor(Color.primary.opacity(0.8))
                                     }
                                 }
                             }
@@ -217,7 +248,7 @@ struct SwiftUIFileMenuView: View {
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.white.opacity(0.8))
                                     .frame(width: 30, height: 30)
-                                    .background(Color.white.opacity(0.2))
+                                    .background(Color.primary.opacity(0.2))
                                     .clipShape(Circle())
                             }
                         }
@@ -281,8 +312,10 @@ struct SwiftUIFileMenuView: View {
                         isAnimating = true
                     }
                     
-                    // Start loading image immediately when sheet appears
-                    shouldLoadImage = true
+                    // Delay image loading until after the sheet animation completes
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        shouldLoadImage = true
+                    }
                 }
             }
         }
