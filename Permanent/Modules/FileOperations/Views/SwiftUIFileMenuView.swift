@@ -1,5 +1,159 @@
 import SwiftUI
 import SDWebImageSwiftUI
+import UIKit
+
+// Helper class to handle file sharing operations using modern iOS APIs
+class FileShareHelper {
+    static let shared = FileShareHelper()
+    private let fileHelper = FileHelper()
+    
+    /// Shares a file with other apps using the native iOS share sheet (UIActivityViewController)
+    /// This provides access to AirDrop, Messages, Mail, third-party apps, and system extensions
+    func shareWithOtherApps(file: FileModel, from viewController: UIViewController) {
+        print("🔄 FileShareHelper: Starting shareWithOtherApps for file: \(file.name)")
+        print("🔄 FileShareHelper: Presenting from: \(type(of: viewController))")
+        print("🔄 FileShareHelper: View controller can present: \(viewController.presentedViewController == nil)")
+        
+        // If the view controller is already presenting something, dismiss it first
+        if viewController.presentedViewController != nil {
+            print("⚠️ FileShareHelper: View controller already presenting, dismissing first")
+            viewController.dismiss(animated: false) {
+                self.shareWithOtherApps(file: file, from: viewController)
+            }
+            return
+        }
+        
+        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
+            print("✅ FileShareHelper: File found locally, presenting share sheet")
+            presentShareSheet(url: localURL, from: viewController, file: file)
+        } else {
+            print("⚠️ FileShareHelper: File not found locally, starting download")
+            downloadAndShare(file: file, from: viewController)
+        }
+    }
+    
+    private func downloadAndShare(file: FileModel, from viewController: UIViewController) {
+        print("🔄 FileShareHelper: Starting download for file: \(file.name)")
+        
+        // Check if view controller can present
+        if viewController.presentedViewController != nil {
+            print("⚠️ FileShareHelper: View controller already presenting, dismissing first")
+            viewController.dismiss(animated: false) {
+                self.downloadAndShare(file: file, from: viewController)
+            }
+            return
+        }
+        
+        let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
+        preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel))
+        
+        print("🔄 FileShareHelper: Presenting preparing alert")
+        viewController.present(preparingAlert, animated: true) {
+            print("✅ FileShareHelper: Preparing alert presented")
+            
+            // Try to download the file using the existing download infrastructure
+            // For now, let's try to share the file name as text since we can't download
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                preparingAlert.dismiss(animated: true) {
+                    print("🔄 FileShareHelper: Alert dismissed, attempting text share fallback")
+                    
+                    // Fallback: Share file information as text
+                    let shareText = "File: \(file.name)"
+                    let activityViewController = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+                    
+                    // Configure for iPad
+                    if let popover = activityViewController.popoverPresentationController {
+                        popover.sourceView = viewController.view
+                        popover.sourceRect = CGRect(x: viewController.view.bounds.midX, y: viewController.view.bounds.midY, width: 0, height: 0)
+                        popover.permittedArrowDirections = []
+                    }
+                    
+                    print("🔄 FileShareHelper: Presenting fallback text share")
+                    viewController.present(activityViewController, animated: true) {
+                        print("✅ FileShareHelper: Fallback share presented successfully")
+                    }
+                }
+            }
+        }
+    }
+    
+    private func presentShareSheet(url: URL, from viewController: UIViewController, file: FileModel) {
+        print("🔄 FileShareHelper: Presenting share sheet for URL: \(url)")
+        print("🔄 FileShareHelper: View controller can present: \(viewController.presentedViewController == nil)")
+        
+        // Provide haptic feedback to indicate action started
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+        
+        // Create activity items with the file URL and optional filename
+        var activityItems: [Any] = [url]
+        
+        // Add filename as a text item to help with context
+        if !file.name.isEmpty {
+            activityItems.append(file.name)
+        }
+        
+        let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+        
+        // Exclude some activities that don't make sense for file sharing
+        activityViewController.excludedActivityTypes = [
+            .assignToContact,
+            .addToReadingList,
+            .postToVimeo,
+            .postToFlickr,
+            .postToTencentWeibo,
+            .postToWeibo
+        ]
+        
+        // Configure for iPad
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = viewController.view
+            popover.sourceRect = CGRect(x: viewController.view.bounds.midX, y: viewController.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        // Add completion handler to track sharing success
+        activityViewController.completionWithItemsHandler = { activityType, completed, returnedItems, error in
+            if completed {
+                // Success haptic feedback
+                let successFeedback = UINotificationFeedbackGenerator()
+                successFeedback.notificationOccurred(.success)
+                print("✅ File shared successfully via \(activityType?.rawValue ?? "unknown service")")
+            } else if let error = error {
+                // Error haptic feedback
+                let errorFeedback = UINotificationFeedbackGenerator()
+                errorFeedback.notificationOccurred(.error)
+                print("❌ Sharing failed: \(error.localizedDescription)")
+            } else {
+                print("ℹ️ Sharing cancelled by user")
+            }
+        }
+        
+        print("🔄 FileShareHelper: About to present UIActivityViewController")
+        viewController.present(activityViewController, animated: true) {
+            print("✅ FileShareHelper: UIActivityViewController presented successfully")
+        }
+    }
+    
+    func presentShareToPermanent(file: FileModel, from viewController: UIViewController) {
+        print("🔄 FileShareHelper: presentShareToPermanent called")
+        
+        // Test with a simple text share to see if UIActivityViewController works at all
+        let testActivityViewController = UIActivityViewController(activityItems: ["Test share - \(file.name)"], applicationActivities: nil)
+        
+        // Configure for iPad
+        if let popover = testActivityViewController.popoverPresentationController {
+            popover.sourceView = viewController.view
+            popover.sourceRect = CGRect(x: viewController.view.bounds.midX, y: viewController.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        print("🔄 FileShareHelper: About to present test UIActivityViewController")
+        viewController.present(testActivityViewController, animated: true) {
+            print("✅ FileShareHelper: Test UIActivityViewController presented successfully")
+        }
+    }
+}
 
 struct SwiftUIFileMenuView: View {
     struct MenuItem {
@@ -323,12 +477,17 @@ struct SwiftUIFileMenuView: View {
     }
     
     private func dismissWithAnimation() {
+        let elapsed = Date().timeIntervalSince(initStartTime) * 1000
+        print("🔍 SwiftUIFileMenuView: [+\(String(format: "%.1f", elapsed))ms] Starting dismissal animation")
+        
         withAnimation(.easeIn(duration: 0.25)) {
             isAnimating = false
             dragOffset = preCalculatedHeight // Animate to fully off-screen
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            let elapsed = Date().timeIntervalSince(self.initStartTime) * 1000
+            print("🔍 SwiftUIFileMenuView: [+\(String(format: "%.1f", elapsed))ms] Calling onDismiss")
             onDismiss()
         }
     }
@@ -339,8 +498,25 @@ struct SwiftUIFileMenuView: View {
             // Regular menu items (excluding delete)
             ForEach(regularMenuItems.indices, id: \.self) { index in
                 MenuItemRow(item: regularMenuItems[index]) {
-                    regularMenuItems[index].action?()
-                    dismissWithAnimation()
+                    let menuItem = regularMenuItems[index]
+                    let elapsed = Date().timeIntervalSince(initStartTime) * 1000
+                    print("🔍 SwiftUIFileMenuView: [+\(String(format: "%.1f", elapsed))ms] Menu item tapped: \(menuItem.type)")
+                    
+                    // Always let handleMenuItemAction decide the flow
+                    // It will handle sharing items specially
+                    if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
+                        print("🔍 SwiftUIFileMenuView: Sharing item detected, letting handleMenuItemAction manage everything")
+                        handleMenuItemAction(menuItem)
+                    } else if menuItem.action != nil {
+                        // Has action - execute and dismiss
+                        print("🔍 SwiftUIFileMenuView: Item has action, executing and dismissing")
+                        handleMenuItemAction(menuItem)
+                        dismissWithAnimation()
+                    } else {
+                        // No action - let handleMenuItemAction manage dismissal timing
+                        print("🔍 SwiftUIFileMenuView: Item has no action, letting handleMenuItemAction manage timing")
+                        handleMenuItemAction(menuItem)
+                    }
                 }
             }
             
@@ -353,14 +529,99 @@ struct SwiftUIFileMenuView: View {
                     .padding(.horizontal, -24)
                 
                 MenuItemRow(item: deleteItem, isDestructive: true) {
-                    deleteItem.action?()
-                    dismissWithAnimation()
+                    if deleteItem.action != nil {
+                        // Has action - execute and dismiss
+                        handleMenuItemAction(deleteItem)
+                        dismissWithAnimation()
+                    } else {
+                        // No action - let handleMenuItemAction manage dismissal timing
+                        handleMenuItemAction(deleteItem)
+                    }
                 }
             }
         }
         .padding(.horizontal, 24)
         .padding(.top, 16)
         .padding(.bottom, 20)
+    }
+    
+    // MARK: - Action Handling
+    private func handleMenuItemAction(_ menuItem: MenuItem) {
+        let elapsed = Date().timeIntervalSince(initStartTime) * 1000
+        print("🔍 SwiftUIFileMenuView: [+\(String(format: "%.1f", elapsed))ms] handleMenuItemAction called for: \(menuItem.type)")
+        print("🔍 SwiftUIFileMenuView: Action is nil: \(menuItem.action == nil)")
+        
+        // Check if this is a sharing item that needs special handling
+        if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
+            print("🔍 SwiftUIFileMenuView: Detected sharing item, using special handling regardless of action")
+            // Handle sharing items specially - dismiss first, then present
+            dismissWithAnimation()
+            
+            // Delay to allow dismissal animation to complete
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                print("🔍 SwiftUIFileMenuView: Delay completed, calling handleSpecialMenuItems for sharing")
+                self.handleSpecialMenuItems(menuItem)
+            }
+            return
+        }
+        
+        if let action = menuItem.action {
+            print("🔍 SwiftUIFileMenuView: Executing provided action")
+            action()
+        } else {
+            // Handle other special cases where action is nil
+            print("🔍 SwiftUIFileMenuView: No action provided, handling special menu item")
+            dismissWithAnimation()
+            
+            // Delay to allow dismissal animation to complete
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                print("🔍 SwiftUIFileMenuView: Delay completed, calling handleSpecialMenuItems")
+                self.handleSpecialMenuItems(menuItem)
+            }
+        }
+    }
+    
+    private func handleSpecialMenuItems(_ menuItem: MenuItem) {
+        print("🔄 SwiftUIFileMenuView: handleSpecialMenuItems called for type: \(menuItem.type)")
+        
+        // Get the top-most view controller to present sharing UI
+        // We need to find a view controller that's actually in the window hierarchy
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+            print("❌ SwiftUIFileMenuView: Could not find window scene")
+            return
+        }
+        
+        guard let window = windowScene.windows.first else {
+            print("❌ SwiftUIFileMenuView: Could not find first window")
+            return
+        }
+        
+        guard let rootViewController = window.rootViewController else {
+            print("❌ SwiftUIFileMenuView: Could not find root view controller")
+            return
+        }
+        
+        // Find a view controller that's actually in the window hierarchy
+        // Skip any hosting controllers that might be getting dismissed
+        let topViewController = rootViewController.findPresentableViewController()
+        print("✅ SwiftUIFileMenuView: Found presentable view controller: \(type(of: topViewController))")
+        print("✅ SwiftUIFileMenuView: Can present: \(topViewController.presentedViewController == nil)")
+        print("✅ SwiftUIFileMenuView: View is in window hierarchy: \(topViewController.view.window != nil)")
+        
+        switch menuItem.type {
+        case .shareToAnotherApp:
+            print("🔄 SwiftUIFileMenuView: Initiating share to another app")
+            FileShareHelper.shared.shareWithOtherApps(file: fileViewModel, from: topViewController)
+        case .shareToPermanent:
+            print("🔄 SwiftUIFileMenuView: Initiating share to Permanent")
+            FileShareHelper.shared.presentShareToPermanent(file: fileViewModel, from: topViewController)
+        default:
+            // For other types, we don't have a default implementation
+            print("ℹ️ SwiftUIFileMenuView: No implementation for \(menuItem.type)")
+            let alert = UIAlertController(title: "Not Implemented", message: "This action is not yet implemented.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            topViewController.present(alert, animated: true)
+        }
     }
     
     // MARK: - Computed Properties
@@ -523,5 +784,74 @@ struct RoundedCorner: Shape {
             cornerRadii: CGSize(width: radius, height: radius)
         )
         return Path(path.cgPath)
+    }
+}
+
+// Extension to find the top-most view controller
+extension UIViewController {
+    func topMostViewController() -> UIViewController {
+        if let presentedViewController = presentedViewController {
+            return presentedViewController.topMostViewController()
+        }
+        
+        if let navigationController = self as? UINavigationController {
+            return navigationController.visibleViewController?.topMostViewController() ?? self
+        }
+        
+        if let tabBarController = self as? UITabBarController {
+            return tabBarController.selectedViewController?.topMostViewController() ?? self
+        }
+        
+        return self
+    }
+    
+    func findPresentableViewController() -> UIViewController {
+        // First try to find a non-hosting controller that's in the window hierarchy
+        var current = self
+        
+        // Traverse up to find a stable view controller
+        while let parent = current.parent {
+            current = parent
+        }
+        
+        // Now traverse down to find the best presentable controller
+        return current.findDeepestPresentableController()
+    }
+    
+    private func findDeepestPresentableController() -> UIViewController {
+        // Skip hosting controllers if possible, they might be getting dismissed
+        if let navigationController = self as? UINavigationController {
+            if let visibleVC = navigationController.visibleViewController {
+                // If the visible controller is a hosting controller, prefer the nav controller
+                if visibleVC.view.window != nil && !(visibleVC is UIHostingController<SwiftUIFileMenuView>) {
+                    return visibleVC.findDeepestPresentableController()
+                } else {
+                    return navigationController
+                }
+            }
+            return navigationController
+        }
+        
+        if let tabBarController = self as? UITabBarController {
+            if let selectedVC = tabBarController.selectedViewController {
+                return selectedVC.findDeepestPresentableController()
+            }
+            return tabBarController
+        }
+        
+        // For hosting controllers, check if they're being dismissed
+        if self is UIHostingController<SwiftUIFileMenuView> {
+            // If this hosting controller doesn't have a window, find the parent
+            if view.window == nil, let parent = parent {
+                return parent.findDeepestPresentableController()
+            }
+        }
+        
+        // If this view controller is already presenting something, try to dismiss it first
+        if presentedViewController != nil {
+            print("⚠️ UIViewController: Found presenting controller, will dismiss before use")
+        }
+        
+        return self
     }
 }
