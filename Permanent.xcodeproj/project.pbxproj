@@ -39,6 +39,7 @@
 		5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */; };
 		5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */; };
 		5E048FDC29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */; };
+		5E04DAE12E3697C600D17F67 /* FileMoreMenuItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */; };
 		5E051C042B69A74F00274657 /* SettingsScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C032B69A74F00274657 /* SettingsScreenView.swift */; };
 		5E051C072B6AEB2900274657 /* SettingsScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C062B6AEB2900274657 /* SettingsScreenViewModel.swift */; };
 		5E051C0A2B6AFAD800274657 /* CustomSimpleListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */; };
@@ -404,8 +405,10 @@
 		5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */; };
 		5EC043A82924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */; };
 		5EC20FCF2CA58FE000CCE8EF /* AuthBannerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC20FCE2CA58FE000CCE8EF /* AuthBannerMessage.swift */; };
+		5EC48B602E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */; };
+		5EC48B612E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
-		5EC7CD292E26A74E00D80AE4 /* SwiftUIFileMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC7CD262E26A74E00D80AE4 /* SwiftUIFileMenuView.swift */; };
+		5EC7CD292E26A74E00D80AE4 /* FileMoreMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */; };
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
@@ -1058,6 +1061,7 @@
 		5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareMangementAdditionalOptionCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementDefaultAccessRoleCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementDefaultAccessRoleCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMoreMenuItemRow.swift; sourceTree = "<group>"; };
 		5E051C032B69A74F00274657 /* SettingsScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenView.swift; sourceTree = "<group>"; };
 		5E051C062B6AEB2900274657 /* SettingsScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenViewModel.swift; sourceTree = "<group>"; };
 		5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSimpleListItemView.swift; sourceTree = "<group>"; };
@@ -1351,8 +1355,9 @@
 		5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementEmptyHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementEmptyHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 		5EC20FCE2CA58FE000CCE8EF /* AuthBannerMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBannerMessage.swift; sourceTree = "<group>"; };
+		5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuViewModel.swift; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
-		5EC7CD262E26A74E00D80AE4 /* SwiftUIFileMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIFileMenuView.swift; sourceTree = "<group>"; };
+		5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMoreMenuView.swift; sourceTree = "<group>"; };
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
@@ -3412,7 +3417,8 @@
 		5EC7CD282E26A74E00D80AE4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5EC7CD262E26A74E00D80AE4 /* SwiftUIFileMenuView.swift */,
+				5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */,
+				5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4028,6 +4034,7 @@
 		BC6358BA25371FB400EEC48C /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */,
 				BCD414D6257F74780019548F /* ShareLinkViewModel.swift */,
 				5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */,
 				BC6358BB25371FCB00EEC48C /* FileModel.swift */,
@@ -4883,6 +4890,7 @@
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				5EB503B52C04C9B600534F09 /* OnboardingWhatsImportantView.swift in Sources */,
+				5EC48B612E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				5EE7C1502CA36D1500445E4E /* AuthLoginResponse.swift in Sources */,
 				5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */,
@@ -4934,6 +4942,7 @@
 				5E2F721C2D94A2FC009F02D3 /* ChangePasswordViewModel.swift in Sources */,
 				5E633A722B28D7E1004D561C /* StorageView.swift in Sources */,
 				5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */,
+				5E04DAE12E3697C600D17F67 /* FileMoreMenuItemRow.swift in Sources */,
 				5EFC5B3B2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift in Sources */,
 				5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */,
 				5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
@@ -5230,7 +5239,7 @@
 				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
 				5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */,
 				5E6CCEEB2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift in Sources */,
-				5EC7CD292E26A74E00D80AE4 /* SwiftUIFileMenuView.swift in Sources */,
+				5EC7CD292E26A74E00D80AE4 /* FileMoreMenuView.swift in Sources */,
 				5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
@@ -5494,6 +5503,7 @@
 				5E390B4F2E1FEF8200F623D3 /* LegacyPlanningDataSourceInterface.swift in Sources */,
 				F559F8B028FF032A0015A522 /* SerialInputStream.swift in Sources */,
 				F5ADBF44290BC4100007A516 /* StoryboardName.swift in Sources */,
+				5EC48B602E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */,
 				F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */,
 				F559F89328FEE9740015A522 /* FilesRepository.swift in Sources */,
 				F559F89128FEE9690015A522 /* SaveDestinationBrowserViewModel.swift in Sources */,
