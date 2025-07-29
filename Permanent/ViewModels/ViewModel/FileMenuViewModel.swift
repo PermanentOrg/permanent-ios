@@ -1,0 +1,642 @@
+//
+//  FileMenuViewModel.swift
+//  Permanent
+//
+//  Created by Lucian Cerbu on 22.07.2025.
+//
+
+import SwiftUI
+import UIKit
+
+@MainActor
+class FileMenuViewModel: ObservableObject {
+    // MARK: - Published Properties
+    @Published var isPresented: Bool = true
+    @Published var isAnimating: Bool = false
+    @Published var dragOffset: CGFloat = 0
+    @Published var shouldLoadImage: Bool = false
+    @Published var imageOpacity: Double = 0.0
+    @Published var isDragging: Bool = false
+    @Published var skeletonOffset: CGFloat = -200
+    
+    // MARK: - Thumbnail Loading Properties
+    @Published var shouldShowThumbnail: Bool = false
+    @Published var thumbnailURL: URL?
+    
+    // MARK: - Menu Item Row Interaction Properties
+    @Published var pressedMenuItemId: String?
+    
+    // MARK: - File Download Task Properties
+    private var downloadTask: DispatchWorkItem?
+    private var downloadTimeoutTask: DispatchWorkItem?
+    private weak var currentPreparingAlert: UIAlertController?
+    private let fileHelper = FileHelper()
+    private let documentInteractionController = UIDocumentInteractionController()
+    
+    // MARK: - Download Dependencies
+    typealias DownloadHandler = (FileModel, @escaping (URL?, Error?) -> Void) -> Void
+    private var downloadHandler: DownloadHandler?
+    
+    // MARK: - Input Properties
+    let fileViewModel: FileModel
+    let menuItems: [MenuItem]
+    let selectedItemCount: Int?
+    let onDismiss: () -> Void
+    
+    // MARK: - Cached/Computed Properties
+    let cachedFormattedFileSize: String?
+    let cachedFormattedDate: String
+    let preCalculatedHeight: CGFloat
+    private var dragStartTime: Date = Date()
+    
+    // MARK: - MenuItem Definition
+    struct MenuItem: Equatable {
+        enum ItemType: String, Equatable, CaseIterable {
+            case download = "download"
+            case copy = "copy"
+            case move = "move"
+            case delete = "delete"
+            case unshare = "unshare"
+            case rename = "rename"
+            case publish = "publish"
+            case shareToPermanent = "shareToPermanent"
+            case shareToAnotherApp = "shareToAnotherApp"
+            case getLink = "getLink"
+            case editMetadata = "editMetadata"
+        }
+        
+        let type: ItemType
+        let action: (() -> Void)?
+        
+        static func == (lhs: MenuItem, rhs: MenuItem) -> Bool {
+            return lhs.type == rhs.type
+        }
+    }
+    
+    // MARK: - Initialization
+    init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void) {
+        self.fileViewModel = fileViewModel
+        self.menuItems = menuItems
+        self.selectedItemCount = selectedItemCount
+        self.onDismiss = onDismiss
+        
+        self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)
+        self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
+        self.preCalculatedHeight = Self.calculateSheetHeight(for: menuItems)
+    }
+    
+    deinit {
+        downloadTask?.cancel()
+        downloadTimeoutTask?.cancel()
+    }
+    
+    // MARK: - File Formatting Logic
+    static func formatFileSize(_ size: Int64) -> String? {
+        guard size > 0 else { return nil }
+        
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useBytes, .useKB, .useMB, .useGB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: size)
+    }
+    
+    static func formatDate(_ dateString: String) -> String {
+        guard !dateString.isEmpty && dateString != "-" else { return "" }
+        
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "MMM. d, yyyy"
+        
+        if let date = inputFormatter.date(from: dateString) {
+            return outputFormatter.string(from: date)
+        } else {
+            return dateString
+        }
+    }
+    
+    // MARK: - Layout Calculations
+    static func calculateSheetHeight(for menuItems: [MenuItem]) -> CGFloat {
+        let headerHeight: CGFloat = 120
+        let itemHeight: CGFloat = 56
+        let regularItemsCount = menuItems.filter { $0.type != .delete }.count
+        let hasDelete = menuItems.contains { $0.type == .delete }
+        let deleteSection: CGFloat = hasDelete ? (itemHeight + 32) : 0
+        let paddingHeight: CGFloat = 0
+        
+        let totalHeight = headerHeight + CGFloat(regularItemsCount) * itemHeight + deleteSection + paddingHeight
+        return min(totalHeight, UIScreen.main.bounds.height * 0.85)
+    }
+    
+    var contentHeight: CGFloat {
+        let itemHeight: CGFloat = 56
+        let regularItemsCount = menuItems.filter { $0.type != .delete }.count
+        let hasDelete = menuItems.contains { $0.type == .delete }
+        let deleteSection: CGFloat = hasDelete ? (itemHeight + 32) : 0
+        let paddingHeight: CGFloat = 0
+        
+        return CGFloat(regularItemsCount) * itemHeight + deleteSection + paddingHeight
+    }
+    
+    var maxContentHeight: CGFloat {
+        return UIScreen.main.bounds.height * 0.85 - 120
+    }
+    
+    var needsScrolling: Bool {
+        return contentHeight > maxContentHeight
+    }
+    
+    var backgroundOpacity: Double {
+        isAnimating ? max(0.0, 0.3 * (1.0 - Double(dragOffset / preCalculatedHeight))) : 0.0
+    }
+    
+    // MARK: - Menu Item Processing
+    var regularMenuItems: [MenuItem] {
+        return menuItems.filter { $0.type != .delete }
+    }
+    
+    var deleteMenuItem: MenuItem? {
+        return menuItems.first { $0.type == .delete }
+    }
+    
+    var displayTitle: String {
+        if let selectedItemCount = selectedItemCount, selectedItemCount > 1 {
+            return "\(selectedItemCount) Items selected"
+        } else {
+            return fileViewModel.name
+        }
+    }
+    
+    // MARK: - Animation Control
+    func startPresentationAnimation() {
+        withAnimation(.easeOut(duration: 0.3)) {
+            isAnimating = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            self.shouldLoadImage = true
+        }
+        
+        withAnimation(Animation.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+            skeletonOffset = 200
+        }
+    }
+    
+    // MARK: - Thumbnail Logic
+    func prepareThumbnailForLoading() {
+        if !fileViewModel.type.isFolder,
+           let thumbnailURLString = fileViewModel.thumbnailURL,
+           !thumbnailURLString.isEmpty,
+           let url = URL(string: thumbnailURLString) {
+            thumbnailURL = url
+            shouldShowThumbnail = true
+        } else {
+            thumbnailURL = nil
+            shouldShowThumbnail = false
+        }
+    }
+    
+    var shouldShowSkeletonAnimation: Bool {
+        return shouldShowThumbnail && imageOpacity < 1.0
+    }
+    
+    var thumbnailPlaceholderOpacity: Double {
+        return 1.0 - imageOpacity
+    }
+    
+    // MARK: - Menu Item Row Interaction Logic
+    func handleMenuItemPressed(_ itemType: MenuItem.ItemType) {
+        pressedMenuItemId = itemType.rawValue
+    }
+    
+    func handleMenuItemReleased() {
+        pressedMenuItemId = nil
+    }
+    
+    func isMenuItemPressed(_ itemType: MenuItem.ItemType) -> Bool {
+        return pressedMenuItemId == itemType.rawValue
+    }
+    
+    func validateTapGesture(tapDuration: TimeInterval, dragDistance: CGFloat, swipeVelocity: CGFloat) -> Bool {
+        let isQuickTap = tapDuration < 0.5
+        let isNotDrag = dragDistance <= 20
+        let isNotSwipe = swipeVelocity <= 100
+        
+        return isQuickTap && isNotDrag && isNotSwipe
+    }
+    
+    // MARK: - View Controller Discovery Protocol
+    var viewControllerProvider: (() -> UIViewController?)?
+    private var capturedPresentingViewController: UIViewController?
+    
+    func setViewControllerProvider(_ provider: @escaping () -> UIViewController?) {
+        viewControllerProvider = provider
+        if let viewController = provider() {
+            capturedPresentingViewController = viewController.presentingViewController
+        }
+    }
+    
+    func setDownloadHandler(_ handler: @escaping DownloadHandler) {
+        downloadHandler = handler
+    }
+    
+    func dismissWithAnimation() {
+        withAnimation(.easeIn(duration: 0.25)) {
+            isAnimating = false
+            dragOffset = preCalculatedHeight
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            self.onDismiss()
+        }
+    }
+    
+    func onImageLoadSuccess() {
+        withAnimation(.easeIn(duration: 0.3)) {
+            imageOpacity = 1.0
+        }
+    }
+    
+    // MARK: - Drag Gesture Handling
+    func handleDragChanged(_ value: DragGesture.Value) {
+        if value.translation.height > 0 {
+            if !isDragging {
+                isDragging = true
+                dragStartTime = Date()
+            }
+            dragOffset = value.translation.height
+        }
+    }
+    
+    func handleDragEnded(_ value: DragGesture.Value) {
+        isDragging = false
+        let threshold = preCalculatedHeight * 0.3
+        
+        if value.translation.height > threshold || value.predictedEndTranslation.height > threshold {
+            dismissWithAnimation()
+        } else {
+            withAnimation(.easeOut(duration: 0.3)) {
+                dragOffset = 0
+            }
+        }
+    }
+    
+    // MARK: - Action Handling Logic
+    func handleMenuItemTap(_ menuItem: MenuItem) {
+        if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
+            handleMenuItemAction(menuItem)
+        } else if menuItem.type == .editMetadata {
+            // Dismiss menu first, then execute edit metadata action
+            dismissWithAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if let action = menuItem.action {
+                    action()
+                }
+            }
+        } else if menuItem.action != nil {
+            handleMenuItemAction(menuItem)
+            dismissWithAnimation()
+        } else {
+            handleMenuItemAction(menuItem)
+        }
+    }
+    
+    private func handleMenuItemAction(_ menuItem: MenuItem) {
+        if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
+            if let viewController = self.viewControllerProvider?() {
+                self.executeSpecialMenuItem(menuItem, with: viewController)
+            } else {
+                self.specialMenuItemRequested = menuItem
+            }
+            return
+        }
+        
+        if let action = menuItem.action {
+            action()
+        } else {
+            dismissWithAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.handleSpecialMenuItems(menuItem)
+            }
+        }
+    }
+    
+    private func handleSpecialMenuItems(_ menuItem: MenuItem) {
+        if let viewController = self.viewControllerProvider?() {
+            self.executeSpecialMenuItem(menuItem, with: viewController)
+        } else {
+            self.specialMenuItemRequested = menuItem
+        }
+    }
+    
+    // MARK: - Public Methods for View Layer
+    func executeSpecialMenuItem(_ menuItem: MenuItem, with viewController: UIViewController) {
+        switch menuItem.type {
+        case .shareToAnotherApp:
+            shareWithOtherApps(from: viewController)
+        case .shareToPermanent:
+            shareWithPermanent(from: viewController)
+        default:
+            presentNotImplementedAlert(from: viewController)
+        }
+    }
+    
+    // MARK: - File Sharing Logic
+    private func shareWithOtherApps(from viewController: UIViewController) {
+        if let localURL = getLocalFileURL() {
+            self.dismissWithAnimation()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                var presentingViewController: UIViewController?
+                
+                if let captured = self.capturedPresentingViewController, captured.view.window != nil {
+                    presentingViewController = captured
+                } else if let presentingVC = viewController.presentingViewController {
+                    presentingViewController = presentingVC
+                } else {
+                    var current: UIViewController? = viewController
+                    while current != nil {
+                        if let presenting = current?.presentingViewController {
+                            presentingViewController = presenting
+                            break
+                        }
+                        current = current?.parent
+                    }
+                }
+                
+                if presentingViewController == nil {
+                    if let rootVC = self.viewControllerProvider?() {
+                        presentingViewController = rootVC
+                    }
+                }
+                
+                if let validViewController = presentingViewController {
+                    self.presentShareSheet(url: localURL, from: validViewController)
+                } else {
+                    self.presentShareSheet(url: localURL, from: viewController)
+                }
+            }
+        } else {
+            downloadAndShare(from: viewController)
+        }
+    }
+    
+    private func shareWithPermanent(from viewController: UIViewController) {
+        // Dismiss the menu first, then trigger the special menu item
+        dismissWithAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            // This triggers the view layer to handle the share management presentation
+            self.specialMenuItemRequested = MenuItem(type: .shareToPermanent, action: nil)
+        }
+    }
+    
+    private func downloadAndShare(from viewController: UIViewController) {
+        let strongSelf = self
+        
+        self.dismissWithAnimation()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            var presentingViewController: UIViewController?
+            
+            if let captured = strongSelf.capturedPresentingViewController, captured.view.window != nil {
+                presentingViewController = captured
+            } else if let presentingVC = viewController.presentingViewController {
+                presentingViewController = presentingVC
+            } else {
+                var current: UIViewController? = viewController
+                while current != nil {
+                    if let presenting = current?.presentingViewController {
+                        presentingViewController = presenting
+                        break
+                    }
+                    current = current?.parent
+                }
+            }
+            
+            if presentingViewController == nil {
+                if let rootVC = strongSelf.viewControllerProvider?() {
+                    presentingViewController = rootVC
+                }
+            }
+            
+            guard let validViewController = presentingViewController else {
+                strongSelf.presentActivityViewController(from: viewController)
+                return
+            }
+            
+            let preparingAlert = strongSelf.createPreparingAlert()
+            strongSelf.currentPreparingAlert = preparingAlert
+            
+            validViewController.present(preparingAlert, animated: true) {
+                strongSelf.downloadTask?.cancel()
+                
+                if let downloadHandler = strongSelf.downloadHandler {
+                    strongSelf.downloadTask = DispatchWorkItem {
+                        // This work item just marks that download is in progress
+                    }
+                    
+                    // Set up a timeout to automatically dismiss the alert if download callback is never called
+                    strongSelf.downloadTimeoutTask = DispatchWorkItem {
+                        DispatchQueue.main.async {
+                            if let currentAlert = strongSelf.currentPreparingAlert,
+                               currentAlert.presentingViewController != nil {
+                                currentAlert.dismiss(animated: true) {
+                                    strongSelf.currentPreparingAlert = nil
+                                    strongSelf.downloadTask = nil
+                                    strongSelf.downloadTimeoutTask = nil
+                                    strongSelf.presentActivityViewController(from: validViewController)
+                                }
+                            }
+                        }
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 30.0, execute: strongSelf.downloadTimeoutTask!)
+                    
+                    downloadHandler(strongSelf.fileViewModel) { downloadedURL, error in
+                        DispatchQueue.main.async {
+                            // Cancel the timeout task since we got a response
+                            strongSelf.downloadTimeoutTask?.cancel()
+                            strongSelf.downloadTimeoutTask = nil
+                            
+                            // Check if the task was cancelled
+                            guard let downloadTask = strongSelf.downloadTask, !downloadTask.isCancelled else {
+                                return
+                            }
+                            
+                            strongSelf.downloadTask = nil
+                            
+                            // Dismiss the alert if it's still being presented
+                            if let currentAlert = strongSelf.currentPreparingAlert,
+                               currentAlert.presentingViewController != nil {
+                                currentAlert.dismiss(animated: true) {
+                                    strongSelf.currentPreparingAlert = nil
+                                    
+                                    if let downloadedURL = downloadedURL {
+                                        strongSelf.presentShareSheet(url: downloadedURL, from: validViewController)
+                                    } else if error != nil {
+                                        strongSelf.presentActivityViewController(from: validViewController)
+                                    } else {
+                                        strongSelf.presentActivityViewController(from: validViewController)
+                                    }
+                                }
+                            } else {
+                                strongSelf.currentPreparingAlert = nil
+                                
+                                if let downloadedURL = downloadedURL {
+                                    strongSelf.presentShareSheet(url: downloadedURL, from: validViewController)
+                                } else {
+                                    strongSelf.presentActivityViewController(from: validViewController)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // No download handler available, present share immediately
+                    preparingAlert.dismiss(animated: true) {
+                        strongSelf.presentActivityViewController(from: validViewController)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func presentSimpleShare(from viewController: UIViewController) {
+        presentActivityViewController(from: viewController)
+        self.dismissWithAnimation()
+    }
+    
+    private func presentActivityViewController(from viewController: UIViewController) {
+        let shareText = "File: \(fileViewModel.name)"
+        let activityViewController = UIActivityViewController(
+            activityItems: [shareText], 
+            applicationActivities: nil
+        )
+        
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = viewController.view
+            popover.sourceRect = CGRect(
+                x: viewController.view.bounds.midX, 
+                y: viewController.view.bounds.midY, 
+                width: 0, 
+                height: 0
+            )
+            popover.permittedArrowDirections = []
+        }
+        
+        viewController.present(activityViewController, animated: true)
+    }
+    
+    private func createPreparingAlert() -> UIAlertController {
+        let alert = UIAlertController(
+            title: "Preparing File...", 
+            message: nil, 
+            preferredStyle: .alert
+        )
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+            self?.downloadTask?.cancel()
+            self?.downloadTask = nil
+            self?.downloadTimeoutTask?.cancel()
+            self?.downloadTimeoutTask = nil
+            self?.currentPreparingAlert = nil
+        }
+        alert.addAction(cancelAction)
+        
+        return alert
+    }
+    
+    private func getLocalFileURL() -> URL? {
+        let uploadFileName = fileViewModel.uploadFileName
+        guard !uploadFileName.isEmpty else {
+            return nil
+        }
+        
+        return fileHelper.url(forFileNamed: uploadFileName)
+    }
+    
+    private func presentShareSheet(url: URL, from viewController: UIViewController) {
+        documentInteractionController.dismissMenu(animated: true)
+        
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            presentActivityViewController(from: viewController)
+            return
+        }
+        
+        documentInteractionController.url = url
+        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+        
+        let presented = documentInteractionController.presentOptionsMenu(from: .zero, in: viewController.view, animated: true)
+        if !presented {
+            presentActivityViewController(from: viewController)
+        }
+    }
+    
+    // MARK: - Special Menu Item Handling
+    @Published var specialMenuItemRequested: MenuItem?
+    
+    func presentNotImplementedAlert(from viewController: UIViewController) {
+        let alert = UIAlertController(title: "Not Implemented", message: "This action is not yet implemented.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        viewController.present(alert, animated: true)
+    }
+    
+    func clearSpecialMenuItemRequest() {
+        specialMenuItemRequested = nil
+    }
+    
+    // MARK: - Menu Item Row Helpers
+    func getIconImage(for itemType: MenuItem.ItemType) -> Image {
+        switch itemType {
+        case .download:
+            return Image(.downloadV1)
+        case .copy:
+            return Image(.copyV1)
+        case .move:
+            return Image(.moveV1)
+        case .delete:
+            return Image(.deleteV1)
+        case .unshare:
+            return Image(.saveOrShareV1)
+        case .rename:
+            return Image(.renameV1)
+        case .publish:
+            return Image(.publishOnWebV1)
+        case .shareToPermanent:
+            return Image(.shareAndManageV1)
+        case .shareToAnotherApp:
+            return Image(.saveOrShareV1)
+        case .getLink:
+            return Image(.saveOrShareV1)
+        case .editMetadata:
+            return Image(.fileInfoV1)
+        }
+    }
+    
+    func getTitle(for itemType: MenuItem.ItemType) -> String {
+        switch itemType {
+        case .download:
+            return "Download"
+        case .copy:
+            return "Copy to another folder"
+        case .move:
+            return "Move to another folder"
+        case .delete:
+            return "Delete"
+        case .unshare:
+            return "Unshare"
+        case .rename:
+            return "Rename"
+        case .publish:
+            return "Publish on the web"
+        case .shareToPermanent:
+            return "Share and manage access"
+        case .shareToAnotherApp:
+            return "Save or send a copy"
+        case .getLink:
+            return "Get Link"
+        case .editMetadata:
+            return "Edit Metadata"
+        }
+    }
+}
