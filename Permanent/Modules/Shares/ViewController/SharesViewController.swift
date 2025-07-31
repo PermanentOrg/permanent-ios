@@ -1354,10 +1354,17 @@ extension SharesViewController: SharedFileActionSheetDelegate {
                 
                 if let shareVO = shareVO,
                    shareVO.sharebyURLID != nil,
-                   let shareURL = shareVO.shareURL {
+                   let shareURLString = shareVO.shareURL,
+                   let shareURL = URL(string: shareURLString) {
                     // File has an existing share link, dismiss menu first then share it directly
                     self.dismiss(animated: true) {
-                        let activityViewController = UIActivityViewController(activityItems: [shareURL], applicationActivities: nil)
+                        // Include both the URL and descriptive text to make it more user-friendly
+                        // and ensure iOS recognizes it as a web link in the share sheet
+                        let shareText = "Check out this shared file: \(file.name)"
+                        let activityViewController = UIActivityViewController(
+                            activityItems: [shareText, shareURL], 
+                            applicationActivities: nil
+                        )
                         activityViewController.popoverPresentationController?.sourceView = self.view
                         self.present(activityViewController, animated: true, completion: nil)
                     }

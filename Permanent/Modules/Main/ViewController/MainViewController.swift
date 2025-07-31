@@ -1689,7 +1689,14 @@ extension MainViewController {
         // Dismiss the current menu first, then present the activity controller
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
-            let activityViewController = UIActivityViewController(activityItems: [publicURL], applicationActivities: nil)
+            
+            // Include both the URL and descriptive text to make it more user-friendly
+            // and ensure iOS recognizes it as a web link in the share sheet
+            let shareText = "Check out this file: \(file.name)"
+            let activityViewController = UIActivityViewController(
+                activityItems: [shareText, publicURL], 
+                applicationActivities: nil
+            )
             activityViewController.popoverPresentationController?.sourceView = self.view
             self.present(activityViewController, animated: true, completion: nil)
         }
