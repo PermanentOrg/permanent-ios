@@ -30,6 +30,14 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         
         viewModel?.loadRootFolder()
         
+        // Add timeout mechanism for loading
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [weak self] in
+            // If still loading after 30 seconds, show error
+            if self?.viewModel?.contentViewModels.isEmpty == true {
+                self?.showLoadingTimeoutAlert()
+            }
+        }
+        
         initUI()
         styleNavBar()
         
@@ -127,5 +135,17 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
 
     @objc func popToWorkspace() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    private func showLoadingTimeoutAlert() {
+        let alert = UIAlertController(
+            title: "Loading Timeout", 
+            message: "Unable to load folder contents. Please check your internet connection and try again.", 
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            self.navigationController?.popViewController(animated: true)
+        })
+        present(alert, animated: true)
     }
 }
