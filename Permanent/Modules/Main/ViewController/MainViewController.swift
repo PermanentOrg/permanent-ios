@@ -1259,6 +1259,11 @@ extension MainViewController: FABActionSheetDelegate {
             }
         }
         
+        // Add getLink menu item for files in PublicFilesViewModel (public workspace)
+        if viewModel is PublicFilesViewModel {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
+        }
+        
         if file.permissions.contains(.delete) && viewModel is PublicFilesViewModel == false {
             menuItems.append(FileMenuViewModel.MenuItem(type: .publish, action: { [self] in
                 publishAction(file: file)
@@ -1305,6 +1310,12 @@ extension MainViewController: FABActionSheetDelegate {
                 // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
+                })
+            },
+            onGetLinkRequested: { [weak self] file in
+                // Dismiss the menu first, then handle get link
+                self?.dismiss(animated: true, completion: {
+                    self?.getPublicLinkAction(file: file)
                 })
             },
             downloadHandler: { [weak self] file, completion in
@@ -1410,6 +1421,12 @@ extension MainViewController: FABActionSheetDelegate {
                 // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
+                })
+            },
+            onGetLinkRequested: { [weak self] file in
+                // Dismiss the menu first, then handle get link
+                self?.dismiss(animated: true, completion: {
+                    self?.getPublicLinkAction(file: file)
                 })
             },
             downloadHandler: { [weak self] file, completion in
@@ -1660,6 +1677,26 @@ extension MainViewController {
     
     func publishAction(file: FileModel) {
         didTapPublish(source: file)
+    }
+    
+    func getPublicLinkAction(file: FileModel) {
+        // Generate the public URL for the file in public workspace
+        guard let publicFilesVM = viewModel as? PublicFilesViewModel,
+              let publicURL = publicFilesVM.publicURL(forFile: file) else {
+            return
+        }
+        
+        // Dismiss the current menu first, then present the activity controller
+        dismiss(animated: true) { [weak self] in
+            guard let self = self else { return }
+
+            let activityViewController = UIActivityViewController(
+                activityItems: [publicURL], 
+                applicationActivities: nil
+            )
+            activityViewController.popoverPresentationController?.sourceView = self.view
+            self.present(activityViewController, animated: true, completion: nil)
+        }
     }
     
     // MARK: - Share Management

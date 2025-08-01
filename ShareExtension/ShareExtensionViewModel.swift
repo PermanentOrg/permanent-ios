@@ -11,6 +11,20 @@ import MobileCoreServices
 
 typealias ShareExtensionCellConfiguration = (fileImage: UIImage?, fileName: String?, fileSize: String?)
 
+enum StorageQuotaError: Error {
+    case insufficientSpace
+    case apiError
+    
+    var localizedDescription: String {
+        switch self {
+        case .insufficientSpace:
+            return "Not enough storage space available. Please free up space or upgrade your storage plan."
+        case .apiError:
+            return "Unable to check storage space. Please try again."
+        }
+    }
+}
+
 class ShareExtensionViewModel: ViewModelInterface {
     var currentArchive: ArchiveVOData? {
         return PermSession.currentSession?.selectedArchive
@@ -26,8 +40,20 @@ class ShareExtensionViewModel: ViewModelInterface {
         return parentFolderName ?? "Mobile Uploads"
     }
     
-    init(session: PermSession? = try? SessionKeychainHandler().savedSession()) {
-        PermSession.currentSession = session
+    init(session: PermSession? = nil) {
+        // Try to load session from keychain
+        let sessionToUse: PermSession?
+        if let providedSession = session {
+            sessionToUse = providedSession
+        } else {
+            do {
+                sessionToUse = try SessionKeychainHandler().savedSession()
+            } catch {
+                sessionToUse = nil
+            }
+        }
+        
+        PermSession.currentSession = sessionToUse
     }
     
     func archiveName() -> String {
@@ -51,19 +77,28 @@ class ShareExtensionViewModel: ViewModelInterface {
     }
     
     func hasActiveSession() -> Bool {
-        guard let expirationDate = session?.expirationDate else { return false }
-        return expirationDate.timeIntervalSince1970 > Date().timeIntervalSince1970
+        guard let session = session else { 
+            return false 
+        }
+        
+        let expirationDate = session.expirationDate
+        let currentTime = Date().timeIntervalSince1970
+        let expirationTime = expirationDate.timeIntervalSince1970
+        let isActive = expirationTime > currentTime
+        
+        return isActive
     }
     
     func processSelectedFiles(attachments: [NSItemProvider], then handler: @escaping (Bool) -> Void) {
         let dispatchGroup = DispatchGroup()
-        let contentType = kUTTypeItem as String
+        let contentType = "public.item" // Updated from deprecated kUTTypeItem
         
         var filesURL: [URL] = []
         for provider in attachments {
             dispatchGroup.enter()
             provider.loadItem(forTypeIdentifier: contentType, options: nil) { (data, error) in
                 guard error == nil else {
+                    dispatchGroup.leave()
                     return
                 }
                 
@@ -125,26 +160,80 @@ class ShareExtensionViewModel: ViewModelInterface {
         selectedFiles.removeAll(where: { $0 == file })
     }
     
+    private func checkStorageQuota(completion: @escaping (Bool) -> Void) {
+        // Calculate total size of selected files
+        var totalFilesSize = 0
+        selectedFiles.forEach { file in
+            if let resources = try? file.url.resourceValues(forKeys: [.fileSizeKey]) {
+                totalFilesSize += resources.fileSize ?? 0
+            }
+        }
+        
+        // Check if we have an active session and account ID
+        guard let accountId = session?.account.accountID else {
+            completion(false)
+            return
+        }
+        
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
+        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completion(false)
+                    return
+                }
+                
+                let spaceLeft = model.results[0].data?[0].accountVO?.spaceLeft ?? 0
+                let hasEnoughSpace = spaceLeft > totalFilesSize
+                
+                DispatchQueue.main.async {
+                    completion(hasEnoughSpace)
+                }
+                
+            case .error(_, _):
+                DispatchQueue.main.async {
+                    completion(false)
+                }
+            default:
+                DispatchQueue.main.async {
+                    completion(false)
+                }
+            }
+        }
+    }
+    
     func uploadSelectedFiles(completion: @escaping ((Error?) -> Void)) {
-        DispatchQueue.global().async { [self] in
-            createDefaultFolderIfNeeded() { [self] error in
-                if error != nil {
-                    completion(error)
-                } else {
-                    do {
-                        try selectedFiles.forEach { file in
-                            let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), name: file.id, usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
-                            file.url = tempLocation
-                            file.archiveId = currentArchive?.archiveID ?? -1
-                        }
-                        
-                        let savedFiles = try ExtensionUploadManager.shared.savedFiles()
-                        selectedFiles.append(contentsOf: savedFiles)
-                        try ExtensionUploadManager.shared.save(files: selectedFiles)
-                        
-                        completion(nil)
-                    } catch {
+        // First check if there's enough storage space
+        checkStorageQuota { [self] hasEnoughSpace in
+            if !hasEnoughSpace {
+                completion(StorageQuotaError.insufficientSpace)
+                return
+            }
+            
+            DispatchQueue.global().async { [self] in
+                createDefaultFolderIfNeeded() { [self] error in
+                    if let error = error {
                         completion(error)
+                    } else {
+                        do {
+                            try selectedFiles.forEach { file in
+                                let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), name: file.id, usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
+                                file.url = tempLocation
+                                file.archiveId = currentArchive?.archiveID ?? -1
+                            }
+                            
+                            let savedFiles = try ExtensionUploadManager.shared.savedFiles()
+                            selectedFiles.append(contentsOf: savedFiles)
+                            try ExtensionUploadManager.shared.save(files: selectedFiles)
+                            
+                            completion(nil)
+                        } catch {
+                            completion(error)
+                        }
                     }
                 }
             }
@@ -195,7 +284,7 @@ class ShareExtensionViewModel: ViewModelInterface {
                     }
                 }
                 
-            case .error(let message):
+            case .error(_):
                 completion(APIError.clientError)
                 break
             }

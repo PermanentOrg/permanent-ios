@@ -5760,7 +5760,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5779,7 +5779,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5823,7 +5823,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5836,7 +5836,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -5855,7 +5855,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Resources/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -5865,7 +5865,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5888,7 +5888,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Resources/Assets/Entitlements/PermanentRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -5898,7 +5898,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5917,12 +5917,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -5942,12 +5942,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -5967,12 +5967,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -5992,12 +5992,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6018,7 +6018,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6028,7 +6028,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6048,7 +6048,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6058,7 +6058,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6078,7 +6078,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6088,7 +6088,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6108,7 +6108,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6118,7 +6118,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6140,7 +6140,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtensionDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6154,7 +6154,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6178,7 +6178,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShareExtension/ShareExtensionDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6192,7 +6192,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6216,7 +6216,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtensionRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6230,7 +6230,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6254,7 +6254,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShareExtension/ShareExtensionDEV-Release.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6268,7 +6268,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6317,7 +6317,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -6336,7 +6336,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -6355,7 +6355,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Resources/Assets/Entitlements/PermanentDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -6365,7 +6365,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6412,7 +6412,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -6425,7 +6425,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -6444,7 +6444,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Resources/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -6454,7 +6454,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6474,7 +6474,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6484,7 +6484,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6503,7 +6503,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6513,7 +6513,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6532,7 +6532,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6542,7 +6542,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6561,7 +6561,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6571,7 +6571,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.1;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

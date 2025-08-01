@@ -7,47 +7,10 @@
 
 import SwiftUI
 import UIKit
+import Foundation
 
 @MainActor
 class FileMenuViewModel: ObservableObject {
-    // MARK: - Published Properties
-    @Published var isPresented: Bool = true
-    @Published var isAnimating: Bool = false
-    @Published var dragOffset: CGFloat = 0
-    @Published var shouldLoadImage: Bool = false
-    @Published var imageOpacity: Double = 0.0
-    @Published var isDragging: Bool = false
-    @Published var skeletonOffset: CGFloat = -200
-    
-    // MARK: - Thumbnail Loading Properties
-    @Published var shouldShowThumbnail: Bool = false
-    @Published var thumbnailURL: URL?
-    
-    // MARK: - Menu Item Row Interaction Properties
-    @Published var pressedMenuItemId: String?
-    
-    // MARK: - File Download Task Properties
-    private var downloadTask: DispatchWorkItem?
-    private var downloadTimeoutTask: DispatchWorkItem?
-    private weak var currentPreparingAlert: UIAlertController?
-    private let fileHelper = FileHelper()
-    private let documentInteractionController = UIDocumentInteractionController()
-    
-    // MARK: - Download Dependencies
-    typealias DownloadHandler = (FileModel, @escaping (URL?, Error?) -> Void) -> Void
-    private var downloadHandler: DownloadHandler?
-    
-    // MARK: - Input Properties
-    let fileViewModel: FileModel
-    let menuItems: [MenuItem]
-    let selectedItemCount: Int?
-    let onDismiss: () -> Void
-    
-    // MARK: - Cached/Computed Properties
-    let cachedFormattedFileSize: String?
-    let cachedFormattedDate: String
-    let preCalculatedHeight: CGFloat
-    private var dragStartTime: Date = Date()
     
     // MARK: - MenuItem Definition
     struct MenuItem: Equatable {
@@ -72,6 +35,44 @@ class FileMenuViewModel: ObservableObject {
             return lhs.type == rhs.type
         }
     }
+    
+    // MARK: - Published Properties
+    @Published var isPresented: Bool = true
+    @Published var isAnimating: Bool = false
+    @Published var dragOffset: CGFloat = 0
+    @Published var shouldLoadImage: Bool = false
+    @Published var imageOpacity: Double = 0.0
+    @Published var isDragging: Bool = false
+    @Published var skeletonOffset: CGFloat = -200
+    @Published var shouldShowThumbnail: Bool = false
+    @Published var thumbnailURL: URL?
+    @Published var pressedMenuItemId: String?
+    @Published var specialMenuItemRequested: MenuItem?
+    
+    // MARK: - Input Properties
+    let fileViewModel: FileModel
+    let menuItems: [MenuItem]
+    let selectedItemCount: Int?
+    let onDismiss: () -> Void
+    
+    // MARK: - Cached/Computed Properties
+    let cachedFormattedFileSize: String?
+    let cachedFormattedDate: String
+    let preCalculatedHeight: CGFloat
+    
+    // MARK: - Private Properties
+    private var dragStartTime: Date = Date()
+    private var downloadTask: DispatchWorkItem?
+    private var downloadTimeoutTask: DispatchWorkItem?
+    private weak var currentPreparingAlert: UIAlertController?
+    private let fileHelper = FileHelper()
+    private let documentInteractionController = UIDocumentInteractionController()
+    
+    // MARK: - Dependencies
+    typealias DownloadHandler = (FileModel, @escaping (URL?, Error?) -> Void) -> Void
+    private var downloadHandler: DownloadHandler?
+    var viewControllerProvider: (() -> UIViewController?)?
+    private var capturedPresentingViewController: UIViewController?
     
     // MARK: - Initialization
     init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void) {
@@ -128,6 +129,7 @@ class FileMenuViewModel: ObservableObject {
         return min(totalHeight, UIScreen.main.bounds.height * 0.85)
     }
     
+    // MARK: - Computed Properties
     var contentHeight: CGFloat {
         let itemHeight: CGFloat = 56
         let regularItemsCount = menuItems.filter { $0.type != .delete }.count
@@ -150,7 +152,6 @@ class FileMenuViewModel: ObservableObject {
         isAnimating ? max(0.0, 0.3 * (1.0 - Double(dragOffset / preCalculatedHeight))) : 0.0
     }
     
-    // MARK: - Menu Item Processing
     var regularMenuItems: [MenuItem] {
         return menuItems.filter { $0.type != .delete }
     }
@@ -225,10 +226,7 @@ class FileMenuViewModel: ObservableObject {
         return isQuickTap && isNotDrag && isNotSwipe
     }
     
-    // MARK: - View Controller Discovery Protocol
-    var viewControllerProvider: (() -> UIViewController?)?
-    private var capturedPresentingViewController: UIViewController?
-    
+    // MARK: - Dependencies Setup
     func setViewControllerProvider(_ provider: @escaping () -> UIViewController?) {
         viewControllerProvider = provider
         if let viewController = provider() {
@@ -336,6 +334,8 @@ class FileMenuViewModel: ObservableObject {
             shareWithOtherApps(from: viewController)
         case .shareToPermanent:
             shareWithPermanent(from: viewController)
+        case .getLink:
+            getLink(from: viewController)
         default:
             presentNotImplementedAlert(from: viewController)
         }
@@ -381,6 +381,7 @@ class FileMenuViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Special Menu Item Methods
     private func shareWithPermanent(from viewController: UIViewController) {
         // Dismiss the menu first, then trigger the special menu item
         dismissWithAnimation()
@@ -389,6 +390,17 @@ class FileMenuViewModel: ObservableObject {
             self.specialMenuItemRequested = MenuItem(type: .shareToPermanent, action: nil)
         }
     }
+    
+    private func getLink(from viewController: UIViewController) {
+        // Dismiss the menu first, then trigger the special menu item
+        dismissWithAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            // This triggers the view layer to handle the get link functionality
+            self.specialMenuItemRequested = MenuItem(type: .getLink, action: nil)
+        }
+    }
+    
+    // MARK: - File Download and Sharing
     
     private func downloadAndShare(from viewController: UIViewController) {
         let strongSelf = self
@@ -573,8 +585,6 @@ class FileMenuViewModel: ObservableObject {
     }
     
     // MARK: - Special Menu Item Handling
-    @Published var specialMenuItemRequested: MenuItem?
-    
     func presentNotImplementedAlert(from viewController: UIViewController) {
         let alert = UIAlertController(title: "Not Implemented", message: "This action is not yet implemented.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -607,7 +617,7 @@ class FileMenuViewModel: ObservableObject {
         case .shareToAnotherApp:
             return Image(.saveOrShareV1)
         case .getLink:
-            return Image(.saveOrShareV1)
+            return Image(.sharePublishGetLink)
         case .editMetadata:
             return Image(.fileInfoV1)
         }

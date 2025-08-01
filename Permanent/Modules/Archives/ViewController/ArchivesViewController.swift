@@ -245,12 +245,13 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                             tableView.reloadData()
                             updateCurrentArchive()
                         } else {
-                            showAlert(title: .error, message: .errorMessage)
+                            showAlert(title: .error, message: "Unable to load archives. Please check your internet connection and try again.")
                         }
                     }
                 }
             } else {
-                showAlert(title: .error, message: .errorMessage)
+                hideSpinner()
+                showAlert(title: .error, message: "Unable to load account information. Please check your internet connection and try again.")
             }
         })
     }

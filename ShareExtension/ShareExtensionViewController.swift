@@ -36,6 +36,12 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         viewModel = ShareExtensionViewModel()
         initUI()
         setupTableView()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Only handle shared files after view appears to avoid view hierarchy issues
         handleSharedFile()
     }
     
@@ -48,7 +54,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         
         title = "Permanent"
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(didTapUpload))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(uploadButtonPressed(_:)))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
         
         saveFolderLabel.text = viewModel?.folderDisplayName
@@ -73,15 +79,13 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     private func handleSharedFile() {
         updateArchiveView()
         
-        if let hasActiveSession = viewModel?.hasActiveSession(), !hasActiveSession {
-            let alert = UIAlertController(title: "Uh oh", message: "You do not have an active session. Please log in to Permanent.".localized(), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
-                self.didTapCancel()
-            }))
-            
-            self.present(alert, animated: true)
+        // Check for active session first
+        guard let hasActiveSession = viewModel?.hasActiveSession(), hasActiveSession else {
+            showSessionExpiredAlert()
+            return
         }
         
+        // Check upload permissions
         if viewModel?.hasUploadPermission() == false {
             let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: .cancel, style: .default, handler: { _ in
@@ -92,6 +96,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
             }))
             
             self.present(alert, animated: true)
+            return
         }
         
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
@@ -99,6 +104,31 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         viewModel?.processSelectedFiles(attachments: attachments, then: { status in
             self.stopLoadingAnimation()
         })
+    }
+    
+    private func showSessionExpiredAlert() {
+        let alert = UIAlertController(
+            title: "Login Required", 
+            message: "Please open the Permanent app and log in to use the share extension.", 
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            self.didTapCancel()
+        }))
+        
+        if view.window != nil {
+            present(alert, animated: true)
+        } else {
+            // If not in hierarchy yet, wait a bit and try again
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if self.view.window != nil {
+                    self.present(alert, animated: true)
+                } else {
+                    // If still not available, just cancel
+                    self.didTapCancel()
+                }
+            }
+        }
     }
     
     func updateArchiveView() {
@@ -122,19 +152,48 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         present(alert, animated: true)
     }
     
-    @objc func didTapUpload() {
-        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
-        present(alert, animated: true)
-        
-        viewModel?.uploadSelectedFiles() { [self] error in
-            dismiss(animated: false) { [self] in
-                if error != nil {
-                    showUploadErrorAlert()
+    private func showStorageQuotaExceededAlert() {
+        let alert = UIAlertController(
+            title: "Storage Full", 
+            message: "You don't have enough storage space to upload these files. Please free up space or upgrade your storage plan in the Permanent app.", 
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            self.didTapCancel()
+        }))
+        if view.window != nil {
+            present(alert, animated: true)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if self.view.window != nil {
+                    self.present(alert, animated: true)
+                } else {
+                    self.didTapCancel()
                 }
-                
-                extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
             }
         }
+    }
+    
+    @IBAction func uploadButtonPressed(_ sender: Any) {
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        
+        viewModel?.uploadSelectedFiles(completion: { error in
+            DispatchQueue.main.async {
+                self.navigationItem.rightBarButtonItem?.isEnabled = true
+                
+                if let error = error {
+                    if error is StorageQuotaError {
+                        self.showStorageQuotaExceededAlert()
+                    } else {
+                        let alert = UIAlertController(title: "Upload Error", message: error.localizedDescription, preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                } else {
+                    self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+                }
+            }
+        })
     }
     
     @objc func didTapCancel() {
@@ -142,6 +201,12 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     }
     
     @IBAction func selectFolderButtonPressed(_ sender: Any) {
+        // Check if we have a valid session before presenting folder selection
+        guard viewModel?.hasActiveSession() == true else {
+            showSessionExpiredAlert()
+            return
+        }
+        
         let storyboard = UIStoryboard(name: "MainInterface", bundle: nil)
         let selectFolderVC = storyboard.instantiateViewController(withIdentifier: "selectWorkspace") as! SelectWorkspaceViewController
         selectFolderVC.delegate = self
@@ -151,6 +216,12 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     }
     
     @IBAction func selectArchiveButtonPressed(_ sender: Any) {
+        // Check if we have a valid session before presenting archives
+        guard viewModel?.hasActiveSession() == true else {
+            showSessionExpiredAlert()
+            return
+        }
+        
         let archivesVC = UIViewController.create(withIdentifier: .archives, from: .archives) as! ArchivesViewController
         archivesVC.delegate = self
         archivesVC.isManaging = false

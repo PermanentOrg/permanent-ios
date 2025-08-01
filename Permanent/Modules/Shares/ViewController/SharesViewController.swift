@@ -733,6 +733,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }))
         }
         
+        // Add getLink for files that have share permissions (can potentially have share URLs)
+        if file.permissions.contains(.share) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
+        }
+        
         let swiftUIView = FileMoreMenuView(
             fileViewModel: file,
             menuItems: menuItems,
@@ -743,6 +748,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
+                })
+            },
+            onGetLinkRequested: { [weak self] file in
+                // Dismiss the menu first, then handle get link
+                self?.dismiss(animated: true, completion: {
+                    self?.getShareLinkAction(file: file)
                 })
             },
             downloadHandler: { [weak self] file, completion in
@@ -822,6 +833,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
+                })
+            },
+            onGetLinkRequested: { [weak self] file in
+                // Dismiss the menu first, then handle get link
+                self?.dismiss(animated: true, completion: {
+                    self?.getShareLinkAction(file: file)
                 })
             },
             downloadHandler: { [weak self] file, completion in
@@ -1325,6 +1342,37 @@ extension SharesViewController {
 extension SharesViewController: SharedFileActionSheetDelegate {
     func downloadAction(file: FileModel) {
         download(file)
+    }
+    
+    func getShareLinkAction(file: FileModel) {
+        let shareViewModel = ShareLinkViewModel(fileViewModel: file)
+        
+        // Check if the file already has a share link
+        shareViewModel.getShareLink(option: .retrieve) { [weak self] shareVO, error in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                
+                if let shareVO = shareVO,
+                   shareVO.sharebyURLID != nil,
+                   let shareURLString = shareVO.shareURL,
+                   let shareURL = URL(string: shareURLString) {
+                    // File has an existing share link, dismiss menu first then share it directly
+                    self.dismiss(animated: true) {
+                        let activityViewController = UIActivityViewController(
+                            activityItems: [shareURL], 
+                            applicationActivities: []
+                        )
+                        activityViewController.popoverPresentationController?.sourceView = self.view
+                        self.present(activityViewController, animated: true, completion: nil)
+                    }
+                } else {
+                    // File doesn't have a share link, dismiss menu first then open ShareManagement to create one
+                    self.dismiss(animated: true) {
+                        self.presentShareManagement(for: file)
+                    }
+                }
+            }
+        }
     }
     
     func relocateAction(files: [FileModel]?, action: FileAction) {

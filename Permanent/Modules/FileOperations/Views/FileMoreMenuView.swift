@@ -11,8 +11,9 @@ import UIKit
 struct FileMoreMenuView: View {
     @ObservedObject private var viewModel: FileMenuViewModel
     private let onShareManagementRequested: ((FileModel) -> Void)?
+    private let onGetLinkRequested: ((FileModel) -> Void)?
     
-    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
+    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
         let newViewModel = FileMenuViewModel(
             fileViewModel: fileViewModel,
             menuItems: menuItems,
@@ -26,6 +27,7 @@ struct FileMoreMenuView: View {
         
         self.viewModel = newViewModel
         self.onShareManagementRequested = onShareManagementRequested
+        self.onGetLinkRequested = onGetLinkRequested
     }
     
     
@@ -255,6 +257,25 @@ struct FileMoreMenuView: View {
                 
                 presentShareManagement(from: topViewController)
             }
+        case .getLink:
+            // Use the callback instead of the special menu item flow
+            if let callback = onGetLinkRequested {
+                callback(viewModel.fileViewModel)
+            } else {
+                // Fallback to the old method if callback not provided
+                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let window = windowScene.windows.first,
+                      let rootViewController = window.rootViewController else {
+                    return
+                }
+                
+                var topViewController = rootViewController
+                while let presented = topViewController.presentedViewController {
+                    topViewController = presented
+                }
+                
+                viewModel.executeSpecialMenuItem(menuItem, with: topViewController)
+            }
         default:
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first,
@@ -281,6 +302,40 @@ struct FileMoreMenuView: View {
         
         let navController = NavigationController(rootViewController: manageLinkVC)
         viewController.present(navController, animated: true, completion: nil)
+    }
+    
+    private func showInfoAlert(title: String, message: String) {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = window.rootViewController else {
+            return
+        }
+        
+        var topViewController = rootViewController
+        while let presented = topViewController.presentedViewController {
+            topViewController = presented
+        }
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        topViewController.present(alert, animated: true)
+    }
+    
+    private func shareURL(_ url: URL) {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = window.rootViewController else {
+            return
+        }
+        
+        var topViewController = rootViewController
+        while let presented = topViewController.presentedViewController {
+            topViewController = presented
+        }
+        
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = topViewController.view
+        topViewController.present(activityViewController, animated: true, completion: nil)
     }
 }
 
