@@ -204,8 +204,15 @@ class UploadManager {
             
             if selectedArchiveUploads.isEmpty == false {
                 logger.info("Found \(selectedArchiveUploads.count, privacy: .public) files from extension to upload")
+                
+                for file in selectedArchiveUploads {
+                    logger.info("Extension file: \(file.name, privacy: .public), archive: \(file.archiveId, privacy: .public)")
+                }
+                
                 upload(files: selectedArchiveUploads)
                 try ExtensionUploadManager.shared.clearSavedFiles(selectedArchiveUploads)
+            } else if !extensionUploads.isEmpty {
+                logger.info("Found \(extensionUploads.count, privacy: .public) extension files but none match current archive ID: \(selectedArchive?.archiveID ?? -1, privacy: .public)")
             }
         } catch {
             logger.error("Error refreshing upload queue: \(error.localizedDescription, privacy: .public)")

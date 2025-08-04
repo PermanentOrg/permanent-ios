@@ -39,6 +39,7 @@
 		5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */; };
 		5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */; };
 		5E048FDC29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */; };
+		5E04DAE12E3697C600D17F67 /* FileMoreMenuItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */; };
 		5E051C042B69A74F00274657 /* SettingsScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C032B69A74F00274657 /* SettingsScreenView.swift */; };
 		5E051C072B6AEB2900274657 /* SettingsScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C062B6AEB2900274657 /* SettingsScreenViewModel.swift */; };
 		5E051C0A2B6AFAD800274657 /* CustomSimpleListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */; };
@@ -404,7 +405,10 @@
 		5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */; };
 		5EC043A82924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */; };
 		5EC20FCF2CA58FE000CCE8EF /* AuthBannerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC20FCE2CA58FE000CCE8EF /* AuthBannerMessage.swift */; };
+		5EC48B602E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */; };
+		5EC48B612E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
+		5EC7CD292E26A74E00D80AE4 /* FileMoreMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */; };
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
@@ -1057,6 +1061,7 @@
 		5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareMangementAdditionalOptionCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementDefaultAccessRoleCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementDefaultAccessRoleCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMoreMenuItemRow.swift; sourceTree = "<group>"; };
 		5E051C032B69A74F00274657 /* SettingsScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenView.swift; sourceTree = "<group>"; };
 		5E051C062B6AEB2900274657 /* SettingsScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenViewModel.swift; sourceTree = "<group>"; };
 		5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSimpleListItemView.swift; sourceTree = "<group>"; };
@@ -1350,7 +1355,9 @@
 		5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementEmptyHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementEmptyHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 		5EC20FCE2CA58FE000CCE8EF /* AuthBannerMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBannerMessage.swift; sourceTree = "<group>"; };
+		5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuViewModel.swift; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
+		5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMoreMenuView.swift; sourceTree = "<group>"; };
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
@@ -2982,6 +2989,7 @@
 		5E4739CB2A41094700A20D85 /* FileOperations */ = {
 			isa = PBXGroup;
 			children = (
+				5EC7CD282E26A74E00D80AE4 /* Views */,
 				5E3E12382A41EB0000682DE5 /* Cells */,
 				BC6358BA25371FB400EEC48C /* ViewModel */,
 				5E4739CC2A41095C00A20D85 /* ViewController */,
@@ -3404,6 +3412,15 @@
 				5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */,
 			);
 			path = LeftSideView;
+			sourceTree = "<group>";
+		};
+		5EC7CD282E26A74E00D80AE4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */,
+				5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		5ECBAF9F2A1B5F0200FACFDF /* LegacyPlanning */ = {
@@ -4017,6 +4034,7 @@
 		BC6358BA25371FB400EEC48C /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */,
 				BCD414D6257F74780019548F /* ShareLinkViewModel.swift */,
 				5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */,
 				BC6358BB25371FCB00EEC48C /* FileModel.swift */,
@@ -4872,6 +4890,7 @@
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				5EB503B52C04C9B600534F09 /* OnboardingWhatsImportantView.swift in Sources */,
+				5EC48B612E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				5EE7C1502CA36D1500445E4E /* AuthLoginResponse.swift in Sources */,
 				5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */,
@@ -4923,6 +4942,7 @@
 				5E2F721C2D94A2FC009F02D3 /* ChangePasswordViewModel.swift in Sources */,
 				5E633A722B28D7E1004D561C /* StorageView.swift in Sources */,
 				5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */,
+				5E04DAE12E3697C600D17F67 /* FileMoreMenuItemRow.swift in Sources */,
 				5EFC5B3B2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift in Sources */,
 				5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */,
 				5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
@@ -5219,6 +5239,7 @@
 				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
 				5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */,
 				5E6CCEEB2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift in Sources */,
+				5EC7CD292E26A74E00D80AE4 /* FileMoreMenuView.swift in Sources */,
 				5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
@@ -5482,6 +5503,7 @@
 				5E390B4F2E1FEF8200F623D3 /* LegacyPlanningDataSourceInterface.swift in Sources */,
 				F559F8B028FF032A0015A522 /* SerialInputStream.swift in Sources */,
 				F5ADBF44290BC4100007A516 /* StoryboardName.swift in Sources */,
+				5EC48B602E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */,
 				F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */,
 				F559F89328FEE9740015A522 /* FilesRepository.swift in Sources */,
 				F559F89128FEE9690015A522 /* SaveDestinationBrowserViewModel.swift in Sources */,
@@ -5738,7 +5760,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5757,7 +5779,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5801,7 +5823,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5814,7 +5836,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -5833,7 +5855,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Resources/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -5843,7 +5865,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5866,7 +5888,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Resources/Assets/Entitlements/PermanentRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -5876,7 +5898,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5895,12 +5917,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -5920,12 +5942,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -5945,12 +5967,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -5970,12 +5992,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -5996,7 +6018,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6006,7 +6028,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6026,7 +6048,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6036,7 +6058,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6056,7 +6078,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6066,7 +6088,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6086,7 +6108,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
@@ -6096,7 +6118,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6118,7 +6140,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtensionDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6132,7 +6154,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6156,7 +6178,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShareExtension/ShareExtensionDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6170,7 +6192,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6194,7 +6216,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtensionRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6208,7 +6230,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6232,7 +6254,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShareExtension/ShareExtensionDEV-Release.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -6246,7 +6268,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6295,7 +6317,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -6314,7 +6336,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -6333,7 +6355,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Resources/Assets/Entitlements/PermanentDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -6343,7 +6365,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6390,7 +6412,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 237;
+				CURRENT_PROJECT_VERSION = 241;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -6403,7 +6425,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -6422,7 +6444,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Resources/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -6432,7 +6454,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6452,7 +6474,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6462,7 +6484,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6481,7 +6503,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6491,7 +6513,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6510,7 +6532,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6520,7 +6542,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6539,7 +6561,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 240;
+				CURRENT_PROJECT_VERSION = 241;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -6549,7 +6571,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.2;
+				MARKETING_VERSION = 1.13.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

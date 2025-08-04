@@ -691,61 +691,101 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
-        var menuItems: [FileMenuViewController.MenuItem] = []
+        var menuItems: [FileMenuViewModel.MenuItem] = []
         
         if file.permissions.contains(.share) {
             if file.permissions.contains(.ownership) {
-                menuItems.append(FileMenuViewController.MenuItem(type: .shareToPermanent, action: nil))
+                menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
             }
         }
         
         if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
-            menuItems.append(FileMenuViewController.MenuItem(type: .unshare, action: { [self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
                 unshareAction(file: file, atIndexPath: indexPath)
             }))
         } else if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
                 deleteAction(file: file, atIndexPath: indexPath)
             }))
         }
 
         if file.permissions.contains(.edit) {
-            menuItems.append(FileMenuViewController.MenuItem(type: .rename, action: { [self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .rename, action: { [self] in
                 renameAction(file: file, atIndexPath: indexPath)
             }))
         }
         
         if file.permissions.contains(.read) && file.type.isFolder == false {
-            menuItems.append(FileMenuViewController.MenuItem(type: .download, action: { [self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .download, action: { [self] in
                 downloadAction(file: file)
             }))
         }
         
         if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, file.permissions.contains(.create) && !currentFolderIsRoot {
-            menuItems.append(FileMenuViewController.MenuItem(type: .copy, action: { [self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .copy, action: { [self] in
                 relocateAction(files: [file], action: .copy)
             }))
         }
         
         if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, file.permissions.contains(.move) && !currentFolderIsRoot {
-            menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .move, action: { [self] in
                 relocateAction(files: [file], action: .move)
             }))
         }
         
-        let vc = FileMenuViewController()
-        vc.fileViewModel = file
-        vc.menuItems = menuItems
-        vc.showsPermission = viewModel?.shareListType == .sharedWithMe
-        present(vc, animated: true)
+        // Add getLink for files that have share permissions (can potentially have share URLs)
+        if file.permissions.contains(.share) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
+        }
+        
+        let swiftUIView = FileMoreMenuView(
+            fileViewModel: file,
+            menuItems: menuItems,
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: true)
+            },
+            onShareManagementRequested: { [weak self] file in
+                // Dismiss the menu first, then present ShareManagement
+                self?.dismiss(animated: true, completion: {
+                    self?.presentShareManagement(for: file)
+                })
+            },
+            onGetLinkRequested: { [weak self] file in
+                // Dismiss the menu first, then handle get link
+                self?.dismiss(animated: true, completion: {
+                    self?.getShareLinkAction(file: file)
+                })
+            },
+            downloadHandler: { [weak self] file, completion in
+                self?.viewModel?.download(
+                    file,
+                    onDownloadStart: {
+                        // No specific action needed
+                    },
+                    onFileDownloaded: { url, error in
+                        DispatchQueue.main.async {
+                            completion(url, error)
+                        }
+                    },
+                    progressHandler: nil
+                )
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: swiftUIView)
+        hostingController.modalPresentationStyle = .overFullScreen
+        hostingController.modalTransitionStyle = .crossDissolve
+        hostingController.view.backgroundColor = .clear
+        
+        present(hostingController, animated: true)
     }
     
     func showFileActionSheetForSelection() {
         guard let file = viewModel?.selectedFiles?.first else { return }
-        var menuItems: [FileMenuViewController.MenuItem] = []
+        var menuItems: [FileMenuViewModel.MenuItem] = []
         
         if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [weak self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [weak self] in
                 self?.showActionDialog(
                     styled: .simple,
                     withTitle: "Delete selected items?".localized(),
@@ -765,7 +805,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         
         if file.permissions.contains(.move) {
-            menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [weak self] in
+            menuItems.append(FileMenuViewModel.MenuItem(type: .move, action: { [weak self] in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
@@ -782,12 +822,47 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }))
         }
         
-        let vc = FileMenuViewController()
-        vc.fileViewModel = file
-        vc.menuItems = menuItems
-        vc.selectedItemCount = viewModel?.selectedFiles?.count
+        let swiftUIView = FileMoreMenuView(
+            fileViewModel: file,
+            menuItems: menuItems,
+            selectedItemCount: viewModel?.selectedFiles?.count,
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: true)
+            },
+            onShareManagementRequested: { [weak self] file in
+                // Dismiss the menu first, then present ShareManagement
+                self?.dismiss(animated: true, completion: {
+                    self?.presentShareManagement(for: file)
+                })
+            },
+            onGetLinkRequested: { [weak self] file in
+                // Dismiss the menu first, then handle get link
+                self?.dismiss(animated: true, completion: {
+                    self?.getShareLinkAction(file: file)
+                })
+            },
+            downloadHandler: { [weak self] file, completion in
+                self?.viewModel?.download(
+                    file,
+                    onDownloadStart: {
+                        // No specific action needed
+                    },
+                    onFileDownloaded: { url, error in
+                        DispatchQueue.main.async {
+                            completion(url, error)
+                        }
+                    },
+                    progressHandler: nil
+                )
+            }
+        )
         
-        present(vc, animated: true)
+        let hostingController = UIHostingController(rootView: swiftUIView)
+        hostingController.modalPresentationStyle = .overFullScreen
+        hostingController.modalTransitionStyle = .crossDissolve
+        hostingController.view.backgroundColor = .clear
+        
+        present(hostingController, animated: true)
     }
     
     func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {
@@ -1269,11 +1344,55 @@ extension SharesViewController: SharedFileActionSheetDelegate {
         download(file)
     }
     
+    func getShareLinkAction(file: FileModel) {
+        let shareViewModel = ShareLinkViewModel(fileViewModel: file)
+        
+        // Check if the file already has a share link
+        shareViewModel.getShareLink(option: .retrieve) { [weak self] shareVO, error in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                
+                if let shareVO = shareVO,
+                   shareVO.sharebyURLID != nil,
+                   let shareURLString = shareVO.shareURL,
+                   let shareURL = URL(string: shareURLString) {
+                    // File has an existing share link, dismiss menu first then share it directly
+                    self.dismiss(animated: true) {
+                        let activityViewController = UIActivityViewController(
+                            activityItems: [shareURL], 
+                            applicationActivities: []
+                        )
+                        activityViewController.popoverPresentationController?.sourceView = self.view
+                        self.present(activityViewController, animated: true, completion: nil)
+                    }
+                } else {
+                    // File doesn't have a share link, dismiss menu first then open ShareManagement to create one
+                    self.dismiss(animated: true) {
+                        self.presentShareManagement(for: file)
+                    }
+                }
+            }
+        }
+    }
+    
     func relocateAction(files: [FileModel]?, action: FileAction) {
         viewModel?.selectedFiles = files
         viewModel?.fileAction = action
 
         setupBottomActionSheet()
+    }
+    
+    // MARK: - Share Management
+    private func presentShareManagement(for file: FileModel) {
+        guard let manageLinkVC = UIViewController.create(withIdentifier: .shareManagement, from: .share) as? ShareManagementViewController else {
+            return
+        }
+        
+        let shareViewModel = ShareLinkViewModel(fileViewModel: file)
+        manageLinkVC.viewModel = shareViewModel
+        
+        let navController = NavigationController(rootViewController: manageLinkVC)
+        present(navController, animated: true, completion: nil)
     }
 }
 

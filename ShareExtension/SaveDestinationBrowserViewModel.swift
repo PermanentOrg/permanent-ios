@@ -42,9 +42,11 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             navigationViewModel.workspaceName = "Private Files"
             
             filesRepository.getPrivateRoot { rootFolder, error in
-                if let rootFolder = rootFolder {
-                    self.contentViewModels.removeAll()
-                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder))
+                DispatchQueue.main.async {
+                    if let rootFolder = rootFolder {
+                        self.contentViewModels.removeAll()
+                        self.contentViewModels.append(FolderContentViewModel(folder: rootFolder))
+                    }
                 }
             }
             
@@ -52,9 +54,11 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             navigationViewModel.workspaceName = "Shared Files"
             
             filesRepository.getSharedRoot() { rootFolder, error in
-                if let rootFolder = rootFolder {
-                    self.contentViewModels.removeAll()
-                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: true))
+                DispatchQueue.main.async {
+                    if let rootFolder = rootFolder {
+                        self.contentViewModels.removeAll()
+                        self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: true))
+                    }
                 }
             }
             
@@ -62,9 +66,11 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             navigationViewModel.workspaceName = "Shared Files"
             
             filesRepository.getSharedRoot() { rootFolder, error in
-                if let rootFolder = rootFolder {
-                    self.contentViewModels.removeAll()
-                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: false))
+                DispatchQueue.main.async {
+                    if let rootFolder = rootFolder {
+                        self.contentViewModels.removeAll()
+                        self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: false))
+                    }
                 }
             }
             
@@ -72,9 +78,11 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             navigationViewModel.workspaceName = "Public Files"
             
             filesRepository.getPublicRoot { rootFolder, error in
-                if let rootFolder = rootFolder {
-                    self.contentViewModels.removeAll()
-                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder))
+                DispatchQueue.main.async {
+                    if let rootFolder = rootFolder {
+                        self.contentViewModels.removeAll()
+                        self.contentViewModels.append(FolderContentViewModel(folder: rootFolder))
+                    }
                 }
             }
         }
