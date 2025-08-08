@@ -11,7 +11,6 @@ import Foundation
 
 @MainActor
 class ShareItemViewModel: ObservableObject {
-    // MARK: - Published Properties
     @Published var isLoading = false
     @Published var shareLink: String?
     @Published var errorMessage: String?
@@ -21,10 +20,9 @@ class ShareItemViewModel: ObservableObject {
     @Published var emailAddress = ""
     @Published var searchText = ""
     
-    // MARK: - File Properties
     let fileModel: FileModel
-    
-    // MARK: - Computed Properties
+    private let shareManagementRepository: ShareManagementRepository
+    private var shareVO: SharebyURLVOData?
     var hasShareLink: Bool {
         shareLink != nil
     }
@@ -53,25 +51,58 @@ class ShareItemViewModel: ObservableObject {
         ShareItemViewModel.formatDate(fileModel.createdDT ?? "")
     }
     
-    // MARK: - Initialization
-    init(fileModel: FileModel) {
+    init(fileModel: FileModel, shareManagementRepository: ShareManagementRepository = ShareManagementRepository()) {
         self.fileModel = fileModel
+        self.shareManagementRepository = shareManagementRepository
+        loadInitialData()
     }
     
-    // MARK: - Private Methods
     private func loadInitialData() {
         isLoading = true
+        errorMessage = nil
         
-        // Simulate network delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.isLoading = false
-            // For demo purposes, sometimes have a link already
-            if Bool.random() {
-                self.shareLink = "https://permanent.org/share/example-link"
+        getShareLink(option: .retrieve)
+    }
+    
+    private func getShareLink(option: ShareLinkOption) {
+        Task {
+            await MainActor.run {
+                if option == .create {
+                    isCreatingLink = true
+                } else {
+                    isLoading = true
+                }
+                errorMessage = nil
+            }
+            
+            shareManagementRepository.getShareLink(file: fileModel, option: option) { [weak self] result, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        self.isLoading = false
+                        self.isCreatingLink = false
+                        
+                        if let error = error {
+                            if option == .retrieve {
+                                self.shareLink = nil
+                            } else {
+                                self.errorMessage = error
+                            }
+                        } else if let result = result {
+                            self.shareVO = result
+                            self.shareLink = result.shareURL
+                            
+                            if option == .create {
+                                self.showLinkSettings = true
+                                self.setDefaultShareSettings()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-    
     static func formatDate(_ dateString: String) -> String {
         guard !dateString.isEmpty && dateString != "-" else { return "" }
         
@@ -107,50 +138,136 @@ class ShareItemViewModel: ObservableObject {
         return ""
     }
     
-    // MARK: - Public Methods
     func createShareLink() {
-        isCreatingLink = true
+        Task {
+            getShareLink(option: .create)
+        }
+    }
+    
+    private func setDefaultShareSettings() {
+        guard let shareVO = self.shareVO else { return }
         
-        // Simulate link creation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.isCreatingLink = false
-            self.shareLink = "https://permanent.org/share/new-link-\(UUID().uuidString.prefix(8))"
-            self.showLinkSettings = true
+        let manageLinkData = ManageLinkData(
+            previewToggle: 1,
+            autoApproveToggle: 1,
+            expiresDT: shareVO.expiresDT,
+            maxUses: shareVO.maxUses,
+            defaultAccessRole: .viewer
+        )
+        
+        Task {
+            await MainActor.run {
+                self.isLoading = true
+                self.errorMessage = nil
+            }
+            
+            shareManagementRepository.updateLink(model: manageLinkData, shareVO: shareVO) { [weak self] shareData, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        self.isLoading = false
+                        
+                        if let error = error {
+                            self.errorMessage = error
+                        } else if let shareData = shareData {
+                            self.shareVO = shareData
+                            self.shareLink = shareData.shareURL
+                        }
+                    }
+                }
+            }
         }
     }
     
     func copyLink() {
-        guard let shareLink = shareLink else { return }
-        
-        // For now, just copy to clipboard
-        #if os(iOS)
+        guard let shareLink = self.shareLink else { return }
+
         UIPasteboard.general.string = shareLink
-        #endif
-        
-        // In the real implementation, this would show the activity controller
-        print("Share link copied: \(shareLink)")
     }
     
     func revokeLink() {
-        // Simulate revoke
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.shareLink = nil
-            self.showLinkSettings = false
+        guard let shareVO = self.shareVO else { return }
+        
+        Task {
+            await MainActor.run {
+                self.isLoading = true
+                self.errorMessage = nil
+            }
+            
+            shareManagementRepository.revokeLink(shareVO: shareVO) { [weak self] result in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        self.isLoading = false
+                        
+                        switch result {
+                        case .success:
+                            self.shareLink = nil
+                            self.shareVO = nil
+                            self.showLinkSettings = false
+                        case .error(let message):
+                            self.errorMessage = message
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func updateShareLink(previewToggle: Bool? = nil, autoApproveToggle: Bool? = nil, expiresDT: String? = nil, maxUses: Int? = nil) {
+        guard let shareVO = self.shareVO else { return }
+        
+        let manageLinkData = ManageLinkData(
+            previewToggle: previewToggle != nil ? (previewToggle! ? 1 : 0) : shareVO.previewToggle,
+            autoApproveToggle: autoApproveToggle != nil ? (autoApproveToggle! ? 1 : 0) : shareVO.autoApproveToggle,
+            expiresDT: expiresDT ?? shareVO.expiresDT,
+            maxUses: maxUses ?? shareVO.maxUses,
+            defaultAccessRole: .viewer
+        )
+        
+        Task {
+            await MainActor.run {
+                self.isLoading = true
+                self.errorMessage = nil
+            }
+            
+            shareManagementRepository.updateLink(model: manageLinkData, shareVO: shareVO) { [weak self] shareData, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        self.isLoading = false
+                        
+                        if let error = error {
+                            self.errorMessage = error
+                        } else if let shareData = shareData {
+                            self.shareVO = shareData
+                            self.shareLink = shareData.shareURL
+                        }
+                    }
+                }
+            }
         }
     }
     
     func sendEmailInvitation() {
-        showEmailAddressField = true
+        Task {
+            await MainActor.run {
+                self.showEmailAddressField = true
+            }
+        }
     }
     
     func submitEmailInvitation() {
-        guard !emailAddress.isEmpty else { return }
+        guard !self.emailAddress.isEmpty else { return }
         
-        // Simulate sending invitation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.showEmailAddressField = false
-            self.emailAddress = ""
-            // Could show success message
+        Task {
+            await MainActor.run {
+                self.showEmailAddressField = false
+                self.emailAddress = ""
+            }
         }
     }
 }
