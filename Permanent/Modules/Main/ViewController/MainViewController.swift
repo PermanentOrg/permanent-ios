@@ -1701,15 +1701,28 @@ extension MainViewController {
     
     // MARK: - Share Management
     private func presentShareManagement(for file: FileModel) {
-        guard let manageLinkVC = UIViewController.create(withIdentifier: .shareManagement, from: .share) as? ShareManagementViewController else {
-            return
+        // Create SwiftUI ShareItemView
+        let shareItemView = ShareItemView(fileModel: file)
+        
+        // Wrap in UIHostingController
+        let hostingController = UIHostingController(rootView: shareItemView)
+        
+        // Present modally
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+        if #available(iOS 15.0, *) {
+            hostingController.sheetPresentationController?.detents = [UISheetPresentationController.Detent.large()]
+            hostingController.sheetPresentationController?.prefersGrabberVisible = false
         }
         
-        let shareViewModel = ShareLinkViewModel(fileViewModel: file)
-        manageLinkVC.viewModel = shareViewModel
-        
-        let navController = NavigationController(rootViewController: manageLinkVC)
-        present(navController, animated: true, completion: nil)
+        present(hostingController, animated: true)
+    }
+    
+    // MARK: - Helper Methods
+    private func formatFileSize(_ size: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useKB, .useMB, .useGB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: size)
     }
 }
 
