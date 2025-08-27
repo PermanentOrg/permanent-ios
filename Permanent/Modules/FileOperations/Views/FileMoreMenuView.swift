@@ -239,26 +239,14 @@ struct FileMoreMenuView: View {
     private func handleSpecialMenuItems(_ menuItem: FileMenuViewModel.MenuItem) {
         switch menuItem.type {
         case .shareToPermanent:
-            // Use the callback instead of presenting directly
+            // Prefer delegating to the host (UIKit controller) to present after dismissing the menu
             if let callback = onShareManagementRequested {
                 callback(viewModel.fileViewModel)
             } else {
-                // Fallback to the old method if callback not provided
-                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                      let window = windowScene.windows.first,
-                      let rootViewController = window.rootViewController else {
-                    return
-                }
-                
-                var topViewController = rootViewController
-                while let presented = topViewController.presentedViewController {
-                    topViewController = presented
-                }
-                
-                presentShareManagement(from: topViewController)
+                // Fallback: present via a safe presenter (the presentingViewController of this menu if available)
+                presentShareManagementSafely()
             }
         case .getLink:
-            // Use the callback instead of the special menu item flow
             if let callback = onGetLinkRequested {
                 callback(viewModel.fileViewModel)
             } else {
@@ -292,16 +280,39 @@ struct FileMoreMenuView: View {
         }
     }
     
-    private func presentShareManagement(from viewController: UIViewController) {
-        guard let manageLinkVC = UIViewController.create(withIdentifier: .shareManagement, from: .share) as? ShareManagementViewController else {
-            return
+    // MARK: - Safe UIKit Presentation Fallback
+    private func presentShareManagementSafely() {
+        DispatchQueue.main.async {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first,
+                  let root = window.rootViewController else { return }
+            
+            // Find the top-most controller
+            var top: UIViewController = root
+            while let presented = top.presentedViewController {
+                top = presented
+            }
+            
+            // If the top is our menu's hosting controller (being dismissed), use its presenter
+            let presenter = top.presentingViewController ?? top
+            
+            // Create SwiftUI ShareItemView directly
+            let shareItemView = ShareItemView(fileModel: viewModel.fileViewModel)
+            
+            // Present with UIHostingController
+            let hostingController = UIHostingController(rootView: shareItemView)
+            hostingController.modalPresentationStyle = .fullScreen
+            
+            presenter.present(hostingController, animated: true)
         }
-        
-        let shareViewModel = ShareLinkViewModel(fileViewModel: viewModel.fileViewModel)
-        manageLinkVC.viewModel = shareViewModel
-        
-        let navController = NavigationController(rootViewController: manageLinkVC)
-        viewController.present(navController, animated: true, completion: nil)
+    }
+
+    // MARK: - Helper Methods
+    private func formatFileSize(_ size: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useKB, .useMB, .useGB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: size)
     }
     
     private func showInfoAlert(title: String, message: String) {
@@ -339,7 +350,6 @@ struct FileMoreMenuView: View {
     }
 }
 
-// Extension to add corner radius to specific corners
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
@@ -357,5 +367,16 @@ struct RoundedCorner: Shape {
             cornerRadii: CGSize(width: radius, height: radius)
         )
         return Path(path.cgPath)
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func ifAvailableiOS16<Content: View>(_ transform: (Self) -> Content) -> some View {
+        if #available(iOS 16.0, *) {
+            transform(self)
+        } else {
+            self
+        }
     }
 }
