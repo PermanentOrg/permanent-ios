@@ -12,6 +12,7 @@ import Foundation
 @MainActor
 class ShareItemViewModel: ObservableObject {
     @Published var isLoading = false
+    @Published var genLinkLoading = false
     @Published var shareLink: String?
     @Published var errorMessage: String?
     @Published var showLinkSettings = false
@@ -68,7 +69,7 @@ class ShareItemViewModel: ObservableObject {
         Task {
             await MainActor.run {
                 if option == .create {
-                    isCreatingLink = true
+                    genLinkLoading = true
                 } else {
                     isLoading = true
                 }
@@ -81,9 +82,13 @@ class ShareItemViewModel: ObservableObject {
                         guard let self = self else { return }
                         
                         self.isLoading = false
-                        self.isCreatingLink = false
                         
                         if let error = error {
+                            // End genLinkLoading on error
+                            if option == .create {
+                                self.genLinkLoading = false
+                            }
+                            
                             if option == .retrieve {
                                 self.shareLink = nil
                             } else {
@@ -157,7 +162,7 @@ class ShareItemViewModel: ObservableObject {
         
         Task {
             await MainActor.run {
-                self.isLoading = true
+                // Keep using genLinkLoading during link creation flow
                 self.errorMessage = nil
             }
             
@@ -166,13 +171,15 @@ class ShareItemViewModel: ObservableObject {
                     await MainActor.run {
                         guard let self = self else { return }
                         
-                        self.isLoading = false
-                        
                         if let error = error {
                             self.errorMessage = error
+                            self.genLinkLoading = false
                         } else if let shareData = shareData {
                             self.shareVO = shareData
                             self.shareLink = shareData.shareURL
+                            self.genLinkLoading = false
+                        } else {
+                            self.genLinkLoading = false
                         }
                     }
                 }

@@ -11,6 +11,8 @@ struct GradientSemiCirclesLoaderView: View {
     var innerCicleWidth: CGFloat = 8
     var innerCicleSize: CGFloat = 25
     var outerCicleWidth: CGFloat = 8
+    var frameWidth: CGFloat = 50
+    var frameHeight: CGFloat = 50
 
     var body: some View {
         ZStack {
@@ -25,7 +27,7 @@ struct GradientSemiCirclesLoaderView: View {
             
             SemiCircle()
                 .stroke(Gradient.yellowPurpleGradient, style: StrokeStyle(lineWidth: outerCicleWidth, lineCap: .round))
-                .frame(width: 50, height: 50)
+                .frame(width: frameWidth, height: frameHeight)
                 .rotationEffect(.degrees(rotate ? 360 : 0))
                 .animation(Animation.linear(duration: 2).repeatForever(autoreverses: false), value: rotate)
                 .onAppear {
@@ -33,7 +35,7 @@ struct GradientSemiCirclesLoaderView: View {
                 }
                 .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
         }
-        .frame(width: 50, height: 50)
+        .frame(width: frameWidth, height: frameHeight)
     }
 }
 
