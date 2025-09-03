@@ -35,7 +35,7 @@ struct ShareItemView: View {
                             if viewModel.genLinkLoading {
                                 linkCreationLoadingSection
                                     .transition(.opacity.combined(with: .scale))
-                            } else if !viewModel.hasShareLink && !viewModel.isLoading {
+                            } else if viewModel.shouldShowCreateButton {
                                 createLinkSection
                                     .transition(.opacity.combined(with: .scale))
                             } else if viewModel.hasShareLink {
@@ -46,6 +46,7 @@ struct ShareItemView: View {
                         .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
                         .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
                         .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
                     }
                     .padding(24)
                 }
@@ -184,7 +185,7 @@ struct ShareItemView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
-        .onTapGesture { viewModel.createShareLink() }
+        .onTapGesture { viewModel.createShareLinkV2() }
         .opacity(viewModel.genLinkLoading ? 0.6 : 1.0)
         .disabled(viewModel.genLinkLoading)
     }

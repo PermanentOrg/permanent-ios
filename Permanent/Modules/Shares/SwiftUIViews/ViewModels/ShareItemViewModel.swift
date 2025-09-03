@@ -24,8 +24,14 @@ class ShareItemViewModel: ObservableObject {
     let fileModel: FileModel
     private let shareManagementRepository: ShareManagementRepository
     private var shareVO: SharebyURLVOData?
+    private var shareLinkV2Data: ShareLinkV2Data?
+    
     var hasShareLink: Bool {
-        shareLink != nil
+        shareLink != nil && !shareLink!.isEmpty
+    }
+    
+    var shouldShowCreateButton: Bool {
+        !hasShareLink && !genLinkLoading && !isLoading
     }
     
     var fileName: String {
@@ -108,6 +114,7 @@ class ShareItemViewModel: ObservableObject {
             }
         }
     }
+    
     static func formatDate(_ dateString: String) -> String {
         guard !dateString.isEmpty && dateString != "-" else { return "" }
         
@@ -149,6 +156,57 @@ class ShareItemViewModel: ObservableObject {
         }
     }
     
+    // MARK: - V2 API Methods
+    
+    func createShareLinkV2() {
+        Task {
+            await MainActor.run {
+                self.genLinkLoading = true
+                self.errorMessage = nil
+                self.shareLink = nil
+            }
+            
+            shareManagementRepository.createShareLinkV2(file: fileModel) { [weak self] result, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        if let error = error {
+                            self.genLinkLoading = false
+                            self.errorMessage = error
+                        } else if let shareData = result {
+                            self.shareLinkV2Data = shareData
+                            
+                            self.shareManagementRepository.getShareLink(file: self.fileModel, option: .retrieve) { [weak self] v1Result, v1Error in
+                                Task {
+                                    await MainActor.run {
+                                        guard let self = self else { return }
+                                        
+                                        if let v1Error = v1Error {
+                                            self.genLinkLoading = false
+                                            self.errorMessage = v1Error
+                                        } else if let v1ShareData = v1Result, let shareURL = v1ShareData.shareURL {
+                                            self.shareVO = v1ShareData
+                                            self.shareLink = shareURL
+                                            self.genLinkLoading = false
+                                            self.showLinkSettings = true
+                                        } else {
+                                            self.genLinkLoading = false
+                                            self.errorMessage = "Failed to retrieve share link URL"
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            self.genLinkLoading = false
+                            self.errorMessage = "Failed to create share link: No data received"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     private func setDefaultShareSettings() {
         guard let shareVO = self.shareVO else { return }
         
@@ -162,7 +220,6 @@ class ShareItemViewModel: ObservableObject {
         
         Task {
             await MainActor.run {
-                // Keep using genLinkLoading during link creation flow
                 self.errorMessage = nil
             }
             

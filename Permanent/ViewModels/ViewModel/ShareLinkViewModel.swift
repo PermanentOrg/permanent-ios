@@ -8,6 +8,7 @@
 import Foundation
 
 typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
+typealias ShareLinkV2Handler = (ShareLinkV2Data?, String?) -> Void
 
 class ShareLinkViewModel: NSObject, ViewModelInterface {
     static let didRevokeShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didRevokeShareLinkNotif")
