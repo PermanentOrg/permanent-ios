@@ -84,8 +84,10 @@ extension Color {
     static var blue900 = Color(.blue900)
     static var yellow = Color(.yellow)
     static var success25 = Color(.success25)
+    static var success50 = Color(.success50)
     static var success200 = Color(.success200)
     static var success500 = Color(.success500)
+    static var warning800 = Color(.warning800)
 }
 
 extension Gradient {

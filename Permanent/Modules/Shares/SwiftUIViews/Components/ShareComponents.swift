@@ -178,3 +178,120 @@ struct ActionButtonView: View {
         }
     }
 }
+
+struct LinkCopyNotificationView: View {
+    @State private var isVisible = false
+    @State private var checkmarkScale: CGFloat = 0.5
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+                .font(.system(size: 20, weight: .medium))
+                .scaleEffect(checkmarkScale)
+                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: checkmarkScale)
+            
+            Text("Link copied to clipboard")
+                .foregroundColor(.white)
+                .font(.custom("Usual-Regular", size: 14))
+                .opacity(isVisible ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.3).delay(0.1), value: isVisible)
+            
+            Spacer()
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.85))
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                .scaleEffect(isVisible ? 1.0 : 0.8)
+                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isVisible)
+        )
+        .onAppear {
+            withAnimation {
+                isVisible = true
+                checkmarkScale = 1.0
+            }
+        }
+    }
+}
+
+struct AnimatedTextWithDotsView: View {
+    @State private var dotCount = 0
+    
+    var body: some View {
+        Text("Creating link" + String(repeating: ".", count: dotCount))
+            .font(.custom("Usual-Regular", size: 14))
+            .foregroundStyle(Gradient.purpleYellowGradientForText)
+            .onAppear {
+                startAnimation()
+            }
+    }
+    
+    private func startAnimation() {
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            withAnimation(.easeInOut(duration: 0.3)) {
+                dotCount = (dotCount + 1) % 4
+            }
+        }
+    }
+}
+
+struct ExpirationOptionView: View {
+    let icon: Image
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 12) {
+                icon
+                    .foregroundColor(Color.blue900)
+                    .frame(width: 24, height: 24)
+                
+                Text(title)
+                    .font(.custom(isSelected ? "Usual-Medium" : "Usual-Regular", size: 14))
+                    .foregroundColor(Color.blue900)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+            .background(
+                Group {
+                    if isSelected {
+                        Color.blue25
+                    } else {
+                        Color.white
+                    }
+                }
+            )
+            .animation(.easeInOut(duration: 0.2), value: isSelected)
+            .cornerRadius(12)
+            .overlay(
+                Group {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 12)
+                            .strokeBorder(
+                                LinearGradient(
+                                    colors: [Color.purple, Color.orange],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                            .opacity(isSelected ? 1.0 : 0.0)
+                            .animation(.easeInOut(duration: 0.3), value: isSelected)
+                    } else {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.blue100, lineWidth: 1)
+                            .opacity(isSelected ? 0.0 : 1.0)
+                            .animation(.easeInOut(duration: 0.3), value: isSelected)
+                    }
+                }
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+    }
+}

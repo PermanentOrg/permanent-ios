@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct ShareItemView: View {
-    @StateObject private var viewModel: ShareItemViewModel
+    @ObservedObject var viewModel: ShareItemViewModel
     @Environment(\.dismiss) private var dismiss
     
+    init(viewModel: ShareItemViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    // Alternative initializer for backwards compatibility
     init(fileModel: FileModel) {
-        self._viewModel = StateObject(wrappedValue: ShareItemViewModel(fileModel: fileModel))
+        self.viewModel = ShareItemViewModel(fileModel: fileModel)
     }
     
     var body: some View {
@@ -193,20 +198,18 @@ struct ShareItemView: View {
     // MARK: - Share Link Section
     private var shareLinkSection: some View {
         HStack(alignment: .center, spacing: 16) {
-            // Thumbnail with gradient
             VStack(alignment: .center) {
-                Image(.sharePublishGetLink)
+                Image(.publishLock)
                     .renderingMode(.template)
-                    .foregroundStyle(Gradient.purpleYellowGradientForText)
+                    .foregroundColor(Color.success500)
                     .frame(width: 32, height: 32)
             }
             .padding()
             .frame(width: 32, height: 32)
-            .background(Color.blue25)
+            .background(Color.success50)
             .cornerRadius(4)
             
-            // Content section
-            HStack(alignment: .center, spacing: 8) {
+            HStack(alignment: .center, spacing: 16) {
                     if let shareLink = viewModel.shareLink {
                         Text(shareLink.replacingOccurrences(of: "https://", with: ""))
                             .font(.custom("Usual-Regular", size: 14))
@@ -214,14 +217,19 @@ struct ShareItemView: View {
                             .lineLimit(1)
                             .truncationMode(.tail)
                     }
-                Button(action: { viewModel.copyLink() }) {
-                    HStack(spacing: 8) {
+                HStack(spacing: 8) {
+                    Button(action: { viewModel.showLinkSettings = true }) {
+                        Image(.publishGear)
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(Color.blue900)
+                        
+                    }
+                    
+                    Button(action: { viewModel.copyLink() }) {
                         Image(.shareCopyV2)
                             .resizable()
                             .frame(width: 24, height: 24)
-                        
-                        Text("Copy")
-                            .font(.custom("Usual-Medium", size: 14))
                             .foregroundColor(Color.blue900)
                     }
                 }
@@ -260,27 +268,5 @@ struct ShareItemView: View {
                 .cornerRadius(12)
             )
             .ignoresSafeArea()
-    }
-}
-
-// MARK: - Animated Text with Dots View
-struct AnimatedTextWithDotsView: View {
-    @State private var dotCount = 0
-    
-    var body: some View {
-        Text("Creating link" + String(repeating: ".", count: dotCount))
-            .font(.custom("Usual-Regular", size: 14))
-            .foregroundStyle(Gradient.purpleYellowGradientForText)
-            .onAppear {
-                startAnimation()
-            }
-    }
-    
-    private func startAnimation() {
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            withAnimation(.easeInOut(duration: 0.3)) {
-                dotCount = (dotCount + 1) % 4 // 0, 1, 2, 3, then back to 0
-            }
-        }
     }
 }

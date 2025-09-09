@@ -1384,13 +1384,9 @@ extension SharesViewController: SharedFileActionSheetDelegate {
     
     // MARK: - Share Management
     private func presentShareManagement(for file: FileModel) {
-        // Create SwiftUI ShareItemView
-        let shareItemView = ShareItemView(fileModel: file)
+        let shareContainerView = ShareContainerView(fileModel: file)
+        let hostingController = UIHostingController(rootView: shareContainerView)
         
-        // Wrap in UIHostingController
-        let hostingController = UIHostingController(rootView: shareItemView)
-        
-        // Present modally
         hostingController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
         if #available(iOS 15.0, *) {
             hostingController.sheetPresentationController?.detents = [UISheetPresentationController.Detent.large()]
