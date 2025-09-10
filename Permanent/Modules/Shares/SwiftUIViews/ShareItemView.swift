@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct ShareItemView: View {
-    @StateObject private var viewModel: ShareItemViewModel
+    @ObservedObject var viewModel: ShareItemViewModel
     @Environment(\.dismiss) private var dismiss
     
+    init(viewModel: ShareItemViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    // Alternative initializer for backwards compatibility
     init(fileModel: FileModel) {
-        self._viewModel = StateObject(wrappedValue: ShareItemViewModel(fileModel: fileModel))
+        self.viewModel = ShareItemViewModel(fileModel: fileModel)
     }
     
     var body: some View {
@@ -31,11 +36,22 @@ struct ShareItemView: View {
                     VStack(spacing: 20) {
                         fileInfoSection
                         
-                        if !viewModel.hasShareLink {
-                            createLinkSection
-                        } else {
-                            shareLinkSection
+                        Group {
+                            if viewModel.genLinkLoading {
+                                linkCreationLoadingSection
+                                    .transition(.opacity.combined(with: .scale))
+                            } else if viewModel.shouldShowCreateButton {
+                                createLinkSection
+                                    .transition(.opacity.combined(with: .scale))
+                            } else if viewModel.hasShareLink {
+                                shareLinkSection
+                                    .transition(.opacity.combined(with: .scale))
+                            }
                         }
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
                     }
                     .padding(24)
                 }
@@ -43,7 +59,7 @@ struct ShareItemView: View {
             }
         .background(Color.blue25)
         .overlay {
-            if viewModel.isLoading {
+            if viewModel.isLoading && !viewModel.genLinkLoading {
                 loadingOverlay
             }
         }
@@ -127,6 +143,25 @@ struct ShareItemView: View {
         }
     }
     
+    // MARK: - Link Creation Loading Section
+    private var linkCreationLoadingSection: some View {
+        HStack(spacing: 16) {
+            ZStack(alignment: .center) {
+                GradientSemiCirclesLoaderView(innerCicleWidth: 2, innerCicleSize: 7, outerCicleWidth: 2,frameWidth: 16, frameHeight:16)
+                    .frame(width: 24, height: 24)
+            }
+            .frame(width: 44, height: 44)
+            .layoutPriority(1)
+            
+            HStack(spacing: 0) {
+                AnimatedTextWithDotsView()
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
     // MARK: - Create Link Section (card row)
     private var createLinkSection: some View {
         HStack(alignment: .center, spacing: 16) {
@@ -155,50 +190,61 @@ struct ShareItemView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
-        .onTapGesture { viewModel.createShareLink() }
-        .opacity(viewModel.isCreatingLink ? 0.6 : 1.0)
-        .disabled(viewModel.isCreatingLink)
+        .onTapGesture { viewModel.createShareLinkV2() }
+        .opacity(viewModel.genLinkLoading ? 0.6 : 1.0)
+        .disabled(viewModel.genLinkLoading)
     }
     
     // MARK: - Share Link Section
     private var shareLinkSection: some View {
-        HStack(alignment: .top, spacing: 16) {
-            ZStack(alignment: .center) {
-                Image(systemName: "link")
-                    .foregroundColor(Color.blue900)
-                    .frame(width: 24, height: 24)
+        HStack(alignment: .center, spacing: 16) {
+            VStack(alignment: .center) {
+                Image(.publishLock)
+                    .renderingMode(.template)
+                    .foregroundColor(Color.success500)
+                    .frame(width: 32, height: 32)
             }
-            .frame(width: 44, height: 44)
-            .layoutPriority(1)
+            .padding()
+            .frame(width: 32, height: 32)
+            .background(Color.success50)
+            .cornerRadius(4)
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Share link")
-                    .font(.custom("Usual-Medium", size: 14))
-                    .foregroundColor(Color.blue900)
-                
-                if let shareLink = viewModel.shareLink {
-                    Text(shareLink)
-                        .font(.custom("Usual-Regular", size: 12))
-                        .foregroundColor(Color.blue400)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
+            HStack(alignment: .center, spacing: 16) {
+                    if let shareLink = viewModel.shareLink {
+                        Text(shareLink.replacingOccurrences(of: "https://", with: ""))
+                            .font(.custom("Usual-Regular", size: 14))
+                            .foregroundStyle(Gradient.purpleYellowGradientForText)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+                HStack(spacing: 8) {
+                    Button(action: { viewModel.showLinkSettings = true }) {
+                        Image(.publishGear)
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(Color.blue900)
+                        
+                    }
+                    
+                    Button(action: { viewModel.copyLink() }) {
+                        Image(.shareCopyV2)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color.blue900)
+                    }
                 }
             }
-            Button(action: { viewModel.copyLink() }) {
-                Text("Copy")
-                    .font(.custom("Usual-Medium", size: 12))
-                    .foregroundColor(Color.blue900)
-            }
-            .layoutPriority(1)
         }
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.12))
-        )
+        .padding(.leading, 8)
+        .padding(.trailing, 12)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.white)
+        .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                .inset(by: 0.5)
+                .stroke(Color(red: 0.91, green: 0.91, blue: 0.93), lineWidth: 1)
         )
     }
     

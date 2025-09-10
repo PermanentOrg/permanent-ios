@@ -15,6 +15,8 @@ protocol ShareManagementRemoteDataSourceInterface {
     func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole, then handler: @escaping (RequestStatus, ShareVOData?) -> Void)
     func denyButtonAction(minArchiveVO: MinArchiveVO, then handler: @escaping (RequestStatus) -> Void)
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void)
+    func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
+    func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
 }
 
 class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface {
@@ -267,6 +269,36 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
         
         return payloadVO
     }
+    
+    func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
+        handler(nil, nil)
+    }
+    
+    func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
+        let apiOperation = APIOperation(ShareLinksV2Endpoint.createShareLink(file: file))
+
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: ShareLinkV2 = JSONHelper.decoding(
+                        from: response,
+                        with: ShareLinkV2.decoder
+                    )
+                else {
+                    handler(nil, .errorMessage)
+                    return
+                }
+                handler(model.data, nil)
+                
+            case .error(let error, _):
+                handler(nil, error?.localizedDescription)
+                
+            default:
+                handler(nil, .errorMessage)
+            }
+        }
+    }
 }
 
 class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterface {
@@ -303,5 +335,43 @@ class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterf
 
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
         handler(.success)
+    }
+    
+    func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
+        // Mock implementation - create a sample V2 data
+        let mockV2Data = ShareLinkV2Data(
+            id: "mock-id",
+            itemId: "mock-item-id", 
+            itemType: "record",
+            token: "mock-token-123",
+            permissionsLevel: "viewer",
+            accessRestrictions: "none",
+            maxUses: nil,
+            usesExpended: 0,
+            expirationTimestamp: nil,
+            creatorAccount: nil,
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z"
+        )
+        handler(mockV2Data, nil)
+    }
+    
+    func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
+        // Mock implementation - create a sample V2 data
+        let mockV2Data = ShareLinkV2Data(
+            id: "mock-id",
+            itemId: "mock-item-id",
+            itemType: "record", 
+            token: "mock-token-123",
+            permissionsLevel: "viewer",
+            accessRestrictions: "none",
+            maxUses: nil,
+            usesExpended: 0,
+            expirationTimestamp: nil,
+            creatorAccount: nil,
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z"
+        )
+        handler(mockV2Data, nil)
     }
 }
