@@ -16,7 +16,16 @@ protocol ShareManagementRemoteDataSourceInterface {
     func denyButtonAction(minArchiveVO: MinArchiveVO, then handler: @escaping (RequestStatus) -> Void)
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void)
     func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
+    func getShareLinkV2(shareLinkId: String, then handler: @escaping ShareLinkV2Handler)
     func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
+    func updateShareLinkV2(
+        shareLinkId: String,
+        permissionsLevel: String?,
+        accessRestrictions: String?,
+        maxUses: Int?,
+        expirationTimestamp: String?,
+        then handler: @escaping ShareLinkV2Handler
+    )
 }
 
 class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface {
@@ -271,11 +280,85 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
     }
     
     func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
+        // We need the shareLinkId to get V2 data, but this method signature expects a FileModel
+        // This is a limitation of the current interface - ideally we'd have a separate method
+        // that takes shareLinkId directly. For now, return nil to indicate V2 data not available
+        // from this method signature.
         handler(nil, nil)
+    }
+    
+    func getShareLinkV2(shareLinkId: String, then handler: @escaping ShareLinkV2Handler) {
+        let apiOperation = APIOperation(ShareLinksV2Endpoint.getShareLink(shareLinkId: shareLinkId))
+
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: ShareLinkV2Response = JSONHelper.decoding(
+                        from: response,
+                        with: ShareLinkV2Response.decoder
+                    )
+                else {
+                    handler(nil, .errorMessage)
+                    return
+                }
+                
+                // Extract the first share link from the response
+                if let firstShareLink = model.items?.first {
+                    handler(firstShareLink, nil)
+                } else {
+                    handler(nil, "Share link not found")
+                }
+
+            case .error(let error, _):
+                handler(nil, error?.localizedDescription)
+            default:
+                handler(nil, .errorMessage)
+            }
+        }
     }
     
     func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
         let apiOperation = APIOperation(ShareLinksV2Endpoint.createShareLink(file: file))
+
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: ShareLinkV2 = JSONHelper.decoding(
+                        from: response,
+                        with: ShareLinkV2.decoder
+                    )
+                else {
+                    handler(nil, .errorMessage)
+                    return
+                }
+                handler(model.data, nil)
+                
+            case .error(let error, _):
+                handler(nil, error?.localizedDescription)
+                
+            default:
+                handler(nil, .errorMessage)
+            }
+        }
+    }
+    
+    func updateShareLinkV2(
+        shareLinkId: String,
+        permissionsLevel: String?,
+        accessRestrictions: String?,
+        maxUses: Int?,
+        expirationTimestamp: String?,
+        then handler: @escaping ShareLinkV2Handler
+    ) {
+        let apiOperation = APIOperation(ShareLinksV2Endpoint.updateShareLink(
+            shareLinkId: shareLinkId,
+            permissionsLevel: permissionsLevel,
+            accessRestrictions: accessRestrictions,
+            maxUses: maxUses,
+            expirationTimestamp: expirationTimestamp
+        ))
 
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -356,6 +439,25 @@ class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterf
         handler(mockV2Data, nil)
     }
     
+    func getShareLinkV2(shareLinkId: String, then handler: @escaping ShareLinkV2Handler) {
+        // Mock implementation - create a sample V2 data using the provided shareLinkId
+        let mockV2Data = ShareLinkV2Data(
+            id: shareLinkId,
+            itemId: "mock-item-id", 
+            itemType: "record",
+            token: "mock-token-123",
+            permissionsLevel: "viewer",
+            accessRestrictions: "none",
+            maxUses: nil,
+            usesExpended: 0,
+            expirationTimestamp: nil,
+            creatorAccount: nil,
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z"
+        )
+        handler(mockV2Data, nil)
+    }
+    
     func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
         // Mock implementation - create a sample V2 data
         let mockV2Data = ShareLinkV2Data(
@@ -368,6 +470,32 @@ class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterf
             maxUses: nil,
             usesExpended: 0,
             expirationTimestamp: nil,
+            creatorAccount: nil,
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z"
+        )
+        handler(mockV2Data, nil)
+    }
+    
+    func updateShareLinkV2(
+        shareLinkId: String,
+        permissionsLevel: String?,
+        accessRestrictions: String?,
+        maxUses: Int?,
+        expirationTimestamp: String?,
+        then handler: @escaping ShareLinkV2Handler
+    ) {
+        // Mock implementation - create updated V2 data
+        let mockV2Data = ShareLinkV2Data(
+            id: shareLinkId,
+            itemId: "mock-item-id",
+            itemType: "record",
+            token: "mock-token-123",
+            permissionsLevel: permissionsLevel ?? "viewer",
+            accessRestrictions: accessRestrictions ?? "none",
+            maxUses: maxUses,
+            usesExpended: 0,
+            expirationTimestamp: expirationTimestamp,
             creatorAccount: nil,
             createdAt: "2024-01-01T00:00:00Z",
             updatedAt: "2024-01-01T00:00:00Z"

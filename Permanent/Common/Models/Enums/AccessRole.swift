@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum AccessRole: Int, CaseIterable, Codable {
  
@@ -66,5 +67,50 @@ enum AccessRole: Int, CaseIterable, Codable {
         case .viewer: return "access.role.viewer"
         default: return nil
         }
+    }
+}
+
+extension AccessRole: SelectableOption {
+    var title: String {
+        switch self {
+        case .owner: return "Owner"
+        case .manager: return "Manager"
+        case .curator: return "Curator"
+        case .editor: return "Editor"
+        case .contributor: return "Contributor"
+        case .viewer: return "Viewer"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .viewer:
+            return "A member with permission to view records only."
+        case .contributor:
+            return "A member with permission to view and create file and folder records (upload only)."
+        case .editor:
+            return "A member with permission to view and create file and folder records."
+        case .curator:
+            return "A member with permission to view and create file and folder records."
+        case .manager: //will not be included in the role selector for share
+            return "A member with permission to view and create file and folder records."
+        case .owner:
+            return "A member with permission to view and create file and folder records."
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .viewer: return Image(.publishAccessViewer)
+        case .contributor: return Image(.publishAccessContributor)
+        case .editor: return Image(.publishAccessEditor)
+        case .curator: return Image(.publishAccessCurator)
+        case .manager: return Image(.publishAccessCurator)
+        case .owner: return Image(.publishAccessOwner)
+        }
+    }
+    
+    var iconColor: Color {
+        return Color.success500
     }
 }

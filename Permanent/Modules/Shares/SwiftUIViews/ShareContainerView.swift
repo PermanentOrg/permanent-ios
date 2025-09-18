@@ -17,12 +17,34 @@ struct ShareContainerView: View {
     
     var body: some View {
         ZStack {
-            if viewModel.showLinkSettings {
+            if viewModel.showGeneralAccess {
+                GeneralAccessView(viewModel: viewModel)
+                    .id("GeneralAccessView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
+            } else if viewModel.showRoleSelection {
+                RoleSelectionView(viewModel: viewModel)
+                    .id("RoleSelectionView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
+            } else if viewModel.showLinkSettings {
                 LinkSettingsView(viewModel: viewModel)
-                    .transition(.move(edge: .trailing))
+                    .id("LinkSettingsView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
             } else {
                 ShareItemView(viewModel: viewModel)
-                    .transition(.move(edge: .leading))
+                    .id("ShareItemView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
             }
             
             // Copy notification overlay
@@ -42,5 +64,8 @@ struct ShareContainerView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.showLinkSettings)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.showGeneralAccess)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.showRoleSelection)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.navigationDirection)
     }
 }
