@@ -9,6 +9,42 @@ import SwiftUI
 import Combine
 import Foundation
 
+enum NavigationDirection {
+    case forward
+    case backward
+}
+
+// Using a local enum to avoid conflicts - can be refactored later
+enum ShareViewAccessLevel: CaseIterable {
+    case anyoneCanView
+    case restricted
+    
+    var title: String {
+        switch self {
+        case .anyoneCanView: return "Anyone can view"
+        case .restricted: return "Restricted"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .anyoneCanView: return "Anyone with the link can view and download."
+        case .restricted: return "The user must have an account and be logged in to view."
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .anyoneCanView: return Image(.publishGlobe)
+        case .restricted: return Image(.publishLock)
+        }
+    }
+    
+    var iconColor: Color {
+        return Color.success500
+    }
+}
+
 enum ShareExpirationOption: CaseIterable {
     case oneDay, oneMonth, oneYear, never, none
     
@@ -24,10 +60,10 @@ enum ShareExpirationOption: CaseIterable {
     
     var icon: Image {
         switch self {
-        case .oneDay: return Image(.publishOneDay)
-        case .oneMonth: return Image(.publishOneMonth)
-        case .oneYear: return Image(.publishOneYear)
-        case .never: return Image(.publishInfinity)
+        case .oneDay: return Image(systemName: "clock")
+        case .oneMonth: return Image(systemName: "calendar")
+        case .oneYear: return Image(systemName: "calendar.badge.clock")
+        case .never: return Image(systemName: "infinity")
         case .none: return Image(systemName: "questionmark") // Placeholder icon for none
         }
     }
@@ -64,6 +100,34 @@ class ShareItemViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var selectedExpiration: ShareExpirationOption = .none
     @Published var showCopyNotification = false
+    @Published var hasUnsavedChanges = false
+    @Published var selectedAccessLevel: ShareViewAccessLevel = .anyoneCanView
+    @Published var showGeneralAccess = false
+    
+    // New properties for restricted mode
+    @Published var showRoleSelection = false
+    @Published var itemPreviewEnabled = false
+    @Published var autoApproveEnabled = false
+    @Published var selectedAccessRole: AccessRole = .viewer
+    
+    @Published var navigationDirection: NavigationDirection = .forward
+    
+    // Transition control similar to AuthenticatorContainerView
+    var insertionViewTransition: AnyTransition {
+        switch navigationDirection {
+        case .forward:
+            return .move(edge: .trailing)
+        case .backward:
+            return .move(edge: .leading)
+        }
+    }
+    
+    // Track original values to detect changes
+    private var originalExpiration: ShareExpirationOption = .none
+    private var originalAccessLevel: ShareViewAccessLevel = .anyoneCanView
+    private var originalItemPreview: Bool = false
+    private var originalAutoApprove: Bool = false
+    private var originalAccessRole: AccessRole = .viewer
     
     let fileModel: FileModel
     private let shareManagementRepository: ShareManagementRepository
@@ -207,7 +271,13 @@ class ShareItemViewModel: ObservableObject {
                             // Set the correct expiration option based on existing data
                             self.setSelectedExpirationFromShareVO(result)
                             
+                            // Try to get V2 data for existing share links to get access level info
+                            if option == .retrieve {
+                                self.tryLoadV2DataForExistingLink()
+                            }
+                            
                             if option == .create {
+                                self.navigationDirection = .forward
                                 self.showLinkSettings = true
                                 self.setDefaultShareSettings()
                             }
@@ -280,6 +350,9 @@ class ShareItemViewModel: ObservableObject {
                         } else if let shareData = result {
                             self.shareLinkV2Data = shareData
                             
+                            // Set UI state from V2 data immediately
+                            self.setAccessLevelFromV2Data(shareData)
+                            
                             self.shareManagementRepository.getShareLink(file: self.fileModel, option: .retrieve) { [weak self] v1Result, v1Error in
                                 Task {
                                     await MainActor.run {
@@ -292,6 +365,7 @@ class ShareItemViewModel: ObservableObject {
                                             self.shareVO = v1ShareData
                                             self.shareLink = shareURL
                                             self.genLinkLoading = false
+                                            self.navigationDirection = .forward
                                             self.showLinkSettings = true
                                         } else {
                                             self.genLinkLoading = false
@@ -348,9 +422,12 @@ class ShareItemViewModel: ObservableObject {
     }
     
     private func setSelectedExpirationFromShareVO(_ shareVO: SharebyURLVOData) {
+        // Set expiration
         guard let expiresDT = shareVO.expiresDT, !expiresDT.isEmpty else {
             // No expiration date means "never" - select the never option
             selectedExpiration = .never
+            originalExpiration = .never
+            setInitialAccessLevel(shareVO)
             return
         }
         
@@ -358,6 +435,8 @@ class ShareItemViewModel: ObservableObject {
         guard let expirationDate = parseExpirationDate(expiresDT) else {
             // If we can't parse the date, don't select any option
             selectedExpiration = .none
+            originalExpiration = .none
+            setInitialAccessLevel(shareVO)
             return
         }
         
@@ -372,15 +451,71 @@ class ShareItemViewModel: ObservableObject {
         if totalDays >= 360 && totalDays <= 370 {
             // 360-370 days range
             selectedExpiration = .oneYear
+            originalExpiration = .oneYear
         } else if totalDays >= 25 && totalDays <= 35 {
             // 25-35 days range
             selectedExpiration = .oneMonth
+            originalExpiration = .oneMonth
         } else if totalHours >= 20 && totalHours <= 28 {
             // 20-28 hours range
             selectedExpiration = .oneDay
+            originalExpiration = .oneDay
         } else {
             // In any other case, don't select anything - no predefined option matches
             selectedExpiration = .none
+            originalExpiration = .none
+        }
+        
+        setInitialAccessLevel(shareVO)
+    }
+    
+    private func setInitialAccessLevel(_ shareVO: SharebyURLVOData) {
+        // Check if we have V2 data available to read access restrictions from
+        if let v2Data = shareLinkV2Data {
+            setAccessLevelFromV2Data(v2Data)
+        } else {
+            // For V1 data, default to anyoneCanView since we don't have access level info from V1 API
+            selectedAccessLevel = .anyoneCanView
+            originalAccessLevel = .anyoneCanView
+        }
+    }
+    
+    private func setAccessLevelFromV2Data(_ v2Data: ShareLinkV2Data) {
+        // Map V2 accessRestrictions to UI access level
+        if let accessRestrictions = v2Data.accessRestrictions {
+            let accessLevel = mapAccessRestrictionsToAccessLevel(accessRestrictions)
+            selectedAccessLevel = accessLevel
+            originalAccessLevel = accessLevel
+        } else {
+            selectedAccessLevel = .anyoneCanView
+            originalAccessLevel = .anyoneCanView
+        }
+        
+        // Also set the permissions level (access role) from V2 data
+        if let permissionsLevel = v2Data.permissionsLevel {
+            let accessRole = mapPermissionsLevelToAccessRole(permissionsLevel)
+            selectedAccessRole = accessRole
+            originalAccessRole = accessRole
+        }
+    }
+    
+    private func mapAccessRestrictionsToAccessLevel(_ accessRestrictions: String) -> ShareViewAccessLevel {
+        switch accessRestrictions {
+        case "none": return .anyoneCanView
+        case "account": return .restricted
+        case "approval": return .restricted // Map approval to restricted for now
+        default: return .anyoneCanView
+        }
+    }
+    
+    private func mapPermissionsLevelToAccessRole(_ permissionsLevel: String) -> AccessRole {
+        switch permissionsLevel {
+        case "viewer": return .viewer
+        case "contributor": return .contributor
+        case "editor": return .editor
+        case "manager": return .manager
+        case "owner": return .owner
+        default: return .viewer
         }
     }
     
@@ -463,6 +598,20 @@ class ShareItemViewModel: ObservableObject {
                         } else if let shareData = shareData {
                             self.shareVO = shareData
                             self.shareLink = shareData.shareURL
+                            
+                            if self.hasUnsavedChanges {
+                                self.originalExpiration = self.selectedExpiration
+                                self.originalAccessLevel = self.selectedAccessLevel
+                                self.originalItemPreview = self.itemPreviewEnabled
+                                self.originalAutoApprove = self.autoApproveEnabled
+                                self.originalAccessRole = self.selectedAccessRole
+                                self.hasUnsavedChanges = false
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    self.navigationDirection = .backward
+                                    self.showLinkSettings = false
+                                }
+                            }
                         }
                     }
                 }
@@ -491,6 +640,184 @@ class ShareItemViewModel: ObservableObject {
     
     func updateExpiration(_ option: ShareExpirationOption) {
         selectedExpiration = option
-        updateShareLink(expiresDT: option.expirationDate)
+        checkForUnsavedChanges()
+    }
+    
+    func updateAccessLevel(_ accessLevel: ShareViewAccessLevel) {
+        selectedAccessLevel = accessLevel
+        checkForUnsavedChanges()
+        navigationDirection = .backward
+        showGeneralAccess = false
+    }
+    
+    func updateAccessRole(_ role: AccessRole) {
+        selectedAccessRole = role
+        checkForUnsavedChanges()
+        navigationDirection = .backward
+        showRoleSelection = false
+    }
+    
+    func toggleItemPreview() {
+        itemPreviewEnabled.toggle()
+        checkForUnsavedChanges()
+    }
+    
+    func toggleAutoApprove() {
+        autoApproveEnabled.toggle()
+        checkForUnsavedChanges()
+    }
+    
+    private func checkForUnsavedChanges() {
+        hasUnsavedChanges = selectedExpiration != originalExpiration || 
+                           selectedAccessLevel != originalAccessLevel ||
+                           itemPreviewEnabled != originalItemPreview ||
+                           autoApproveEnabled != originalAutoApprove ||
+                           selectedAccessRole != originalAccessRole
+    }
+    
+    func saveChanges() {
+        if hasUnsavedChanges {
+            // Prefer V2 API: first try V2 data, then try to extract from existing share data
+            if let shareLinkV2Data = self.shareLinkV2Data, let shareLinkId = shareLinkV2Data.id {
+                updateShareLinkV2(shareLinkId: shareLinkId)
+            } else if let shareVO = self.shareVO, let sharebyURLID = shareVO.sharebyURLID {
+                // Use sharebyURLID from existing share data for V2 API
+                updateShareLinkV2(shareLinkId: String(sharebyURLID))
+            } else {
+                // Fallback to V1 API only if we have no way to get share link ID
+                if selectedExpiration != originalExpiration {
+                    updateShareLink(
+                        previewToggle: itemPreviewEnabled != originalItemPreview ? itemPreviewEnabled : nil,
+                        autoApproveToggle: autoApproveEnabled != originalAutoApprove ? autoApproveEnabled : nil,
+                        expiresDT: selectedExpiration.expirationDate
+                    )
+                } else {
+                    updateShareLink(
+                        previewToggle: itemPreviewEnabled != originalItemPreview ? itemPreviewEnabled : nil,
+                        autoApproveToggle: autoApproveEnabled != originalAutoApprove ? autoApproveEnabled : nil
+                    )
+                }
+            }
+        } else {
+            navigationDirection = .backward
+            showLinkSettings = false
+        }
+    }
+    
+    // MARK: - V2 Update Method
+    
+    func updateShareLinkV2(shareLinkId: String) {
+        Task {
+            await MainActor.run {
+                self.isLoading = true
+                self.errorMessage = nil
+            }
+            
+            // Map UI settings to V2 API parameters
+            // Always send current values to ensure at least one parameter is present (API requirement)
+            let permissionsLevel = mapAccessRoleToPermissionsLevel(selectedAccessRole)
+            let accessRestrictions = mapAccessLevelToAccessRestrictions(selectedAccessLevel)
+            
+            // Handle expiration: send actual date for set expiration, "null" string to clear expiration
+            let expirationTimestamp: String? = (selectedExpiration != .never && selectedExpiration != .none) ? selectedExpiration.expirationDate : "null"
+            
+            shareManagementRepository.updateShareLinkV2(
+                shareLinkId: shareLinkId,
+                permissionsLevel: permissionsLevel,
+                accessRestrictions: accessRestrictions,
+                maxUses: nil, // Not currently supported in UI
+                expirationTimestamp: expirationTimestamp
+            ) { [weak self] result, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        self.isLoading = false
+                        
+                        if let error = error {
+                            self.errorMessage = error
+                        } else if let updatedData = result {
+                            self.shareLinkV2Data = updatedData
+                            
+                            // Update UI state from the updated V2 data
+                            self.setAccessLevelFromV2Data(updatedData)
+                            
+                            if self.hasUnsavedChanges {
+                                // Update the shareVO expiration date if it changed
+                                if self.selectedExpiration != self.originalExpiration {
+                                    self.shareVO?.expiresDT = self.selectedExpiration.expirationDate
+                                }
+                                
+                                self.originalExpiration = self.selectedExpiration
+                                self.originalAccessLevel = self.selectedAccessLevel
+                                self.originalItemPreview = self.itemPreviewEnabled
+                                self.originalAutoApprove = self.autoApproveEnabled
+                                self.originalAccessRole = self.selectedAccessRole
+                                self.hasUnsavedChanges = false
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    self.navigationDirection = .backward
+                                    self.showLinkSettings = false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func mapAccessRoleToPermissionsLevel(_ role: AccessRole) -> String {
+        switch role {
+        case .viewer: return "viewer"
+        case .contributor: return "contributor"
+        case .editor: return "editor"
+        case .manager: return "manager"
+        case .owner: return "owner"
+        case .curator: return "editor" // Map curator to editor since it's not in V2 API
+        }
+    }
+    
+    private func mapAccessLevelToAccessRestrictions(_ level: ShareViewAccessLevel) -> String {
+        switch level {
+        case .anyoneCanView: return "none"
+        case .restricted: return "account"
+        // Add more mappings as needed based on ShareViewAccessLevel cases
+        }
+    }
+    
+    private func tryLoadV2DataForExistingLink() {
+        // Attempt to load V2 data for existing share links to get access restrictions info
+        // Use sharebyURLID if available, otherwise fall back to the file-based method
+        if let shareVO = self.shareVO, let sharebyURLID = shareVO.sharebyURLID {
+            shareManagementRepository.getShareLinkV2(shareLinkId: String(sharebyURLID)) { [weak self] v2Data, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        if let v2Data = v2Data {
+                            self.shareLinkV2Data = v2Data
+                            self.setAccessLevelFromV2Data(v2Data)
+                        }
+                        // If V2 data is not available, we keep the default UI state
+                    }
+                }
+            }
+        } else {
+            // Fallback to the file-based method (which currently returns nil)
+            shareManagementRepository.getShareLinkV2(file: fileModel) { [weak self] v2Data, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        if let v2Data = v2Data {
+                            self.shareLinkV2Data = v2Data
+                            self.setAccessLevelFromV2Data(v2Data)
+                        }
+                        // If V2 data is not available, we keep the default UI state
+                    }
+                }
+            }
+        }
     }
 }

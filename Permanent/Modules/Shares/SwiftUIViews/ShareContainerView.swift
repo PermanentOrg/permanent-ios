@@ -17,12 +17,34 @@ struct ShareContainerView: View {
     
     var body: some View {
         ZStack {
-            if viewModel.showLinkSettings {
+            if viewModel.showGeneralAccess {
+                GeneralAccessView(viewModel: viewModel)
+                    .id("GeneralAccessView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
+            } else if viewModel.showRoleSelection {
+                RoleSelectionView(viewModel: viewModel)
+                    .id("RoleSelectionView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
+            } else if viewModel.showLinkSettings {
                 LinkSettingsView(viewModel: viewModel)
-                    .transition(.move(edge: .trailing))
+                    .id("LinkSettingsView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
             } else {
                 ShareItemView(viewModel: viewModel)
-                    .transition(.move(edge: .leading))
+                    .id("ShareItemView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
             }
             
             // Copy notification overlay
@@ -35,12 +57,14 @@ struct ShareContainerView: View {
                             insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.8)),
                             removal: .move(edge: .bottom).combined(with: .opacity)
                         ))
-                        .padding(.bottom, 8)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 24)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.showLinkSettings)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.showGeneralAccess)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.showRoleSelection)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.navigationDirection)
     }
 }

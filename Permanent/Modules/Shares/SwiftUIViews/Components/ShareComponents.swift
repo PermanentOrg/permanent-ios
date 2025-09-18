@@ -199,6 +199,7 @@ struct LinkCopyNotificationView: View {
             
             Spacer()
         }
+        .padding(.vertical, 4)
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)

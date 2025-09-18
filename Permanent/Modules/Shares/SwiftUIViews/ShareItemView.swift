@@ -21,17 +21,23 @@ struct ShareItemView: View {
     }
     
     var body: some View {
+        VStack(spacing: 0) {
+            // Top bar + tinted header area
             VStack(spacing: 0) {
-                // Top bar + tinted header area
+                ZStack {
+                    topBar
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+                        .padding(.bottom, 8)
+                }
+                .frame(height: 64)
+                .background(Color.white)
+                
                 VStack(spacing: 0) {
-                    ZStack {
-                        topBar
-                            .padding(.horizontal, 16)
-                            .padding(.top, 12)
-                            .padding(.bottom, 8)
-                    }
-                    .frame(height: 64)
-                    .background(Color.white)
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                        .background(Color.blue50)
                     
                     VStack(spacing: 20) {
                         fileInfoSection
@@ -54,6 +60,7 @@ struct ShareItemView: View {
                         .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
                     }
                     .padding(24)
+                }
                 }
                 Spacer()
             }
@@ -218,7 +225,10 @@ struct ShareItemView: View {
                             .truncationMode(.tail)
                     }
                 HStack(spacing: 8) {
-                    Button(action: { viewModel.showLinkSettings = true }) {
+                    Button(action: { 
+                        viewModel.navigationDirection = .forward
+                        viewModel.showLinkSettings = true 
+                    }) {
                         Image(.publishGear)
                             .resizable()
                             .frame(width: 16, height: 16)

@@ -63,8 +63,33 @@ class ShareManagementRepository {
         }
     }
     
+    func getShareLinkV2(shareLinkId: String, then completion: @escaping ShareLinkV2Handler) {
+        remoteDataSource.getShareLinkV2(shareLinkId: shareLinkId) { result, error in
+            completion(result, error)
+        }
+    }
+    
     func createShareLinkV2(file: FileModel, then completion: @escaping ShareLinkV2Handler) {
         remoteDataSource.createShareLinkV2(file: file) { result, error in
+            completion(result, error)
+        }
+    }
+    
+    func updateShareLinkV2(
+        shareLinkId: String,
+        permissionsLevel: String? = nil,
+        accessRestrictions: String? = nil,
+        maxUses: Int? = nil,
+        expirationTimestamp: String? = nil,
+        then completion: @escaping ShareLinkV2Handler
+    ) {
+        remoteDataSource.updateShareLinkV2(
+            shareLinkId: shareLinkId,
+            permissionsLevel: permissionsLevel,
+            accessRestrictions: accessRestrictions,
+            maxUses: maxUses,
+            expirationTimestamp: expirationTimestamp
+        ) { result, error in
             completion(result, error)
         }
     }
