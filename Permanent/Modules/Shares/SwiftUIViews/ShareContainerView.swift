@@ -57,8 +57,7 @@ struct ShareContainerView: View {
                             insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.8)),
                             removal: .move(edge: .bottom).combined(with: .opacity)
                         ))
-                        .padding(.bottom, 8)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 24)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
