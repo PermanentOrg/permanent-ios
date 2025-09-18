@@ -72,7 +72,7 @@
 		<string>OpenSans-SemiBold.ttf</string>
 	</array>
 	<key>UIDesignRequiresCompatibility</key>
-	<false/>
+	<true/>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
