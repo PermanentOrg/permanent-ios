@@ -15,6 +15,14 @@ enum ShareLinksV2Endpoint {
         maxUses: Int? = nil, 
         expirationTimestamp: String? = nil
     )
+    case updateShareLink(
+        shareLinkId: String,
+        permissionsLevel: String? = nil,
+        accessRestrictions: String? = nil,
+        maxUses: Int? = nil,
+        expirationTimestamp: String? = nil
+    )
+    case getShareLink(shareLinkId: String)
 }
 
 extension ShareLinksV2Endpoint: RequestProtocol {
@@ -28,6 +36,15 @@ extension ShareLinksV2Endpoint: RequestProtocol {
                 maxUses: maxUses, 
                 expirationTimestamp: expirationTimestamp
             )
+        case .updateShareLink(_, let permissionsLevel, let accessRestrictions, let maxUses, let expirationTimestamp):
+            return updateShareLinkParameters(
+                permissionsLevel: permissionsLevel,
+                accessRestrictions: accessRestrictions,
+                maxUses: maxUses,
+                expirationTimestamp: expirationTimestamp
+            )
+        case .getShareLink:
+            return nil
         }
     }
     
@@ -39,6 +56,10 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         switch self {
         case .createShareLink:
             return .post
+        case .updateShareLink:
+            return .patch
+        case .getShareLink:
+            return .get
         }
     }
     
@@ -46,6 +67,10 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         switch self {
         case .createShareLink:
             return ["content-type": "application/json; charset=utf-8"]
+        case .updateShareLink:
+            return ["content-type": "application/json; charset=utf-8"]
+        case .getShareLink:
+            return nil
         }
     }
     
@@ -73,6 +98,10 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         switch self {
         case .createShareLink:
             return "\(endpointPath)api/v2/share-links"
+        case .updateShareLink(let shareLinkId, _, _, _, _):
+            return "\(endpointPath)api/v2/share-links/\(shareLinkId)"
+        case .getShareLink(let shareLinkId):
+            return "\(endpointPath)api/v2/share-links?shareLinkIds[]=\(shareLinkId)"
         }
     }
 }
@@ -113,6 +142,39 @@ extension ShareLinksV2Endpoint {
         
         if let expirationTimestamp = expirationTimestamp {
             parameters["expirationTimestamp"] = expirationTimestamp
+        }
+        
+        return parameters
+    }
+    
+    func updateShareLinkParameters(
+        permissionsLevel: String? = nil,
+        accessRestrictions: String? = nil,
+        maxUses: Int? = nil,
+        expirationTimestamp: String? = nil
+    ) -> RequestParameters {
+        var parameters: [String: Any] = [:]
+        
+        // Add optional parameters only if they are provided
+        if let permissionsLevel = permissionsLevel {
+            parameters["permissionsLevel"] = permissionsLevel
+        }
+        
+        if let accessRestrictions = accessRestrictions {
+            parameters["accessRestrictions"] = accessRestrictions
+        }
+        
+        if let maxUses = maxUses {
+            parameters["maxUses"] = maxUses
+        }
+        
+        if let expirationTimestamp = expirationTimestamp {
+            if expirationTimestamp == "null" {
+                // Explicitly set to NSNull to send JSON null
+                parameters["expirationTimestamp"] = NSNull()
+            } else {
+                parameters["expirationTimestamp"] = expirationTimestamp
+            }
         }
         
         return parameters

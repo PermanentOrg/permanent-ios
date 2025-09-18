@@ -25,7 +25,7 @@ struct ShareLinkV2Data: Model {
     let maxUses: Int?
     let usesExpended: Int?
     let expirationTimestamp: String?
-    let creatorAccount: CreatorAccount?
+    let creatorAccount: CreatorAccountForShare?
     let createdAt: String?
     let updatedAt: String?
     
@@ -45,12 +45,4 @@ struct ShareLinkV2Data: Model {
     }
 }
 
-struct CreatorAccount: Model {
-    let id: String?
-    let name: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case name
-    }
-}
+

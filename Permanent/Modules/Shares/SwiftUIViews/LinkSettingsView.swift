@@ -12,9 +12,9 @@ struct LinkSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Top bar
+        ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
+                // Top bar
                 ZStack {
                     topBar
                         .padding(.horizontal, 16)
@@ -24,30 +24,48 @@ struct LinkSettingsView: View {
                 .frame(height: 64)
                 .background(Color.white)
                 
-                VStack(spacing: 20) {
-                    linkDisplaySection
-                    
-                    generalAccessSection
-                    
-                    linkExpirationSection
-                    
-                    Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                    .background(Color.blue50)
-                    .padding(.horizontal, 24)
-                    
-                    revokeLinkButton
-                    
-                    Spacer()
-                    
-                    HStack(spacing: 24) {
-                        doneButton
+                // Scrollable content
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                            .background(Color.blue50)
+                        
+                        VStack(spacing: 20) {
+                            linkDisplaySection
+                            
+                            generalAccessSection
+                            
+                            linkExpirationSection
+                            
+                            separator
+                            
+                            revokeLinkButton
+                        }
+                        .padding(.bottom, 120) // Height of buttons + padding + safe area
                     }
-                    .padding(.horizontal, 24)
                 }
             }
-            Spacer()
+
+            VStack {
+                Spacer()
+                Rectangle()
+                    .fill(.regularMaterial)
+                    .frame(height: 150)
+                    .mask {
+                        LinearGradient(colors: [Color.black, Color.black, Color.black, Color.black.opacity(0)], startPoint: .bottom, endPoint: .top)
+                    }
+            }
+            .ignoresSafeArea(edges: .bottom)
+            
+            // Floating buttons at bottom with proper background
+            HStack(spacing: 24) {
+                cancelButton
+                doneButton
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
         }
         .background(Color.white)
         .overlay {
@@ -67,6 +85,7 @@ struct LinkSettingsView: View {
         ZStack {
             HStack {
                 Button(action: { 
+                    viewModel.navigationDirection = .backward
                     viewModel.showLinkSettings = false 
                 }) {
                     Image(systemName: "chevron.left")
@@ -159,15 +178,15 @@ struct LinkSettingsView: View {
             
             HStack(spacing: 16) {
                 Group {
-                    Image(.publishGlobe)
+                    viewModel.selectedAccessLevel.icon
                         .frame(width: 16, height: 16)
-                        .foregroundColor(Color.green)
+                        .foregroundColor(viewModel.selectedAccessLevel.iconColor)
                         .padding(10)
-                        .background(Color.green.opacity(0.1))
+                        .background(viewModel.selectedAccessLevel.iconColor.opacity(0.1))
                         .cornerRadius(4)
                 }
                 
-                Text("Anyone can view")
+                Text(viewModel.selectedAccessLevel.title)
                     .font(.custom("Usual-Medium", size: 14))
                     .foregroundColor(Color.blue900)
                 
@@ -179,7 +198,47 @@ struct LinkSettingsView: View {
                     .foregroundColor(Color.blue200)
             }
             .onTapGesture {
-                // Handle access level change
+                viewModel.navigationDirection = .forward
+                viewModel.showGeneralAccess = true
+            }
+            
+            // Show additional options when Restricted is selected
+            if viewModel.selectedAccessLevel == .restricted {
+                
+                // Default Access Role Section
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("DEFAULT ACCESS ROLE")
+                        .font(.custom("Usual-Regular", size: 10))
+                        .kerning(1.6)
+                        .foregroundColor(Color.blue900)
+                        .textCase(.uppercase)
+                    
+                    HStack(spacing: 16) {
+                        Group {
+                            viewModel.selectedAccessRole.icon
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(viewModel.selectedAccessRole.iconColor)
+                                .padding(10)
+                                .background(viewModel.selectedAccessRole.iconColor.opacity(0.1))
+                                .cornerRadius(4)
+                        }
+                        
+                        Text(viewModel.selectedAccessRole.title)
+                            .font(.custom("Usual-Medium", size: 14))
+                            .foregroundColor(Color.blue900)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14))
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color.blue200)
+                    }
+                    .onTapGesture {
+                        viewModel.navigationDirection = .forward
+                        viewModel.showRoleSelection = true
+                    }
+                }
             }
         }
         .padding(.horizontal, 24)
@@ -248,6 +307,14 @@ struct LinkSettingsView: View {
         .padding(.horizontal, 24)
     }
     
+    private var separator: some View {
+        Rectangle()
+        .foregroundColor(.clear)
+        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+        .background(Color.blue50)
+        .padding(.horizontal, 24)
+    }
+    
     // MARK: - Revoke Link Button
     private var revokeLinkButton: some View {
         Button(action: { viewModel.revokeLink() }) {
@@ -269,17 +336,39 @@ struct LinkSettingsView: View {
     // MARK: - Done Button
     private var doneButton: some View {
         Button(action: { 
-            viewModel.showLinkSettings = false 
+            if viewModel.hasUnsavedChanges {
+                viewModel.saveChanges()
+            } else {
+                viewModel.navigationDirection = .backward
+                viewModel.showLinkSettings = false
+            }
         }) {
-            Text("Done")
-                .font(.custom("Usual-Medium", size: 16))
+            Text(viewModel.hasUnsavedChanges ? "Save" : "Done")
+                .font(.custom("Usual-Medium", size: 14))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .padding(.vertical, 20)
                 .background(Color.blue900)
                 .cornerRadius(12)
         }
     }
+    
+    // MARK: - Cancel Button
+    private var cancelButton: some View {
+        Button(action: {
+                viewModel.navigationDirection = .backward
+                viewModel.showLinkSettings = false
+        }) {
+            Text("Cancel")
+                .font(.custom("Usual-Medium", size: 14))
+                .foregroundColor(Color.blue900)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(Color.blue50)
+                .cornerRadius(12)
+        }
+    }
+
     
     // MARK: - Loading Overlay
     private var loadingOverlay: some View {
