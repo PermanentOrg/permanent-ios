@@ -548,21 +548,72 @@ class ShareItemViewModel: ObservableObject {
                 self.errorMessage = nil
             }
             
-            shareManagementRepository.revokeLink(shareVO: shareVO) { [weak self] result in
-                Task {
-                    await MainActor.run {
-                        guard let self = self else { return }
-                        
-                        self.isLoading = false
-                        
-                        switch result {
-                        case .success:
-                            self.shareLink = nil
-                            self.shareVO = nil
-                            self.showLinkSettings = false
-                        case .error(let message):
-                            self.errorMessage = message
+            if let shareLinkV2Data = self.shareLinkV2Data, let shareLinkId = shareLinkV2Data.id {
+                // Use V2 delete API
+                shareManagementRepository.deleteShareLinkV2(shareLinkId: shareLinkId) { [weak self] result in
+                    Task {
+                        await MainActor.run {
+                            guard let self = self else { return }
+                            
+                            self.isLoading = false
+                            
+                            switch result {
+                            case .success:
+                                self.shareLink = nil
+                                self.shareVO = nil
+                                self.shareLinkV2Data = nil
+                                self.showLinkSettings = false
+                            case .error(let message):
+                                self.errorMessage = message
+                            }
                         }
+                    }
+                }
+            } else if let sharebyURLID = shareVO.sharebyURLID {
+                // Try V2 API using sharebyURLID as shareLinkId 
+                shareManagementRepository.deleteShareLinkV2(shareLinkId: String(sharebyURLID)) { [weak self] result in
+                    Task {
+                        await MainActor.run {
+                            guard let self = self else { return }
+                            
+                            self.isLoading = false
+                            
+                            switch result {
+                            case .success:
+                                self.shareLink = nil
+                                self.shareVO = nil
+                                self.shareLinkV2Data = nil
+                                self.showLinkSettings = false
+                            case .error(_):
+                                // If V2 API fails, fallback to V1 API
+                                self.revokeLinkV1(shareVO: shareVO)
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Fallback to V1 API
+                self.revokeLinkV1(shareVO: shareVO)
+            }
+        }
+    }
+    
+    private func revokeLinkV1(shareVO: SharebyURLVOData) {
+        shareManagementRepository.revokeLink(shareVO: shareVO) { [weak self] result in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    self.isLoading = false
+                    
+                    switch result {
+                    case .success:
+                        self.shareLink = nil
+                        self.shareVO = nil
+                        self.shareLinkV2Data = nil
+                        self.showLinkSettings = false
+                    case .error(let message):
+                        self.errorMessage = message
                     }
                 }
             }
