@@ -23,14 +23,13 @@ struct LinkSettingsView: View {
                 }
                 .frame(height: 64)
                 .background(Color.white)
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                    .background(Color.blue50)
                 
-                // Scrollable content
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        Rectangle()
-                            .foregroundColor(.clear)
-                            .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                            .background(Color.blue50)
+
                         
                         VStack(spacing: 20) {
                             linkDisplaySection
@@ -44,7 +43,7 @@ struct LinkSettingsView: View {
                             revokeLinkButton
                         }
                         .padding(.bottom, 120) // Height of buttons + padding + safe area
-                    }
+
                 }
             }
 

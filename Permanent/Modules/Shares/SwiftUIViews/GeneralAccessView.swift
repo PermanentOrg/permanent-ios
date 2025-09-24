@@ -12,21 +12,17 @@ struct GeneralAccessView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Top bar
             topBar
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
                 .padding(.bottom, 8)
                 .frame(height: 64)
                 .background(Color.white)
-            
-            // Content
+            Rectangle()
+                .foregroundColor(.clear)
+                .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                .background(Color.blue50)
             VStack(spacing: 0) {
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                    .background(Color.blue50)
-                
                 ForEach(ShareViewAccessLevel.allCases, id: \.self) { accessLevel in
                     SelectableOptionView(
                         option: accessLevel,
@@ -36,7 +32,6 @@ struct GeneralAccessView: View {
                         }
                     )
                 }
-                
                 Spacer()
             }
         }
