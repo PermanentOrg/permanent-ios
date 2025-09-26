@@ -72,6 +72,7 @@ struct RoleSelectionView: View {
             HStack {
                 Spacer()
                 Button(action: { 
+                    viewModel.revertChanges()
                     viewModel.navigationDirection = .backward
                     viewModel.showRoleSelection = false
                     viewModel.showLinkSettings = false 

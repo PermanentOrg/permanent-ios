@@ -110,6 +110,13 @@ class ShareItemViewModel: ObservableObject {
     @Published var autoApproveEnabled = false
     @Published var selectedAccessRole: AccessRole = .viewer
     
+    // Bottom alert for revoke confirmation
+    @Published var showRevokeAlert = false
+    
+    lazy var revokeAction: () -> Void = { [weak self] in
+        self?.performRevokeLink()
+    }
+    
     @Published var navigationDirection: NavigationDirection = .forward
     
     // Transition control similar to AuthenticatorContainerView
@@ -540,6 +547,10 @@ class ShareItemViewModel: ObservableObject {
     }
     
     func revokeLink() {
+        showRevokeAlert = true
+    }
+    
+    func performRevokeLink() {
         guard let shareVO = self.shareVO else { return }
         
         Task {
@@ -562,6 +573,7 @@ class ShareItemViewModel: ObservableObject {
                                 self.shareLink = nil
                                 self.shareVO = nil
                                 self.shareLinkV2Data = nil
+                                self.navigationDirection = .backward
                                 self.showLinkSettings = false
                             case .error(let message):
                                 self.errorMessage = message
@@ -583,6 +595,7 @@ class ShareItemViewModel: ObservableObject {
                                 self.shareLink = nil
                                 self.shareVO = nil
                                 self.shareLinkV2Data = nil
+                                self.navigationDirection = .backward
                                 self.showLinkSettings = false
                             case .error(_):
                                 // If V2 API fails, fallback to V1 API
@@ -611,6 +624,7 @@ class ShareItemViewModel: ObservableObject {
                         self.shareLink = nil
                         self.shareVO = nil
                         self.shareLinkV2Data = nil
+                        self.navigationDirection = .backward
                         self.showLinkSettings = false
                     case .error(let message):
                         self.errorMessage = message
@@ -816,6 +830,13 @@ class ShareItemViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func revertChanges() {
+        selectedExpiration = originalExpiration
+        selectedAccessLevel = originalAccessLevel
+        selectedAccessRole = originalAccessRole
+        hasUnsavedChanges = false
     }
     
     private func mapAccessRoleToPermissionsLevel(_ role: AccessRole) -> String {

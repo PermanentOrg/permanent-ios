@@ -72,6 +72,7 @@ struct GeneralAccessView: View {
             HStack {
                 Spacer()
                 Button(action: { 
+                    viewModel.revertChanges()
                     viewModel.navigationDirection = .backward
                     viewModel.showGeneralAccess = false
                     viewModel.showLinkSettings = false 

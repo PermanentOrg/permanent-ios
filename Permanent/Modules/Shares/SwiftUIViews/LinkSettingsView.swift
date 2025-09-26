@@ -77,6 +77,12 @@ struct LinkSettingsView: View {
         } message: {
             if let errorMessage = viewModel.errorMessage { Text(errorMessage) }
         }
+        .overlay {
+            RevokeBottomAlertView(
+                isPresented: $viewModel.showRevokeAlert,
+                onRevoke: viewModel.revokeAction
+            )
+        }
     }
     
     // MARK: - Top Bar
@@ -84,6 +90,7 @@ struct LinkSettingsView: View {
         ZStack {
             HStack {
                 Button(action: { 
+                    viewModel.revertChanges()
                     viewModel.navigationDirection = .backward
                     viewModel.showLinkSettings = false 
                 }) {
@@ -355,6 +362,7 @@ struct LinkSettingsView: View {
     // MARK: - Cancel Button
     private var cancelButton: some View {
         Button(action: {
+                viewModel.revertChanges()
                 viewModel.navigationDirection = .backward
                 viewModel.showLinkSettings = false
         }) {
