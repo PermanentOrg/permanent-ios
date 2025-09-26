@@ -22,7 +22,6 @@ struct ShareItemView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Top bar + tinted header area
             VStack(spacing: 0) {
                 ZStack {
                     topBar
@@ -32,7 +31,6 @@ struct ShareItemView: View {
                 }
                 .frame(height: 64)
                 .background(Color.white)
-                
                 VStack(spacing: 0) {
                     Rectangle()
                         .foregroundColor(.clear)

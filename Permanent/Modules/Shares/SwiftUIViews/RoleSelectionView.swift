@@ -12,32 +12,26 @@ struct RoleSelectionView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Top bar
             topBar
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
                 .padding(.bottom, 8)
                 .frame(height: 64)
                 .background(Color.white)
-            
-            // Content with ScrollView
+            Rectangle()
+                .foregroundColor(.clear)
+                .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                .background(Color.blue50)
             ScrollView {
-                VStack(spacing: 0) {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                        .background(Color.blue50)
-                    
-                    LazyVStack(spacing: 0) {
-                        ForEach(AccessRole.allCases.filter { $0 != .curator }, id: \.self) { role in
-                            SelectableOptionView(
-                                option: role,
-                                isSelected: viewModel.selectedAccessRole == role,
-                                action: {
-                                    viewModel.updateAccessRole(role)
-                                }
-                            )
-                        }
+                LazyVStack(spacing: 0) {
+                    ForEach(AccessRole.allCases.filter { $0 != .curator }, id: \.self) { role in
+                        SelectableOptionView(
+                            option: role,
+                            isSelected: viewModel.selectedAccessRole == role,
+                            action: {
+                                viewModel.updateAccessRole(role)
+                            }
+                        )
                     }
                 }
             }
@@ -78,6 +72,7 @@ struct RoleSelectionView: View {
             HStack {
                 Spacer()
                 Button(action: { 
+                    viewModel.revertChanges()
                     viewModel.navigationDirection = .backward
                     viewModel.showRoleSelection = false
                     viewModel.showLinkSettings = false 
@@ -90,7 +85,6 @@ struct RoleSelectionView: View {
                 }
             }
         }
-        .frame(height: 32)
     }
     
     private var loadingOverlay: some View {

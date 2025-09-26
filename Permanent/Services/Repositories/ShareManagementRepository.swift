@@ -93,4 +93,10 @@ class ShareManagementRepository {
             completion(result, error)
         }
     }
+    
+    func deleteShareLinkV2(shareLinkId: String, then completion: @escaping (RequestStatus) -> Void) {
+        remoteDataSource.deleteShareLinkV2(shareLinkId: shareLinkId) { result in
+            completion(result)
+        }
+    }
 }

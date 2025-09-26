@@ -431,6 +431,8 @@
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
+		5ECB0C912E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */; };
+		5ECB0C922E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */; };
 		5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */; };
 		5ECBAF9E2A1B5EF500FACFDF /* ArchiveSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */; };
 		5ECBAFA32A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */; };
@@ -1393,6 +1395,7 @@
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
+		5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevokeBottomAlertView.swift; sourceTree = "<group>"; };
 		5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveSteward.swift; sourceTree = "<group>"; };
 		5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStewardResponseTriggerType.swift; sourceTree = "<group>"; };
 		5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningArchiveDetails.swift; sourceTree = "<group>"; };
@@ -3388,6 +3391,7 @@
 		5EA9C2B62E45FF78003BA1E9 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */,
 				5E317C652E7C1D8600DE5A77 /* SelectableOptionView.swift */,
 				5E28C32B2E7BEECB00A073A8 /* SelectableOption.swift */,
 				5EA9C2B52E45FF78003BA1E9 /* ShareComponents.swift */,
@@ -3407,10 +3411,10 @@
 			isa = PBXGroup;
 			children = (
 				5E08C0D42E6F063600374D0F /* ShareContainerView.swift */,
+				5E08C0D32E6F063600374D0F /* LinkSettingsView.swift */,
 				5EAD21E12E73589500D15F76 /* RoleSelectionView.swift */,
 				5E98C9802E706A28002AEFA5 /* GeneralAccessView.swift */,
 				5EA9C2BE2E45FF78003BA1E9 /* ShareItemView.swift */,
-				5E08C0D32E6F063600374D0F /* LinkSettingsView.swift */,
 				5EA9C2B62E45FF78003BA1E9 /* Components */,
 				5EA9C2B82E45FF78003BA1E9 /* ViewModels */,
 			);
@@ -4993,6 +4997,7 @@
 				5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */,
 				5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */,
 				5ED3B3AC29F7E008000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
+				5ECB0C922E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */,
 				5E5979CC2DC8CEBD00694BDA /* ChecklistBottomMenuView.swift in Sources */,
 				9220ACC92A1CAA72003797C9 /* SequenceExtension.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
@@ -5670,6 +5675,7 @@
 				92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */,
 				F5A87F9A2996C51100C4272B /* WorkspacesContentViewModel.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
+				5ECB0C912E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */,
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
 				F559F89D28FEEABA0015A522 /* APIPayload.swift in Sources */,

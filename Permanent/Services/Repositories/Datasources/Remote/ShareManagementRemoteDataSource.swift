@@ -26,6 +26,7 @@ protocol ShareManagementRemoteDataSourceInterface {
         expirationTimestamp: String?,
         then handler: @escaping ShareLinkV2Handler
     )
+    func deleteShareLinkV2(shareLinkId: String, then handler: @escaping (RequestStatus) -> Void)
 }
 
 class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface {
@@ -382,6 +383,38 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
             }
         }
     }
+    
+    func deleteShareLinkV2(shareLinkId: String, then handler: @escaping (RequestStatus) -> Void) {
+        let apiOperation = APIOperation(ShareLinksV2Endpoint.deleteShareLink(shareLinkId: shareLinkId))
+
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, let statusCode):
+                // According to the API documentation, a 204 status code means success
+                if let httpResponse = statusCode, httpResponse.statusCode == 204 {
+                    handler(.success)
+                } else {
+                    guard
+                        let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                            from: response,
+                            with: APIResults<NoDataModel>.decoder
+                        ),
+                        model.isSuccessful
+                    else {
+                        handler(.error(message: .errorMessage))
+                        return
+                    }
+                    handler(.success)
+                }
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                handler(.error(message: .errorMessage))
+            }
+        }
+    }
 }
 
 class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterface {
@@ -501,5 +534,10 @@ class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterf
             updatedAt: "2024-01-01T00:00:00Z"
         )
         handler(mockV2Data, nil)
+    }
+    
+    func deleteShareLinkV2(shareLinkId: String, then handler: @escaping (RequestStatus) -> Void) {
+        // Mock successful deletion
+        handler(.success)
     }
 }

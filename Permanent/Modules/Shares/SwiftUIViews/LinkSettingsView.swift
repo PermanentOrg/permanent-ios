@@ -23,14 +23,13 @@ struct LinkSettingsView: View {
                 }
                 .frame(height: 64)
                 .background(Color.white)
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                    .background(Color.blue50)
                 
-                // Scrollable content
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        Rectangle()
-                            .foregroundColor(.clear)
-                            .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                            .background(Color.blue50)
+
                         
                         VStack(spacing: 20) {
                             linkDisplaySection
@@ -44,7 +43,7 @@ struct LinkSettingsView: View {
                             revokeLinkButton
                         }
                         .padding(.bottom, 120) // Height of buttons + padding + safe area
-                    }
+
                 }
             }
 
@@ -78,6 +77,12 @@ struct LinkSettingsView: View {
         } message: {
             if let errorMessage = viewModel.errorMessage { Text(errorMessage) }
         }
+        .overlay {
+            RevokeBottomAlertView(
+                isPresented: $viewModel.showRevokeAlert,
+                onRevoke: viewModel.revokeAction
+            )
+        }
     }
     
     // MARK: - Top Bar
@@ -85,6 +90,7 @@ struct LinkSettingsView: View {
         ZStack {
             HStack {
                 Button(action: { 
+                    viewModel.revertChanges()
                     viewModel.navigationDirection = .backward
                     viewModel.showLinkSettings = false 
                 }) {
@@ -356,6 +362,7 @@ struct LinkSettingsView: View {
     // MARK: - Cancel Button
     private var cancelButton: some View {
         Button(action: {
+                viewModel.revertChanges()
                 viewModel.navigationDirection = .backward
                 viewModel.showLinkSettings = false
         }) {
