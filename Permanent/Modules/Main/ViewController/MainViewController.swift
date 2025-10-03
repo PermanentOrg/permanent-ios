@@ -460,6 +460,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @IBAction
     func backButtonAction(_ sender: UIButton) {
+        // Fall back to regular navigation hierarchy
         guard
             let viewModel = viewModel,
             let _ = viewModel.removeCurrentFolderFromHierarchy(),
@@ -660,9 +661,17 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func navigationToShareFolderLink() {
         if let navParamsOptional: NavigationDataForShareFolderLink? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink),
            let navParams = navParamsOptional  {
-            directoryLabel.text = navParams.folderName
             backButton.isHidden = false
-            navigateToFolder(withParams: NavigateMinParams(archiveNo: navParams.archiveNo, folderLinkId: navParams.folderLinkId, folderName: navParams.folderName), backNavigation: false, shouldDisplaySpinner: true, then: {
+            
+            // Standard navigation to shared folder
+            navigateToFolder(withParams: NavigateMinParams(archiveNo: navParams.archiveNo, folderLinkId: navParams.folderLinkId, folderName: navParams.folderName), backNavigation: false, shouldDisplaySpinner: true, then: { [weak self] in
+                // Ensure the folder name is preserved even after navigation completes
+                if let folderName = navParams.folderName, !folderName.isEmpty {
+                    self?.directoryLabel.text = folderName
+                } else {
+                    // Fallback to current folder name if available
+                    self?.directoryLabel.text = self?.viewModel?.currentFolder?.name ?? "Folder"
+                }
             })
             
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)

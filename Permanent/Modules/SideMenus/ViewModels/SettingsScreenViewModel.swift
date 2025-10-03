@@ -97,7 +97,8 @@ class SettingsScreenViewModel: ObservableObject {
                     self.showFinishSetUpAccount = true
                 }
                 
-                
+            case .error(let error, _):
+                self.showFinishSetUpAccount = false
             default:
                 self.showFinishSetUpAccount = false
             }
@@ -239,7 +240,7 @@ class SettingsScreenViewModel: ObservableObject {
                 case .success:
                     self.loggedOut = true
                     
-                case .error(let message):
+                case .error(_):
                         self.showError = true
                 }
             })

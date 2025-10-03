@@ -30,4 +30,10 @@ protocol ShareDetails {
     var fileType: FileType? { get }
     
     var thumbURL2000: String? { get }
+    
+    // Archive number of the original archive where the share was created
+    var originalArchiveNbr: String? { get }
+    
+    // Clean archive name without "From" prefix
+    var cleanArchiveName: String? { get }
 }
