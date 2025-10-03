@@ -69,6 +69,9 @@ class NetworkLogger {
     
     /// Enable network logging with default settings
     static func enableLogging() {
+        NetworkLogger.configuration.logLevel = .debug
+        NetworkLogger.configuration.environmentRestriction = nil // Log in all environments
+        NetworkLogger.configuration.logBodies = true
         configuration.isEnabled = true
     }
     

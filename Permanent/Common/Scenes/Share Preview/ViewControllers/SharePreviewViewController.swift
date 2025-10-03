@@ -115,12 +115,28 @@ class SharePreviewViewController: UIViewController {
     }
     
     fileprivate func setupActionButton(forStatus status: ShareStatus) {
+        // Check if current user is the share creator
+        let isShareCreator = isCurrentUserShareCreator()
+        
         switch status {
         case .pending:
-            actionButton.isEnabled = false
-            actionButton.titleLabel?.adjustsFontSizeToFitWidth = true
-            actionButton.setTitleColor(.primary, for: [])
-            actionButton.configureActionButtonUI(title: status.infoText, bgColor: .backgroundPrimary)
+            // If user is the creator, they should be able to view their own share
+            if isShareCreator {
+                actionButton.configureActionButtonUI(title: viewModel.navigateParams == nil ? .viewInArchive : .viewInArchive)
+            } else {
+                actionButton.isEnabled = false
+                actionButton.titleLabel?.adjustsFontSizeToFitWidth = true
+                actionButton.setTitleColor(.primary, for: [])
+                actionButton.configureActionButtonUI(title: status.infoText, bgColor: .backgroundPrimary)
+            }
+            
+        case .needsApproval:
+            // If user is the creator, they shouldn't need to request approval
+            if isShareCreator {
+                actionButton.configureActionButtonUI(title: viewModel.navigateParams == nil ? .viewInArchive : .viewInArchive)
+            } else {
+                actionButton.configureActionButtonUI(title: viewModel.navigateParams == nil ? status.infoText : .viewInArchive)
+            }
             
         default:
             actionButton.configureActionButtonUI(title: viewModel.navigateParams == nil ? status.infoText : .viewInArchive)
@@ -129,15 +145,125 @@ class SharePreviewViewController: UIViewController {
         actionButton.isHidden = false
     }
     
+    // MARK: - Helper Methods
+    
+    /// Checks if the current user is the creator of the share
+    private func isCurrentUserShareCreator() -> Bool {
+        guard let currentUserAccountId = AuthenticationManager.shared.session?.account.accountID else {
+            return false
+        }
+        
+        // Primary check: Use the creator account ID stored in ShareDetailsVM
+        if let shareDetailsVM = viewModel.shareDetails as? ShareDetailsVM,
+           let creatorAccountId = shareDetailsVM.creatorAccountId {
+            return creatorAccountId == currentUserAccountId
+        }
+        
+        // Fallback check: Use navigateParams which is set in the ViewModel when current user is the creator
+        // This is set in SharePreviewViewModel.onFetchSharedItemsSuccess when the share creator email
+        // matches the current user email
+        if viewModel.navigateParams != nil {
+            return true
+        }
+        
+        return false
+    }
+    
+    /// Fallback method to navigate to shared folder when navigateParams is not available
+    private func navigateToSharedFolder() {
+        guard let shareDetails = viewModel?.shareDetails,
+              let currentArchive = viewModel?.currentArchive else {
+            // Fallback to shares view if we can't get the necessary data
+            viewInArchive()
+            return
+        }
+        
+        // Check if the currently selected archive matches the original archive where the share was created
+        let currentArchiveNbr = currentArchive.archiveNbr ?? ""
+        let originalArchiveNbr = shareDetails.originalArchiveNbr ?? ""
+        
+        if !originalArchiveNbr.isEmpty && currentArchiveNbr != originalArchiveNbr {
+            showArchiveMismatchAlert(correctArchiveName: shareDetails.cleanArchiveName ?? shareDetails.archiveName)
+            return
+        }
+        
+        // Try to construct navigation parameters from available data
+        let archiveNo = currentArchive.archiveNbr ?? ""
+        
+        // Check if this is a folder share (we can navigate directly)
+        if let fileType = shareDetails.fileType, fileType == .publicFolder {
+            let folderLinkId = shareDetails.folderLinkId
+            let folderName = shareDetails.sharedFileName
+            
+            if !archiveNo.isEmpty && folderLinkId > 0 {
+                let params: NavigateMinParams = (archiveNo: archiveNo, folderLinkId: folderLinkId, folderName: folderName)
+                DispatchQueue.main.async { [weak self] in
+                    self?.navigateTo(params)
+                }
+                return
+            }
+        }
+        
+        // For file shares, try to navigate to the parent folder using parentFolderLinkId
+        if let shareDetailsVM = shareDetails as? ShareDetailsVM,
+           let parentFolderLinkId = shareDetailsVM.parentFolderLinkId,
+           !archiveNo.isEmpty && parentFolderLinkId > 0 {
+            
+            let params: NavigateMinParams = (archiveNo: archiveNo, folderLinkId: parentFolderLinkId, folderName: "Containing Folder")
+            DispatchQueue.main.async { [weak self] in
+                self?.navigateTo(params)
+            }
+            return
+        }
+        
+        // Fallback to viewInArchive as last resort
+        viewInArchive()
+    }
+    
     // MARK: - Actions
     
     @IBAction func previewAction(_ sender: UIButton) {
-        if viewModel.navigateParams == nil {
-            viewModel.performAction()
-        } else {
-            navigationController?.popViewController(animated: true)
+        // Add safety check to prevent any potential issues
+        guard let viewModel = viewModel else {
+            return
+        }
+        
+        // Check if the currently selected archive matches the original archive where the share was created
+        if let shareDetails = viewModel.shareDetails,
+           let currentArchive = viewModel.currentArchive {
+            let currentArchiveNbr = currentArchive.archiveNbr ?? ""
+            let originalArchiveNbr = shareDetails.originalArchiveNbr ?? ""
+            
+            if !originalArchiveNbr.isEmpty && currentArchiveNbr != originalArchiveNbr {
+                showArchiveMismatchAlert(correctArchiveName: shareDetails.cleanArchiveName ?? shareDetails.archiveName)
+                return
+            }
+        }
+        
+        let isShareCreator = isCurrentUserShareCreator()
+        
+        if isShareCreator {
+            // If user is the share creator, navigate directly to the folder without back navigation
             if let params = viewModel.navigateParams {
-                self.navigateTo(params)
+                // Use the existing navigation params to go to the folder directly
+                DispatchQueue.main.async { [weak self] in
+                    self?.navigateTo(params)
+                }
+            } else {
+                // Fallback: try to construct navigation params from share details
+                navigateToSharedFolder()
+            }
+        } else {
+            // For non-creators, use the standard flow based on status
+            if viewModel.navigateParams == nil {
+                viewModel.performAction()
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.navigationController?.popViewController(animated: true)
+                    if let params = viewModel.navigateParams {
+                        self?.navigateTo(params)
+                    }
+                }
             }
         }
     }
@@ -155,6 +281,24 @@ class SharePreviewViewController: UIViewController {
     @objc
     fileprivate func dismissScreen() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    /// Shows an alert when the user has selected the wrong archive
+    private func showArchiveMismatchAlert(correctArchiveName: String) {
+        let alert = UIAlertController(
+            title: "Incorrect Archive",
+            message: "This item is shared from '\(correctArchiveName)'. You need to select the correct archive to view this content.",
+            preferredStyle: .alert
+        )
+        
+        // Add action to change archive
+        alert.addAction(UIAlertAction(title: "Change Archive", style: .default) { [weak self] _ in
+            self?.changeArchiveButtonPressed(self?.actionButton as Any)
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present(alert, animated: true)
     }
 }
 
@@ -221,7 +365,19 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
                 shareNameLabel.text = details.sharedFileName
                 archiveNameLabel.text = details.archiveName
                 sharedByLabel.text = details.accountName
-                archiveImage.sd_setImage(with: details.archiveThumbURL)
+                
+                // Load archive thumbnail with better error handling
+                if let archiveThumbURL = details.archiveThumbURL {
+                    archiveImage.sd_setImage(with: archiveThumbURL, placeholderImage: nil) { [weak self] image, error, _, _ in
+                        if error != nil {
+                            // If there's an error loading the thumbnail, try to use a default archive icon
+                            self?.archiveImage.image = UIImage(named: "archiveThumb") ?? UIImage(systemName: "folder.fill")
+                        }
+                    }
+                } else {
+                    // No thumbnail URL available, use default
+                    archiveImage.image = UIImage(named: "archiveThumb") ?? UIImage(systemName: "folder.fill")
+                }
                 archiveImage.isHidden = false
                 
                 setupActionButton(forStatus: details.status)
@@ -245,22 +401,64 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
     }
     
     func viewInArchive() {
-        guard let sharesVC = UIViewController.create(
-            withIdentifier: .shares,
-            from: .share
-        ) as? SharesViewController else {
-            return
-        }
+        let isShareCreator = isCurrentUserShareCreator()
         
-        sharesVC.sharedRecordId = viewModel.shareDetails?.recordId ?? -1
-        sharesVC.fileType = viewModel.shareDetails?.fileType
-        sharesVC.sharedFolderLinkId = viewModel.shareDetails?.folderLinkId ?? -1
-        sharesVC.sharedFolderName = viewModel.shareDetails?.sharedFileName ?? ""
-        sharesVC.sharedFolderArchiveNo = viewModel.currentArchive?.archiveNbr ?? ""
-        sharesVC.shareThumbnailURL = viewModel.shareDetails?.thumbURL2000
-        sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
-        sharesVC.selectedFileId = viewModel.shareDetails?.folderLinkId
-        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+        if isShareCreator {
+            // For share creators, navigate to the actual location in their private archive
+            guard let shareDetails = viewModel?.shareDetails,
+                  let currentArchive = viewModel?.currentArchive else {
+                return
+            }
+            
+            let archiveNo = currentArchive.archiveNbr ?? ""
+            
+            // Check if this is a folder share
+            if let fileType = shareDetails.fileType, fileType == .publicFolder {
+                let folderLinkId = shareDetails.folderLinkId
+                let folderName = shareDetails.sharedFileName
+                
+                if !archiveNo.isEmpty && folderLinkId > 0 {
+                    let params: NavigateMinParams = (archiveNo: archiveNo, folderLinkId: folderLinkId, folderName: folderName)
+                    DispatchQueue.main.async { [weak self] in
+                        self?.navigateTo(params)
+                    }
+                    return
+                }
+            }
+            
+            // For file shares, navigate to the parent folder using parentFolderLinkId
+            if let shareDetailsVM = shareDetails as? ShareDetailsVM,
+               let parentFolderLinkId = shareDetailsVM.parentFolderLinkId,
+               !archiveNo.isEmpty && parentFolderLinkId > 0 {
+                
+                let params: NavigateMinParams = (archiveNo: archiveNo, folderLinkId: parentFolderLinkId, folderName: "Containing Folder")
+                DispatchQueue.main.async { [weak self] in
+                    self?.navigateTo(params)
+                }
+                return
+            }
+            
+            // Fallback: navigate to the main files view if we can't determine the specific location
+            DispatchQueue.main.async {
+                let mainVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+                mainVC.viewModel = MyFilesViewModel()
+                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: mainVC)
+            }
+        } else {
+            // For non-creators, show the shares list
+            guard let sharesVC = UIViewController.create(
+                withIdentifier: .shares,
+                from: .share
+            ) as? SharesViewController else {
+                return
+            }
+            
+            // Set only the basic information needed for the shares view
+            sharesVC.sharedFolderArchiveNo = viewModel.currentArchive?.archiveNbr ?? ""
+            sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+            
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+        }
     }
 }
 

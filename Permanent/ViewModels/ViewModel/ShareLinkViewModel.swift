@@ -203,7 +203,10 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
               let payload = EventsPayloadBuilder.build(accountId: accountId,
                                                        eventAction: AccountEventAction.copyShareLink,
-                                                       entityId: String(accountId)) else { return }
+                                                       entityId: String(accountId)) else { 
+            return 
+        }
+        
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }

@@ -147,7 +147,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
                         
-                    case .error(let error, _):
+                    case .error(_, _):
                         break
                         
                     default:
@@ -279,9 +279,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     fileprivate func configureLogging() {
         #if STAGING_ENVIRONMENT
-            NetworkLogger.configuration.logLevel = .debug
-            NetworkLogger.configuration.environmentRestriction = nil // Log in all environments
-            NetworkLogger.configuration.logBodies = true
             NetworkLogger.enableLogging()
         #else
              NetworkLogger.disableLogging()
@@ -312,13 +309,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         viewModel.urlToken = url.lastPathComponent
         sharePreviewVC.viewModel = viewModel
         
-        rootViewController.navigateTo(viewController: sharePreviewVC)
-        
         sharePreviewVC.navigateTo = { [weak self] params in
             self?.navigateToFolder(params: params)
         }
         
+        // Dismiss any presented SwiftUI views or modal controllers before navigating
+        dismissPresentedViewsAndNavigate(to: sharePreviewVC)
+        
         return true
+    }
+    
+    private func dismissPresentedViewsAndNavigate(to viewController: UIViewController) {
+        // Find the topmost presented view controller
+        var topMostPresentedVC: UIViewController = rootViewController
+        while let presentedVC = topMostPresentedVC.presentedViewController {
+            topMostPresentedVC = presentedVC
+        }
+        
+        // If we found any presented view controllers, dismiss from the root
+        if topMostPresentedVC != rootViewController {
+            rootViewController.dismiss(animated: true) { [weak self] in
+                self?.rootViewController.navigateTo(viewController: viewController)
+            }
+        } else {
+            // No presented view controllers, navigate directly
+            rootViewController.navigateTo(viewController: viewController)
+        }
     }
     
     fileprivate func navigateToFolder(params: NavigateMinParams) {
