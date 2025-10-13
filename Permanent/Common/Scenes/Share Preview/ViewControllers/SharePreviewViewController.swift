@@ -228,21 +228,22 @@ class SharePreviewViewController: UIViewController {
             return
         }
         
-        // Check if the currently selected archive matches the original archive where the share was created
-        if let shareDetails = viewModel.shareDetails,
-           let currentArchive = viewModel.currentArchive {
-            let currentArchiveNbr = currentArchive.archiveNbr ?? ""
-            let originalArchiveNbr = shareDetails.originalArchiveNbr ?? ""
-            
-            if !originalArchiveNbr.isEmpty && currentArchiveNbr != originalArchiveNbr {
-                showArchiveMismatchAlert(correctArchiveName: shareDetails.cleanArchiveName ?? shareDetails.archiveName)
-                return
-            }
-        }
-        
         let isShareCreator = isCurrentUserShareCreator()
         
         if isShareCreator {
+            // Check if the currently selected archive matches the original archive where the share was created
+            // This check should only apply to share creators who are viewing their own shared content
+            if let shareDetails = viewModel.shareDetails,
+               let currentArchive = viewModel.currentArchive {
+                let currentArchiveNbr = currentArchive.archiveNbr ?? ""
+                let originalArchiveNbr = shareDetails.originalArchiveNbr ?? ""
+                
+                if !originalArchiveNbr.isEmpty && currentArchiveNbr != originalArchiveNbr {
+                    showArchiveMismatchAlert(correctArchiveName: shareDetails.cleanArchiveName ?? shareDetails.archiveName)
+                    return
+                }
+            }
+            
             // If user is the share creator, navigate directly to the folder without back navigation
             if let params = viewModel.navigateParams {
                 // Use the existing navigation params to go to the folder directly
@@ -255,6 +256,7 @@ class SharePreviewViewController: UIViewController {
             }
         } else {
             // For non-creators, use the standard flow based on status
+            // Regular users should be able to request access from any archive they have access to
             if viewModel.navigateParams == nil {
                 viewModel.performAction()
             } else {
