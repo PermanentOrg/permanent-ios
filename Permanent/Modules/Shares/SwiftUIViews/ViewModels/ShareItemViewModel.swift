@@ -110,6 +110,14 @@ class ShareItemViewModel: ObservableObject {
     @Published var autoApproveEnabled = false
     @Published var selectedAccessRole: AccessRole = .viewer
     
+    // Properties for archives with access
+    @Published var sharedArchives: [ShareVOData] = []
+    @Published var isLoadingArchives = false
+    
+    // Loading states for approve/deny actions
+    @Published var approvingShareIDs: Set<Int> = []
+    @Published var denyingShareIDs: Set<Int> = []
+    
     // Bottom alert for revoke confirmation
     @Published var showRevokeAlert = false
     
@@ -240,6 +248,7 @@ class ShareItemViewModel: ObservableObject {
         errorMessage = nil
         
         getShareLink(option: .retrieve)
+        fetchSharedArchives()
     }
     
     private func getShareLink(option: ShareLinkOption) {
@@ -869,7 +878,7 @@ class ShareItemViewModel: ObservableObject {
     private func mapAccessLevelToAccessRestrictions(_ level: ShareViewAccessLevel) -> String {
         switch level {
         case .anyoneCanView: return "none"
-        case .restricted: return "account"
+        case .restricted: return "approval"
         // Add more mappings as needed based on ShareViewAccessLevel cases
         }
     }
@@ -904,6 +913,169 @@ class ShareItemViewModel: ObservableObject {
                         }
                         // If V2 data is not available, we keep the default UI state
                     }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Fetch Shared Archives
+    private func fetchSharedArchives() {
+        guard fileModel.folderLinkId > 0,
+              fileModel.parentFolderLinkId > 0 else {
+            return
+        }
+        
+        isLoadingArchives = true
+        
+        let downloader = DownloadManagerGCD()
+        let fileDownloadInfo = FileDownloadInfoVM(
+            fileType: fileModel.type,
+            folderLinkId: fileModel.folderLinkId,
+            parentFolderLinkId: fileModel.parentFolderLinkId
+        )
+        
+        downloader.getRecord(fileDownloadInfo) { [weak self] recordVO, error in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    self.isLoadingArchives = false
+                    
+                    if let error = error {
+                        print("Error fetching record details: \(error)")
+                        return
+                    }
+                    
+                    if let recordVO = recordVO,
+                       let recordData = recordVO.recordVO,
+                       let shareVOs = recordData.shareVOS {
+                        self.sharedArchives = shareVOs
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Approve/Deny Share Requests
+    
+    func isApprovingShare(shareID: Int) -> Bool {
+        return approvingShareIDs.contains(shareID)
+    }
+    
+    func isDenyingShare(shareID: Int) -> Bool {
+        return denyingShareIDs.contains(shareID)
+    }
+    
+    func approveShareRequest(_ shareVO: ShareVOData, accessRole: AccessRole = .viewer) {
+        guard let shareID = shareVO.shareID else { return }
+        
+        DispatchQueue.main.async {
+            self.approvingShareIDs.insert(shareID)
+            self.objectWillChange.send()
+        }
+        
+        shareManagementRepository.approveButtonAction(shareVO: shareVO, accessRole: accessRole) { [weak self] result, updatedShareVO in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    switch result {
+                    case .success:
+                        if let index = self.sharedArchives.firstIndex(where: { $0.shareID == shareVO.shareID }) {
+                            if let updatedShare = updatedShareVO {
+                                self.fetchCompleteShareDetails(for: updatedShare, at: index, clearLoadingState: true, loadingShareID: shareID)
+                            } else {
+                                self.approvingShareIDs.remove(shareID)
+                                self.objectWillChange.send()
+                            }
+                        } else {
+                            self.approvingShareIDs.remove(shareID)
+                            self.objectWillChange.send()
+                        }
+                        
+                    case .error(let message):
+                        self.approvingShareIDs.remove(shareID)
+                        self.errorMessage = message
+                        self.objectWillChange.send()
+                    }
+                }
+            }
+        }
+    }
+    
+    func denyShareRequest(_ shareVO: ShareVOData) {
+        guard let shareID = shareVO.shareID else { return }
+        
+        DispatchQueue.main.async {
+            self.denyingShareIDs.insert(shareID)
+            self.objectWillChange.send()
+        }
+        
+        shareManagementRepository.denyButtonAction(shareVO: shareVO) { [weak self] result in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    self.denyingShareIDs.remove(shareID)
+                    self.objectWillChange.send()
+                    
+                    switch result {
+                    case .success:
+                        self.sharedArchives.removeAll { $0.shareID == shareVO.shareID }
+                        
+                    case .error(let message):
+                        self.errorMessage = message
+                    }
+                }
+            }
+        }
+    }
+    
+    private func fetchCompleteShareDetails(for share: ShareVOData, at index: Int, clearLoadingState: Bool = false, loadingShareID: Int? = nil) {
+        guard let shareID = share.shareID else {
+            return
+        }
+        
+        guard fileModel.folderLinkId > 0,
+              fileModel.parentFolderLinkId > 0 else {
+            return
+        }
+        
+        let downloader = DownloadManagerGCD()
+        let fileDownloadInfo = FileDownloadInfoVM(
+            fileType: fileModel.type,
+            folderLinkId: fileModel.folderLinkId,
+            parentFolderLinkId: fileModel.parentFolderLinkId
+        )
+        
+        downloader.getRecord(fileDownloadInfo) { [weak self] recordVO, error in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    if error != nil {
+                        return
+                    }
+                    
+                    if let recordVO = recordVO,
+                       let recordData = recordVO.recordVO,
+                       let shareVOs = recordData.shareVOS,
+                       let completeShare = shareVOs.first(where: { $0.shareID == shareID }) {
+                        
+                        if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
+                            self.sharedArchives[index] = completeShare
+                        }
+                    } else {
+                        if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
+                            self.sharedArchives[index] = share
+                        }
+                    }
+                    
+                    if clearLoadingState, let loadingID = loadingShareID {
+                        self.approvingShareIDs.remove(loadingID)
+                    }
+                    
+                    self.objectWillChange.send()
                 }
             }
         }
