@@ -31,6 +31,13 @@ struct ShareContainerView: View {
                         insertion: viewModel.insertionViewTransition,
                         removal: .opacity
                     ))
+            } else if viewModel.showArchiveAccessManagement {
+                ArchiveAccessManagementView(viewModel: viewModel)
+                    .id("ArchiveAccessManagementView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
             } else if viewModel.showLinkSettings {
                 LinkSettingsView(viewModel: viewModel)
                     .id("LinkSettingsView")
@@ -65,6 +72,7 @@ struct ShareContainerView: View {
         .animation(.easeInOut(duration: 0.3), value: viewModel.showLinkSettings)
         .animation(.easeInOut(duration: 0.3), value: viewModel.showGeneralAccess)
         .animation(.easeInOut(duration: 0.3), value: viewModel.showRoleSelection)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.showArchiveAccessManagement)
         .animation(.easeInOut(duration: 0.3), value: viewModel.navigationDirection)
     }
 }

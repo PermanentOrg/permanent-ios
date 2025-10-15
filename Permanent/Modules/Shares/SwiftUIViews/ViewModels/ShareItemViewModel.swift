@@ -110,6 +110,11 @@ class ShareItemViewModel: ObservableObject {
     @Published var autoApproveEnabled = false
     @Published var selectedAccessRole: AccessRole = .viewer
     
+    // Archive access management
+    @Published var showArchiveAccessManagement = false
+    @Published var selectedArchiveForEdit: ShareVOData?
+    @Published var selectedRoleForArchive: AccessRole?
+    
     // Properties for archives with access
     @Published var sharedArchives: [ShareVOData] = []
     @Published var isLoadingArchives = false
@@ -120,6 +125,9 @@ class ShareItemViewModel: ObservableObject {
     
     // Bottom alert for revoke confirmation
     @Published var showRevokeAlert = false
+    
+    // Bottom alert for archive access revoke confirmation
+    @Published var showRevokeArchiveAccessAlert = false
     
     lazy var revokeAction: () -> Void = { [weak self] in
         self?.performRevokeLink()
@@ -1073,6 +1081,97 @@ class ShareItemViewModel: ObservableObject {
                     
                     if clearLoadingState, let loadingID = loadingShareID {
                         self.approvingShareIDs.remove(loadingID)
+                    }
+                    
+                    self.objectWillChange.send()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Archive Access Management
+    
+    func updateArchiveAccessRole(shareVO: ShareVOData, newRole: AccessRole, completion: @escaping (RequestStatus, String?) -> Void) {
+        guard shareVO.shareID != nil else {
+            completion(.error(message: "Invalid share ID"), nil)
+            return
+        }
+        
+        // Set loading state
+        DispatchQueue.main.async {
+            self.isLoading = true
+            self.errorMessage = nil
+            self.objectWillChange.send()
+        }
+        
+        shareManagementRepository.approveButtonAction(shareVO: shareVO, accessRole: newRole) { [weak self] result, updatedShareVO in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    self.isLoading = false
+                    
+                    switch result {
+                    case .success:
+                        // Update the selected archive for edit
+                        if let updatedShare = updatedShareVO {
+                            self.selectedArchiveForEdit?.accessRole = updatedShare.accessRole
+                            
+                            // Update the shared archives array
+                            if let index = self.sharedArchives.firstIndex(where: { $0.shareID == shareVO.shareID }) {
+                                self.sharedArchives[index].accessRole = updatedShare.accessRole
+                            }
+                            
+                            // Reset the selected role to match the updated role
+                            self.selectedRoleForArchive = AccessRole.roleForValue(updatedShare.accessRole ?? "viewer")
+                            
+                            completion(.success, nil)
+                        } else {
+                            completion(.error(message: .errorMessage), .errorMessage)
+                        }
+                        
+                    case .error(let message):
+                        self.errorMessage = message ?? .errorMessage
+                        completion(.error(message: message), message)
+                    }
+                    
+                    self.objectWillChange.send()
+                }
+            }
+        }
+    }
+    
+    func revokeArchiveAccess(shareVO: ShareVOData, completion: @escaping (RequestStatus, String?) -> Void) {
+        guard shareVO.shareID != nil else {
+            completion(.error(message: "Invalid share ID"), nil)
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.isLoading = true
+            self.errorMessage = nil
+            self.objectWillChange.send()
+        }
+        
+        shareManagementRepository.denyButtonAction(shareVO: shareVO) { [weak self] result in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    self.isLoading = false
+                    
+                    switch result {
+                    case .success:
+                        self.sharedArchives.removeAll { $0.shareID == shareVO.shareID }
+                        
+                        self.selectedArchiveForEdit = nil
+                        self.selectedRoleForArchive = nil
+                        
+                        completion(.success, nil)
+                        
+                    case .error(let message):
+                        self.errorMessage = message ?? .errorMessage
+                        completion(.error(message: message), message)
                     }
                     
                     self.objectWillChange.send()

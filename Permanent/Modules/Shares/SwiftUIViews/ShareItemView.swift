@@ -22,51 +22,55 @@ struct ShareItemView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            ZStack {
+                topBar
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
+            }
+            .frame(height: 64)
+            .background(Color.white)
+            
             VStack(spacing: 0) {
-                ZStack {
-                    topBar
-                        .padding(.horizontal, 16)
-                        .padding(.top, 12)
-                        .padding(.bottom, 8)
-                }
-                .frame(height: 64)
-                .background(Color.white)
-                VStack(spacing: 0) {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                        .background(Color.blue50)
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                    .background(Color.blue50)
+                
+                VStack(spacing: 20) {
+                    fileInfoSection
                     
-                    VStack(spacing: 20) {
-                        fileInfoSection
-                        
-                        Group {
-                            if viewModel.genLinkLoading {
-                                linkCreationLoadingSection
-                                    .transition(.opacity.combined(with: .scale))
-                            } else if viewModel.shouldShowCreateButton {
-                                createLinkSection
-                                    .transition(.opacity.combined(with: .scale))
-                            } else if viewModel.hasShareLink {
-                                shareLinkSection
-                                    .transition(.opacity.combined(with: .scale))
-                            }
-                        }
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
-                        
-                        // Current Requests and Access Section
-                        if !viewModel.sharedArchives.isEmpty || viewModel.isLoadingArchives {
-                            currentRequestsAndAccessSection
+                    Group {
+                        if viewModel.genLinkLoading {
+                            linkCreationLoadingSection
+                                .transition(.opacity.combined(with: .scale))
+                        } else if viewModel.shouldShowCreateButton {
+                            createLinkSection
+                                .transition(.opacity.combined(with: .scale))
+                        } else if viewModel.hasShareLink {
+                            shareLinkSection
+                                .transition(.opacity.combined(with: .scale))
                         }
                     }
-                    .padding(24)
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
                 }
+                .padding(24)
+                
+                // Current Requests and Access Section - Scrollable
+                if !viewModel.sharedArchives.isEmpty || viewModel.isLoadingArchives {
+                    currentRequestsAndAccessSection
+                } else {
+                    // Spacer to fill remaining space with blue25 background when no archives
+                    Spacer()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.blue25)
                 }
-                Spacer()
             }
+            .background(Color.blue25)
+        }
         .background(Color.blue25)
         .overlay {
             if viewModel.isLoading && !viewModel.genLinkLoading {
@@ -263,13 +267,38 @@ struct ShareItemView: View {
     
     // MARK: - Current Requests and Access Section
     private var currentRequestsAndAccessSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 0) {
             Text("CURRENT REQUESTS AND ACCESS:")
-                .font(.custom("Usual-Medium", size: 11))
-                .foregroundColor(Color.blue400)
+                .font(.custom("Usual", size: 11))
+                .foregroundColor(Color.blue900)
                 .textCase(.uppercase)
-                .tracking(0.5)
+                .kerning(1.6)
+                .padding(.top, 32)
+                .padding(.bottom, 16)
+                .padding(.horizontal, 24)
+                .background(Color.white)
             
+            Group {
+                if #available(iOS 16.4, *) {
+                    ScrollView(showsIndicators: false) {
+                        scrollableContent
+                    }
+                    .scrollBounceBehavior(.basedOnSize, axes: .vertical)
+                    .background(Color.white)
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        scrollableContent
+                    }
+                    .background(Color.white)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .background(Color.white)
+    }
+    
+    private var scrollableContent: some View {
+        VStack(alignment: .leading, spacing: 16) {
             if viewModel.isLoadingArchives {
                 HStack(spacing: 12) {
                     ProgressView()
@@ -288,6 +317,8 @@ struct ShareItemView: View {
                 }
             }
         }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 40)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
@@ -300,7 +331,6 @@ struct ShareItemView: View {
             if isPending {
                 userAvatarView(shareVO: shareVO)
                 
-                // User info
                 VStack(alignment: .leading, spacing: 4) {
                     Text(archiveDisplayName(shareVO: shareVO))
                         .font(.custom("Usual-Medium", size: 14))
@@ -380,17 +410,25 @@ struct ShareItemView: View {
                         .foregroundColor(Color.blue900)
                         .lineLimit(1)
                     
-                    Text(accessRoleDisplayText(shareVO: shareVO))
-                        .font(.custom("Usual-Regular", size: 12))
-                        .foregroundColor(Color.blue400)
-                        .textCase(.uppercase)
-                        .tracking(0.5)
+                    let role = accessRoleFromShareVO(shareVO)
+                    HStack(spacing: 4) {
+                        Text(role.title.uppercased())
+                            .font(.custom("Usual-Regular", size: 10))
+                            .kerning(1.2)
+                            .foregroundColor(Color.blue900)
+                    }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.blue25)
+                    .cornerRadius(4)
                 }
                 
                 Spacer()
                 
                 Button(action: {
-                    // TODO: Add edit functionality - could show role selection or archive management options
+                    viewModel.selectedArchiveForEdit = shareVO
+                    viewModel.navigationDirection = .forward
+                    viewModel.showArchiveAccessManagement = true
                 }) {
                     Image(.shareArchiveEditShare)
                         .frame(width: 24, height: 24)
@@ -403,8 +441,6 @@ struct ShareItemView: View {
     
     // MARK: - Helper Views
     private func userAvatarView(shareVO: ShareVOData) -> some View {
-        let account = shareVO.accountVO
-        
         return ZStack {
             Image(.shareArchivePending)
                 .cornerRadius(8)
@@ -476,6 +512,11 @@ struct ShareItemView: View {
         default:
             return "viewer"
         }
+    }
+    
+    private func accessRoleFromShareVO(_ shareVO: ShareVOData) -> AccessRole {
+        let accessRole = shareVO.accessRole ?? "viewer"
+        return AccessRole.roleForValue(accessRole)
     }
     
     // MARK: - Loading Overlay
