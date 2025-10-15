@@ -9,15 +9,21 @@ import SwiftUI
 
 struct RevokeBottomAlertView: View {
     @Binding var isPresented: Bool
+    let title: String
+    let buttonText: String
     let onRevoke: () -> Void
     let onCancel: (() -> Void)?
     
     init(
         isPresented: Binding<Bool>,
+        title: String = "Are you sure you want to revoke this share link?",
+        buttonText: String = "Revoke link",
         onRevoke: @escaping () -> Void,
         onCancel: (() -> Void)? = nil
     ) {
         self._isPresented = isPresented
+        self.title = title
+        self.buttonText = buttonText
         self.onRevoke = onRevoke
         self.onCancel = onCancel
     }
@@ -48,9 +54,7 @@ struct RevokeBottomAlertView: View {
         VStack {
             HStack {
                 Spacer()
-                Text("Are you sure you want to ")
-                + Text("revoke this share link?")
-                    .bold()
+                Text(title)
                 Spacer()
             }
                 .font(.custom("Usual-Regular", size: 14))
@@ -64,7 +68,7 @@ struct RevokeBottomAlertView: View {
                 Button(action: revokeAction) {
                     HStack {
                         Spacer()
-                        Text("Revoke link")
+                        Text(buttonText)
                             .fontWeight(.medium)
                             .font(.custom("Usual-Regular", size: 14))
                             .foregroundColor(.white)
@@ -131,6 +135,8 @@ struct RevokeBottomAlertView: View {
 #Preview {
     RevokeBottomAlertView(
         isPresented: .constant(true),
+        title: "Are you sure you want to revoke access from The Tiberiu Paliuc Long Archive? This action will immediately remove all permissions granted.",
+        buttonText: "Revoke access",
         onRevoke: {
             print("Revoke tapped")
         },

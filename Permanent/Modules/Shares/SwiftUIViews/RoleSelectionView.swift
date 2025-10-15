@@ -27,9 +27,9 @@ struct RoleSelectionView: View {
                     ForEach(AccessRole.allCases.filter { $0 != .curator }, id: \.self) { role in
                         SelectableOptionView(
                             option: role,
-                            isSelected: viewModel.selectedAccessRole == role,
+                            isSelected: isRoleSelected(role),
                             action: {
-                                viewModel.updateAccessRole(role)
+                                handleRoleSelection(role)
                             }
                         )
                     }
@@ -104,5 +104,23 @@ struct RoleSelectionView: View {
                 .cornerRadius(12)
             )
             .ignoresSafeArea()
+    }
+    
+    private func isRoleSelected(_ role: AccessRole) -> Bool {
+        if viewModel.showArchiveAccessManagement {
+            return viewModel.selectedRoleForArchive == role
+        } else {
+            return viewModel.selectedAccessRole == role
+        }
+    }
+    
+    private func handleRoleSelection(_ role: AccessRole) {
+        if viewModel.showArchiveAccessManagement {
+            viewModel.selectedRoleForArchive = role
+            viewModel.navigationDirection = .backward
+            viewModel.showRoleSelection = false
+        } else {
+            viewModel.updateAccessRole(role)
+        }
     }
 }
