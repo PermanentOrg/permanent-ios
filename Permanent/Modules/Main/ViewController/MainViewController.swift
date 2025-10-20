@@ -1376,13 +1376,16 @@ extension MainViewController: FABActionSheetDelegate {
         }
         
         if file.permissions.contains(.edit) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .editMetadata, action: { [weak self] in
-                self?.presentMetadataEditView { hasUpdates in
-                    if hasUpdates {
-                        self?.refreshCurrentFolder()
+            let hasFolder = viewModel?.selectedFiles?.contains(where: { $0.type.isFolder }) ?? false
+            if !hasFolder {
+                menuItems.append(FileMenuViewModel.MenuItem(type: .editMetadata, action: { [weak self] in
+                    self?.presentMetadataEditView { hasUpdates in
+                        if hasUpdates {
+                            self?.refreshCurrentFolder()
+                        }
                     }
-                }
-            }))
+                }))
+            }
         }
         
         if file.permissions.contains(.move) {
@@ -1423,6 +1426,7 @@ extension MainViewController: FABActionSheetDelegate {
             fileViewModel: file,
             menuItems: menuItems,
             selectedItemCount: viewModel?.selectedFiles?.count,
+            selectedFiles: viewModel?.selectedFiles,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
             },

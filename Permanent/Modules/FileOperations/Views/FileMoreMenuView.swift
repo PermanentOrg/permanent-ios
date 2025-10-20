@@ -13,11 +13,12 @@ struct FileMoreMenuView: View {
     private let onShareManagementRequested: ((FileModel) -> Void)?
     private let onGetLinkRequested: ((FileModel) -> Void)?
     
-    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
+    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
         let newViewModel = FileMenuViewModel(
             fileViewModel: fileViewModel,
             menuItems: menuItems,
             selectedItemCount: selectedItemCount,
+            selectedFiles: selectedFiles,
             onDismiss: onDismiss
         )
         
