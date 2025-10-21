@@ -99,6 +99,7 @@ class ShareItemViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var selectedExpiration: ShareExpirationOption = .none
     @Published var showCopyNotification = false
+    @Published var showArchiveAccessNotification = false
     @Published var hasUnsavedChanges = false
     @Published var selectedAccessLevel: ShareViewAccessLevel = .anyoneCanView
     @Published var showGeneralAccess = false
@@ -568,6 +569,22 @@ class ShareItemViewModel: ObservableObject {
         
         // Track copy link event for analytics (matching UIKit version)
         trackCopyLinkEvent()
+    }
+    
+    func showArchiveAccessUpdatedNotification() {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            showArchiveAccessNotification = true
+        }
+        
+        // Hide notification after 2 seconds with animation
+        Task {
+            try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showArchiveAccessNotification = false
+                }
+            }
+        }
     }
     
     private func trackCopyLinkEvent() {
@@ -1117,6 +1134,9 @@ class ShareItemViewModel: ObservableObject {
                     
                     switch result {
                     case .success:
+                        // Show success notification
+                        self.showArchiveAccessUpdatedNotification()
+                        
                         // Update the selected archive for edit
                         if let updatedShare = updatedShareVO {
                             self.selectedArchiveForEdit?.accessRole = updatedShare.accessRole

@@ -54,12 +54,21 @@ struct ShareContainerView: View {
                     ))
             }
             
-            // Copy notification overlay
             VStack {
                 Spacer()
                 
                 if viewModel.showCopyNotification {
                     LinkCopyNotificationView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.8)),
+                            removal: .move(edge: .bottom).combined(with: .opacity)
+                        ))
+                        .padding(.horizontal, 24)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                
+                if viewModel.showArchiveAccessNotification {
+                    ArchiveAccessNotificationView()
                         .transition(.asymmetric(
                             insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.8)),
                             removal: .move(edge: .bottom).combined(with: .opacity)
