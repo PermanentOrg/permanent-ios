@@ -10,6 +10,8 @@ import SwiftUI
 struct ArchiveAccessManagementView: View {
     @ObservedObject var viewModel: ShareItemViewModel
     @State private var revokeArchiveName: String = ""
+    @State private var archiveName: String = ""
+    @State private var archiveThumbnailURL: String?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -37,30 +39,32 @@ struct ArchiveAccessManagementView: View {
                         
                         // Archive info row
                         HStack(spacing: 12) {
-                            // Archive thumbnail
-                            if let selectedArchive = viewModel.selectedArchiveForEdit {
-                                archiveThumbnailView(shareVO: selectedArchive)
-                            } else {
-                                Image(.shareArchivePending)
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            Group {
+                                if let thumbURL = archiveThumbnailURL,
+                                   let url = URL(string: thumbURL) {
+                                    AsyncImage(url: url) { image in
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                    } placeholder: {
+                                        Image(.shareArchivePending)
+                                    }
+                                } else {
+                                    Image(.shareArchivePending)
+                                }
                             }
+                            .frame(width: 40, height: 40)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             
                             VStack(alignment: .leading, spacing: 2) {
-                                if let selectedArchive = viewModel.selectedArchiveForEdit {
-                                    HStack{
-                                        Text("The") +
-                                        Text(" \(archiveDisplayName(shareVO: selectedArchive)) ")
-                                            .bold() +
-                                        Text("Archive")
-                                    }
-                                    .font(.custom("Usual", size: 14))
-                                    .foregroundColor(Color.blue900)
-                                } else {
-                                    Text("Archive Name")
-                                        .font(.custom("Usual", size: 14))
-                                        .foregroundColor(Color.blue900)
+                                HStack {
+                                    Text("The") +
+                                    Text(" \(archiveName) ")
+                                        .bold() +
+                                    Text("Archive")
                                 }
+                                .font(.custom("Usual", size: 14))
+                                .foregroundColor(Color.blue900)
                             }
                             Spacer()
                         }
@@ -118,7 +122,7 @@ struct ArchiveAccessManagementView: View {
                     // Revoke Access Section
                     VStack(alignment: .leading, spacing: 16) {
                         Button(action: {
-                            revokeArchiveName = viewModel.selectedArchiveForEdit?.archiveVO?.fullName ?? "Archive"
+                            revokeArchiveName = archiveName
 
                             DispatchQueue.main.async {
                                 viewModel.showRevokeArchiveAccessAlert = true
@@ -184,10 +188,14 @@ struct ArchiveAccessManagementView: View {
         .background(Color.white)
         .onAppear {
             // Initialize selectedRoleForArchive with the original role from the currently selected archive
-            // Only if it hasn't been set yet
             if viewModel.selectedRoleForArchive == nil {
                 guard let selectedArchive = viewModel.selectedArchiveForEdit else { return }
                 viewModel.selectedRoleForArchive = AccessRole.roleForValue(selectedArchive.accessRole ?? "viewer")
+            }
+            
+            if let selectedArchive = viewModel.selectedArchiveForEdit {
+                archiveName = selectedArchive.archiveVO?.fullName ?? "Unknown Archive"
+                archiveThumbnailURL = selectedArchive.archiveVO?.thumbURL500
             }
         }
         .overlay {
