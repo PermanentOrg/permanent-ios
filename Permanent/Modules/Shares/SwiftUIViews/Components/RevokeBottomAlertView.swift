@@ -13,19 +13,22 @@ struct RevokeBottomAlertView: View {
     let buttonText: String
     let onRevoke: () -> Void
     let onCancel: (() -> Void)?
+    let titleView: (() -> AnyView)?
     
     init(
         isPresented: Binding<Bool>,
         title: String = "Are you sure you want to revoke this share link?",
         buttonText: String = "Revoke link",
         onRevoke: @escaping () -> Void,
-        onCancel: (() -> Void)? = nil
+        onCancel: (() -> Void)? = nil,
+        titleView: (() -> AnyView)? = nil
     ) {
         self._isPresented = isPresented
         self.title = title
         self.buttonText = buttonText
         self.onRevoke = onRevoke
         self.onCancel = onCancel
+        self.titleView = titleView
     }
     
     var body: some View {
@@ -43,7 +46,6 @@ struct RevokeBottomAlertView: View {
             
             alertCard
                 .offset(y: isPresented ? 0 : 400)
-                .opacity(isPresented ? 1 : 0)
                 .animation(.easeOut(duration: 0.3), value: isPresented)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -52,17 +54,27 @@ struct RevokeBottomAlertView: View {
     
     private var alertCard: some View {
         VStack {
-            HStack {
-                Spacer()
+            if let titleView = titleView {
+                titleView()
+                    .font(.custom("Usual-Regular", size: 14))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(6)
+                    .foregroundColor(.blue700)
+                    .padding(.top, 32)
+                    .padding(.horizontal, 32)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .animation(nil, value: title)
+            } else {
                 Text(title)
-                Spacer()
+                    .font(.custom("Usual-Regular", size: 14))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(6)
+                    .foregroundColor(.blue700)
+                    .padding(.top, 32)
+                    .padding(.horizontal, 32)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .animation(nil, value: title)
             }
-                .font(.custom("Usual-Regular", size: 14))
-                .multilineTextAlignment(.center)
-                .lineSpacing(6)
-                .foregroundColor(.blue700)
-                .padding(.top, 32)
-                .padding(.horizontal, 32)
             
             VStack(spacing: 16) {
                 Button(action: revokeAction) {

@@ -10,6 +10,8 @@ import SwiftUI
 struct ShareItemView: View {
     @ObservedObject var viewModel: ShareItemViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var denyConfirmationTitle: String = "Are you sure you want to deny access?"
+    @State private var denyArchiveName: String = ""
     
     init(viewModel: ShareItemViewModel) {
         self.viewModel = viewModel
@@ -21,66 +23,98 @@ struct ShareItemView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            ZStack {
-                topBar
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
-                    .padding(.bottom, 8)
-            }
-            .frame(height: 64)
-            .background(Color.white)
-            
+        ZStack {
             VStack(spacing: 0) {
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                    .background(Color.blue50)
+                ZStack {
+                    topBar
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+                        .padding(.bottom, 8)
+                }
+                .frame(height: 64)
+                .background(Color.white)
                 
-                VStack(spacing: 20) {
-                    fileInfoSection
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                        .background(Color.blue50)
                     
-                    Group {
-                        if viewModel.genLinkLoading {
-                            linkCreationLoadingSection
-                                .transition(.opacity.combined(with: .scale))
-                        } else if viewModel.shouldShowCreateButton {
-                            createLinkSection
-                                .transition(.opacity.combined(with: .scale))
-                        } else if viewModel.hasShareLink {
-                            shareLinkSection
-                                .transition(.opacity.combined(with: .scale))
+                    VStack(spacing: 20) {
+                        fileInfoSection
+                        
+                        Group {
+                            if viewModel.genLinkLoading {
+                                linkCreationLoadingSection
+                                    .transition(.opacity.combined(with: .scale))
+                            } else if viewModel.shouldShowCreateButton {
+                                createLinkSection
+                                    .transition(.opacity.combined(with: .scale))
+                            } else if viewModel.hasShareLink {
+                                shareLinkSection
+                                    .transition(.opacity.combined(with: .scale))
+                            }
                         }
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
                     }
-                    .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
-                    .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
-                    .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
-                    .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
+                    .padding(24)
+                    
+                    // Current Requests and Access Section - Scrollable
+                    if !viewModel.sharedArchives.isEmpty || viewModel.isLoadingArchives {
+                        currentRequestsAndAccessSection
+                    } else {
+                        // Spacer to fill remaining space with blue25 background when no archives
+                        Spacer()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color.blue25)
+                    }
                 }
-                .padding(24)
-                
-                // Current Requests and Access Section - Scrollable
-                if !viewModel.sharedArchives.isEmpty || viewModel.isLoadingArchives {
-                    currentRequestsAndAccessSection
-                } else {
-                    // Spacer to fill remaining space with blue25 background when no archives
-                    Spacer()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.blue25)
-                }
+                .background(Color.blue25)
             }
             .background(Color.blue25)
-        }
-        .background(Color.blue25)
-        .overlay {
-            if viewModel.isLoading && !viewModel.genLinkLoading {
-                loadingOverlay
+            .overlay {
+                if viewModel.isLoading && !viewModel.genLinkLoading {
+                    loadingOverlay
+                }
             }
-        }
-        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-            Button("OK") { viewModel.errorMessage = nil }
-        } message: {
-            if let errorMessage = viewModel.errorMessage { Text(errorMessage) }
+            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+                Button("OK") { viewModel.errorMessage = nil }
+            } message: {
+                if let errorMessage = viewModel.errorMessage { Text(errorMessage) }
+            }
+            
+            RevokeBottomAlertView(
+                isPresented: $viewModel.showDenyArchiveAccessAlert,
+                title: denyConfirmationTitle,
+                buttonText: "Yes",
+                onRevoke: {
+                    if let shareVO = viewModel.selectedArchiveForDeny {
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                            viewModel.denyShareRequest(shareVO)
+                        }
+                        viewModel.selectedArchiveForDeny = nil
+                        denyConfirmationTitle = ""
+                        denyArchiveName = ""
+                    }
+                },
+                onCancel: {
+                    viewModel.selectedArchiveForDeny = nil
+                    denyConfirmationTitle = ""
+                    denyArchiveName = ""
+                },
+                titleView: {
+                    AnyView(
+                        Group {
+                            Text("Are you sure you want to deny access from ")
+                            + Text("The \(denyArchiveName) Archive").fontWeight(.semibold)
+                            + Text("?")
+                        }
+                    )
+                }
+            )
         }
     }
     
@@ -384,8 +418,15 @@ struct ShareItemView: View {
                                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                                 impactFeedback.impactOccurred()
                                 
-                                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                    viewModel.denyShareRequest(shareVO)
+                                // Capture the archive name before showing the alert
+                                let archiveName = shareVO.archiveVO?.fullName ?? "Archive"
+                                denyConfirmationTitle = "Are you sure you want to deny access from The \(archiveName) Archive?"
+                                denyArchiveName = archiveName
+                                viewModel.selectedArchiveForDeny = shareVO
+                                
+                                // Delay showing the alert to ensure the title is set first
+                                DispatchQueue.main.async {
+                                    viewModel.showDenyArchiveAccessAlert = true
                                 }
                             }) {
                                 Image(.shareDeny)

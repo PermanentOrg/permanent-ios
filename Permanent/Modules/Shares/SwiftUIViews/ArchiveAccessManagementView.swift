@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ArchiveAccessManagementView: View {
     @ObservedObject var viewModel: ShareItemViewModel
+    @State private var revokeArchiveName: String = ""
     
     var body: some View {
         VStack(spacing: 0) {
@@ -117,8 +118,11 @@ struct ArchiveAccessManagementView: View {
                     // Revoke Access Section
                     VStack(alignment: .leading, spacing: 16) {
                         Button(action: {
-                            // Show revoke confirmation dialog
-                            viewModel.showRevokeArchiveAccessAlert = true
+                            revokeArchiveName = viewModel.selectedArchiveForEdit?.archiveVO?.fullName ?? "Archive"
+
+                            DispatchQueue.main.async {
+                                viewModel.showRevokeArchiveAccessAlert = true
+                            }
                         }) {
                             HStack(spacing: 16) {
                                 Image(.publishRevokeLink2)
@@ -132,7 +136,6 @@ struct ArchiveAccessManagementView: View {
                                 
                                 Spacer()
                             }
-                          //  .padding(.vertical, 12)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
@@ -204,6 +207,15 @@ struct ArchiveAccessManagementView: View {
                 buttonText: "Revoke access",
                 onRevoke: {
                     revokeAccess()
+                },
+                titleView: {
+                    AnyView(
+                        Group {
+                            Text("Are you sure you want to revoke access from ")
+                            + Text("The \(revokeArchiveName) Archive").fontWeight(.semibold)
+                            + Text("? This action will immediately remove all permissions granted.")
+                        }
+                    )
                 }
             )
         }
