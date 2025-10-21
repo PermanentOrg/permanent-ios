@@ -1219,14 +1219,9 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let file = viewModel?.fileForRowAt(indexPath: indexPath)
-        let listItemHeight: CGFloat
+        let listItemHeight: CGFloat = 70  // Consistent height for all list items
         let gridItemHeight: CGFloat = UIScreen.main.bounds.width / 2 + 50
-        if viewModel?.shareListType == .sharedByMe {
-            listItemHeight = (file?.minArchiveVOS.count ?? 0) > 0 ? 90 : 70
-        } else {
-            listItemHeight = file?.sharedByArchive != nil ? 90 : 70
-        }
+        
         let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: listItemHeight)
         // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
         // Vertical size: 30 is the height of the title label
