@@ -826,6 +826,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             fileViewModel: file,
             menuItems: menuItems,
             selectedItemCount: viewModel?.selectedFiles?.count,
+            selectedFiles: viewModel?.selectedFiles,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
             },

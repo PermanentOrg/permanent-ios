@@ -14,7 +14,6 @@ enum NavigationDirection {
     case backward
 }
 
-// Using a local enum to avoid conflicts - can be refactored later
 enum ShareViewAccessLevel: CaseIterable {
     case anyoneCanView
     case restricted
@@ -128,6 +127,11 @@ class ShareItemViewModel: ObservableObject {
     
     // Bottom alert for archive access revoke confirmation
     @Published var showRevokeArchiveAccessAlert = false
+    
+    // Bottom alert for deny pending archive access confirmation
+    @Published var showDenyArchiveAccessAlert = false
+    @Published var selectedArchiveForDeny: ShareVOData?
+    @Published var denyArchiveName: String = ""
     
     lazy var revokeAction: () -> Void = { [weak self] in
         self?.performRevokeLink()

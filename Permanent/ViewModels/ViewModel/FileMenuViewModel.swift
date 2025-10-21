@@ -53,6 +53,7 @@ class FileMenuViewModel: ObservableObject {
     let fileViewModel: FileModel
     let menuItems: [MenuItem]
     let selectedItemCount: Int?
+    let selectedFiles: [FileModel]?
     let onDismiss: () -> Void
     
     // MARK: - Cached/Computed Properties
@@ -75,14 +76,37 @@ class FileMenuViewModel: ObservableObject {
     private var capturedPresentingViewController: UIViewController?
     
     // MARK: - Initialization
-    init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void) {
+    init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, onDismiss: @escaping () -> Void) {
         self.fileViewModel = fileViewModel
         self.menuItems = menuItems
         self.selectedItemCount = selectedItemCount
+        self.selectedFiles = selectedFiles
         self.onDismiss = onDismiss
         
-        self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)
-        self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
+        // Calculate size and date based on selection
+        if let selectedFiles = selectedFiles, selectedFiles.count > 1 {
+            // Multiple files selected
+            let files = selectedFiles.filter { !$0.type.isFolder }
+            let folders = selectedFiles.filter { $0.type.isFolder }
+            
+            // Calculate total file size (only for files, not folders)
+            let totalSize = files.reduce(Int64(0)) { $0 + $1.size }
+            self.cachedFormattedFileSize = totalSize > 0 ? Self.formatFileSize(totalSize) : nil
+            
+            // If there are folders, use the date of the first folder, otherwise use the date of the first file
+            if let firstFolder = folders.first {
+                self.cachedFormattedDate = Self.formatDate(firstFolder.date)
+            } else if let firstFile = files.first {
+                self.cachedFormattedDate = Self.formatDate(firstFile.date)
+            } else {
+                self.cachedFormattedDate = ""
+            }
+        } else {
+            // Single file selected
+            self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)
+            self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
+        }
+        
         self.preCalculatedHeight = Self.calculateSheetHeight(for: menuItems)
     }
     
