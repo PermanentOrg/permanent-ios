@@ -89,7 +89,7 @@ struct ShareItemView: View {
             RevokeBottomAlertView(
                 isPresented: $viewModel.showDenyArchiveAccessAlert,
                 title: denyConfirmationTitle,
-                buttonText: "Yes",
+                buttonText: "Deny access",
                 onRevoke: {
                     if let shareVO = viewModel.selectedArchiveForDeny {
                         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
