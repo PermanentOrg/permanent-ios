@@ -119,6 +119,9 @@ class DrawerViewController: UIViewController {
                 leftSideMenuController.selectedMenuOption = .files
             }
             
+        case _ where viewController is SharesViewController:
+            leftSideMenuController.selectedMenuOption = .shares
+            
         default:
             break
         }

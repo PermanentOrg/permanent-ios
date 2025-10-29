@@ -112,6 +112,7 @@ class SharePreviewViewModel {
                 let status = ShareStatus.status(forValue: shareVO.status)
                 self.shareDetails?.status = status
             
+                self.viewDelegate?.updateScreen(status: .success, shareDetails: self.shareDetails)
                 self.viewDelegate?.updateShareAccess(status: .success, shareStatus: status)
             
             break
@@ -154,7 +155,15 @@ class SharePreviewViewModel {
         
         let details = ShareDetailsVM(model: model)
         self.shareDetails = details
-        viewDelegate?.updateScreen(status: .success, shareDetails: details)
+        
+        let isNonRestrictive = model.autoApproveToggle == 1
+        let hasAccess = model.shareVO != nil
+        
+        if isNonRestrictive && !hasAccess {
+            requestShareAccess(urlToken: urlToken)
+        } else {
+            viewDelegate?.updateScreen(status: .success, shareDetails: details)
+        }
         
         // Delete the saved token if it existed.
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.shareURLToken)
