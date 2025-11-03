@@ -168,7 +168,9 @@ class FileCollectionViewCell: UICollectionViewCell {
                 model.permissions.contains(.delete) ||
                 model.permissions.contains(.move) ||
                 model.permissions.contains(.publish) ||
-                model.permissions.contains(.share)
+                model.permissions.contains(.share) ||
+                model.permissions.contains(.edit) ||
+                model.permissions.contains(.read)
             hasRightButton = hasRightButton && hasRightButtonPermission
         } else {
             overlayView.isHidden = action == .none

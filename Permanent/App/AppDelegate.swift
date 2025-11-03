@@ -281,7 +281,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #if STAGING_ENVIRONMENT
             NetworkLogger.enableLogging()
         #else
-             NetworkLogger.disableLogging()
+             NetworkLogger.enableLogging()
         #endif
     }
     

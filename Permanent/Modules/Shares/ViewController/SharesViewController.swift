@@ -698,16 +698,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
             }
         }
-        
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
-                unshareAction(file: file, atIndexPath: indexPath)
-            }))
-        } else if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
-                deleteAction(file: file, atIndexPath: indexPath)
-            }))
-        }
 
         if file.permissions.contains(.edit) {
             menuItems.append(FileMenuViewModel.MenuItem(type: .rename, action: { [self] in
@@ -738,9 +728,26 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
         }
         
+        // Add unshare (leave share) or delete as the last item with separator
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
+                unshareAction(file: file, atIndexPath: indexPath)
+            }))
+        } else if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
+                deleteAction(file: file, atIndexPath: indexPath)
+            }))
+        }
+        
+        // Determine if we should show archive info (only in Shared With Me tab, and at root level)
+        let isSharedWithMe = viewModel?.shareListType == .sharedWithMe
+        let isAtRootLevel = viewModel?.currentFolderIsRoot ?? true
+        let shouldShowArchiveInfo = isSharedWithMe && isAtRootLevel
+        
         let swiftUIView = FileMoreMenuView(
             fileViewModel: file,
             menuItems: menuItems,
+            showArchiveInfo: shouldShowArchiveInfo,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
             },

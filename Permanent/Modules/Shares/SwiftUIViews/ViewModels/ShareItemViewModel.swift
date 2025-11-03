@@ -515,12 +515,22 @@ class ShareItemViewModel: ObservableObject {
             let accessLevel = mapAccessRestrictionsToAccessLevel(accessRestrictions)
             selectedAccessLevel = accessLevel
             originalAccessLevel = accessLevel
+            
+            // API constraint: when accessRestrictions is "none", permissionsLevel must be "viewer"
+            if accessRestrictions == "none" {
+                selectedAccessRole = .viewer
+                originalAccessRole = .viewer
+                return
+            }
         } else {
             selectedAccessLevel = .anyoneCanView
             originalAccessLevel = .anyoneCanView
+            selectedAccessRole = .viewer
+            originalAccessRole = .viewer
+            return
         }
         
-        // Also set the permissions level (access role) from V2 data
+        // Also set the permissions level (access role) from V2 data (for restricted mode)
         if let permissionsLevel = v2Data.permissionsLevel {
             let accessRole = mapPermissionsLevelToAccessRole(permissionsLevel)
             selectedAccessRole = accessRole
@@ -764,6 +774,13 @@ class ShareItemViewModel: ObservableObject {
     
     func updateAccessLevel(_ accessLevel: ShareViewAccessLevel) {
         selectedAccessLevel = accessLevel
+        
+        // When switching to "anyone can view", automatically set role to viewer
+        // as per API requirement (accessRestrictions "none" requires permissionsLevel "viewer")
+        if accessLevel == .anyoneCanView {
+            selectedAccessRole = .viewer
+        }
+        
         checkForUnsavedChanges()
         navigationDirection = .backward
         showGeneralAccess = false
@@ -834,8 +851,16 @@ class ShareItemViewModel: ObservableObject {
             
             // Map UI settings to V2 API parameters
             // Always send current values to ensure at least one parameter is present (API requirement)
-            let permissionsLevel = mapAccessRoleToPermissionsLevel(selectedAccessRole)
             let accessRestrictions = mapAccessLevelToAccessRestrictions(selectedAccessLevel)
+            
+            // API requirement: when accessRestrictions is "none" (anyone can view), 
+            // permissionsLevel must be "viewer"
+            let permissionsLevel: String
+            if accessRestrictions == "none" {
+                permissionsLevel = "viewer"
+            } else {
+                permissionsLevel = mapAccessRoleToPermissionsLevel(selectedAccessRole)
+            }
             
             // Handle expiration: send actual date for set expiration, "null" string to clear expiration
             let expirationTimestamp: String? = (selectedExpiration != .never && selectedExpiration != .none) ? selectedExpiration.expirationDate : "null"
@@ -963,22 +988,46 @@ class ShareItemViewModel: ObservableObject {
             parentFolderLinkId: fileModel.parentFolderLinkId
         )
         
-        downloader.getRecord(fileDownloadInfo) { [weak self] recordVO, error in
-            Task {
-                await MainActor.run {
-                    guard let self = self else { return }
-                    
-                    self.isLoadingArchives = false
-                    
-                    if let error = error {
-                        print("Error fetching record details: \(error)")
-                        return
+        // Use getFolder for folders, getRecord for files
+        if isFolder {
+            downloader.getFolder(fileDownloadInfo) { [weak self] folderVO, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        self.isLoadingArchives = false
+                        
+                        if let error = error {
+                            print("Error fetching folder details: \(error)")
+                            return
+                        }
+                        
+                        if let folderVO = folderVO,
+                           let folderData = folderVO.folderVO,
+                           let shareVOs = folderData.shareVOS {
+                            self.sharedArchives = shareVOs
+                        }
                     }
-                    
-                    if let recordVO = recordVO,
-                       let recordData = recordVO.recordVO,
-                       let shareVOs = recordData.shareVOS {
-                        self.sharedArchives = shareVOs
+                }
+            }
+        } else {
+            downloader.getRecord(fileDownloadInfo) { [weak self] recordVO, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        self.isLoadingArchives = false
+                        
+                        if let error = error {
+                            print("Error fetching record details: \(error)")
+                            return
+                        }
+                        
+                        if let recordVO = recordVO,
+                           let recordData = recordVO.recordVO,
+                           let shareVOs = recordData.shareVOS {
+                            self.sharedArchives = shareVOs
+                        }
                     }
                 }
             }
@@ -1077,34 +1126,69 @@ class ShareItemViewModel: ObservableObject {
             parentFolderLinkId: fileModel.parentFolderLinkId
         )
         
-        downloader.getRecord(fileDownloadInfo) { [weak self] recordVO, error in
-            Task {
-                await MainActor.run {
-                    guard let self = self else { return }
-                    
-                    if error != nil {
-                        return
-                    }
-                    
-                    if let recordVO = recordVO,
-                       let recordData = recordVO.recordVO,
-                       let shareVOs = recordData.shareVOS,
-                       let completeShare = shareVOs.first(where: { $0.shareID == shareID }) {
+        // Use getFolder for folders, getRecord for files
+        if isFolder {
+            downloader.getFolder(fileDownloadInfo) { [weak self] folderVO, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
                         
-                        if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
-                            self.sharedArchives[index] = completeShare
+                        if error != nil {
+                            return
                         }
-                    } else {
-                        if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
-                            self.sharedArchives[index] = share
+                        
+                        if let folderVO = folderVO,
+                           let folderData = folderVO.folderVO,
+                           let shareVOs = folderData.shareVOS,
+                           let completeShare = shareVOs.first(where: { $0.shareID == shareID }) {
+                            
+                            if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
+                                self.sharedArchives[index] = completeShare
+                            }
+                        } else {
+                            if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
+                                self.sharedArchives[index] = share
+                            }
                         }
+                        
+                        if clearLoadingState, let loadingID = loadingShareID {
+                            self.approvingShareIDs.remove(loadingID)
+                        }
+                        
+                        self.objectWillChange.send()
                     }
-                    
-                    if clearLoadingState, let loadingID = loadingShareID {
-                        self.approvingShareIDs.remove(loadingID)
+                }
+            }
+        } else {
+            downloader.getRecord(fileDownloadInfo) { [weak self] recordVO, error in
+                Task {
+                    await MainActor.run {
+                        guard let self = self else { return }
+                        
+                        if error != nil {
+                            return
+                        }
+                        
+                        if let recordVO = recordVO,
+                           let recordData = recordVO.recordVO,
+                           let shareVOs = recordData.shareVOS,
+                           let completeShare = shareVOs.first(where: { $0.shareID == shareID }) {
+                            
+                            if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
+                                self.sharedArchives[index] = completeShare
+                            }
+                        } else {
+                            if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
+                                self.sharedArchives[index] = share
+                            }
+                        }
+                        
+                        if clearLoadingState, let loadingID = loadingShareID {
+                            self.approvingShareIDs.remove(loadingID)
+                        }
+                        
+                        self.objectWillChange.send()
                     }
-                    
-                    self.objectWillChange.send()
                 }
             }
         }
