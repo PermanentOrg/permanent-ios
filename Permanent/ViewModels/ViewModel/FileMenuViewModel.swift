@@ -160,10 +160,16 @@ class FileMenuViewModel: ObservableObject {
         let regularItemsCount = menuItems.filter { $0.type != .delete && $0.type != .unshare }.count
         let hasDestructiveItem = menuItems.contains { $0.type == .delete || $0.type == .unshare }
         
+        let totalItemCount = regularItemsCount + (hasDestructiveItem ? 1 : 0)
+        
+        // If there are no menu items, only show header (and archive info if present)
+        guard totalItemCount > 0 else {
+            return headerHeight + archiveInfoHeight
+        }
+        
         let topPadding: CGFloat = 24
         let bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
         
-        let totalItemCount = regularItemsCount + (hasDestructiveItem ? 1 : 0)
         let menuItemsHeight: CGFloat = CGFloat(totalItemCount) * itemHeight
         
         let menuSectionHeight = topPadding + menuItemsHeight + bottomPadding

@@ -220,30 +220,31 @@ struct FileMoreMenuView: View {
                 archiveInfoSection(archiveName: archiveName, accessRole: accessRole)
             }
             
-            VStack(spacing: 16) {
-                ForEach(viewModel.regularMenuItems.indices, id: \.self) { index in
-                    FileMoreMenuItemRow(item: viewModel.regularMenuItems[index], viewModel: viewModel) {
-                        viewModel.handleMenuItemTap(viewModel.regularMenuItems[index])
-                    }
-                }
-                
-                if let destructiveItem = viewModel.destructiveMenuItem {
-                    // Only show separator if there are other menu items above
-                    if !viewModel.regularMenuItems.isEmpty {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 1)
-                            .padding(.horizontal, -24)
+            if !viewModel.regularMenuItems.isEmpty || viewModel.destructiveMenuItem != nil {
+                VStack(spacing: 16) {
+                    ForEach(viewModel.regularMenuItems.indices, id: \.self) { index in
+                        FileMoreMenuItemRow(item: viewModel.regularMenuItems[index], viewModel: viewModel) {
+                            viewModel.handleMenuItemTap(viewModel.regularMenuItems[index])
+                        }
                     }
                     
-                    FileMoreMenuItemRow(item: destructiveItem, viewModel: viewModel, isDestructive: true) {
-                        viewModel.handleMenuItemTap(destructiveItem)
+                    if let destructiveItem = viewModel.destructiveMenuItem {
+                        if !viewModel.regularMenuItems.isEmpty {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 1)
+                                .padding(.horizontal, -24)
+                        }
+                        
+                        FileMoreMenuItemRow(item: destructiveItem, viewModel: viewModel, isDestructive: true) {
+                            viewModel.handleMenuItemTap(destructiveItem)
+                        }
                     }
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+                .padding(.bottom, viewModel.regularMenuItems.isEmpty && viewModel.destructiveMenuItem != nil ? 16 : 24)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 24)
-            .padding(.bottom, viewModel.regularMenuItems.isEmpty && viewModel.destructiveMenuItem != nil ? 16 : 24)
         }
     }
     
