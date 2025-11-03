@@ -791,6 +791,21 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         guard let file = viewModel?.selectedFiles?.first else { return }
         var menuItems: [FileMenuViewModel.MenuItem] = []
         
+        let isNotAtRootLevel = !(viewModel?.currentFolderIsRoot ?? true)
+        if file.permissions.contains(.edit) && isNotAtRootLevel {
+            let hasFolder = viewModel?.selectedFiles?.contains(where: { $0.type.isFolder }) ?? false
+            let hasEditorOrHigherRole = file.accessRole.rawValue <= AccessRole.editor.rawValue
+            if !hasFolder && hasEditorOrHigherRole {
+                menuItems.append(FileMenuViewModel.MenuItem(type: .editMetadata, action: { [weak self] in
+                    self?.presentMetadataEditView { hasUpdates in
+                        if hasUpdates {
+                            self?.refreshShares()
+                        }
+                    }
+                }))
+            }
+        }
+        
         if file.permissions.contains(.delete) {
             menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [weak self] in
                 self?.showActionDialog(
@@ -1405,6 +1420,30 @@ extension SharesViewController: SharedFileActionSheetDelegate {
         formatter.allowedUnits = [.useKB, .useMB, .useGB]
         formatter.countStyle = .file
         return formatter.string(fromByteCount: size)
+    }
+    
+    // MARK: - Metadata Edit
+    func presentMetadataEditView(completion: @escaping (Bool) -> Void) {
+        guard let selectedFiles = self.viewModel?.selectedFiles else { return }
+        
+        let hostingController = UIHostingController(rootView: MetadataEditView(viewModel: FilesMetadataViewModel(files: selectedFiles)))
+        hostingController.modalPresentationStyle = .fullScreen
+        
+        self.present(hostingController, animated: true, completion: nil)
+        
+        self.dismissFloatingActionIsland()
+        self.fabView.isHidden = false
+        self.clearButtonWasPressed(UIButton())
+        
+        hostingController.rootView.dismissAction = { hasUpdates in
+            hostingController.dismiss(animated: true, completion: {
+                completion(hasUpdates)
+            })
+        }
+    }
+    
+    private func refreshShares() {
+        getShares(shouldShowSpinner: false)
     }
 }
 
