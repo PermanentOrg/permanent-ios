@@ -49,6 +49,12 @@ class FileMenuViewModel: ObservableObject {
     @Published var pressedMenuItemId: String?
     @Published var specialMenuItemRequested: MenuItem?
     
+    @Published var showDeleteConfirmation: Bool = false
+    @Published var showLeaveShareConfirmation: Bool = false
+    @Published var pendingDeleteAction: (() -> Void)?
+    @Published var pendingLeaveShareAction: (() -> Void)?
+    @Published var isExecutingAction: Bool = false
+    
     // MARK: - Input Properties
     let fileViewModel: FileModel
     let menuItems: [MenuItem]
@@ -333,6 +339,16 @@ class FileMenuViewModel: ObservableObject {
     
     // MARK: - Action Handling Logic
     func handleMenuItemTap(_ menuItem: MenuItem) {
+        if menuItem.type == .delete {
+            pendingDeleteAction = menuItem.action
+            showDeleteConfirmation = true
+            return
+        } else if menuItem.type == .unshare {
+            pendingLeaveShareAction = menuItem.action
+            showLeaveShareConfirmation = true
+            return
+        }
+        
         if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
             handleMenuItemAction(menuItem)
         } else if menuItem.type == .editMetadata {
@@ -645,6 +661,33 @@ class FileMenuViewModel: ObservableObject {
     
     func clearSpecialMenuItemRequest() {
         specialMenuItemRequested = nil
+    }
+    
+    // MARK: - Confirmation Actions
+    func executeDeleteAction() {
+        dismissWithAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.pendingDeleteAction?()
+            self.pendingDeleteAction = nil
+        }
+    }
+    
+    func executeLeaveShareAction() {
+        dismissWithAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.pendingLeaveShareAction?()
+            self.pendingLeaveShareAction = nil
+        }
+    }
+    
+    func cancelDeleteAction() {
+        showDeleteConfirmation = false
+        pendingDeleteAction = nil
+    }
+    
+    func cancelLeaveShareAction() {
+        showLeaveShareConfirmation = false
+        pendingLeaveShareAction = nil
     }
     
     // MARK: - Menu Item Row Helpers
