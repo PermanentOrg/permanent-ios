@@ -13,12 +13,13 @@ struct FileMoreMenuView: View {
     private let onShareManagementRequested: ((FileModel) -> Void)?
     private let onGetLinkRequested: ((FileModel) -> Void)?
     
-    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
+    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
         let newViewModel = FileMenuViewModel(
             fileViewModel: fileViewModel,
             menuItems: menuItems,
             selectedItemCount: selectedItemCount,
             selectedFiles: selectedFiles,
+            showArchiveInfo: showArchiveInfo,
             onDismiss: onDismiss
         )
         
@@ -213,27 +214,97 @@ struct FileMoreMenuView: View {
     
     @ViewBuilder
     private var menuContent: some View {
-        LazyVStack(spacing: 16) {
-            ForEach(viewModel.regularMenuItems.indices, id: \.self) { index in
-                FileMoreMenuItemRow(item: viewModel.regularMenuItems[index], viewModel: viewModel) {
-                    viewModel.handleMenuItemTap(viewModel.regularMenuItems[index])
-                }
+        LazyVStack(spacing: 0) {
+            // Archive info section (only shown in Shared With Me)
+            if viewModel.showArchiveInfo, let archiveName = viewModel.archiveName, let accessRole = viewModel.accessRoleName {
+                archiveInfoSection(archiveName: archiveName, accessRole: accessRole)
             }
             
-            if let deleteItem = viewModel.deleteMenuItem {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(height: 1)
-                    .padding(.horizontal, -24)
-                
-                FileMoreMenuItemRow(item: deleteItem, viewModel: viewModel, isDestructive: true) {
-                    viewModel.handleMenuItemTap(deleteItem)
+            if !viewModel.regularMenuItems.isEmpty || viewModel.destructiveMenuItem != nil {
+                VStack(spacing: 16) {
+                    ForEach(viewModel.regularMenuItems.indices, id: \.self) { index in
+                        FileMoreMenuItemRow(item: viewModel.regularMenuItems[index], viewModel: viewModel) {
+                            viewModel.handleMenuItemTap(viewModel.regularMenuItems[index])
+                        }
+                    }
+                    
+                    if let destructiveItem = viewModel.destructiveMenuItem {
+                        if !viewModel.regularMenuItems.isEmpty {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 1)
+                                .padding(.horizontal, -24)
+                        }
+                        
+                        FileMoreMenuItemRow(item: destructiveItem, viewModel: viewModel, isDestructive: true) {
+                            viewModel.handleMenuItemTap(destructiveItem)
+                        }
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+                .padding(.bottom, viewModel.regularMenuItems.isEmpty && viewModel.destructiveMenuItem != nil ? 16 : 24)
             }
         }
+    }
+    
+    // MARK: - Archive Info Section
+    @ViewBuilder
+    private func archiveInfoSection(archiveName: String, accessRole: String) -> some View {
+        HStack(alignment: .center, spacing: 16) {
+            Group {
+                if let thumbnailURLString = viewModel.fileViewModel.sharedByArchive?.thumbnail,
+                   let thumbnailURL = URL(string: thumbnailURLString) {
+                    WebImage(url: thumbnailURL)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 24, height: 24, alignment: .center)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                } else {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.blue100)
+                        .frame(width: 24, height: 24, alignment: .center)
+                        .overlay(
+                            Text(String(archiveName.prefix(1)).uppercased())
+                                .font(.custom("Usual-Regular", size: 16))
+                                .fontWeight(.semibold)
+                                .foregroundColor(Color.blue900)
+                        )
+                }
+            }
+            .padding(.horizontal, 8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("FROM")
+                    .font(.custom("Usual-Regular", size: 10))
+                    .foregroundColor(Color.blue400)
+                    .kerning(1.6)
+                
+                HStack {
+                    Text("The") +
+                    Text(" \(archiveName) ")
+                        .bold() +
+                    Text("Archive")
+                }
+                .font(.custom("Usual-Regular", size: 12))
+                .foregroundColor(Color.blue900)
+                .lineLimit(1)
+            }
+            
+            Spacer()
+            
+            Text(accessRole)
+                .font(.custom("Usual-Regular", size: 8))
+                .kerning(1.28)
+                .foregroundColor(Color.blue900)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.white)
+                .cornerRadius(4)
+        }
         .padding(.horizontal, 24)
-        .padding(.top, 24)
-        .padding(.bottom, 20)
+        .padding(.bottom, 24)
+        .background(Color.blue25)
     }
     
     // MARK: - Special Menu Item Handling

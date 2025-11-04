@@ -698,16 +698,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
             }
         }
-        
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
-                unshareAction(file: file, atIndexPath: indexPath)
-            }))
-        } else if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
-                deleteAction(file: file, atIndexPath: indexPath)
-            }))
-        }
 
         if file.permissions.contains(.edit) {
             menuItems.append(FileMenuViewModel.MenuItem(type: .rename, action: { [self] in
@@ -738,9 +728,26 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
         }
         
+        // Add unshare (leave share) or delete as the last item with separator
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
+                unshareAction(file: file, atIndexPath: indexPath)
+            }))
+        } else if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
+                deleteAction(file: file, atIndexPath: indexPath)
+            }))
+        }
+        
+        // Determine if we should show archive info (only in Shared With Me tab, and at root level)
+        let isSharedWithMe = viewModel?.shareListType == .sharedWithMe
+        let isAtRootLevel = viewModel?.currentFolderIsRoot ?? true
+        let shouldShowArchiveInfo = isSharedWithMe && isAtRootLevel
+        
         let swiftUIView = FileMoreMenuView(
             fileViewModel: file,
             menuItems: menuItems,
+            showArchiveInfo: shouldShowArchiveInfo,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
             },
@@ -783,6 +790,21 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     func showFileActionSheetForSelection() {
         guard let file = viewModel?.selectedFiles?.first else { return }
         var menuItems: [FileMenuViewModel.MenuItem] = []
+        
+        let isNotAtRootLevel = !(viewModel?.currentFolderIsRoot ?? true)
+        if file.permissions.contains(.edit) && isNotAtRootLevel {
+            let hasFolder = viewModel?.selectedFiles?.contains(where: { $0.type.isFolder }) ?? false
+            let hasEditorOrHigherRole = file.accessRole.rawValue <= AccessRole.editor.rawValue
+            if !hasFolder && hasEditorOrHigherRole {
+                menuItems.append(FileMenuViewModel.MenuItem(type: .editMetadata, action: { [weak self] in
+                    self?.presentMetadataEditView { hasUpdates in
+                        if hasUpdates {
+                            self?.refreshShares()
+                        }
+                    }
+                }))
+            }
+        }
         
         if file.permissions.contains(.delete) {
             menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [weak self] in
@@ -1398,6 +1420,30 @@ extension SharesViewController: SharedFileActionSheetDelegate {
         formatter.allowedUnits = [.useKB, .useMB, .useGB]
         formatter.countStyle = .file
         return formatter.string(fromByteCount: size)
+    }
+    
+    // MARK: - Metadata Edit
+    func presentMetadataEditView(completion: @escaping (Bool) -> Void) {
+        guard let selectedFiles = self.viewModel?.selectedFiles else { return }
+        
+        let hostingController = UIHostingController(rootView: MetadataEditView(viewModel: FilesMetadataViewModel(files: selectedFiles)))
+        hostingController.modalPresentationStyle = .fullScreen
+        
+        self.present(hostingController, animated: true, completion: nil)
+        
+        self.dismissFloatingActionIsland()
+        self.fabView.isHidden = false
+        self.clearButtonWasPressed(UIButton())
+        
+        hostingController.rootView.dismissAction = { hasUpdates in
+            hostingController.dismiss(animated: true, completion: {
+                completion(hasUpdates)
+            })
+        }
+    }
+    
+    private func refreshShares() {
+        getShares(shouldShowSpinner: false)
     }
 }
 

@@ -55,11 +55,14 @@ class FileMenuViewModel: ObservableObject {
     let selectedItemCount: Int?
     let selectedFiles: [FileModel]?
     let onDismiss: () -> Void
+    let showArchiveInfo: Bool
     
     // MARK: - Cached/Computed Properties
     let cachedFormattedFileSize: String?
     let cachedFormattedDate: String
     let preCalculatedHeight: CGFloat
+    let archiveName: String?
+    let accessRoleName: String?
     
     // MARK: - Private Properties
     private var dragStartTime: Date = Date()
@@ -76,11 +79,12 @@ class FileMenuViewModel: ObservableObject {
     private var capturedPresentingViewController: UIViewController?
     
     // MARK: - Initialization
-    init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, onDismiss: @escaping () -> Void) {
+    init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void) {
         self.fileViewModel = fileViewModel
         self.menuItems = menuItems
         self.selectedItemCount = selectedItemCount
         self.selectedFiles = selectedFiles
+        self.showArchiveInfo = showArchiveInfo
         self.onDismiss = onDismiss
         
         // Calculate size and date based on selection
@@ -107,7 +111,15 @@ class FileMenuViewModel: ObservableObject {
             self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
         }
         
-        self.preCalculatedHeight = Self.calculateSheetHeight(for: menuItems)
+        if showArchiveInfo, let sharedByArchive = fileViewModel.sharedByArchive {
+            self.archiveName = sharedByArchive.name
+            self.accessRoleName = fileViewModel.accessRole.title.uppercased()
+        } else {
+            self.archiveName = nil
+            self.accessRoleName = nil
+        }
+        
+        self.preCalculatedHeight = Self.calculateSheetHeight(for: menuItems, showArchiveInfo: showArchiveInfo && fileViewModel.sharedByArchive != nil)
     }
     
     deinit {
@@ -141,31 +153,47 @@ class FileMenuViewModel: ObservableObject {
     }
     
     // MARK: - Layout Calculations
-    static func calculateSheetHeight(for menuItems: [MenuItem]) -> CGFloat {
-        let headerHeight: CGFloat = 120
+    static func calculateSheetHeight(for menuItems: [MenuItem], showArchiveInfo: Bool = false) -> CGFloat {
+        let headerHeight: CGFloat = 88
+        let archiveInfoHeight: CGFloat = showArchiveInfo ? 54 : 0
         let itemHeight: CGFloat = 56
-        let regularItemsCount = menuItems.filter { $0.type != .delete }.count
-        let hasDelete = menuItems.contains { $0.type == .delete }
-        let deleteSection: CGFloat = hasDelete ? (itemHeight + 32) : 0
-        let paddingHeight: CGFloat = 0
+        let regularItemsCount = menuItems.filter { $0.type != .delete && $0.type != .unshare }.count
+        let hasDestructiveItem = menuItems.contains { $0.type == .delete || $0.type == .unshare }
         
-        let totalHeight = headerHeight + CGFloat(regularItemsCount) * itemHeight + deleteSection + paddingHeight
+        let totalItemCount = regularItemsCount + (hasDestructiveItem ? 1 : 0)
+        
+        // If there are no menu items, only show header (and archive info if present)
+        guard totalItemCount > 0 else {
+            return headerHeight + archiveInfoHeight
+        }
+        
+        let topPadding: CGFloat = 24
+        let bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        
+        let menuItemsHeight: CGFloat = CGFloat(totalItemCount) * itemHeight
+        
+        let menuSectionHeight = topPadding + menuItemsHeight + bottomPadding
+        let totalHeight = headerHeight + archiveInfoHeight + menuSectionHeight
         return min(totalHeight, UIScreen.main.bounds.height * 0.85)
     }
     
     // MARK: - Computed Properties
     var contentHeight: CGFloat {
         let itemHeight: CGFloat = 56
-        let regularItemsCount = menuItems.filter { $0.type != .delete }.count
-        let hasDelete = menuItems.contains { $0.type == .delete }
-        let deleteSection: CGFloat = hasDelete ? (itemHeight + 32) : 0
-        let paddingHeight: CGFloat = 0
+        let regularItemsCount = menuItems.filter { $0.type != .delete && $0.type != .unshare }.count
+        let hasDestructiveItem = menuItems.contains { $0.type == .delete || $0.type == .unshare }
         
-        return CGFloat(regularItemsCount) * itemHeight + deleteSection + paddingHeight
+        let topPadding: CGFloat = 24
+        let bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        
+        let totalItemCount = regularItemsCount + (hasDestructiveItem ? 1 : 0)
+        let menuItemsHeight: CGFloat = CGFloat(totalItemCount) * itemHeight
+        
+        return topPadding + menuItemsHeight + bottomPadding
     }
     
     var maxContentHeight: CGFloat {
-        return UIScreen.main.bounds.height * 0.85 - 120
+        return UIScreen.main.bounds.height * 0.85 - 88
     }
     
     var needsScrolling: Bool {
@@ -177,11 +205,11 @@ class FileMenuViewModel: ObservableObject {
     }
     
     var regularMenuItems: [MenuItem] {
-        return menuItems.filter { $0.type != .delete }
+        return menuItems.filter { $0.type != .delete && $0.type != .unshare }
     }
     
-    var deleteMenuItem: MenuItem? {
-        return menuItems.first { $0.type == .delete }
+    var destructiveMenuItem: MenuItem? {
+        return menuItems.first { $0.type == .delete || $0.type == .unshare }
     }
     
     var displayTitle: String {
@@ -631,7 +659,7 @@ class FileMenuViewModel: ObservableObject {
         case .delete:
             return Image(.deleteV1)
         case .unshare:
-            return Image(.saveOrShareV1)
+            return Image(.publishRevokeLink)
         case .rename:
             return Image(.renameV1)
         case .publish:
@@ -650,7 +678,7 @@ class FileMenuViewModel: ObservableObject {
     func getTitle(for itemType: MenuItem.ItemType) -> String {
         switch itemType {
         case .download:
-            return "Download"
+            return "Save"
         case .copy:
             return "Copy to another folder"
         case .move:
@@ -658,7 +686,7 @@ class FileMenuViewModel: ObservableObject {
         case .delete:
             return "Delete"
         case .unshare:
-            return "Unshare"
+            return "Leave share"
         case .rename:
             return "Rename"
         case .publish:

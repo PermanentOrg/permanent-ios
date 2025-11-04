@@ -23,6 +23,7 @@ struct FileMoreMenuItemRow: View {
     var body: some View {
         HStack(spacing: 16) {
             viewModel.getIconImage(for: item.type)
+                .renderingMode(.template)
                 .foregroundColor(isDestructive ? viewModel.isMenuItemPressed(item.type) ? Color.error500.opacity(0.5) : Color.error500 : viewModel.isMenuItemPressed(item.type) ? Color.blue900.opacity(0.5) : Color.blue900)
                 .frame(width: 40, height: 40)
             
