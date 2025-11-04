@@ -12,8 +12,10 @@ struct FileMoreMenuView: View {
     @ObservedObject private var viewModel: FileMenuViewModel
     private let onShareManagementRequested: ((FileModel) -> Void)?
     private let onGetLinkRequested: ((FileModel) -> Void)?
+    private let onDeleteConfirmed: (([FileModel]) -> Void)?
+    private let onLeaveShareConfirmed: ((FileModel) -> Void)?
     
-    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
+    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
         let newViewModel = FileMenuViewModel(
             fileViewModel: fileViewModel,
             menuItems: menuItems,
@@ -30,6 +32,8 @@ struct FileMoreMenuView: View {
         self.viewModel = newViewModel
         self.onShareManagementRequested = onShareManagementRequested
         self.onGetLinkRequested = onGetLinkRequested
+        self.onDeleteConfirmed = onDeleteConfirmed
+        self.onLeaveShareConfirmed = onLeaveShareConfirmed
     }
     
     
@@ -207,6 +211,40 @@ struct FileMoreMenuView: View {
                     }
                 }
             }
+            
+            ConfirmationBottomAlertView(
+                isPresented: $viewModel.showDeleteConfirmation,
+                fileName: viewModel.fileViewModel.name,
+                actionType: .delete,
+                onConfirm: {
+                    handleDeleteConfirmation()
+                },
+                onCancel: {
+                    viewModel.cancelDeleteAction()
+                }
+            )
+            
+            ConfirmationBottomAlertView(
+                isPresented: $viewModel.showLeaveShareConfirmation,
+                fileName: viewModel.fileViewModel.name,
+                actionType: .leaveShare,
+                onConfirm: {
+                    handleLeaveShareConfirmation()
+                },
+                onCancel: {
+                    viewModel.cancelLeaveShareAction()
+                }
+            )
+            
+            if viewModel.isExecutingAction {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .overlay(
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.5)
+                    )
+            }
         }
         .ignoresSafeArea(.container, edges: .bottom)
     }
@@ -379,6 +417,42 @@ struct FileMoreMenuView: View {
         }
     }
 
+    // MARK: - Confirmation Actions
+    private func handleDeleteConfirmation() {
+        viewModel.showDeleteConfirmation = false
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.viewModel.dismissWithAnimation()
+            
+            // Wait for menu dismiss animation to complete before executing action
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if let onDeleteConfirmed = self.onDeleteConfirmed {
+                    let filesToDelete = self.viewModel.selectedFiles ?? [self.viewModel.fileViewModel]
+                    onDeleteConfirmed(filesToDelete)
+                } else {
+                    self.viewModel.executeDeleteAction()
+                }
+            }
+        }
+    }
+    
+    private func handleLeaveShareConfirmation() {
+        viewModel.showLeaveShareConfirmation = false
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.viewModel.dismissWithAnimation()
+            
+            // Wait for menu dismiss animation to complete before executing action
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if let onLeaveShareConfirmed = self.onLeaveShareConfirmed {
+                    onLeaveShareConfirmed(self.viewModel.fileViewModel)
+                } else {
+                    self.viewModel.executeLeaveShareAction()
+                }
+            }
+        }
+    }
+    
     // MARK: - Helper Methods
     private func formatFileSize(_ size: Int64) -> String {
         let formatter = ByteCountFormatter()

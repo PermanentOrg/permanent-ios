@@ -763,6 +763,44 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.getShareLinkAction(file: file)
                 })
             },
+            onDeleteConfirmed: { [weak self] files in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.delete(files, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles(files)
+                                self?.refreshCollectionView()
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
+                })
+            },
+            onLeaveShareConfirmed: { [weak self] file in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.unshare(file, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles([file])
+                                self?.refreshCollectionView()
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
+                })
+            },
             downloadHandler: { [weak self] file, completion in
                 self?.viewModel?.download(
                     file,
@@ -862,6 +900,47 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 // Dismiss the menu first, then handle get link
                 self?.dismiss(animated: true, completion: {
                     self?.getShareLinkAction(file: file)
+                })
+            },
+            onDeleteConfirmed: { [weak self] files in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.delete(files, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles(files)
+                                self?.refreshCollectionView()
+                                self?.dismissFloatingActionIsland()
+                                self?.fabView.isHidden = false
+                                self?.clearButtonWasPressed(UIButton())
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
+                })
+            },
+            onLeaveShareConfirmed: { [weak self] file in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.unshare(file, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles([file])
+                                self?.refreshCollectionView()
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
                 })
             },
             downloadHandler: { [weak self] file, completion in

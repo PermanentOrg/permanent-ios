@@ -313,12 +313,11 @@
 		5E7141452AFD25D5003952CD /* GiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7141442AFD25D5003952CD /* GiftingModel.swift */; };
 		5E71E5F12C9C60D600B7A315 /* Login2FAFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E71E5F02C9C60B700B7A315 /* Login2FAFieldView.swift */; };
 		5E72081D2E9D455D001300CA /* ArchiveAccessManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E72081C2E9D455D001300CA /* ArchiveAccessManagementView.swift */; };
-
-
 		5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9027E36EAA00A47D27 /* RCValues.swift */; };
 		5E744F9327E38DB900A47D27 /* LoadingScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */; };
 		5E75AFE12DBFC0250074159F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75AFE02DBFC0160074159F /* ChecklistItem.swift */; };
 		5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E781EA72787006B0007E397 /* ProfileItemOperation.swift */; };
+		5E7A697D2EBA4CB4005FA69B /* ConfirmationBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7A697B2EBA4CB4005FA69B /* ConfirmationBottomAlertView.swift */; };
 		5E7A87F72C99C83D00228EB4 /* AuthImageForRightSidePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7A87F62C99C83700228EB4 /* AuthImageForRightSidePageView.swift */; };
 		5E7A87F92C99C84C00228EB4 /* AuthTextForRightSidePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7A87F82C99C84A00228EB4 /* AuthTextForRightSidePageView.swift */; };
 		5E7AE8AB291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7AE8A9291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift */; };
@@ -1292,11 +1291,11 @@
 		5E7141442AFD25D5003952CD /* GiftingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftingModel.swift; sourceTree = "<group>"; };
 		5E71E5F02C9C60B700B7A315 /* Login2FAFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login2FAFieldView.swift; sourceTree = "<group>"; };
 		5E72081C2E9D455D001300CA /* ArchiveAccessManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveAccessManagementView.swift; sourceTree = "<group>"; };
-
 		5E744F9027E36EAA00A47D27 /* RCValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCValues.swift; sourceTree = "<group>"; };
 		5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenViewController.swift; sourceTree = "<group>"; };
 		5E75AFE02DBFC0160074159F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 		5E781EA72787006B0007E397 /* ProfileItemOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileItemOperation.swift; sourceTree = "<group>"; };
+		5E7A697B2EBA4CB4005FA69B /* ConfirmationBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationBottomAlertView.swift; sourceTree = "<group>"; };
 		5E7A87F62C99C83700228EB4 /* AuthImageForRightSidePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthImageForRightSidePageView.swift; sourceTree = "<group>"; };
 		5E7A87F82C99C84A00228EB4 /* AuthTextForRightSidePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTextForRightSidePageView.swift; sourceTree = "<group>"; };
 		5E7AE8A9291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementSeparatorFooterCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -3272,6 +3271,14 @@
 			path = Billing;
 			sourceTree = "<group>";
 		};
+		5E7A697C2EBA4CB4005FA69B /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				5E7A697B2EBA4CB4005FA69B /* ConfirmationBottomAlertView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		5E814A492C90DDA6005FF97C /* Container */ = {
 			isa = PBXGroup;
 			children = (
@@ -3396,7 +3403,6 @@
 		5EA9C2B62E45FF78003BA1E9 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-
 				5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */,
 				5E317C652E7C1D8600DE5A77 /* SelectableOptionView.swift */,
 				5E28C32B2E7BEECB00A073A8 /* SelectableOption.swift */,
@@ -3493,6 +3499,7 @@
 		5EC7CD282E26A74E00D80AE4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5E7A697C2EBA4CB4005FA69B /* Components */,
 				5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */,
 				5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */,
 			);
@@ -4905,6 +4912,7 @@
 				5E62F7C927F79FF40046F6C8 /* PopularArchive.swift in Sources */,
 				5E2E3D1826D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.swift in Sources */,
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
+				5E7A697D2EBA4CB4005FA69B /* ConfirmationBottomAlertView.swift in Sources */,
 				5E5979D72DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift in Sources */,
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
@@ -4961,7 +4969,6 @@
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
-
 				5EB2D2362C245EEA0029D0DE /* OnboardingArchive.swift in Sources */,
 				5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */,
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
@@ -5595,7 +5602,6 @@
 				F5ADBF3B290BBF900007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				5E4739DC2A4185A700A20D85 /* FilePreviewNavigationController.swift in Sources */,
 				F5ADBF36290ADB7C0007A516 /* ArchivesViewController.swift in Sources */,
-
 				5ED4B9C52876DF0E00CF044B /* ArchiveVO.swift in Sources */,
 				F559F89F28FEEAD50015A522 /* RelocateFolderPayload.swift in Sources */,
 				5ED3B3B329F7E945000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
