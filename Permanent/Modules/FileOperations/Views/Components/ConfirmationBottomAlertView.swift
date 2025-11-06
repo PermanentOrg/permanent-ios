@@ -13,17 +13,46 @@ struct ConfirmationBottomAlertView: View {
     let actionType: ActionType
     let onConfirm: () -> Void
     let onCancel: (() -> Void)?
+    let isMultipleItems: Bool
+    let isFolder: Bool
     
     enum ActionType {
         case delete
         case leaveShare
         
-        var title: String {
+        func title(isFolder: Bool) -> String {
             switch self {
             case .delete:
-                return "Are you sure you want to delete"
+                return "Are you sure you want to delete the selected \(isFolder ? "folder" : "file")"
             case .leaveShare:
                 return "Are you sure you want to give up your access to the"
+            }
+        }
+        
+        func multipleItemsTitle() -> Text {
+            switch self {
+            case .delete:
+                return Text("Are you sure you want to delete the ")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
+                + Text("selected items")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .fontWeight(.bold)
+                    .foregroundColor(.blue700)
+                + Text("?")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
+            case .leaveShare:
+                return Text("Are you sure you want to give up your access to the ")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
+                + Text("selected items")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .fontWeight(.bold)
+                    .foregroundColor(.blue700)
+                + Text("?")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
             }
         }
         
@@ -42,13 +71,17 @@ struct ConfirmationBottomAlertView: View {
         fileName: String,
         actionType: ActionType,
         onConfirm: @escaping () -> Void,
-        onCancel: (() -> Void)? = nil
+        onCancel: (() -> Void)? = nil,
+        isMultipleItems: Bool = false,
+        isFolder: Bool = false
     ) {
         self._isPresented = isPresented
         self.fileName = fileName
         self.actionType = actionType
         self.onConfirm = onConfirm
         self.onCancel = onCancel
+        self.isMultipleItems = isMultipleItems
+        self.isFolder = isFolder
     }
     
     var body: some View {
@@ -124,16 +157,20 @@ struct ConfirmationBottomAlertView: View {
     
     private var titleView: some View {
         Group {
-            Text(actionType.title + " ")
-                .font(.custom("Usual-Regular", size: 14))
-                .foregroundColor(.blue700)
-            + Text(fileName)
-                .font(.custom("Usual-Regular", size: 14))
-                .fontWeight(.bold)
-                .foregroundColor(.blue700)
-            + Text(actionType == .leaveShare ? " item?" : "?")
-                .font(.custom("Usual-Regular", size: 14))
-                .foregroundColor(.blue700)
+            if isMultipleItems {
+                actionType.multipleItemsTitle()
+            } else {
+                Text(actionType.title(isFolder: isFolder) + " ")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
+                + Text(fileName)
+                    .font(.custom("Usual-Regular", size: 14))
+                    .fontWeight(.bold)
+                    .foregroundColor(.blue700)
+                + Text(actionType == .leaveShare ? " item?" : "?")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
+            }
         }
         .multilineTextAlignment(.center)
         .lineSpacing(6)
@@ -175,7 +212,8 @@ struct ConfirmationBottomAlertView: View {
             },
             onCancel: {
                 print("Cancelled")
-            }
+            },
+            isMultipleItems: false
         )
     }
 }

@@ -221,7 +221,9 @@ struct FileMoreMenuView: View {
                 },
                 onCancel: {
                     viewModel.cancelDeleteAction()
-                }
+                },
+                isMultipleItems: (viewModel.selectedItemCount ?? 1) > 1,
+                isFolder: viewModel.fileViewModel.type.isFolder
             )
             
             ConfirmationBottomAlertView(
@@ -233,7 +235,9 @@ struct FileMoreMenuView: View {
                 },
                 onCancel: {
                     viewModel.cancelLeaveShareAction()
-                }
+                },
+                isMultipleItems: false,
+                isFolder: viewModel.fileViewModel.type.isFolder
             )
             
             if viewModel.isExecutingAction {
