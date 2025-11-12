@@ -15,7 +15,7 @@ struct FileMoreMenuView: View {
     private let onDeleteConfirmed: (([FileModel]) -> Void)?
     private let onLeaveShareConfirmed: ((FileModel) -> Void)?
     
-    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
+    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil, menuItemsGenerator: FileMenuViewModel.MenuItemsGenerator? = nil, fileModelUpdateHandler: FileMenuViewModel.FileModelUpdateHandler? = nil) {
         let newViewModel = FileMenuViewModel(
             fileViewModel: fileViewModel,
             menuItems: menuItems,
@@ -27,6 +27,14 @@ struct FileMoreMenuView: View {
         
         if let downloadHandler = downloadHandler {
             newViewModel.setDownloadHandler(downloadHandler)
+        }
+        
+        if let menuItemsGenerator = menuItemsGenerator {
+            newViewModel.setMenuItemsGenerator(menuItemsGenerator)
+        }
+        
+        if let fileModelUpdateHandler = fileModelUpdateHandler {
+            newViewModel.setFileModelUpdateHandler(fileModelUpdateHandler)
         }
         
         self.viewModel = newViewModel
@@ -173,11 +181,11 @@ struct FileMoreMenuView: View {
                     
                     Spacer(minLength: 0)
                 }
-                .frame(height: viewModel.preCalculatedHeight)
+                .frame(height: viewModel.dynamicHeight)
                 .frame(maxWidth: .infinity)
                 .background(Color.white)
                 .cornerRadius(16, corners: [.topLeft, .topRight])
-                .offset(y: viewModel.isAnimating ? viewModel.dragOffset : viewModel.preCalculatedHeight)
+                .offset(y: viewModel.isAnimating ? viewModel.dragOffset : viewModel.dynamicHeight)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
@@ -202,6 +210,7 @@ struct FileMoreMenuView: View {
                     }
                     
                     viewModel.prepareThumbnailForLoading()
+                    viewModel.fetchUpdatedAccessRole()
                     viewModel.startPresentationAnimation()
                 }
                 .onChange(of: viewModel.specialMenuItemRequested) { menuItem in

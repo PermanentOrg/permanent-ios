@@ -690,7 +690,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
     
-    func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
+    private func generateMenuItems(for file: FileModel, atIndexPath indexPath: IndexPath) -> [FileMenuViewModel.MenuItem] {
         var menuItems: [FileMenuViewModel.MenuItem] = []
         
         if file.permissions.contains(.share) {
@@ -739,6 +739,32 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }))
         }
         
+        return menuItems
+    }
+    
+    private func updateFileModelInDataSource(_ updatedFile: FileModel) {
+        guard let viewModel = self.viewModel else { return }
+        
+        if viewModel.shareListType == .sharedByMe {
+            if let index = viewModel.sharedByMeViewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                viewModel.sharedByMeViewModels[index] = updatedFile
+                if let activeIndex = viewModel.viewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                    viewModel.viewModels[activeIndex] = updatedFile
+                }
+            }
+        } else {
+            if let index = viewModel.sharedWithMeViewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                viewModel.sharedWithMeViewModels[index] = updatedFile
+                if let activeIndex = viewModel.viewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                    viewModel.viewModels[activeIndex] = updatedFile
+                }
+            }
+        }
+    }
+    
+    func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
+        let menuItems = generateMenuItems(for: file, atIndexPath: indexPath)
+        
         // Determine if we should show archive info (only in Shared With Me tab, and at root level)
         let isSharedWithMe = viewModel?.shareListType == .sharedWithMe
         let isAtRootLevel = viewModel?.currentFolderIsRoot ?? true
@@ -752,13 +778,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.dismiss(animated: true)
             },
             onShareManagementRequested: { [weak self] file in
-                // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
                 })
             },
             onGetLinkRequested: { [weak self] file in
-                // Dismiss the menu first, then handle get link
                 self?.dismiss(animated: true, completion: {
                     self?.getShareLinkAction(file: file)
                 })
@@ -814,6 +838,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     },
                     progressHandler: nil
                 )
+            },
+            menuItemsGenerator: { [weak self] updatedFile in
+                guard let self = self else { return [] }
+                return self.generateMenuItems(for: updatedFile, atIndexPath: indexPath)
+            },
+            fileModelUpdateHandler: { [weak self] (updatedFile: FileModel) in
+                self?.updateFileModelInDataSource(updatedFile)
             }
         )
         
@@ -891,13 +922,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.dismiss(animated: true)
             },
             onShareManagementRequested: { [weak self] file in
-                // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
                 })
             },
             onGetLinkRequested: { [weak self] file in
-                // Dismiss the menu first, then handle get link
                 self?.dismiss(animated: true, completion: {
                     self?.getShareLinkAction(file: file)
                 })
@@ -956,6 +985,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     },
                     progressHandler: nil
                 )
+            },
+            fileModelUpdateHandler: { [weak self] (updatedFile: FileModel) in
+                // Update the file in the data source when its role/permissions change
+                self?.updateFileModelInDataSource(updatedFile)
             }
         )
         
@@ -1198,7 +1231,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self.refreshCollectionView()
             } else {
                 collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-                showFileActionSheet(file: file, atIndexPath: indexPath)
+                let currentFile = viewModel?.viewModels[indexPath.row] ?? file
+                showFileActionSheet(file: currentFile, atIndexPath: indexPath)
             }
 
         case .downloading:

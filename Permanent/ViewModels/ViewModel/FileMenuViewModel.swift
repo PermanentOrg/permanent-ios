@@ -55,8 +55,11 @@ class FileMenuViewModel: ObservableObject {
     @Published var pendingLeaveShareAction: (() -> Void)?
     @Published var isExecutingAction: Bool = false
     
+    @Published var dynamicMenuItems: [MenuItem] = []
+    @Published var dynamicHeight: CGFloat = 0
+    
     // MARK: - Input Properties
-    let fileViewModel: FileModel
+    var fileViewModel: FileModel
     let menuItems: [MenuItem]
     let selectedItemCount: Int?
     let selectedFiles: [FileModel]?
@@ -68,7 +71,6 @@ class FileMenuViewModel: ObservableObject {
     let cachedFormattedDate: String
     let preCalculatedHeight: CGFloat
     let archiveName: String?
-    let accessRoleName: String?
     
     // MARK: - Private Properties
     private var dragStartTime: Date = Date()
@@ -80,7 +82,11 @@ class FileMenuViewModel: ObservableObject {
     
     // MARK: - Dependencies
     typealias DownloadHandler = (FileModel, @escaping (URL?, Error?) -> Void) -> Void
+    typealias MenuItemsGenerator = (FileModel) -> [MenuItem]
+    typealias FileModelUpdateHandler = (FileModel) -> Void
     private var downloadHandler: DownloadHandler?
+    private var menuItemsGenerator: MenuItemsGenerator?
+    private var fileModelUpdateHandler: FileModelUpdateHandler?
     var viewControllerProvider: (() -> UIViewController?)?
     private var capturedPresentingViewController: UIViewController?
     
@@ -119,13 +125,15 @@ class FileMenuViewModel: ObservableObject {
         
         if showArchiveInfo, let sharedByArchive = fileViewModel.sharedByArchive {
             self.archiveName = sharedByArchive.name
-            self.accessRoleName = fileViewModel.accessRole.title.uppercased()
         } else {
             self.archiveName = nil
-            self.accessRoleName = nil
         }
         
         self.preCalculatedHeight = Self.calculateSheetHeight(for: menuItems, showArchiveInfo: showArchiveInfo && fileViewModel.sharedByArchive != nil)
+        
+        // Initialize dynamic properties
+        self.dynamicMenuItems = menuItems
+        self.dynamicHeight = self.preCalculatedHeight
     }
     
     deinit {
@@ -207,15 +215,15 @@ class FileMenuViewModel: ObservableObject {
     }
     
     var backgroundOpacity: Double {
-        isAnimating ? max(0.0, 0.3 * (1.0 - Double(dragOffset / preCalculatedHeight))) : 0.0
+        isAnimating ? max(0.0, 0.3 * (1.0 - Double(dragOffset / dynamicHeight))) : 0.0
     }
     
     var regularMenuItems: [MenuItem] {
-        return menuItems.filter { $0.type != .delete && $0.type != .unshare }
+        return dynamicMenuItems.filter { $0.type != .delete && $0.type != .unshare }
     }
     
     var destructiveMenuItem: MenuItem? {
-        return menuItems.first { $0.type == .delete || $0.type == .unshare }
+        return dynamicMenuItems.first { $0.type == .delete || $0.type == .unshare }
     }
     
     var displayTitle: String {
@@ -223,6 +231,103 @@ class FileMenuViewModel: ObservableObject {
             return "\(selectedItemCount) Items selected"
         } else {
             return fileViewModel.name
+        }
+    }
+    
+    var accessRoleName: String? {
+        guard showArchiveInfo, fileViewModel.sharedByArchive != nil else {
+            return nil
+        }
+        return fileViewModel.accessRole.title.uppercased()
+    }
+    
+    // MARK: - Access Role Update
+    func fetchUpdatedAccessRole() {
+        guard showArchiveInfo, fileViewModel.sharedByArchive != nil else {
+            return
+        }
+        
+        let itemInfo = (folderLinkId: fileViewModel.folderLinkId, parentFolderLinkId: fileViewModel.parentFolderLinkId)
+        
+        let endpoint: FilesEndpoint
+        if fileViewModel.type.isFolder {
+            endpoint = FilesEndpoint.getFolder(itemInfo: itemInfo)
+        } else {
+            endpoint = FilesEndpoint.getRecord(itemInfo: itemInfo)
+        }
+        
+        let apiOperation = APIOperation(endpoint)
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case .json(let response, _):
+                    if self.fileViewModel.type.isFolder {
+                        guard let model: APIResults<FolderVO> = JSONHelper.decoding(
+                            from: response,
+                            with: APIResults<FolderVO>.decoder
+                        ),
+                        model.isSuccessful,
+                        let folderData = model.results.first?.data?.first?.folderVO,
+                        let accessRoleString = folderData.accessRole else {
+                            return
+                        }
+                        
+                        let newAccessRole = AccessRole.roleForValue(accessRoleString)
+                        if self.fileViewModel.accessRole != newAccessRole {
+                            self.fileViewModel.accessRole = newAccessRole
+                            self.updatePermissions(forAccessRole: accessRoleString)
+                            self.regenerateMenuItemsAndAnimateHeight()
+                        }
+                    } else {
+                        guard let model: APIResults<RecordVO> = JSONHelper.decoding(
+                            from: response,
+                            with: APIResults<RecordVO>.decoder
+                        ),
+                        model.isSuccessful,
+                        let recordData = model.results.first?.data?.first?.recordVO,
+                        let accessRoleString = recordData.accessRole else {
+                            return
+                        }
+                        
+                        let newAccessRole = AccessRole.roleForValue(accessRoleString)
+                        if self.fileViewModel.accessRole != newAccessRole {
+                            self.fileViewModel.accessRole = newAccessRole
+                            self.updatePermissions(forAccessRole: accessRoleString)
+                            self.regenerateMenuItemsAndAnimateHeight()
+                        }
+                    }
+                    
+                case .error:
+                    break
+                    
+                default:
+                    break
+                }
+            }
+        }
+    }
+    
+    private func updatePermissions(forAccessRole accessRoleString: String) {
+        let newPermissions = ArchiveVOData.permissions(forAccessRole: accessRoleString)
+        self.fileViewModel.permissions = newPermissions
+    }
+    
+    private func regenerateMenuItemsAndAnimateHeight() {
+        fileModelUpdateHandler?(fileViewModel)
+        
+        guard let generator = menuItemsGenerator else {
+            return
+        }
+        
+        let newMenuItems = generator(fileViewModel)
+        let newHeight = Self.calculateSheetHeight(for: newMenuItems, showArchiveInfo: showArchiveInfo && fileViewModel.sharedByArchive != nil)
+        
+        withAnimation(.easeInOut(duration: 0.3)) {
+            self.dynamicMenuItems = newMenuItems
+            self.dynamicHeight = newHeight
         }
     }
     
@@ -296,10 +401,18 @@ class FileMenuViewModel: ObservableObject {
         downloadHandler = handler
     }
     
+    func setMenuItemsGenerator(_ generator: @escaping MenuItemsGenerator) {
+        menuItemsGenerator = generator
+    }
+    
+    func setFileModelUpdateHandler(_ handler: @escaping FileModelUpdateHandler) {
+        fileModelUpdateHandler = handler
+    }
+    
     func dismissWithAnimation() {
         withAnimation(.easeIn(duration: 0.25)) {
             isAnimating = false
-            dragOffset = preCalculatedHeight
+            dragOffset = dynamicHeight
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
@@ -326,7 +439,7 @@ class FileMenuViewModel: ObservableObject {
     
     func handleDragEnded(_ value: DragGesture.Value) {
         isDragging = false
-        let threshold = preCalculatedHeight * 0.3
+        let threshold = dynamicHeight * 0.3
         
         if value.translation.height > threshold || value.predictedEndTranslation.height > threshold {
             dismissWithAnimation()
