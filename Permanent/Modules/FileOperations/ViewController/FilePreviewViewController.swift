@@ -9,6 +9,7 @@ import UIKit
 import WebKit
 import AVKit
 import PDFKit
+import SwiftUI
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -323,24 +324,81 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     // MARK: - Actions
 
     @objc func showShareMenu(_ sender: Any) {
-        var menuItems: [FileMenuViewController.MenuItem] = []
+        var menuItems: [FileMenuViewModel.MenuItem] = []
         
-        menuItems.append(FileMenuViewController.MenuItem(type: .shareToAnotherApp, action: { [self] in
-            shareWithOtherApps()
-        }))
-        
-        if let publicURL = viewModel?.publicURL {
-            menuItems.append(FileMenuViewController.MenuItem(type: .getLink, action: { [self] in
-                share(url: publicURL)
-            }))
-        } else if self.file.permissions.contains(.ownership) {
-            menuItems.append(FileMenuViewController.MenuItem(type: .shareToPermanent, action: nil))
+        // Share to Permanent - only for files with ownership
+        if file.permissions.contains(.ownership) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
         }
+        
+        // Share to another app - for files with share permission (not folders)
+        if file.permissions.contains(.share) && file.type.isFolder == false {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
+                shareWithOtherApps()
+            }))
+        }
+        
+        // Publish on the web - for files with delete permission
+        if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .publish, action: { [self] in
+                publishAction()
+            }))
+        }
+        
+        // Download - for files with read permission (not folders)
+        if file.permissions.contains(.read) && file.type.isFolder == false {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .download, action: { [weak self] in
+                guard let self = self else { return }
+                self.downloadFile()
+            }))
+        }
+        
+        let swiftUIView = FileMoreMenuView(
+            fileViewModel: file,
+            menuItems: menuItems,
+            onDismiss: { [weak self] in
+                // Only dismiss the menu overlay, not the preview
+                self?.presentedViewController?.dismiss(animated: true)
+            },
+            onShareManagementRequested: { [weak self] file in
+                // Don't dismiss the preview - just dismiss the menu and present share management on top
+                if let hostingController = self?.presentedViewController {
+                    hostingController.dismiss(animated: true) {
+                        self?.presentShareManagement(for: file)
+                    }
+                }
+            },
+            downloadHandler: { [weak self] fileModel, completion in
+                guard let self = self, let record = self.viewModel?.recordVO else {
+                    completion(nil, NSError(domain: "FilePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Record not available"]))
+                    return
+                }
+                
+                self.viewModel?.download(record, fileType: fileModel.type, onFileDownloaded: { url, error in
+                    completion(url, error)
+                })
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: swiftUIView)
+        hostingController.modalPresentationStyle = .overFullScreen
+        hostingController.modalTransitionStyle = .crossDissolve
+        hostingController.view.backgroundColor = .clear
+        
+        present(hostingController, animated: true)
+    }
     
-        let vc = FileMenuViewController()
-        vc.fileViewModel = file
-        vc.menuItems = menuItems
-        present(vc, animated: true)
+    private func presentShareManagement(for file: FileModel) {
+        let shareContainerView = ShareContainerView(fileModel: file)
+        let hostingController = UIHostingController(rootView: shareContainerView)
+        hostingController.modalPresentationStyle = .pageSheet
+        if #available(iOS 15.0, *) {
+            if let sheet = hostingController.sheetPresentationController {
+                sheet.detents = [.large()]
+                sheet.prefersGrabberVisible = true
+            }
+        }
+        present(hostingController, animated: true)
     }
 
     @IBAction func retryButtonPressed(_ sender: Any) {
@@ -379,13 +437,16 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     // MARK: - Menu dismiss
     private func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        present(activityViewController, animated: true)
     }
     
     private func htmlBody(withContent content: String) -> String {
@@ -393,19 +454,20 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func shareWithOtherApps() {
-        if let fileName = self.viewModel?.fileName(),
-            let localURL = fileHelper.url(forFileNamed: fileName) {
+        let fileExtension = (file.uploadFileName as NSString).pathExtension
+        let fileName = !fileExtension.isEmpty ? "\(file.name).\(fileExtension)" : file.name
+        
+        if let localURL = fileHelper.url(forFileNamed: fileName) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
             preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
                 self.viewModel?.cancelDownload()
-            })
-            )
+            }))
 
             present(preparingAlert, animated: true) {
                 if let record = self.viewModel?.recordVO {
-                    self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { url, _ in
+                    self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { url, error in
                         if let url = url {
                             self.dismiss(animated: true) {
                                 self.share(url: url)
@@ -414,10 +476,122 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                             self.dismiss(animated: true, completion: nil)
                         }
                     })
+                } else {
+                    self.dismiss(animated: true, completion: nil)
                 }
             }
         }
     }
+    
+    func downloadFile() {
+        guard let record = viewModel?.recordVO else {
+            showErrorAlert(message: "Unable to download file")
+            return
+        }
+        
+        if let menuHostingController = presentedViewController {
+            menuHostingController.dismiss(animated: true) {
+                self.startDownload(record: record)
+            }
+        } else {
+            startDownload(record: record)
+        }
+    }
+    
+    private func startDownload(record: RecordVO) {
+        let preparingAlert = UIAlertController(title: "Downloading...".localized(), message: nil, preferredStyle: .alert)
+        preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { [weak self] _ in
+            self?.viewModel?.cancelDownload()
+        }))
+        
+        present(preparingAlert, animated: true) {
+            self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { [weak self] url, error in
+                guard let self = self else { return }
+                
+                self.dismiss(animated: true) {
+                    if url != nil {
+                        let successAlert = UIAlertController(
+                            title: "Download complete".localized(),
+                            message: nil,
+                            preferredStyle: .alert
+                        )
+                        self.present(successAlert, animated: true)
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            successAlert.dismiss(animated: true)
+                        }
+                    } else {
+                        let errorMessage = error?.localizedDescription ?? "Failed to download file"
+                        self.showErrorAlert(message: errorMessage)
+                    }
+                }
+            })
+        }
+    }
+    
+    func publishAction() {
+        let title = String(format: "\(String.publish) \"%@\"?", file.name)
+        showActionDialog(
+            styled: .simpleWithDescription,
+            withTitle: title,
+            description: .publishDescription,
+            positiveButtonTitle: .publish,
+            positiveAction: { [weak self] in
+                self?.actionDialog?.dismiss()
+                self?.publish()
+            },
+            overlayView: nil
+        )
+    }
+    
+    private func publish() {
+        showSpinner()
+        
+        // Get the current archive number
+        guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr else {
+            hideSpinner()
+            showErrorAlert(message: "Unable to publish file")
+            return
+        }
+        
+        // First, get the public root folder
+        let filesRepository = FilesRepository()
+        filesRepository.getPublicRoot(archiveNbr: archiveNbr) { [weak self] (folder, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.hideSpinner()
+                self.showErrorAlert(message: error.localizedDescription)
+                return
+            }
+            
+            guard let publicRootFolder = folder else {
+                self.hideSpinner()
+                self.showErrorAlert(message: "Unable to get public folder")
+                return
+            }
+            
+            // Now relocate (copy) the file to the public folder
+            filesRepository.relocate(
+                files: [self.file],
+                folderLinkId: publicRootFolder.folderLinkId,
+                isCopy: true
+            ) { error in
+                self.hideSpinner()
+                
+                if let error = error {
+                    self.showErrorAlert(message: error.localizedDescription)
+                } else {
+                    if self.file.type.isFolder {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder published successfully".localized())
+                    } else {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 // MARK: - WKNavigationDelegate
@@ -472,5 +646,10 @@ extension FilePreviewViewController: FilePreviewNavigationControllerDelegate {
         if hasChanges == true {
             self.hasChanges = true
         }
+    }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        // This controller manages the preview, so forward the request through its navigation controller
+        (navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerRequestsDownload(self, file: file)
     }
 }

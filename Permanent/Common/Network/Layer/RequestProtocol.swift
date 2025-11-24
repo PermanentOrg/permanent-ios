@@ -62,6 +62,7 @@ protocol RequestProtocol {
     var bodyData: Data? { get }
     
     var customURL: String? { get }
+    var ignoreErrors: Bool { get }
 }
 
 extension RequestProtocol {
@@ -141,5 +142,9 @@ extension RequestProtocol {
         } else {
             return nil
         }
+    }
+    
+    var ignoreErrors: Bool {
+        return false
     }
 }

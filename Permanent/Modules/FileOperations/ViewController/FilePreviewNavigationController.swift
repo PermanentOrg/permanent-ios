@@ -10,6 +10,7 @@ import UIKit
 protocol FilePreviewNavigationControllerDelegate: AnyObject {
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel)
 }
 
 class FilePreviewNavigationController: UINavigationController {
@@ -24,7 +25,13 @@ class FilePreviewNavigationController: UINavigationController {
     
     weak var filePreviewNavDelegate: FilePreviewNavigationControllerDelegate?
     
-    var hasChanges: Bool = false
+    var hasChanges: Bool = false {
+        didSet {
+            if hasChanges {
+                filePreviewNavDelegate?.filePreviewNavigationControllerDidChange(self, hasChanges: hasChanges)
+            }
+        }
+    }
     
     override init(rootViewController: UIViewController) {
         super.init(rootViewController: rootViewController)
@@ -40,5 +47,13 @@ class FilePreviewNavigationController: UINavigationController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if isBeingDismissed {
+            filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
+        }
     }
 }

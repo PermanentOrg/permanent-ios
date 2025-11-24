@@ -26,6 +26,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private var fileActionSheet: SharedFileActionSheet?
     
     private let overlayView = UIView()
+    let fileHelper = FileHelper()
+    let documentInteractionController = UIDocumentInteractionController()
     
     var selectedIndex: Int = 0
     
@@ -698,6 +700,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
             }
         }
+        
+        // Share to another app - for files with share permission (not folders)
+        if file.permissions.contains(.share) && file.type.isFolder == false {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
+                shareWithOtherApps(file: file)
+            }))
+        }
 
         if file.permissions.contains(.edit) {
             menuItems.append(FileMenuViewModel.MenuItem(type: .rename, action: { [self] in
@@ -721,11 +730,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             menuItems.append(FileMenuViewModel.MenuItem(type: .move, action: { [self] in
                 relocateAction(files: [file], action: .move)
             }))
-        }
-        
-        // Add getLink for files that have share permissions (can potentially have share URLs)
-        if file.permissions.contains(.share) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
         }
         
         // Add unshare (leave share) or delete as the last item with separator
@@ -782,9 +786,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.presentShareManagement(for: file)
                 })
             },
-            onGetLinkRequested: { [weak self] file in
+            onRenameRequested: { [weak self] file in
+                // TODO: Implement rename functionality
                 self?.dismiss(animated: true, completion: {
-                    self?.getShareLinkAction(file: file)
+                    // Rename action will be implemented here
                 })
             },
             onDeleteConfirmed: { [weak self] files in
@@ -849,9 +854,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         )
         
         let hostingController = UIHostingController(rootView: swiftUIView)
-        hostingController.modalPresentationStyle = .overFullScreen
-        hostingController.modalTransitionStyle = .crossDissolve
-        hostingController.view.backgroundColor = .clear
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
         
         present(hostingController, animated: true)
     }
@@ -926,9 +931,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.presentShareManagement(for: file)
                 })
             },
-            onGetLinkRequested: { [weak self] file in
+            onRenameRequested: { [weak self] file in
+                // TODO: Implement rename functionality
                 self?.dismiss(animated: true, completion: {
-                    self?.getShareLinkAction(file: file)
+                    // Rename action will be implemented here
                 })
             },
             onDeleteConfirmed: { [weak self] files in
@@ -993,9 +999,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         )
         
         let hostingController = UIHostingController(rootView: swiftUIView)
-        hostingController.modalPresentationStyle = .overFullScreen
-        hostingController.modalTransitionStyle = .crossDissolve
-        hostingController.view.backgroundColor = .clear
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
         
         present(hostingController, animated: true)
     }
@@ -1032,6 +1038,41 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func unshareAction(file: FileModel, atIndexPath indexPath: IndexPath) {
         didTapUnshare(forFile: file, atIndexPath: indexPath)
+    }
+    
+    func shareWithOtherApps(file: FileModel) {
+        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
+            share(url: localURL)
+        } else {
+            let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
+            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
+                self.viewModel?.cancelDownload() })
+            )
+            present(preparingAlert, animated: true) {
+                self.viewModel?.download(file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
+                    if let url = url {
+                        self.dismiss(animated: true) {
+                            self.share(url: url)
+                        }
+                    } else {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                }, progressHandler: nil)
+            }
+        }
+    }
+    
+    private func share(url: URL) {
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        present(activityViewController, animated: true)
     }
 
     fileprivate func getShares(shouldShowSpinner: Bool = true, completion: (() -> Void)? = nil) {
@@ -1569,6 +1610,10 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
     }
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+    }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        downloadAction(file: file)
     }
 }
 

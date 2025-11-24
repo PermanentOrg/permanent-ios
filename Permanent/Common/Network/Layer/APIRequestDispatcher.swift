@@ -61,17 +61,19 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         
         NetworkLogger.log(request: urlRequest)
         
+        let shouldIgnoreErrors = request.ignoreErrors
+        
         // Create a URLSessionTask to execute the URLRequest.
         var task: URLSessionTask?
         switch request.requestType {
         case .data:
             task = networkSession.dataTask(with: urlRequest, completionHandler: { data, urlResponse, error in
-                self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
+                self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, ignoreErrors: shouldIgnoreErrors, completion: completion)
             })
             
         case .upload:
             task = networkSession.uploadTask(with: urlRequest, progressHandler: request.progressHandler, completion: { data, urlResponse, error in
-                self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
+                self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, ignoreErrors: shouldIgnoreErrors, completion: completion)
             })
             
         case .download:
@@ -99,8 +101,9 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - data: The `Data` instance to be serialized into a JSON object.
     ///   - urlResponse: The received  optional `URLResponse` instance.
     ///   - error: The received  optional `Error` instance.
+    ///   - ignoreErrors: If true, errors will be silently ignored without triggering session expiration
     ///   - completion: Completion handler.
-    private func handleJsonTaskResponse(data: Data?, urlResponse: URLResponse?, error: Error?, completion: @escaping (OperationResult) -> Void) {
+    private func handleJsonTaskResponse(data: Data?, urlResponse: URLResponse?, error: Error?, ignoreErrors: Bool, completion: @escaping (OperationResult) -> Void) {
         // Check for errors
         if let apiError = APIError.error(withCode: (error as NSError?)?.code) {
             return completion(.error(apiError, nil))
@@ -113,6 +116,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         }
         NetworkLogger.log(response: urlResponse, data: data, error: error)
         
+        let shouldIgnoreAuthErrors = ignoreErrors || isNonCriticalEndpoint(urlResponse)
+        
         // Verify the HTTP status code.
         let result = verify(data: data, urlResponse: urlResponse, error: error)
         switch result {
@@ -124,7 +129,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
                 if let mfaError = json as? [String: Any],
                 let results = mfaError["Results"] as? [[String: Any]],
                 let message = (results[0]["message"] as? [String])?.first,
-                (message == "warning.auth.mfaToken" && !ignoresMFAWarning) {
+                (message == "warning.auth.mfaToken" && !ignoresMFAWarning && !shouldIgnoreAuthErrors) {
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: Self.sessionExpiredNotificationName, object: self)
                     }
@@ -137,7 +142,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             }
             
         case .failure(let error):
-            if error as? APIError == APIError.unauthorized {
+            if error as? APIError == APIError.unauthorized && !shouldIgnoreAuthErrors {
                 completion(OperationResult.error(error, urlResponse))
                 
                 DispatchQueue.main.async {
@@ -240,5 +245,19 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             
         default: return nil
         }
+    }
+    
+    private func isNonCriticalEndpoint(_ urlResponse: HTTPURLResponse) -> Bool {
+        guard let url = urlResponse.url?.absoluteString else { return false }
+        
+        if url.contains("/api/v2/event") && !url.contains("/checklist") {
+            return true
+        }
+        
+        if url.contains("/api/v2/share-links") {
+            return true
+        }
+        
+        return false
     }
 }
