@@ -59,9 +59,9 @@ enum ShareExpirationOption: CaseIterable {
     
     var icon: Image {
         switch self {
-        case .oneDay: return Image(systemName: "clock")
-        case .oneMonth: return Image(systemName: "calendar")
-        case .oneYear: return Image(systemName: "calendar.badge.clock")
+        case .oneDay: return Image(.publishOneDay)
+        case .oneMonth: return Image(.publishOneMonth)
+        case .oneYear: return Image(.publishOneYear)
         case .never: return Image(systemName: "infinity")
         case .none: return Image(systemName: "questionmark") // Placeholder icon for none
         }
@@ -240,8 +240,11 @@ class ShareItemViewModel: ObservableObject {
     }
     
     var expirationDisplayText: String {
-        if let expiresDT = shareVO?.expiresDT, !expiresDT.isEmpty {
-            if let date = parseExpirationDate(expiresDT) {
+        // Show selected expiration if it has a date (not "never" or "none")
+        if selectedExpiration != .never && selectedExpiration != .none,
+           let expirationDateString = selectedExpiration.expirationDate,
+           !expirationDateString.isEmpty {
+            if let date = parseExpirationDate(expirationDateString) {
                 let displayFormatter = DateFormatter()
                 displayFormatter.dateFormat = "MMMM d, yyyy"
                 return "The link will expire on \(displayFormatter.string(from: date))."
@@ -723,7 +726,7 @@ class ShareItemViewModel: ObservableObject {
                         self.isLoading = false
                         
                         if let error = error {
-                            self.errorMessage = error
+                            self.errorMessage = self.userFriendlyErrorMessage(from: error)
                         } else if let shareData = shareData {
                             self.shareVO = shareData
                             self.shareLink = shareData.shareURL
@@ -879,7 +882,7 @@ class ShareItemViewModel: ObservableObject {
                         self.isLoading = false
                         
                         if let error = error {
-                            self.errorMessage = error
+                            self.errorMessage = self.userFriendlyErrorMessage(from: error)
                         } else if let updatedData = result {
                             self.shareLinkV2Data = updatedData
                             
@@ -909,6 +912,26 @@ class ShareItemViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    private func userFriendlyErrorMessage(from error: String) -> String {
+        if error.contains("APIError") || error.contains("Permanent.") {
+            return "Unable to update link settings. Please try again."
+        }
+        
+        if error.lowercased().contains("network") || error.lowercased().contains("connection") {
+            return "Network connection issue. Please check your internet and try again."
+        }
+        
+        if error.lowercased().contains("timeout") {
+            return "Request timed out. Please try again."
+        }
+        
+        if error.lowercased().contains("authentication") || error.lowercased().contains("unauthorized") {
+            return "Authentication error. Please sign in again."
+        }
+        
+        return error
     }
     
     func revertChanges() {

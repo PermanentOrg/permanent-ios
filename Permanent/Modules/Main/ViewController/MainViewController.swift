@@ -1260,17 +1260,11 @@ extension MainViewController: FABActionSheetDelegate {
             menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
         }
         
-        if file.permissions.contains(.share) {
-            if file.type.isFolder == false {
-                menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
-                    shareWithOtherApps(file: file)
-                }))
-            }
-        }
-        
-        // Add getLink menu item for files in PublicFilesViewModel (public workspace)
-        if viewModel is PublicFilesViewModel {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
+        // Share to another app - for files with share permission (not folders)
+        if file.permissions.contains(.share) && file.type.isFolder == false {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
+                shareWithOtherApps(file: file)
+            }))
         }
         
         if file.permissions.contains(.delete) && viewModel is PublicFilesViewModel == false {
@@ -1321,11 +1315,8 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.presentShareManagement(for: file)
                 })
             },
-            onGetLinkRequested: { [weak self] file in
-                // Dismiss the menu first, then handle get link
-                self?.dismiss(animated: true, completion: {
-                    self?.getPublicLinkAction(file: file)
-                })
+            onRenameRequested: { [weak self] file in
+                self?.dismiss(animated: true)
             },
             onDeleteConfirmed: { [weak self] files in
                 self?.dismiss(animated: true, completion: {
@@ -1364,9 +1355,9 @@ extension MainViewController: FABActionSheetDelegate {
         )
         
         let hostingController = UIHostingController(rootView: swiftUIView)
-        hostingController.modalPresentationStyle = .overFullScreen
-        hostingController.modalTransitionStyle = .crossDissolve
-        hostingController.view.backgroundColor = .clear
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
         
         present(hostingController, animated: true)
     }
@@ -1456,11 +1447,8 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.presentShareManagement(for: file)
                 })
             },
-            onGetLinkRequested: { [weak self] file in
-                // Dismiss the menu first, then handle get link
-                self?.dismiss(animated: true, completion: {
-                    self?.getPublicLinkAction(file: file)
-                })
+            onRenameRequested: { [weak self] file in
+                self?.dismiss(animated: true)
             },
             onDeleteConfirmed: { [weak self] files in
                 self?.dismiss(animated: true, completion: {
@@ -1665,7 +1653,7 @@ extension MainViewController {
                 self.viewModel?.cancelDownload() })
             )
             present(preparingAlert, animated: true) {
-                self.viewModel?.download(file: file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
+                self.viewModel?.download(file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
                     if let url = url {
                         self.dismiss(animated: true) {
                             self.share(url: url)
@@ -1673,21 +1661,24 @@ extension MainViewController {
                     } else {
                         self.dismiss(animated: true, completion: nil)
                     }
-                })
+                }, progressHandler: nil)
             }
         }
     }
     
     private func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
-        
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
-        
         viewModel?.trackEvent(action: AccountEventAction.openShareModal)
+        
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        present(activityViewController, animated: true)
     }
     
     func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {
@@ -1794,7 +1785,15 @@ extension MainViewController: FilePreviewNavigationControllerDelegate {
         }
     }
     
-    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) { }
+    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        if hasChanges {
+            refreshCurrentFolder(shouldDisplaySpinner: false)
+        }
+    }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        downloadAction(file: file)
+    }
 }
 
 // MARK: - PhotoPickerViewControllerDelegate

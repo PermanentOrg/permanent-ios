@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -112,24 +113,84 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func showShareMenu(_ sender: Any) {
-        var menuItems: [FileMenuViewController.MenuItem] = []
+        var menuItems: [FileMenuViewModel.MenuItem] = []
         
-        menuItems.append(FileMenuViewController.MenuItem(type: .shareToAnotherApp, action: { [self] in
-            shareWithOtherApps()
-        }))
-        
-        if let publicURL = viewModel?.publicURL {
-            menuItems.append(FileMenuViewController.MenuItem(type: .getLink, action: { [self] in
-                share(url: publicURL)
-            }))
-        } else if self.file.permissions.contains(.ownership) {
-            menuItems.append(FileMenuViewController.MenuItem(type: .shareToPermanent, action: nil))
+        // Share to Permanent - only for files with ownership
+        if file.permissions.contains(.ownership) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
         }
+        
+        // Share to another app - for files with share permission (not folders)
+        if file.permissions.contains(.share) && file.type.isFolder == false {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
+                shareWithOtherApps()
+            }))
+        }
+        
+        // Publish on the web - for files with delete permission
+        if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .publish, action: { [self] in
+                publishAction()
+            }))
+        }
+        
+        // Download - for files with read permission (not folders)
+        if file.permissions.contains(.read) && file.type.isFolder == false {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .download, action: { [weak self] in
+                guard let self = self else { return }
+                // Store the file reference before dismissing
+                let fileToDownload = self.file!
+                
+                // First dismiss the menu
+                if let menuHostingController = self.presentedViewController {
+                    menuHostingController.dismiss(animated: true) {
+                        // Then dismiss the preview and notify delegate
+                        self.navigationController?.dismiss(animated: true) {
+                            // Use delegate to request download from MainViewController
+                            self.delegate?.filePreviewNavigationControllerRequestsDownload(self, file: fileToDownload)
+                        }
+                    }
+                }
+            }))
+        }
+        
+        let swiftUIView = FileMoreMenuView(
+            fileViewModel: file,
+            menuItems: menuItems,
+            onDismiss: { [weak self] in
+                // Only dismiss the menu overlay, not the details view
+                self?.presentedViewController?.dismiss(animated: true)
+            },
+            onShareManagementRequested: { [weak self] file in
+                // Don't dismiss the details view - just dismiss the menu and present share management on top
+                if let hostingController = self?.presentedViewController {
+                    hostingController.dismiss(animated: true) {
+                        self?.presentShareManagement(for: file)
+                    }
+                }
+            },
+            downloadHandler: nil
+        )
+        
+        let hostingController = UIHostingController(rootView: swiftUIView)
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
+        
+        present(hostingController, animated: true)
+    }
     
-        let vc = FileMenuViewController()
-        vc.fileViewModel = file
-        vc.menuItems = menuItems
-        present(vc, animated: true)
+    private func presentShareManagement(for file: FileModel) {
+        let shareContainerView = ShareContainerView(fileModel: file)
+        let hostingController = UIHostingController(rootView: shareContainerView)
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+        if #available(iOS 15.0, *) {
+            if let sheet = hostingController.sheetPresentationController {
+                sheet.detents = [.large()]
+                sheet.prefersGrabberVisible = true
+            }
+        }
+        present(hostingController, animated: true)
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -178,13 +239,16 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
 
     private func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        present(activityViewController, animated: true)
     }
     
     private func segmentedControlChangedAction() -> ((FileDetailsMenuCollectionViewCell) -> Void) {
@@ -216,8 +280,11 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func shareWithOtherApps() {
-        if let fileName = self.viewModel?.fileName(),
-            let localURL = fileHelper.url(forFileNamed: fileName) {
+        // Check for file using displayName + extension (matches DownloadManagerGCD naming)
+        let fileExtension = (file.uploadFileName as NSString).pathExtension
+        let fileName = !fileExtension.isEmpty ? "\(file.name).\(fileExtension)" : file.name
+        
+        if let localURL = fileHelper.url(forFileNamed: fileName) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
@@ -240,6 +307,70 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
     }
+    
+    func publishAction() {
+        let title = String(format: "\(String.publish) \"%@\"?", file.name)
+        showActionDialog(
+            styled: .simpleWithDescription,
+            withTitle: title,
+            description: .publishDescription,
+            positiveButtonTitle: .publish,
+            positiveAction: { [weak self] in
+                self?.actionDialog?.dismiss()
+                self?.publish()
+            },
+            overlayView: nil
+        )
+    }
+    
+    private func publish() {
+        showSpinner()
+        
+        // Get the current archive number
+        guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr else {
+            hideSpinner()
+            showErrorAlert(message: "Unable to publish file")
+            return
+        }
+        
+        // First, get the public root folder
+        let filesRepository = FilesRepository()
+        filesRepository.getPublicRoot(archiveNbr: archiveNbr) { [weak self] (folder, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.hideSpinner()
+                self.showErrorAlert(message: error.localizedDescription)
+                return
+            }
+            
+            guard let publicRootFolder = folder else {
+                self.hideSpinner()
+                self.showErrorAlert(message: "Unable to get public folder")
+                return
+            }
+            
+            // Now relocate (copy) the file to the public folder
+            filesRepository.relocate(
+                files: [self.file],
+                folderLinkId: publicRootFolder.folderLinkId,
+                isCopy: true
+            ) { error in
+                self.hideSpinner()
+                
+                if let error = error {
+                    self.showErrorAlert(message: error.localizedDescription)
+                } else {
+                    if self.file.type.isFolder {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder published successfully".localized())
+                    } else {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 // MARK: - UICollectionViewDataSource

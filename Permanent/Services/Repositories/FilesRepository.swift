@@ -33,4 +33,12 @@ class FilesRepository {
     func getPublicRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
         remoteDataSource.getPublicRoot(completion: completion)
     }
+    
+    func getPublicRoot(archiveNbr: String, completion: @escaping ((FileModel?, Error?) -> Void)) {
+        remoteDataSource.getPublicRoot(archiveNbr: archiveNbr, completion: completion)
+    }
+    
+    func relocate(files: [FileModel], folderLinkId: Int, isCopy: Bool, completion: @escaping ((Error?) -> Void)) {
+        remoteDataSource.relocate(files: files, folderLinkId: folderLinkId, isCopy: isCopy, completion: completion)
+    }
 }

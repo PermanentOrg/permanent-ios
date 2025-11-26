@@ -11,11 +11,11 @@ import UIKit
 struct FileMoreMenuView: View {
     @ObservedObject private var viewModel: FileMenuViewModel
     private let onShareManagementRequested: ((FileModel) -> Void)?
-    private let onGetLinkRequested: ((FileModel) -> Void)?
+    private let onRenameRequested: ((FileModel) -> Void)?
     private let onDeleteConfirmed: (([FileModel]) -> Void)?
     private let onLeaveShareConfirmed: ((FileModel) -> Void)?
     
-    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil, menuItemsGenerator: FileMenuViewModel.MenuItemsGenerator? = nil, fileModelUpdateHandler: FileMenuViewModel.FileModelUpdateHandler? = nil) {
+    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onRenameRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil, menuItemsGenerator: FileMenuViewModel.MenuItemsGenerator? = nil, fileModelUpdateHandler: FileMenuViewModel.FileModelUpdateHandler? = nil) {
         let newViewModel = FileMenuViewModel(
             fileViewModel: fileViewModel,
             menuItems: menuItems,
@@ -39,7 +39,7 @@ struct FileMoreMenuView: View {
         
         self.viewModel = newViewModel
         self.onShareManagementRequested = onShareManagementRequested
-        self.onGetLinkRequested = onGetLinkRequested
+        self.onRenameRequested = onRenameRequested
         self.onDeleteConfirmed = onDeleteConfirmed
         self.onLeaveShareConfirmed = onLeaveShareConfirmed
     }
@@ -369,8 +369,8 @@ struct FileMoreMenuView: View {
                 // Fallback: present via a safe presenter (the presentingViewController of this menu if available)
                 presentShareManagementSafely()
             }
-        case .getLink:
-            if let callback = onGetLinkRequested {
+        case .rename:
+            if let callback = onRenameRequested {
                 callback(viewModel.fileViewModel)
             } else {
                 // Fallback to the old method if callback not provided

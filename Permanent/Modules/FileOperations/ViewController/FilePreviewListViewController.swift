@@ -204,4 +204,9 @@ extension FilePreviewListViewController: FilePreviewNavigationControllerDelegate
             self.hasChanges = true
         }
     }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        // Forward the request through the navigation controller
+        (navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerRequestsDownload(self, file: file)
+    }
 }

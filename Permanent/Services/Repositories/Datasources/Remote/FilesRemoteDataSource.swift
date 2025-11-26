@@ -15,7 +15,9 @@ protocol FilesRemoteDataSourceInterface {
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileModel?, Error?) -> Void))
     func getPrivateRoot(completion: @escaping ((FileModel?, Error?) -> Void))
     func getPublicRoot(completion: @escaping ((FileModel?, Error?) -> Void))
+    func getPublicRoot(archiveNbr: String, completion: @escaping ((FileModel?, Error?) -> Void))
     func getSharedRoot(completion: @escaping ((FileModel?, Error?) -> Void))
+    func relocate(files: [FileModel], folderLinkId: Int, isCopy: Bool, completion: @escaping ((Error?) -> Void))
 }
 
 class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
@@ -175,6 +177,68 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
+    func getPublicRoot(archiveNbr: String, completion: @escaping ((FileModel?, Error?) -> Void)) {
+        let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: archiveNbr))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
+                    completion(nil, APIError.parseError)
+                    return
+                }
+                
+                if model.isSuccessful == true, let folderVO = model.results?.first?.data?.first?.folderVO {
+                    let folder = FileModel(model: folderVO)
+                    completion(folder, nil)
+                } else {
+                    completion(nil, APIError.parseError)
+                }
+                
+            case .error(let error, _):
+                completion(nil, error)
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    func relocate(files: [FileModel], folderLinkId: Int, isCopy: Bool, completion: @escaping ((Error?) -> Void)) {
+        let action: FileAction = isCopy ? .copy : .move
+        
+        // Create a destination FileModel with the folderLinkId
+        let destination = FileModel(
+            name: "",
+            recordId: 0,
+            folderLinkId: folderLinkId,
+            archiveNbr: files.first?.archiveNo ?? "",
+            type: "folder",
+            permissions: []
+        )
+        
+        let relocateParams: RelocateParams = ((files: files, destination: destination), action)
+        let apiOperation = APIOperation(FilesEndpoint.relocate(params: relocateParams))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let httpResponse, _):
+                if let response = httpResponse,
+                   let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
+                   let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                    completion(nil)
+                } else {
+                    completion(APIError.serverError)
+                }
+            case .error(let error, _):
+                completion(error)
+            default:
+                completion(APIError.unknown)
+            }
+        }
+    }
+    
     // MARK: - Private
     private func navigateMin(params: NavigateMinParams, then handler: @escaping (([FileModel], Error?) -> Void)) {
         let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
@@ -318,8 +382,16 @@ class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
         completion(privateRootMock, nil)
     }
     
+    func getPublicRoot(archiveNbr: String, completion: @escaping ((FileModel?, Error?) -> Void)) {
+        completion(privateRootMock, nil)
+    }
+    
     func getSharedRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
         completion(privateRootMock, nil)
+    }
+    
+    func relocate(files: [FileModel], folderLinkId: Int, isCopy: Bool, completion: @escaping ((Error?) -> Void)) {
+        completion(nil)
     }
 }
 

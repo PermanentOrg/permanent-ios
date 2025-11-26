@@ -354,25 +354,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
             }
         )}
 
-    func download(file: FileModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
-        let downloadInfo = FileDownloadInfoVM(
-            fileType: file.type,
-            folderLinkId: file.folderLinkId,
-            parentFolderLinkId: file.parentFolderLinkId
-        )
-        
-        downloader = DownloadManagerGCD()
-        downloader?.download(
-            downloadInfo,
-            onDownloadStart: onDownloadStart,
-            onFileDownloaded: onFileDownloaded,
-            progressHandler: nil,
-            completion: {
-                self.downloader = nil
-                self.downloadQueue.safeRemoveFirst()
-            }
-        )}
-
     func delete(_ files: [FileModel]?, then handler: @escaping ServerResponse) {
         guard let files = files else {
             handler(.error(message: .errorMessage))

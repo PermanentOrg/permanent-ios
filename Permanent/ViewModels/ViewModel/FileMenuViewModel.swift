@@ -24,7 +24,6 @@ class FileMenuViewModel: ObservableObject {
             case publish = "publish"
             case shareToPermanent = "shareToPermanent"
             case shareToAnotherApp = "shareToAnotherApp"
-            case getLink = "getLink"
             case editMetadata = "editMetadata"
         }
         
@@ -270,8 +269,19 @@ class FileMenuViewModel: ObservableObject {
                             with: APIResults<FolderVO>.decoder
                         ),
                         model.isSuccessful,
-                        let folderData = model.results.first?.data?.first?.folderVO,
-                        let accessRoleString = folderData.accessRole else {
+                        let folderData = model.results.first?.data?.first?.folderVO else {
+                            return
+                        }
+                        
+                        var accessRoleString: String?
+                        if let accessVO = folderData.accessVO?.value as? [String: Any],
+                           let role = accessVO["accessRole"] as? String {
+                            accessRoleString = role
+                        } else if let role = folderData.accessRole {
+                            accessRoleString = role
+                        }
+                        
+                        guard let accessRoleString = accessRoleString else {
                             return
                         }
                         
@@ -287,8 +297,19 @@ class FileMenuViewModel: ObservableObject {
                             with: APIResults<RecordVO>.decoder
                         ),
                         model.isSuccessful,
-                        let recordData = model.results.first?.data?.first?.recordVO,
-                        let accessRoleString = recordData.accessRole else {
+                        let recordData = model.results.first?.data?.first?.recordVO else {
+                            return
+                        }
+                        
+                        var accessRoleString: String?
+                        if let accessVO = recordData.accessVO?.value as? [String: Any],
+                           let role = accessVO["accessRole"] as? String {
+                            accessRoleString = role
+                        } else if let role = recordData.accessRole {
+                            accessRoleString = role
+                        }
+                        
+                        guard let accessRoleString = accessRoleString else {
                             return
                         }
                         
@@ -515,8 +536,8 @@ class FileMenuViewModel: ObservableObject {
             shareWithOtherApps(from: viewController)
         case .shareToPermanent:
             shareWithPermanent(from: viewController)
-        case .getLink:
-            getLink(from: viewController)
+        case .rename:
+            rename(from: viewController)
         default:
             presentNotImplementedAlert(from: viewController)
         }
@@ -572,12 +593,10 @@ class FileMenuViewModel: ObservableObject {
         }
     }
     
-    private func getLink(from viewController: UIViewController) {
-        // Dismiss the menu first, then trigger the special menu item
+    private func rename(from viewController: UIViewController) {
         dismissWithAnimation()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // This triggers the view layer to handle the get link functionality
-            self.specialMenuItemRequested = MenuItem(type: .getLink, action: nil)
+            self.specialMenuItemRequested = MenuItem(type: .rename, action: nil)
         }
     }
     
@@ -699,9 +718,17 @@ class FileMenuViewModel: ObservableObject {
     }
     
     private func presentActivityViewController(from viewController: UIViewController) {
-        let shareText = "File: \(fileViewModel.name)"
+        // Try to get the local file URL if available
+        let activityItems: [Any]
+        if let localURL = getLocalFileURL(), FileManager.default.fileExists(atPath: localURL.path) {
+            activityItems = [localURL]
+        } else {
+            // Fallback to sharing file name as text
+            activityItems = ["File: \(fileViewModel.name)"]
+        }
+        
         let activityViewController = UIActivityViewController(
-            activityItems: [shareText], 
+            activityItems: activityItems, 
             applicationActivities: nil
         )
         
@@ -739,30 +766,34 @@ class FileMenuViewModel: ObservableObject {
     }
     
     private func getLocalFileURL() -> URL? {
-        let uploadFileName = fileViewModel.uploadFileName
-        guard !uploadFileName.isEmpty else {
-            return nil
+        let fileExtension = (fileViewModel.uploadFileName as NSString).pathExtension
+        let fileName = !fileExtension.isEmpty ? "\(fileViewModel.name).\(fileExtension)" : fileViewModel.name
+        
+        if let url = fileHelper.url(forFileNamed: fileName) {
+            return url
         }
         
-        return fileHelper.url(forFileNamed: uploadFileName)
+        if fileExtension.uppercased() == "HEIC" {
+            let convertedFileName = "\(fileViewModel.name).JPG"
+            if let url = fileHelper.url(forFileNamed: convertedFileName) {
+                return url
+            }
+        }
+        
+        return nil
     }
     
     private func presentShareSheet(url: URL, from viewController: UIViewController) {
-        documentInteractionController.dismissMenu(animated: true)
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            presentActivityViewController(from: viewController)
-            return
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = viewController.view
+            popover.sourceRect = CGRect(x: viewController.view.bounds.midX, y: viewController.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
         }
         
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        
-        let presented = documentInteractionController.presentOptionsMenu(from: .zero, in: viewController.view, animated: true)
-        if !presented {
-            presentActivityViewController(from: viewController)
-        }
+        viewController.present(activityViewController, animated: true)
     }
     
     // MARK: - Special Menu Item Handling
@@ -824,8 +855,6 @@ class FileMenuViewModel: ObservableObject {
             return Image(.shareAndManageV1)
         case .shareToAnotherApp:
             return Image(.saveOrShareV1)
-        case .getLink:
-            return Image(.sharePublishGetLink)
         case .editMetadata:
             return Image(.fileInfoV1)
         }
@@ -851,8 +880,6 @@ class FileMenuViewModel: ObservableObject {
             return "Share and manage access"
         case .shareToAnotherApp:
             return "Save or send a copy"
-        case .getLink:
-            return "Get Link"
         case .editMetadata:
             return "Edit Metadata"
         }
