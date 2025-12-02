@@ -1149,22 +1149,81 @@ extension MainViewController {
 
 extension MainViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = UIViewController.create(
-            withIdentifier: .fabActionSheet,
-            from: .main
-        ) as? FABActionSheet else {
-            showAlert(title: .error, message: .errorMessage)
-            return
-        }
-
-        actionSheet.delegate = self
+        let fabMenuView = FABMenuView(
+            onCreateFolder: { [weak self] in
+                self?.didTapNewFolder()
+            },
+            onTakePhoto: { [weak self] in
+                self?.handleUploadAction {
+                    self?.openCamera()
+                }
+            },
+            onUploadPhotos: { [weak self] in
+                self?.handleUploadAction {
+                    self?.openPhotoLibrary()
+                }
+            },
+            onBrowseFiles: { [weak self] in
+                self?.handleUploadAction {
+                    self?.openFileBrowser()
+                }
+            },
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: false, completion: {
+                    // Show FAB buttons with animation when menu is dismissed
+                    self?.fabView.isHidden = false
+                    self?.fabView.alpha = 0
+                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                        self?.fabView.alpha = 1
+                    }
+                })
+            }
+        )
         
-        if Constants.Design.currentPlatform == .phone {
-            navigationController?.display(viewController: actionSheet, modally: true)
+        let hostingController = UIHostingController(rootView: fabMenuView)
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
+        
+        present(hostingController, animated: true)
+        
+        // Hide FAB with fade animation after presenting
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
+                self.fabView.alpha = 0
+            } completion: { _ in
+                self.fabView.isHidden = true
+            }
+        }
+        
+        viewModel?.trackEvent(action: RecordEventAction.initiateUpload)
+    }
+    
+    private func handleUploadAction(action: @escaping () -> Void) {
+        if viewModel is PublicFilesViewModel {
+            let title = ""
+            let description = "This is a public folder. Are you sure you want to upload here?".localized()
+            showActionDialog(
+                styled: .simpleWithDescription,
+                withTitle: title,
+                description: description,
+                positiveButtonTitle: "Upload".localized(),
+                positiveAction: { [weak self] in
+                    self?.view.dismissPopup(
+                        self?.actionDialog,
+                        overlayView: self?.overlayView,
+                        completion: { _ in
+                            self?.actionDialog?.removeFromSuperview()
+                            self?.actionDialog = nil
+                            action()
+                        }
+                    )
+                },
+                cancelButtonTitle: "Cancel".localized(),
+                overlayView: overlayView
+            )
         } else {
-            // iPad presentation - use formSheet or pageSheet
-            actionSheet.modalPresentationStyle = .formSheet
-            present(actionSheet, animated: true)
+            action()
         }
     }
     
@@ -1187,34 +1246,12 @@ extension MainViewController: FABViewDelegate {
     }
 }
 
-// MARK: - FABActionSheetDelegate
+// MARK: - FABActionSheetDelegate (kept for backwards compatibility)
 extension MainViewController: FABActionSheetDelegate {
     func didTapUpload() {
-        if viewModel is PublicFilesViewModel {
-            let title = ""
-            let description = "This is a public folder. Are you sure you want to upload here?".localized()
-            showActionDialog(
-                styled: .simpleWithDescription,
-                withTitle: title,
-                description: description,
-                positiveButtonTitle: "Upload".localized(),
-                positiveAction: { [weak self] in
-                    self?.view.dismissPopup(
-                        self?.actionDialog,
-                        overlayView: self?.overlayView,
-                        completion: { _ in
-                            self?.actionDialog?.removeFromSuperview()
-                            self?.actionDialog = nil
-                            
-                            self?.showActionSheet()
-                        }
-                    )
-                },
-                cancelButtonTitle: "Cancel".localized(),
-                overlayView: overlayView
-            )
-        } else {
-            showActionSheet()
+        // This is kept for backwards compatibility but no longer used
+        handleUploadAction {
+            self.showActionSheet()
         }
     }
     
@@ -1810,5 +1847,13 @@ extension MainViewController: PhotoPickerViewControllerDelegate {
                 processUpload(toFolder: currentFolder, forURLS: urls)
             }
         })
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension MainViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        // Show FAB buttons when menu is dismissed
+        updateFABViewVisibility()
     }
 }

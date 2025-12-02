@@ -1628,19 +1628,45 @@ extension SharesViewController: SortActionSheetDelegate {
 // MARK: - FABViewDelegate
 extension SharesViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = UIViewController.create(
-            withIdentifier: .fabActionSheet,
-            from: .main
-        ) as? FABActionSheet else {
-            showAlert(title: .error, message: .errorMessage)
-            return
-        }
-        ///To Do: for iPad another presentation mode for this menu should be implemented
-        if Constants.Design.currentPlatform == .phone {
-            actionSheet.delegate = self
-            navigationController?.display(viewController: actionSheet, modally: true)
-        } else {
-            return
+        let fabMenuView = FABMenuView(
+            onCreateFolder: { [weak self] in
+                self?.didTapNewFolder()
+            },
+            onTakePhoto: { [weak self] in
+                self?.openCamera()
+            },
+            onUploadPhotos: { [weak self] in
+                self?.openPhotoLibrary()
+            },
+            onBrowseFiles: { [weak self] in
+                self?.openFileBrowser()
+            },
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: false, completion: {
+                    // Show FAB buttons with animation when menu is dismissed
+                    self?.fabView.isHidden = false
+                    self?.fabView.alpha = 0
+                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                        self?.fabView.alpha = 1
+                    }
+                })
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: fabMenuView)
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
+        
+        present(hostingController, animated: true)
+        
+        // Hide FAB with fade animation after presenting
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
+                self.fabView.alpha = 0
+            } completion: { _ in
+                self.fabView.isHidden = true
+            }
         }
     }
     
@@ -1664,9 +1690,10 @@ extension SharesViewController: FABViewDelegate {
     }
 }
 
-// MARK: - FABActionSheetDelegate
+// MARK: - FABActionSheetDelegate (kept for backwards compatibility)
 extension SharesViewController: FABActionSheetDelegate {
     func didTapUpload() {
+        // This is kept for backwards compatibility but no longer used
         showActionSheet()
     }
     
@@ -1805,5 +1832,13 @@ extension SharesViewController: PhotoPickerViewControllerDelegate {
                 processUpload(toFolder: currentFolder, forURLS: urls)
             }
         })
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension SharesViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        // Show FAB buttons when menu is dismissed
+        fabView.isHidden = false
     }
 }
