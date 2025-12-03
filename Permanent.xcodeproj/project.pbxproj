@@ -389,6 +389,8 @@
 		5EAB11192ED8690D003A902E /* FABMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAB11182ED8690D003A902E /* FABMenuView.swift */; };
 		5EAB111D2ED9D112003A902E /* FABMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAB111C2ED9D112003A902E /* FABMenuViewModel.swift */; };
 		5EAB111F2ED9EA0C003A902E /* FABMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAB111E2ED9EA0C003A902E /* FABMenuItemView.swift */; };
+		5EAB11202EDDF8A0003A902E /* CreateNewFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAB11212EDDF8A0003A902E /* CreateNewFolderView.swift */; };
+		5EAB11222EDDF8A0003A902E /* CreateNewFolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAB11232EDDF8A0003A902E /* CreateNewFolderViewModel.swift */; };
 		5EABF5E12D3A9BA500DB7109 /* TopBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EABF5E02D3A9BA500DB7109 /* TopBannerView.swift */; };
 		5EAD21E22E73589500D15F76 /* RoleSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAD21E12E73589500D15F76 /* RoleSelectionView.swift */; };
 		5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */; };
@@ -1361,6 +1363,8 @@
 		5EAB11182ED8690D003A902E /* FABMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABMenuView.swift; sourceTree = "<group>"; };
 		5EAB111C2ED9D112003A902E /* FABMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABMenuViewModel.swift; sourceTree = "<group>"; };
 		5EAB111E2ED9EA0C003A902E /* FABMenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABMenuItemView.swift; sourceTree = "<group>"; };
+		5EAB11212EDDF8A0003A902E /* CreateNewFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewFolderView.swift; sourceTree = "<group>"; };
+		5EAB11232EDDF8A0003A902E /* CreateNewFolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewFolderViewModel.swift; sourceTree = "<group>"; };
 		5EABF5E02D3A9BA500DB7109 /* TopBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBannerView.swift; sourceTree = "<group>"; };
 		5EAD21E12E73589500D15F76 /* RoleSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleSelectionView.swift; sourceTree = "<group>"; };
 		5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -2492,6 +2496,8 @@
 				5EAB111E2ED9EA0C003A902E /* FABMenuItemView.swift */,
 				5EAB111C2ED9D112003A902E /* FABMenuViewModel.swift */,
 				5EAB11182ED8690D003A902E /* FABMenuView.swift */,
+				5EAB11212EDDF8A0003A902E /* CreateNewFolderView.swift */,
+				5EAB11232EDDF8A0003A902E /* CreateNewFolderViewModel.swift */,
 				BC120C5E253EF8F500C41243 /* FABActionSheet.swift */,
 				5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */,
 			);
@@ -5224,6 +5230,8 @@
 				5E9F5CEF2D53591600F6213E /* CustomPhoneFieldView.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				5EAB111D2ED9D112003A902E /* FABMenuViewModel.swift in Sources */,
+				5EAB11202EDDF8A0003A902E /* CreateNewFolderView.swift in Sources */,
+				5EAB11222EDDF8A0003A902E /* CreateNewFolderViewModel.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
 				92430A5E2AF2A1F00098597D /* EmailChipsTextField.swift in Sources */,
 				5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */,

@@ -791,10 +791,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             case .success:
                 DispatchQueue.main.async {
                     self.refreshCollectionView()
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder successfully created".localized())
                 }
 
-            case .error(let message):
-                self.showErrorAlert(message: message)
+            case .error(_):
+                self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
             }
         })
     }
@@ -1256,14 +1257,27 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func didTapNewFolder() {
-        showActionDialog(
-            styled: .singleField,
-            withTitle: .createFolder,
-            placeholders: [.folderName],
-            positiveButtonTitle: .create,
-            positiveAction: { self.newFolderAction() },
-            overlayView: overlayView
+        var hostingController: UIHostingController<CreateNewFolderView>?
+        
+        let createFolderView = CreateNewFolderView(
+            onCreateFolder: { [weak self] folderName in
+                hostingController?.dismiss(animated: false) {
+                    self?.createNewFolder(named: folderName)
+                }
+            },
+            onDismiss: {
+                hostingController?.dismiss(animated: false)
+            }
         )
+        
+        hostingController = UIHostingController(rootView: createFolderView)
+        hostingController?.modalPresentationStyle = .overFullScreen
+        hostingController?.modalTransitionStyle = .crossDissolve
+        hostingController?.view.backgroundColor = .clear
+        
+        if let controller = hostingController {
+            present(controller, animated: false)
+        }
     }
     
     func showSortActionSheetDialog() {
