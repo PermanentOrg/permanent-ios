@@ -337,6 +337,10 @@
 		5E83CC4B286C602500A5775B /* FolderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9DB37325516B27004F453B /* FolderInfo.swift */; };
 		5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */; };
 		5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC76EA255E8BF800903D3C /* URLExtension.swift */; };
+		5E8421F82EE05D4000C73337 /* RenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8421F62EE05D4000C73337 /* RenameView.swift */; };
+		5E8421F92EE05D4000C73337 /* RenameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8421F72EE05D4000C73337 /* RenameViewModel.swift */; };
+		5E8421FC2EE099E500C73337 /* RenameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8421FB2EE099E500C73337 /* RenameTextField.swift */; };
+		5E8421FD2EE099E500C73337 /* FolderNameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8421FA2EE099E500C73337 /* FolderNameTextField.swift */; };
 		5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */; };
 		5E865D072D403AC7005B41B7 /* TwoStepConfirmationContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */; };
 		5E865D092D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */; };
@@ -1315,6 +1319,10 @@
 		5E814A452C8F29E3005FF97C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		5E814A472C8F34E4005FF97C /* AuthLeftSideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideView.swift; sourceTree = "<group>"; };
 		5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionUploadManager.swift; sourceTree = "<group>"; };
+		5E8421F62EE05D4000C73337 /* RenameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameView.swift; sourceTree = "<group>"; };
+		5E8421F72EE05D4000C73337 /* RenameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameViewModel.swift; sourceTree = "<group>"; };
+		5E8421FA2EE099E500C73337 /* FolderNameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderNameTextField.swift; sourceTree = "<group>"; };
+		5E8421FB2EE099E500C73337 /* RenameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameTextField.swift; sourceTree = "<group>"; };
 		5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepBottomNotificationView.swift; sourceTree = "<group>"; };
 		5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmationContainerView.swift; sourceTree = "<group>"; };
 		5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmationContainerViewModel.swift; sourceTree = "<group>"; };
@@ -2493,6 +2501,10 @@
 		5E3E122F2A41E45000682DE5 /* FABActionSheet */ = {
 			isa = PBXGroup;
 			children = (
+				5E8421FA2EE099E500C73337 /* FolderNameTextField.swift */,
+				5E8421FB2EE099E500C73337 /* RenameTextField.swift */,
+				5E8421F62EE05D4000C73337 /* RenameView.swift */,
+				5E8421F72EE05D4000C73337 /* RenameViewModel.swift */,
 				5EAB111E2ED9EA0C003A902E /* FABMenuItemView.swift */,
 				5EAB111C2ED9D112003A902E /* FABMenuViewModel.swift */,
 				5EAB11182ED8690D003A902E /* FABMenuView.swift */,
@@ -5439,6 +5451,8 @@
 				5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */,
 				5E865D0B2D40E709005B41B7 /* TwoStepChooseVerificationView.swift in Sources */,
 				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,
+				5E8421FC2EE099E500C73337 /* RenameTextField.swift in Sources */,
+				5E8421FD2EE099E500C73337 /* FolderNameTextField.swift in Sources */,
 				5E59B9BA2C9AEDC30089A824 /* AuthVerifyIdentityViewModel.swift in Sources */,
 				5E75AFE12DBFC0250074159F /* ChecklistItem.swift in Sources */,
 				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,
@@ -5534,6 +5548,8 @@
 				5E4455D32A08F0BB00A56235 /* TrustedStewardViewController.swift in Sources */,
 				5E0AA7EF2C937561003FBCF2 /* CustomLoginFormView.swift in Sources */,
 				5EABF5E12D3A9BA500DB7109 /* TopBannerView.swift in Sources */,
+				5E8421F82EE05D4000C73337 /* RenameView.swift in Sources */,
+				5E8421F92EE05D4000C73337 /* RenameViewModel.swift in Sources */,
 				5EAB111F2ED9EA0C003A902E /* FABMenuItemView.swift in Sources */,
 				BCC4067125A86E9C00E29CC4 /* AccountStatus.swift in Sources */,
 				F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */,
