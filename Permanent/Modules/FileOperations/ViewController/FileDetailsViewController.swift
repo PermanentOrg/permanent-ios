@@ -309,18 +309,45 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func publishAction() {
-        let title = String(format: "\(String.publish) \"%@\"?", file.name)
-        showActionDialog(
-            styled: .simpleWithDescription,
-            withTitle: title,
-            description: .publishDescription,
-            positiveButtonTitle: .publish,
-            positiveAction: { [weak self] in
-                self?.actionDialog?.dismiss()
-                self?.publish()
-            },
-            overlayView: nil
-        )
+        let presentPublishView: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            
+            var hostingController: UIHostingController<PublishView>?
+            
+            let publishView = PublishView(
+                fileName: self.file.name,
+                isFolder: self.file.type.isFolder,
+                thumbnailURL: self.file.thumbnailURL,
+                thumbnailURL2000: self.file.thumbnailURL2000,
+                onPublish: { [weak self] in
+                    hostingController?.dismiss(animated: false) {
+                        self?.publish()
+                    }
+                },
+                onDismiss: {
+                    hostingController?.dismiss(animated: false)
+                }
+            )
+            
+            hostingController = UIHostingController(rootView: publishView)
+            hostingController?.modalPresentationStyle = .overFullScreen
+            hostingController?.modalTransitionStyle = .crossDissolve
+            hostingController?.view.backgroundColor = .clear
+            
+            if let controller = hostingController {
+                self.present(controller, animated: false)
+            }
+        }
+        
+        if let presented = presentedViewController {
+            presented.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    presentPublishView()
+                }
+            }
+        } else {
+            presentPublishView()
+        }
     }
     
     private func publish() {
