@@ -16,6 +16,7 @@ struct RenameView: View {
     @State private var isTextFieldFocused: Bool = false
     @State private var shakeTextField: Bool = false
     @State private var isRenaming: Bool = false
+    @State private var showThumbnail: Bool = false
     
     // Height calculation: Header(64) + Separator(1) + Spacer(24) + TextField(48) + Spacer(24) + Button(56) + BottomPadding(32) = 249
     private let menuHeight: CGFloat = 249
@@ -91,19 +92,23 @@ struct RenameView: View {
                                 .fixedSize()
                         } else if let thumbnailURLString = viewModel.thumbnailURL,
                                   let url = URL(string: thumbnailURLString) {
-                            WebImage(url: url)
-                                .placeholder {
-                                    Image(systemName: "doc.fill")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .foregroundColor(.blue900)
-                                        .frame(width: 24, height: 24)
-                                }
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 24, height: 24)
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
-                                .fixedSize()
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color(red: 0.91, green: 0.91, blue: 0.93))
+                                    .frame(width: 24, height: 24)
+                                
+                                ProgressView()
+                                    .scaleEffect(0.5)
+                                
+                                WebImage(url: url)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 24, height: 24)
+                                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                                    .opacity(showThumbnail ? 1 : 0)
+                            }
+                            .frame(width: 24, height: 24)
+                            .fixedSize()
                         } else {
                             // Fallback file icon
                             Image(systemName: "doc.fill")
@@ -218,6 +223,11 @@ struct RenameView: View {
         .ignoresSafeArea(.container)
         .onAppear {
             viewModel.startPresentationAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showThumbnail = true
+                }
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 isTextFieldFocused = true
             }
