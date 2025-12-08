@@ -1007,29 +1007,45 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {
-        let title = String(format: "\(String.rename) \"%@\"", file.name)
-        
-        self.showActionDialog(
-            styled: .singleField,
-            withTitle: title,
-            placeholders: ["Name".localized()],
-            prefilledValues: ["\(file.name)"],
-            positiveButtonTitle: .rename,
-            positiveAction: { [weak self] in
-                guard let self = self else { return }
-                guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
-                if inputName.isEmpty {
-                    self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
-                } else {
-                    self.actionDialog?.dismiss()
-                    self.rename(file, inputName, atIndexPath: indexPath)
-                    self.view.endEditing(true)
+        let presentRenameView: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            
+            var hostingController: UIHostingController<RenameView>?
+            
+            let renameView = RenameView(
+                currentName: file.name,
+                isFolder: file.type.isFolder,
+                thumbnailURL: file.thumbnailURL,
+                onRename: { [weak self] newName in
+                    hostingController?.dismiss(animated: false) {
+                        self?.rename(file, newName, atIndexPath: indexPath)
+                    }
+                },
+                onDismiss: {
+                    hostingController?.dismiss(animated: false)
                 }
-            },
-            positiveButtonColor: .primary,
-            cancelButtonColor: .brightRed,
-            overlayView: self.overlayView
-        )
+            )
+            
+            hostingController = UIHostingController(rootView: renameView)
+            hostingController?.modalPresentationStyle = .overFullScreen
+            hostingController?.modalTransitionStyle = .crossDissolve
+            hostingController?.view.backgroundColor = .clear
+            
+            if let controller = hostingController {
+                self.present(controller, animated: false)
+            }
+        }
+        
+        // Dismiss any currently presented view controller first
+        if let presented = presentedViewController {
+            presented.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    presentRenameView()
+                }
+            }
+        } else {
+            presentRenameView()
+        }
     }
     
     func deleteAction(file: FileModel, atIndexPath indexPath: IndexPath) {
@@ -1142,18 +1158,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     func rename(_ file: FileModel, _ name: String, atIndexPath indexPath: IndexPath) {
         showSpinner()
         viewModel?.rename(file: file, name: name, then: { status in
-            self.hideSpinner()
-            
             switch status {
             case .success:
-                self.pullToRefreshAction()
-                if file.type.isFolder {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successful".localized())
-                } else {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successful".localized())
-                }
+                self.refreshCurrentFolder(shouldDisplaySpinner: false, then: {
+                    self.hideSpinner()
+                    if file.type.isFolder {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successful".localized())
+                    } else {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successful".localized())
+                    }
+                })
                 
             case .error( _):
+                self.hideSpinner()
                 self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
             }
         })

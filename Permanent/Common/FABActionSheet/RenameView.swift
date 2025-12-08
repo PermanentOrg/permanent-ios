@@ -1,30 +1,37 @@
 //
-//  CreateNewFolderView.swift
+//  RenameView.swift
 //  Permanent
 //
-//  Created by Lucian Cerbu on 02.12.2025.
+//  Created by Lucian Cerbu on 03.12.2025.
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
-struct CreateNewFolderView: View {
-    @StateObject private var viewModel: CreateNewFolderViewModel
+struct RenameView: View {
+    @StateObject private var viewModel: RenameViewModel
     @GestureState private var dragOffset: CGFloat = 0
     @State private var dismissOffset: CGFloat = 0
     @State private var isDragging: Bool = false
     @State private var isTextFieldFocused: Bool = false
     @State private var shakeTextField: Bool = false
-    @State private var isCreating: Bool = false
+    @State private var isRenaming: Bool = false
     
     // Height calculation: Header(64) + Separator(1) + Spacer(24) + TextField(48) + Spacer(24) + Button(56) + BottomPadding(32) = 249
     private let menuHeight: CGFloat = 249
     
     init(
-        onCreateFolder: @escaping (String) -> Void,
+        currentName: String,
+        isFolder: Bool,
+        thumbnailURL: String? = nil,
+        onRename: @escaping (String) -> Void,
         onDismiss: (() -> Void)? = nil
     ) {
-        self._viewModel = StateObject(wrappedValue: CreateNewFolderViewModel(
-            onCreateFolder: onCreateFolder,
+        self._viewModel = StateObject(wrappedValue: RenameViewModel(
+            currentName: currentName,
+            isFolder: isFolder,
+            thumbnailURL: thumbnailURL,
+            onRename: onRename,
             onDismiss: {
                 onDismiss?()
             }
@@ -45,23 +52,22 @@ struct CreateNewFolderView: View {
                 VStack(spacing: 0) {
                     // Header with centered title and close button
                     ZStack(alignment: .center) {
-                            HStack(alignment: .center) {
-                                Text("Create new folder")
-                                    .font(.custom("Usual-Regular", size: 16))
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.blue900)
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                
-                                
-                                Spacer()
-                                
-                                Button(action: {
-                                    dismissMenu()
-                                }) {
-                                    Image(.closeButtonV2)
-                                        .frame(width: 24, height: 24)
-                                }
+                        HStack(alignment: .center) {
+                            Text(viewModel.title)
+                                .font(.custom("Usual-Regular", size: 16))
+                                .fontWeight(.medium)
+                                .foregroundColor(.blue900)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                dismissMenu()
+                            }) {
+                                Image(.closeButtonV2)
+                                    .frame(width: 24, height: 24)
                             }
+                        }
                     }
                     .frame(height: 64)
                     .padding(.horizontal, 24)
@@ -74,20 +80,47 @@ struct CreateNewFolderView: View {
                     Spacer()
                         .frame(height: 24)
                     
-                    // Folder name input field
+                    // Item name input field
                     HStack(alignment: .center, spacing: 16) {
-                        Image(.folderIconFigma)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                            .fixedSize()
+                        // Show folder icon for folders, thumbnail for files
+                        if viewModel.isFolder {
+                            Image(.folderIconFigma)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .fixedSize()
+                        } else if let thumbnailURLString = viewModel.thumbnailURL,
+                                  let url = URL(string: thumbnailURLString) {
+                            WebImage(url: url)
+                                .placeholder {
+                                    Image(systemName: "doc.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .foregroundColor(.blue900)
+                                        .frame(width: 24, height: 24)
+                                }
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 24, height: 24)
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                .fixedSize()
+                        } else {
+                            // Fallback file icon
+                            Image(systemName: "doc.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .foregroundColor(.blue900)
+                                .frame(width: 24, height: 24)
+                                .fixedSize()
+                        }
                         
-                        FolderNameTextField(
-                            text: $viewModel.folderName,
+                        RenameTextField(
+                            text: $viewModel.itemName,
                             isFirstResponder: $isTextFieldFocused,
-                            isReturnKeyEnabled: viewModel.isCreateButtonEnabled && !isCreating,
+                            placeholder: viewModel.isFolder ? "Folder name" : "File name",
+                            isReturnKeyEnabled: viewModel.isRenameButtonEnabled && !isRenaming,
                             onSubmit: {
-                                createFolder()
+                                renameItem()
                             },
                             onEmptySubmit: {
                                 triggerShake()
@@ -96,9 +129,9 @@ struct CreateNewFolderView: View {
                         .frame(maxWidth: .infinity)
                         
                         // Clear button
-                        if !viewModel.folderName.isEmpty {
+                        if !viewModel.itemName.isEmpty {
                             Button(action: {
-                                viewModel.folderName = ""
+                                viewModel.itemName = ""
                             }) {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundColor(.blue900)
@@ -108,7 +141,7 @@ struct CreateNewFolderView: View {
                             .transition(.opacity.combined(with: .scale))
                         }
                     }
-                    .animation(.easeInOut(duration: 0.2), value: viewModel.folderName.isEmpty)
+                    .animation(.easeInOut(duration: 0.2), value: viewModel.itemName.isEmpty)
                     .padding(.leading, 16)
                     .padding(.trailing, 12)
                     .padding(.vertical, 0)
@@ -129,15 +162,15 @@ struct CreateNewFolderView: View {
                     Spacer()
                         .frame(height: 24)
                     
-                    // Create button
+                    // Rename button
                     Button(action: {
-                        if viewModel.isCreateButtonEnabled {
-                            createFolder()
+                        if viewModel.isRenameButtonEnabled {
+                            renameItem()
                         } else {
                             triggerShake()
                         }
                     }) {
-                        Text("Create")
+                        Text("Rename")
                             .font(.custom("Usual-Regular", size: 14))
                             .fontWeight(.medium)
                             .foregroundColor(.white)
@@ -145,10 +178,10 @@ struct CreateNewFolderView: View {
                             .frame(height: 56)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill((viewModel.isCreateButtonEnabled && !isCreating) ? Color.blue900 : Color.gray.opacity(0.3))
+                                    .fill((viewModel.isRenameButtonEnabled && !isRenaming) ? Color.blue900 : Color.gray.opacity(0.3))
                             )
                     }
-                    .disabled(!viewModel.isCreateButtonEnabled || isCreating)
+                    .disabled(!viewModel.isRenameButtonEnabled || isRenaming)
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
@@ -185,7 +218,6 @@ struct CreateNewFolderView: View {
         .ignoresSafeArea(.container)
         .onAppear {
             viewModel.startPresentationAnimation()
-            // Auto-focus the text field after a short delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 isTextFieldFocused = true
             }
@@ -193,10 +225,8 @@ struct CreateNewFolderView: View {
     }
     
     private func dismissMenu() {
-        // Dismiss keyboard first
         isTextFieldFocused = false
         
-        // Wait for keyboard to dismiss, then animate view dismissal
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             withAnimation(.easeIn(duration: 0.25)) {
                 self.dismissOffset = self.menuHeight
@@ -210,22 +240,18 @@ struct CreateNewFolderView: View {
         }
     }
     
-    private func createFolder() {
-        guard !isCreating else { return }
+    private func renameItem() {
+        guard !isRenaming else { return }
         
-        let folderName = viewModel.folderName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !folderName.isEmpty else {
+        let newName = viewModel.itemName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !newName.isEmpty else {
             triggerShake()
             return
         }
         
-        // Prevent double submission
-        isCreating = true
-        
-        // Dismiss keyboard first
+        isRenaming = true
         isTextFieldFocused = false
         
-        // Wait for keyboard to dismiss, then animate view dismissal
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             withAnimation(.easeIn(duration: 0.25)) {
                 self.dismissOffset = self.menuHeight
@@ -234,7 +260,12 @@ struct CreateNewFolderView: View {
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                self.viewModel.createFolder(name: folderName)
+                // Only call rename if name actually changed, otherwise just dismiss
+                if self.viewModel.hasNameChanged {
+                    self.viewModel.rename(newName: newName)
+                } else {
+                    self.viewModel.callOnDismiss()
+                }
             }
         }
     }
@@ -247,10 +278,13 @@ struct CreateNewFolderView: View {
     }
 }
 
-struct CreateNewFolderView_Previews: PreviewProvider {
+struct RenameView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateNewFolderView(
-            onCreateFolder: { _ in },
+        RenameView(
+            currentName: "My Folder",
+            isFolder: true,
+            thumbnailURL: nil,
+            onRename: { _ in },
             onDismiss: {}
         )
     }
