@@ -1091,20 +1091,47 @@ extension MainViewController {
         }
     
     private func didTapPublish(source: FileModel) {
-        let title = String(format: "\(String.publish) \"%@\"?", source.name)
-        self.showActionDialog(
-            styled: .simpleWithDescription,
-            withTitle: title,
-            description: .publishDescription,
-            positiveButtonTitle: .publish,
-            positiveAction: {
-                self.actionDialog?.dismiss()
-                self.publish(file: source)
-            },
-            overlayView: self.overlayView
-        )
+        let presentPublishView: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            
+            var hostingController: UIHostingController<PublishView>?
+            
+            let publishView = PublishView(
+                fileName: source.name,
+                isFolder: source.type.isFolder,
+                thumbnailURL: source.thumbnailURL,
+                thumbnailURL2000: source.thumbnailURL2000,
+                onPublish: { [weak self] in
+                    hostingController?.dismiss(animated: false) {
+                        self?.publish(file: source)
+                    }
+                },
+                onDismiss: {
+                    hostingController?.dismiss(animated: false)
+                }
+            )
+            
+            hostingController = UIHostingController(rootView: publishView)
+            hostingController?.modalPresentationStyle = .overFullScreen
+            hostingController?.modalTransitionStyle = .crossDissolve
+            hostingController?.view.backgroundColor = .clear
+            
+            if let controller = hostingController {
+                self.present(controller, animated: false)
+            }
+        }
+        
+        if let presented = presentedViewController {
+            presented.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    presentPublishView()
+                }
+            }
+        } else {
+            presentPublishView()
+        }
     }
-    
+
     private func download(_ file: FileModel) {
         viewModel?.download(
             file,
