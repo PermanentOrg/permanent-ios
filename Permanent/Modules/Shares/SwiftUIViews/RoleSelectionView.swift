@@ -24,7 +24,7 @@ struct RoleSelectionView: View {
                 .background(Color.blue50)
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(AccessRole.allCases.filter { $0 != .curator }, id: \.self) { role in
+                    ForEach([AccessRole.viewer, .contributor, .editor, .curator, .owner], id: \.self) { role in
                         SelectableOptionView(
                             option: role,
                             isSelected: isRoleSelected(role),

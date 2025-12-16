@@ -76,6 +76,26 @@ struct ShareContainerView: View {
                         .padding(.horizontal, 24)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
+                
+                if viewModel.showLinkSettingsNotification {
+                    LinkSettingsNotificationView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.8)),
+                            removal: .move(edge: .bottom).combined(with: .opacity)
+                        ))
+                        .padding(.horizontal, 24)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                
+                if viewModel.showRevokeLinkNotification {
+                    RevokeLinkNotificationView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.8)),
+                            removal: .move(edge: .bottom).combined(with: .opacity)
+                        ))
+                        .padding(.horizontal, 24)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.showLinkSettings)
@@ -83,5 +103,9 @@ struct ShareContainerView: View {
         .animation(.easeInOut(duration: 0.3), value: viewModel.showRoleSelection)
         .animation(.easeInOut(duration: 0.3), value: viewModel.showArchiveAccessManagement)
         .animation(.easeInOut(duration: 0.3), value: viewModel.navigationDirection)
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showCopyNotification)
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showArchiveAccessNotification)
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showLinkSettingsNotification)
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showRevokeLinkNotification)
     }
 }

@@ -100,6 +100,8 @@ class ShareItemViewModel: ObservableObject {
     @Published var selectedExpiration: ShareExpirationOption = .none
     @Published var showCopyNotification = false
     @Published var showArchiveAccessNotification = false
+    @Published var showLinkSettingsNotification = false
+    @Published var showRevokeLinkNotification = false
     @Published var hasUnsavedChanges = false
     @Published var selectedAccessLevel: ShareViewAccessLevel = .anyoneCanView
     @Published var showGeneralAccess = false
@@ -555,7 +557,7 @@ class ShareItemViewModel: ObservableObject {
         case "viewer": return .viewer
         case "contributor": return .contributor
         case "editor": return .editor
-        case "manager": return .manager
+        case "manager": return .curator // Backend uses manager, UI shows curator
         case "owner": return .owner
         default: return .viewer
         }
@@ -585,16 +587,58 @@ class ShareItemViewModel: ObservableObject {
     }
     
     func showArchiveAccessUpdatedNotification() {
-        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-            showArchiveAccessNotification = true
-        }
-        
-        // Hide notification after 2 seconds with animation
+        // Delay showing the notification to allow view transition to complete
         Task {
+            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds delay
+            await MainActor.run {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    showArchiveAccessNotification = true
+                }
+            }
+            
+            // Hide notification after 2 seconds with animation
             try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
             await MainActor.run {
                 withAnimation(.easeInOut(duration: 0.3)) {
                     showArchiveAccessNotification = false
+                }
+            }
+        }
+    }
+    
+    func showLinkSettingsUpdatedNotification() {
+        // Delay showing the notification to allow view transition to complete
+        Task {
+            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds delay
+            await MainActor.run {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    showLinkSettingsNotification = true
+                }
+            }
+            
+            // Hide notification after 2 seconds with animation
+            try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showLinkSettingsNotification = false
+                }
+            }
+        }
+    }
+    
+    func showRevokeLinkSuccessNotification() {
+        Task {
+            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds delay
+            await MainActor.run {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    showRevokeLinkNotification = true
+                }
+            }
+            
+            try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showRevokeLinkNotification = false
                 }
             }
         }
@@ -642,6 +686,7 @@ class ShareItemViewModel: ObservableObject {
                                 self.shareLinkV2Data = nil
                                 self.navigationDirection = .backward
                                 self.showLinkSettings = false
+                                self.showRevokeLinkSuccessNotification()
                             case .error(let message):
                                 self.errorMessage = message
                             }
@@ -664,6 +709,7 @@ class ShareItemViewModel: ObservableObject {
                                 self.shareLinkV2Data = nil
                                 self.navigationDirection = .backward
                                 self.showLinkSettings = false
+                                self.showRevokeLinkSuccessNotification()
                             case .error(_):
                                 // If V2 API fails, fallback to V1 API
                                 self.revokeLinkV1(shareVO: shareVO)
@@ -693,6 +739,7 @@ class ShareItemViewModel: ObservableObject {
                         self.shareLinkV2Data = nil
                         self.navigationDirection = .backward
                         self.showLinkSettings = false
+                        self.showRevokeLinkSuccessNotification()
                     case .error(let message):
                         self.errorMessage = message
                     }
@@ -905,6 +952,9 @@ class ShareItemViewModel: ObservableObject {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     self.navigationDirection = .backward
                                     self.showLinkSettings = false
+                                    
+                                    // Show success notification
+                                    self.showLinkSettingsUpdatedNotification()
                                 }
                             }
                         }
@@ -948,7 +998,7 @@ class ShareItemViewModel: ObservableObject {
         case .editor: return "editor"
         case .manager: return "manager"
         case .owner: return "owner"
-        case .curator: return "editor" // Map curator to editor since it's not in V2 API
+        case .curator: return "manager" // Backend expects manager for curator role
         }
     }
     
