@@ -557,7 +557,9 @@ struct ShareItemView: View {
     
     private func accessRoleFromShareVO(_ shareVO: ShareVOData) -> AccessRole {
         let accessRole = shareVO.accessRole ?? "viewer"
-        return AccessRole.roleForValue(accessRole)
+        let role = AccessRole.roleForValue(accessRole)
+        // For file sharing, display curator when backend returns manager
+        return role == .manager ? .curator : role
     }
     
     // MARK: - Loading Overlay

@@ -237,7 +237,9 @@ class FileMenuViewModel: ObservableObject {
         guard showArchiveInfo, fileViewModel.sharedByArchive != nil else {
             return nil
         }
-        return fileViewModel.accessRole.title.uppercased()
+        // For file sharing, display curator when backend returns manager
+        let displayRole = fileViewModel.accessRole == .manager ? AccessRole.curator : fileViewModel.accessRole
+        return displayRole.title.uppercased()
     }
     
     // MARK: - Access Role Update

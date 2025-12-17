@@ -46,7 +46,10 @@ class ShareManagementSharedWithCollectionViewCell: UICollectionViewCell {
     
     func configure(withShareVO shareVO: MinArchiveVO) {
         nameLabel.text = "The " + (shareVO.name) + " Archive"
-        roleLabel.text = AccessRole.roleForValue(shareVO.accessRole).groupName.uppercased()
+        let role = AccessRole.roleForValue(shareVO.accessRole)
+        // For file sharing, display curator when backend returns manager
+        let displayRole = role == .manager ? AccessRole.curator : role
+        roleLabel.text = displayRole.groupName.uppercased()
         
         let url = URL(string: shareVO.thumbnail)
         archiveImageView.sd_setImage(with: url)
