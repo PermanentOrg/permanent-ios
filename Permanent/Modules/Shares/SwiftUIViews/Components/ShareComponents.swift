@@ -255,6 +255,81 @@ struct ArchiveAccessNotificationView: View {
     }
 }
 
+struct LinkSettingsNotificationView: View {
+    @State private var isVisible = false
+    @State private var checkmarkScale: CGFloat = 0.5
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+                .font(.system(size: 20, weight: .medium))
+                .scaleEffect(checkmarkScale)
+                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: checkmarkScale)
+            
+            Text("Link settings have been updated.")
+                .foregroundColor(.white)
+                .font(.custom("Usual-Regular", size: 14))
+                .opacity(isVisible ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.3).delay(0.1), value: isVisible)
+            
+            Spacer()
+        }
+        .padding(.vertical, 4)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.85))
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                .scaleEffect(isVisible ? 1.0 : 0.8)
+                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isVisible)
+        )
+        .onAppear {
+            withAnimation {
+                isVisible = true
+                checkmarkScale = 1.0
+            }
+        }
+    }
+}
+
+struct RevokeLinkNotificationView: View {
+    @State private var isVisible = false
+    @State private var checkmarkScale: CGFloat = 0.5
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+                .font(.system(size: 20, weight: .medium))
+                .scaleEffect(checkmarkScale)
+                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: checkmarkScale)
+            
+            Text("Link has been revoked.")
+                .foregroundColor(.white)
+                .font(.custom("Usual-Regular", size: 14))
+                .opacity(isVisible ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.3).delay(0.1), value: isVisible)
+            
+            Spacer()
+        }
+        .padding(.vertical, 4)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.85))
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                .scaleEffect(isVisible ? 1.0 : 0.8)
+                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isVisible)
+        )
+        .onAppear {
+            withAnimation {
+                isVisible = true
+                checkmarkScale = 1.0
+            }
+        }
+    }
+}
 struct AnimatedTextWithDotsView: View {
     @State private var dotCount = 0
     

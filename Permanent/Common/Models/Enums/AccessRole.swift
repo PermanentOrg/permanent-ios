@@ -85,17 +85,17 @@ extension AccessRole: SelectableOption {
     var description: String {
         switch self {
         case .viewer:
-            return "A member with permission to view records only."
+            return "Can view all materials but cannot edit, delete, upload, publish, or share anything."
         case .contributor:
-            return "A member with permission to view and create file and folder records (upload only)."
+            return "Can upload new materials but cannot edit metadata, delete items, publish content, or share."
         case .editor:
-            return "A member with permission to view and create file and folder records."
+            return "Can upload and edit metadata but cannot delete materials, publish them, or share anything."
         case .curator:
-            return "A member with permission to view and create file and folder records."
-        case .manager: //will not be included in the role selector for share
-            return "A member with permission to view and create file and folder records."
+            return "Trusted member with full control: edit, organize, delete, publish, share, and manage archive membership."
+        case .manager:
+            return "Trusted member with full control: edit, organize, delete, publish, share, and manage archive membership."
         case .owner:
-            return "A member with permission to view and create file and folder records."
+            return "Has ultimate control: manages roles, settings, and full archive access, including deletion."
         }
     }
     

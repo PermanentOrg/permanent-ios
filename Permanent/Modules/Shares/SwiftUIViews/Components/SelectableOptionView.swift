@@ -26,7 +26,7 @@ struct SelectableOptionView<T: SelectableOption>: View {
                 // Content
                 VStack(alignment: .leading, spacing: 16) {
                     Text(option.title)
-                        .font(.custom("Usual-Medium", size: 14))
+                        .font(.custom(isSelected ? "Usual-Medium" : "Usual-Regular", size: 14))
                         .foregroundColor(Color.blue900)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
