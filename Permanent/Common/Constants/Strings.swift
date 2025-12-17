@@ -226,4 +226,9 @@ extension String {
     static var oldest: String { return "Oldest".localized() }
     static var newest: String { return "Newest".localized() }
     static var linkSettings: String { return "LinkSettings".localized() }
+    
+    // MARK: - Workspace Tab Menu
+    static var privateWorkspace: String { return "Private" }
+    static var sharedWorkspace: String { return "Shared" }
+    static var publicWorkspace: String { return "Public" }
 }

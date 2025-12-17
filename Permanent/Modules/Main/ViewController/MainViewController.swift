@@ -25,6 +25,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
     private let screenLockManager = ScreenLockManager()
+    
+    // iOS 26+ Workspace Tab Bar (from WorkspaceTabs module)
+    private lazy var workspaceTabViewModel: WorkspaceTabViewModel? = {
+        if #available(iOS 26, *) {
+            return WorkspaceTabViewModel()
+        }
+        return nil
+    }()
+    private var workspaceTabBarHostingController: UIHostingController<AnyView>?
 
     private var sortActionSheet: SortActionSheet?
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
@@ -40,7 +49,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         setupCollectionView()
         setupBottomActionSheet()
         
-        fabView.delegate = self
+        // Setup bottom UI based on iOS version
+        if #available(iOS 26, *) {
+            setupWorkspaceTabBar()
+        } else {
+            fabView.delegate = self
+        }
         
         getRootFolder()
         
@@ -225,7 +239,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         collectionView.refreshControl = refreshControl
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
+        
+        // Set bottom inset based on iOS version
+        if #available(iOS 26, *) {
+            collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 100, right: 6)
+        } else {
+            collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
+        }
+        
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
         flowLayout.minimumLineSpacing = 0
@@ -345,11 +366,19 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func showMemberChecklistButton() {
         viewModel?.showMemberChecklist({ [weak self] showChecklist in
-            self?.fabView.showsChecklistButton = showChecklist ?? false
-            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 140 : 64
-                self?.view.layoutIfNeeded()
-            })
+            guard let self = self else { return }
+            
+            if #available(iOS 26, *) {
+                // On iOS 26+, update the workspace tab bar view model
+                self.workspaceTabViewModel?.updateChecklistVisibility(showChecklist ?? false)
+            } else {
+                // On older iOS, update the FAB view
+                self.fabView.showsChecklistButton = showChecklist ?? false
+                UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                    self.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 140 : 64
+                    self.view.layoutIfNeeded()
+                })
+            }
         })
     }
     
@@ -361,7 +390,108 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let hasUploadPermission = viewModel.archivePermissions.contains(.upload)
         let shouldShowFAB = hasCreatePermission && hasUploadPermission && !viewModel.isPickingImage
         
-        fabView.isHidden = !shouldShowFAB
+        // On iOS 26+, update workspace tab bar instead
+        if #available(iOS 26, *) {
+            workspaceTabViewModel?.updateChecklistVisibility(fabView.showsChecklistButton)
+        } else {
+            fabView.isHidden = !shouldShowFAB
+        }
+    }
+    
+    @available(iOS 26, *)
+    private func setupWorkspaceTabBar() {
+        guard let tabViewModel = workspaceTabViewModel else { return }
+        
+        // Hide the old FAB view on iOS 26+
+        fabView.isHidden = true
+        
+        // Determine initial workspace based on view model type
+        if viewModel is PublicFilesViewModel {
+            tabViewModel.selectedWorkspace = .public
+        } else {
+            // Note: SharedFilesViewModel would need to be checked if this is SharesViewController
+            // For now, default to private for MainViewController
+            tabViewModel.selectedWorkspace = .private
+        }
+        
+        // Create the SwiftUI workspace tab bar
+        let tabBarView = WorkspaceTabBarView(
+            viewModel: tabViewModel,
+            onWorkspaceSelected: { [weak self] workspace in
+                self?.handleWorkspaceSelection(workspace)
+            },
+            onPlusButtonTapped: { [weak self] in
+                self?.didTap()
+            },
+            onChecklistButtonTapped: { [weak self] in
+                self?.didTapChecklist()
+            }
+        )
+        
+        // Wrap in AnyView for type erasure
+        let hostingController = UIHostingController(rootView: AnyView(tabBarView))
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Add as child view controller
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        // Position at bottom using constraints
+        NSLayoutConstraint.activate([
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            hostingController.view.heightAnchor.constraint(equalToConstant: 80)
+        ])
+        
+        workspaceTabBarHostingController = hostingController
+        
+        // Update collection view bottom inset to account for tab bar
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 100, right: 6)
+    }
+    
+    @available(iOS 26, *)
+    private func handleWorkspaceSelection(_ workspace: WorkspaceType) {
+        // Update drawer selection
+        updateDrawerSelection(for: workspace)
+        
+        // Navigate to the selected workspace with animation
+        switch workspace {
+        case .private:
+            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            newRootVC.viewModel = MyFilesViewModel()
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .shared:
+            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .public:
+            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            newRootVC.viewModel = PublicFilesViewModel()
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+        }
+    }
+    
+    @available(iOS 26, *)
+    private func updateDrawerSelection(for workspace: WorkspaceType) {
+        // Update the drawer menu's selected option to stay in sync
+        guard let drawerVC = AppDelegate.shared.rootViewController.current as? DrawerViewController else {
+            return
+        }
+        
+        let sideMenuVC = drawerVC.leftSideMenuController
+        
+        switch workspace {
+        case .private:
+            sideMenuVC.selectedMenuOption = .files
+        case .shared:
+            sideMenuVC.selectedMenuOption = .shares
+        case .public:
+            sideMenuVC.selectedMenuOption = .publicFiles
+        }
     }
     
     func resetCollectionViewState() {

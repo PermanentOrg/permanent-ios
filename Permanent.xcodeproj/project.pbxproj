@@ -444,6 +444,9 @@
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
+		5ECABB9B2EF2F63A0039B6F4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5ECABB992EF2F63A0039B6F4 /* README.md */; };
+		5ECABB9C2EF2F63A0039B6F4 /* WorkspaceTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */; };
+		5ECABB9D2EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB952EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift */; };
 		5ECB0C912E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */; };
 		5ECB0C922E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */; };
 		5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */; };
@@ -1421,6 +1424,9 @@
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
+		5ECABB952EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTabViewModel.swift; sourceTree = "<group>"; };
+		5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTabBarView.swift; sourceTree = "<group>"; };
+		5ECABB992EF2F63A0039B6F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevokeBottomAlertView.swift; sourceTree = "<group>"; };
 		5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveSteward.swift; sourceTree = "<group>"; };
 		5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStewardResponseTriggerType.swift; sourceTree = "<group>"; };
@@ -2761,6 +2767,7 @@
 		5E47399B2A40B8A700A20D85 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				5ECABB9A2EF2F63A0039B6F4 /* WorkspaceTabs */,
 				5E4739AD2A40FA1F00A20D85 /* Onboarding */,
 				5E4739AE2A40FA6000A20D85 /* Authentication */,
 				5E4739AC2A40F9F100A20D85 /* AccountOnboarding */,
@@ -3537,6 +3544,32 @@
 				5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		5ECABB962EF2F63A0039B6F4 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				5ECABB952EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		5ECABB982EF2F63A0039B6F4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5ECABB9A2EF2F63A0039B6F4 /* WorkspaceTabs */ = {
+			isa = PBXGroup;
+			children = (
+				5ECABB962EF2F63A0039B6F4 /* ViewModel */,
+				5ECABB982EF2F63A0039B6F4 /* Views */,
+				5ECABB992EF2F63A0039B6F4 /* README.md */,
+			);
+			path = WorkspaceTabs;
 			sourceTree = "<group>";
 		};
 		5ECBAF9F2A1B5F0200FACFDF /* LegacyPlanning */ = {
@@ -4642,6 +4675,7 @@
 				5ECF1DC52B7520E20086EF21 /* Usual-Regular.ttf in Resources */,
 				5ECF1DBB2B7520E20086EF21 /* Usual-Light.ttf in Resources */,
 				5E048FDC29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib in Resources */,
+				5ECABB9B2EF2F63A0039B6F4 /* README.md in Resources */,
 				BC55970425A3462900BF55DA /* DropdownView.xib in Resources */,
 				5ECF1DB92B7520E20086EF21 /* Usual-Medium.ttf in Resources */,
 				BC59BABD25C2B7D6005A45D3 /* FileLargeCollectionViewCell.xib in Resources */,
@@ -5136,6 +5170,8 @@
 				5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				5E29FA572E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */,
+				5ECABB9C2EF2F63A0039B6F4 /* WorkspaceTabBarView.swift in Sources */,
+				5ECABB9D2EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
