@@ -462,16 +462,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         case .private:
             let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
             newRootVC.viewModel = MyFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
             
         case .shared:
             let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
             
         case .public:
             let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
             newRootVC.viewModel = PublicFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
         }
     }
     

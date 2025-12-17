@@ -107,8 +107,8 @@ class DrawerViewController: UIViewController {
         rootViewController.display(viewController: viewController)
     }
     
-    func changeRoot(viewController: UIViewController) {
-        rootViewController.changeRootController(viewController: viewController)
+    func changeRoot(viewController: UIViewController, useTabTransition: Bool = false) {
+        rootViewController.changeRootController(viewController: viewController, useTabTransition: useTabTransition)
         
         switch viewController {
             

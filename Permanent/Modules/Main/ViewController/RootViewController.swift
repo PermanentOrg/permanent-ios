@@ -120,8 +120,8 @@ class RootViewController: UIViewController {
         (current as? DrawerViewController)?.navigateTo(viewController: viewController)
     }
     
-    func changeDrawerRoot(viewController: UIViewController) {
-        (current as? DrawerViewController)?.changeRoot(viewController: viewController)
+    func changeDrawerRoot(viewController: UIViewController, useTabTransition: Bool = false) {
+        (current as? DrawerViewController)?.changeRoot(viewController: viewController, useTabTransition: useTabTransition)
     }
     
     func setDrawerRoot() {

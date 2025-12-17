@@ -34,8 +34,19 @@ class RootNavigationController: UINavigationController {
         topViewController?.navigationItem.rightBarButtonItem?.tintColor = .white
     }
     
-    func changeRootController(viewController: UIViewController) {
-        self.setViewControllers([viewController], animated: true)
+    func changeRootController(viewController: UIViewController, useTabTransition: Bool = false) {
+        if useTabTransition {
+            // Cross-dissolve (fade) for workspace switching - native tab feel
+            let transition = CATransition()
+            transition.duration = 0.25
+            transition.type = .fade
+            transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            self.view.layer.add(transition, forKey: kCATransition)
+            self.setViewControllers([viewController], animated: false)
+        } else {
+            // Default navigation behavior for other transitions
+            self.setViewControllers([viewController], animated: true)
+        }
         
         configureNavigationItems()
     }

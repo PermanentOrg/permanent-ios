@@ -221,7 +221,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         case .private:
             let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
             newRootVC.viewModel = MyFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
             
         case .shared:
             // Already on shared, just update selection
@@ -231,7 +231,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         case .public:
             let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
             newRootVC.viewModel = PublicFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
         }
     }
     
