@@ -27,9 +27,9 @@ struct WorkspaceTabBarView: View {
                             workspace: workspace,
                             isSelected: viewModel.selectedWorkspace == workspace,
                             action: {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    viewModel.selectedWorkspace = workspace
-                                }
+                                // Update view model FIRST, synchronously
+                                viewModel.selectedWorkspace = workspace
+                                // Then navigate
                                 onWorkspaceSelected(workspace)
                             }
                         )
@@ -41,8 +41,8 @@ struct WorkspaceTabBarView: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: -2)
             }
             
-            // Separate floating action buttons
-            HStack(spacing: 12) {
+            // Separate floating action buttons - stacked vertically
+            VStack(spacing: 12) {
                 if viewModel.showPlusButton {
                     ActionButton(iconName: "plus", action: onPlusButtonTapped)
                         .transition(.scale.combined(with: .opacity))

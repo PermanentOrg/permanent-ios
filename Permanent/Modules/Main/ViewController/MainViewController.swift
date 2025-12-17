@@ -344,7 +344,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             },
             FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
                 self?.dismissFloatingActionIsland()
-                self?.fabView.isHidden = false
+                if #available(iOS 26, *) {
+                    // FAB stays hidden on iOS 26+, workspace tab bar handles buttons
+                } else {
+                    self?.fabView.isHidden = false
+                }
 
                 self?.viewModel?.selectedFiles = []
                 self?.viewModel?.fileAction = .none
@@ -390,8 +394,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let hasUploadPermission = viewModel.archivePermissions.contains(.upload)
         let shouldShowFAB = hasCreatePermission && hasUploadPermission && !viewModel.isPickingImage
         
-        // On iOS 26+, update workspace tab bar instead
+        // On iOS 26+, always keep FAB hidden and update workspace tab bar instead
         if #available(iOS 26, *) {
+            fabView.isHidden = true
             workspaceTabViewModel?.updateChecklistVisibility(fabView.showsChecklistButton)
         } else {
             fabView.isHidden = !shouldShowFAB
@@ -453,26 +458,51 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     @available(iOS 26, *)
+    func updateWorkspaceSelection(_ workspace: WorkspaceType) {
+        workspaceTabViewModel?.selectedWorkspace = workspace
+    }
+    
+    @available(iOS 26, *)
     private func handleWorkspaceSelection(_ workspace: WorkspaceType) {
-        // Update drawer selection
-        updateDrawerSelection(for: workspace)
+        let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
         
-        // Navigate to the selected workspace with animation
+        // Try cache first for instant switching
+        if let cached = WorkspaceControllerCache.shared.get(workspace: workspace, archiveId: archiveId) {
+            // Update cached VC's workspace selection to match current selection
+            if let mainVC = cached as? MainViewController {
+                mainVC.updateWorkspaceSelection(workspace)
+            } else if let sharesVC = cached as? SharesViewController {
+                sharesVC.updateWorkspaceSelection(workspace)
+            }
+            
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: cached, useTabTransition: true)
+            updateDrawerSelection(for: workspace)
+            return
+        }
+        
+        // Create new controller if not cached
+        let newRootVC: UIViewController
+        
         switch workspace {
         case .private:
-            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-            newRootVC.viewModel = MyFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
+            let mainVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            mainVC.viewModel = MyFilesViewModel()
+            newRootVC = mainVC
             
         case .shared:
-            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
+            newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
             
         case .public:
-            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-            newRootVC.viewModel = PublicFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
+            let mainVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            mainVC.viewModel = PublicFilesViewModel()
+            newRootVC = mainVC
         }
+        
+        // Cache for future use
+        WorkspaceControllerCache.shared.set(newRootVC, workspace: workspace, archiveId: archiveId)
+        
+        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
+        updateDrawerSelection(for: workspace)
     }
     
     @available(iOS 26, *)
@@ -538,7 +568,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
                     
-                    self?.fabView.isHidden = false
+                    if #available(iOS 26, *) {
+                        // FAB stays hidden on iOS 26+
+                    } else {
+                        self?.fabView.isHidden = false
+                    }
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -554,7 +588,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
 
-                    self?.fabView.isHidden = false
+                    if #available(iOS 26, *) {
+                        // FAB stays hidden on iOS 26+
+                    } else {
+                        self?.fabView.isHidden = false
+                    }
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -705,7 +743,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func clearButtonWasPressed(_ sender: UIButton) {
-        fabView.isHidden = false
+        if #available(iOS 26, *) {
+            // FAB stays hidden on iOS 26+
+        } else {
+            fabView.isHidden = false
+        }
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = true
             backButton.layer.opacity = 1
@@ -1329,11 +1371,15 @@ extension MainViewController: FABViewDelegate {
             },
             onDismiss: { [weak self] in
                 self?.dismiss(animated: false, completion: {
-                    // Show FAB buttons with animation when menu is dismissed
-                    self?.fabView.isHidden = false
-                    self?.fabView.alpha = 0
-                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                        self?.fabView.alpha = 1
+                    // Show FAB buttons with animation when menu is dismissed (iOS < 26 only)
+                    if #available(iOS 26, *) {
+                        // FAB stays hidden on iOS 26+
+                    } else {
+                        self?.fabView.isHidden = false
+                        self?.fabView.alpha = 0
+                        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                            self?.fabView.alpha = 1
+                        }
                     }
                 })
             }
@@ -1586,7 +1632,11 @@ extension MainViewController: FABActionSheetDelegate {
                         self?.deleteFile(self?.viewModel?.selectedFiles)
                         
                         self?.dismissFloatingActionIsland()
-                        self?.fabView.isHidden = false
+                        if #available(iOS 26, *) {
+                            // FAB stays hidden on iOS 26+
+                        } else {
+                            self?.fabView.isHidden = false
+                        }
                         self?.clearButtonWasPressed(UIButton())
                     }, positiveButtonColor: .brightRed,
                     cancelButtonColor: .primary,
@@ -1614,7 +1664,11 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
                     
-                    self?.fabView.isHidden = false
+                    if #available(iOS 26, *) {
+                        // FAB stays hidden on iOS 26+
+                    } else {
+                        self?.fabView.isHidden = false
+                    }
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -1633,7 +1687,11 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
                     
-                    self?.fabView.isHidden = false
+                    if #available(iOS 26, *) {
+                        // FAB stays hidden on iOS 26+
+                    } else {
+                        self?.fabView.isHidden = false
+                    }
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -1671,7 +1729,11 @@ extension MainViewController: FABActionSheetDelegate {
                                 self?.viewModel?.removeSyncedFiles(files)
                                 self?.refreshCollectionView()
                                 self?.dismissFloatingActionIsland()
-                                self?.fabView.isHidden = false
+                                if #available(iOS 26, *) {
+                                    // FAB stays hidden on iOS 26+
+                                } else {
+                                    self?.fabView.isHidden = false
+                                }
                                 self?.clearButtonWasPressed(UIButton())
                             }
                             
@@ -1810,7 +1872,11 @@ extension MainViewController: FABActionSheetDelegate {
         self.present(hostingController, animated: true, completion: nil)
         
         self.dismissFloatingActionIsland()
-        self.fabView.isHidden = false
+        if #available(iOS 26, *) {
+            // FAB stays hidden on iOS 26+
+        } else {
+            self.fabView.isHidden = false
+        }
         self.clearButtonWasPressed(UIButton())
         
         // Add a way to call the completion block when the view is dismissed.

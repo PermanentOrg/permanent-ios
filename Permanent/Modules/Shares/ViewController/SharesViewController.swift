@@ -216,23 +216,59 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     @available(iOS 26, *)
+    func updateWorkspaceSelection(_ workspace: WorkspaceType) {
+        workspaceTabViewModel?.selectedWorkspace = workspace
+    }
+    
+    @available(iOS 26, *)
     private func handleWorkspaceSelection(_ workspace: WorkspaceType) {
-        switch workspace {
-        case .private:
-            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-            newRootVC.viewModel = MyFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
-            
-        case .shared:
-            // Already on shared, just update selection
+        let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
+        
+        // Check if we're staying on the same workspace (shared)
+        if workspace == .shared {
             workspaceTabViewModel?.selectedWorkspace = .shared
             updateDrawerSelection(for: .shared)
+            return
+        }
+        
+        // Try cache first for instant switching
+        if let cached = WorkspaceControllerCache.shared.get(workspace: workspace, archiveId: archiveId) {
+            // Update cached VC's workspace selection to match current selection
+            if let mainVC = cached as? MainViewController {
+                mainVC.updateWorkspaceSelection(workspace)
+            } else if let sharesVC = cached as? SharesViewController {
+                sharesVC.updateWorkspaceSelection(workspace)
+            }
+            
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: cached, useTabTransition: true)
+            updateDrawerSelection(for: workspace)
+            return
+        }
+        
+        // Create new controller if not cached
+        let newRootVC: UIViewController
+        
+        switch workspace {
+        case .private:
+            let mainVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            mainVC.viewModel = MyFilesViewModel()
+            newRootVC = mainVC
+            
+        case .shared:
+            // Should not reach here due to early return above
+            return
             
         case .public:
-            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-            newRootVC.viewModel = PublicFilesViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
+            let mainVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            mainVC.viewModel = PublicFilesViewModel()
+            newRootVC = mainVC
         }
+        
+        // Cache for future use
+        WorkspaceControllerCache.shared.set(newRootVC, workspace: workspace, archiveId: archiveId)
+        
+        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
+        updateDrawerSelection(for: workspace)
     }
     
     @available(iOS 26, *)

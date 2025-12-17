@@ -447,6 +447,7 @@
 		5ECABB9B2EF2F63A0039B6F4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5ECABB992EF2F63A0039B6F4 /* README.md */; };
 		5ECABB9C2EF2F63A0039B6F4 /* WorkspaceTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */; };
 		5ECABB9D2EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB952EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift */; };
+		5ECABB9F2EF30C860039B6F4 /* WorkspaceControllerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB9E2EF30C860039B6F4 /* WorkspaceControllerCache.swift */; };
 		5ECB0C912E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */; };
 		5ECB0C922E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */; };
 		5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */; };
@@ -1427,6 +1428,7 @@
 		5ECABB952EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTabViewModel.swift; sourceTree = "<group>"; };
 		5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTabBarView.swift; sourceTree = "<group>"; };
 		5ECABB992EF2F63A0039B6F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		5ECABB9E2EF30C860039B6F4 /* WorkspaceControllerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceControllerCache.swift; sourceTree = "<group>"; };
 		5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevokeBottomAlertView.swift; sourceTree = "<group>"; };
 		5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveSteward.swift; sourceTree = "<group>"; };
 		5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStewardResponseTriggerType.swift; sourceTree = "<group>"; };
@@ -3565,6 +3567,7 @@
 		5ECABB9A2EF2F63A0039B6F4 /* WorkspaceTabs */ = {
 			isa = PBXGroup;
 			children = (
+				5ECABB9E2EF30C860039B6F4 /* WorkspaceControllerCache.swift */,
 				5ECABB962EF2F63A0039B6F4 /* ViewModel */,
 				5ECABB982EF2F63A0039B6F4 /* Views */,
 				5ECABB992EF2F63A0039B6F4 /* README.md */,
@@ -4980,6 +4983,7 @@
 				5E2E3D1826D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.swift in Sources */,
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
 				5E7A697D2EBA4CB4005FA69B /* ConfirmationBottomAlertView.swift in Sources */,
+				5ECABB9F2EF30C860039B6F4 /* WorkspaceControllerCache.swift in Sources */,
 				5E5979D72DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift in Sources */,
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
