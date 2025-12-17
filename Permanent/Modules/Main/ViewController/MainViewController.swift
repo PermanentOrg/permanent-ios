@@ -25,15 +25,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
     private let screenLockManager = ScreenLockManager()
-    
-    // iOS 26+ Workspace Tab Bar (from WorkspaceTabs module)
-    private lazy var workspaceTabViewModel: WorkspaceTabViewModel? = {
-        if #available(iOS 26, *) {
-            return WorkspaceTabViewModel()
-        }
-        return nil
-    }()
-    private var workspaceTabBarHostingController: UIHostingController<AnyView>?
 
     private var sortActionSheet: SortActionSheet?
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
@@ -51,7 +42,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         // Setup bottom UI based on iOS version
         if #available(iOS 26, *) {
-            setupWorkspaceTabBar()
+            // Tab bar is now at DrawerViewController level (fixed)
+            fabView.isHidden = true
         } else {
             fabView.delegate = self
         }
@@ -373,8 +365,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             guard let self = self else { return }
             
             if #available(iOS 26, *) {
-                // On iOS 26+, update the workspace tab bar view model
-                self.workspaceTabViewModel?.updateChecklistVisibility(showChecklist ?? false)
+                // Tab bar is now at DrawerViewController level
+                // Checklist visibility is managed there
             } else {
                 // On older iOS, update the FAB view
                 self.fabView.showsChecklistButton = showChecklist ?? false
@@ -397,132 +389,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         // On iOS 26+, always keep FAB hidden and update workspace tab bar instead
         if #available(iOS 26, *) {
             fabView.isHidden = true
-            workspaceTabViewModel?.updateChecklistVisibility(fabView.showsChecklistButton)
+            // Tab bar checklist visibility is managed at DrawerViewController level
         } else {
             fabView.isHidden = !shouldShowFAB
         }
     }
     
-    @available(iOS 26, *)
-    private func setupWorkspaceTabBar() {
-        guard let tabViewModel = workspaceTabViewModel else { return }
-        
-        // Hide the old FAB view on iOS 26+
-        fabView.isHidden = true
-        
-        // Determine initial workspace based on view model type
-        if viewModel is PublicFilesViewModel {
-            tabViewModel.selectedWorkspace = .public
-        } else {
-            // Note: SharedFilesViewModel would need to be checked if this is SharesViewController
-            // For now, default to private for MainViewController
-            tabViewModel.selectedWorkspace = .private
-        }
-        
-        // Create the SwiftUI workspace tab bar
-        let tabBarView = WorkspaceTabBarView(
-            viewModel: tabViewModel,
-            onWorkspaceSelected: { [weak self] workspace in
-                self?.handleWorkspaceSelection(workspace)
-            },
-            onPlusButtonTapped: { [weak self] in
-                self?.didTap()
-            },
-            onChecklistButtonTapped: { [weak self] in
-                self?.didTapChecklist()
-            }
-        )
-        
-        // Wrap in AnyView for type erasure
-        let hostingController = UIHostingController(rootView: AnyView(tabBarView))
-        hostingController.view.backgroundColor = .clear
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Add as child view controller
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        hostingController.didMove(toParent: self)
-        
-        // Position at bottom using constraints
-        NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            hostingController.view.heightAnchor.constraint(equalToConstant: 80)
-        ])
-        
-        workspaceTabBarHostingController = hostingController
-        
-        // Update collection view bottom inset to account for tab bar
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 100, right: 6)
-    }
-    
-    @available(iOS 26, *)
-    func updateWorkspaceSelection(_ workspace: WorkspaceType) {
-        workspaceTabViewModel?.selectedWorkspace = workspace
-    }
-    
-    @available(iOS 26, *)
-    private func handleWorkspaceSelection(_ workspace: WorkspaceType) {
-        let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
-        
-        // Try cache first for instant switching
-        if let cached = WorkspaceControllerCache.shared.get(workspace: workspace, archiveId: archiveId) {
-            // Update cached VC's workspace selection to match current selection
-            if let mainVC = cached as? MainViewController {
-                mainVC.updateWorkspaceSelection(workspace)
-            } else if let sharesVC = cached as? SharesViewController {
-                sharesVC.updateWorkspaceSelection(workspace)
-            }
-            
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: cached, useTabTransition: true)
-            updateDrawerSelection(for: workspace)
-            return
-        }
-        
-        // Create new controller if not cached
-        let newRootVC: UIViewController
-        
-        switch workspace {
-        case .private:
-            let mainVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-            mainVC.viewModel = MyFilesViewModel()
-            newRootVC = mainVC
-            
-        case .shared:
-            newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
-            
-        case .public:
-            let mainVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-            mainVC.viewModel = PublicFilesViewModel()
-            newRootVC = mainVC
-        }
-        
-        // Cache for future use
-        WorkspaceControllerCache.shared.set(newRootVC, workspace: workspace, archiveId: archiveId)
-        
-        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC, useTabTransition: true)
-        updateDrawerSelection(for: workspace)
-    }
-    
-    @available(iOS 26, *)
-    private func updateDrawerSelection(for workspace: WorkspaceType) {
-        // Update the drawer menu's selected option to stay in sync
-        guard let drawerVC = AppDelegate.shared.rootViewController.current as? DrawerViewController else {
-            return
-        }
-        
-        let sideMenuVC = drawerVC.leftSideMenuController
-        
-        switch workspace {
-        case .private:
-            sideMenuVC.selectedMenuOption = .files
-        case .shared:
-            sideMenuVC.selectedMenuOption = .shares
-        case .public:
-            sideMenuVC.selectedMenuOption = .publicFiles
-        }
-    }
+    // MARK: - Tab bar is now managed by DrawerViewController (fixed at root level)
     
     func resetCollectionViewState() {
         // Reset collection view scroll position to top
