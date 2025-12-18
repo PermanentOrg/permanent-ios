@@ -445,7 +445,6 @@
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
 		5ECABB9B2EF2F63A0039B6F4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5ECABB992EF2F63A0039B6F4 /* README.md */; };
-		5ECABB9C2EF2F63A0039B6F4 /* WorkspaceTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */; };
 		5ECABB9D2EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB952EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift */; };
 		5ECABB9F2EF30C860039B6F4 /* WorkspaceControllerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECABB9E2EF30C860039B6F4 /* WorkspaceControllerCache.swift */; };
 		5ECB0C912E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */; };
@@ -575,6 +574,12 @@
 		5EF300382D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */; };
 		5EF3003A2D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */; };
 		5EF3003C2D4AC773001FFEE7 /* TwoStepChoosePhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */; };
+		5EFAD6172EF32FE600BEB226 /* FileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFAD6142EF32FE600BEB226 /* FileListItemView.swift */; };
+		5EFAD6182EF32FE600BEB226 /* FileItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFAD6132EF32FE600BEB226 /* FileItemViewModel.swift */; };
+		5EFAD6192EF32FE600BEB226 /* FileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFAD6152EF32FE600BEB226 /* FileListView.swift */; };
+		5EFAD61A2EF32FE600BEB226 /* FileGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFAD6122EF32FE600BEB226 /* FileGridItemView.swift */; };
+		5EFAD61C2EF3318400BEB226 /* MainViewController+FileListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFAD61B2EF3318400BEB226 /* MainViewController+FileListCoordinator.swift */; };
+		5EFAD6202EF3549A00BEB226 /* WorkspaceTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFAD61F2EF3549A00BEB226 /* WorkspaceTabBarView.swift */; };
 		5EFC5B3B2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */; };
 		5EFCE3E52CFE022100D7E802 /* TwoFactorMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */; };
 		5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */; };
@@ -1426,7 +1431,6 @@
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
 		5ECABB952EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTabViewModel.swift; sourceTree = "<group>"; };
-		5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTabBarView.swift; sourceTree = "<group>"; };
 		5ECABB992EF2F63A0039B6F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5ECABB9E2EF30C860039B6F4 /* WorkspaceControllerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceControllerCache.swift; sourceTree = "<group>"; };
 		5ECB0C902E856F15006EFDA7 /* RevokeBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevokeBottomAlertView.swift; sourceTree = "<group>"; };
@@ -1516,6 +1520,12 @@
 		5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseEmailViewModel.swift; sourceTree = "<group>"; };
 		5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChoosePhoneViewModel.swift; sourceTree = "<group>"; };
 		5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChoosePhoneView.swift; sourceTree = "<group>"; };
+		5EFAD6122EF32FE600BEB226 /* FileGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileGridItemView.swift; sourceTree = "<group>"; };
+		5EFAD6132EF32FE600BEB226 /* FileItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileItemViewModel.swift; sourceTree = "<group>"; };
+		5EFAD6142EF32FE600BEB226 /* FileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListItemView.swift; sourceTree = "<group>"; };
+		5EFAD6152EF32FE600BEB226 /* FileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListView.swift; sourceTree = "<group>"; };
+		5EFAD61B2EF3318400BEB226 /* MainViewController+FileListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainViewController+FileListCoordinator.swift"; sourceTree = "<group>"; };
+		5EFAD61F2EF3549A00BEB226 /* WorkspaceTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTabBarView.swift; sourceTree = "<group>"; };
 		5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideViewModel.swift; sourceTree = "<group>"; };
 		5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorMethod.swift; sourceTree = "<group>"; };
 		5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordView.swift; sourceTree = "<group>"; };
@@ -2870,6 +2880,7 @@
 		5E4739A62A40F1B300A20D85 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				5EFAD61B2EF3318400BEB226 /* MainViewController+FileListCoordinator.swift */,
 				BC4526EC251CD62C00E24A51 /* MainViewController.swift */,
 				BC6358832535C7D000EEC48C /* NavigationController.swift */,
 				BC4526F4251DF5AE00E24A51 /* RootViewController.swift */,
@@ -3559,7 +3570,8 @@
 		5ECABB982EF2F63A0039B6F4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5ECABB972EF2F63A0039B6F4 /* WorkspaceTabBarView.swift */,
+				5EFAD61F2EF3549A00BEB226 /* WorkspaceTabBarView.swift */,
+				5EFAD6162EF32FE600BEB226 /* FileList */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -3710,6 +3722,17 @@
 				BCB0725825221494003E2F66 /* PreferencesManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		5EFAD6162EF32FE600BEB226 /* FileList */ = {
+			isa = PBXGroup;
+			children = (
+				5EFAD6122EF32FE600BEB226 /* FileGridItemView.swift */,
+				5EFAD6132EF32FE600BEB226 /* FileItemViewModel.swift */,
+				5EFAD6142EF32FE600BEB226 /* FileListItemView.swift */,
+				5EFAD6152EF32FE600BEB226 /* FileListView.swift */,
+			);
+			path = FileList;
 			sourceTree = "<group>";
 		};
 		5EFC4048292D71CC00FD244B /* Remote */ = {
@@ -5162,6 +5185,7 @@
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
 				5E24A23B2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift in Sources */,
 				5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */,
+				5EFAD61C2EF3318400BEB226 /* MainViewController+FileListCoordinator.swift in Sources */,
 				F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* PETextField.swift in Sources */,
@@ -5174,7 +5198,6 @@
 				5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				5E29FA572E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */,
-				5ECABB9C2EF2F63A0039B6F4 /* WorkspaceTabBarView.swift in Sources */,
 				5ECABB9D2EF2F63A0039B6F4 /* WorkspaceTabViewModel.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
@@ -5339,6 +5362,10 @@
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				5E56FDCF2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift in Sources */,
 				F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */,
+				5EFAD6172EF32FE600BEB226 /* FileListItemView.swift in Sources */,
+				5EFAD6182EF32FE600BEB226 /* FileItemViewModel.swift in Sources */,
+				5EFAD6192EF32FE600BEB226 /* FileListView.swift in Sources */,
+				5EFAD61A2EF32FE600BEB226 /* FileGridItemView.swift in Sources */,
 				5E6CCEF42B72DD1800D192FF /* AccountSettingsViewControllerRepresentable.swift in Sources */,
 				5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */,
 				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
@@ -5482,6 +5509,7 @@
 				5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
 				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,
+				5EFAD6202EF3549A00BEB226 /* WorkspaceTabBarView.swift in Sources */,
 				5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */,
 				5E7A87F72C99C83D00228EB4 /* AuthImageForRightSidePageView.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,

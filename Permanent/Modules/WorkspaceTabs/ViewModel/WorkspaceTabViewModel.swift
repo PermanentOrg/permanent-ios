@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 enum WorkspaceType: Int, CaseIterable {
     case `private` = 0
@@ -34,6 +35,10 @@ class WorkspaceTabViewModel: ObservableObject {
     @Published var selectedWorkspace: WorkspaceType = .private
     @Published var showPlusButton: Bool = false
     @Published var showChecklistButton: Bool = false
+    @Published var isHidden: Bool = false
+    
+    static let showFloatingIslandNotification = Notification.Name("WorkspaceTabBar.showFloatingIsland")
+    static let hideFloatingIslandNotification = Notification.Name("WorkspaceTabBar.hideFloatingIsland")
     
     private var cancellables = Set<AnyCancellable>()
     private var currentArchive: ArchiveVOData? {
@@ -54,6 +59,25 @@ class WorkspaceTabViewModel: ObservableObject {
         NotificationCenter.default.publisher(for: ArchivesViewModel.didChangeArchiveNotification)
             .sink { [weak self] _ in
                 self?.updateButtonVisibility()
+            }
+            .store(in: &cancellables)
+        
+        // Listen for floating action island show/hide
+        NotificationCenter.default.publisher(for: WorkspaceTabViewModel.showFloatingIslandNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    self?.isHidden = true
+                }
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: WorkspaceTabViewModel.hideFloatingIslandNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    self?.isHidden = false
+                }
             }
             .store(in: &cancellables)
     }

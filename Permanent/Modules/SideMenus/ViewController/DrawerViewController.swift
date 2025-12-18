@@ -197,7 +197,7 @@ class DrawerViewController: UIViewController {
         
         guard let viewModel = workspaceTabViewModel else { return }
         
-        // Create the SwiftUI workspace tab bar
+        // Create the SwiftUI workspace tab bar (custom HStack, NOT TabView)
         let tabBarView = WorkspaceTabBarView(
             viewModel: viewModel,
             onWorkspaceSelected: { [weak self] workspace in
@@ -213,23 +213,46 @@ class DrawerViewController: UIViewController {
         
         // Wrap in AnyView for type erasure
         let hostingController = UIHostingController(rootView: AnyView(tabBarView))
+        
+        // CRITICAL: Ensure complete transparency
+        // The custom tab bar uses .glassEffect() which handles its own background
         hostingController.view.backgroundColor = .clear
+        hostingController.view.isOpaque = false
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Disable safe area insets for the hosting controller
+        // This prevents UIKit from adding extra padding
+        hostingController.safeAreaRegions = []
         
         // Add as child view controller
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         
-        // Position at bottom using constraints (FIXED - never moves)
+        // Position at bottom with horizontal padding for floating effect
         NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
             hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            hostingController.view.heightAnchor.constraint(equalToConstant: 80)
+            hostingController.view.heightAnchor.constraint(equalToConstant: 72)
         ])
         
+        // Force clear background on all subviews recursively
+        // This ensures no UIKit layer adds unwanted backgrounds
+        clearBackgroundRecursively(hostingController.view)
+        
         workspaceTabBarHostingController = hostingController
+    }
+    
+    /// Recursively clears background color on all subviews
+    /// This is necessary because UIHostingController can add intermediate views with backgrounds
+    @available(iOS 26, *)
+    private func clearBackgroundRecursively(_ view: UIView) {
+        view.backgroundColor = .clear
+        view.isOpaque = false
+        for subview in view.subviews {
+            clearBackgroundRecursively(subview)
+        }
     }
     
     @available(iOS 26, *)

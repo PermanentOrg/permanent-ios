@@ -126,6 +126,9 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         ])
 
         floatingActionIsland?.didMove(toParent: self)
+        
+        // Notify workspace tab bar to hide
+        NotificationCenter.default.post(name: Notification.Name("WorkspaceTabBar.showFloatingIsland"), object: nil)
     }
 
     func dismissFloatingActionIsland(_ completion: (() -> Void)? = nil) {
@@ -136,6 +139,10 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             floatingActionIsland?.didMove(toParent: nil)
 
             floatingActionIsland = nil
+            
+            // Notify workspace tab bar to show
+            NotificationCenter.default.post(name: Notification.Name("WorkspaceTabBar.hideFloatingIsland"), object: nil)
+            
             completion?()
         }
     }

@@ -7,111 +7,169 @@
 
 import SwiftUI
 
+// MARK: - Custom Liquid Glass Tab Bar (NO TabView)
+// This implementation uses HStack with custom buttons instead of TabView.
+// TabView is fundamentally broken for our use case because it expects to manage
+// content, but our content is managed by UIKit (DrawerViewController).
+
 @available(iOS 26, *)
 struct WorkspaceTabBarView: View {
     @ObservedObject var viewModel: WorkspaceTabViewModel
+    @Namespace private var tabAnimation
     
     let onWorkspaceSelected: (WorkspaceType) -> Void
     let onPlusButtonTapped: () -> Void
     let onChecklistButtonTapped: () -> Void
     
-    private let tabBarHeight: CGFloat = 80
+    // Brand colors
+    private let primaryColor = Color(red: 0.07, green: 0.11, blue: 0.29)
+    private let secondaryColor = Color(red: 0.47, green: 0.49, blue: 0.57)
     
     var body: some View {
-        GlassEffectContainer {
-            HStack(spacing: 0) {
-                // Workspace tabs
-                HStack(spacing: 4) {
-                    ForEach(WorkspaceType.allCases, id: \.self) { workspace in
-                        WorkspaceTabButton(
-                            workspace: workspace,
-                            isSelected: viewModel.selectedWorkspace == workspace,
-                            action: {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    viewModel.selectedWorkspace = workspace
-                                }
-                                onWorkspaceSelected(workspace)
-                            }
-                        )
+        HStack(spacing: 0) {
+            // Workspace tab buttons (left side)
+            HStack(spacing: 4) {
+                ForEach(WorkspaceType.allCases, id: \.self) { workspace in
+                    TabButton(
+                        workspace: workspace,
+                        isSelected: viewModel.selectedWorkspace == workspace,
+                        namespace: tabAnimation,
+                        primaryColor: primaryColor,
+                        secondaryColor: secondaryColor
+                    ) {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                            viewModel.selectedWorkspace = workspace
+                        }
+                        onWorkspaceSelected(workspace)
                     }
                 }
-                .padding(.leading, 16)
-                
-                Spacer()
-                
-                // Action buttons
-                HStack(spacing: 12) {
-                    if viewModel.showPlusButton {
-                        ActionButton(iconName: "plus", action: onPlusButtonTapped)
-                    }
-                    
-                    if viewModel.showChecklistButton {
-                        ActionButton(iconName: "checklist", action: onChecklistButtonTapped)
-                    }
-                }
-                .padding(.trailing, 16)
             }
-            .padding(.vertical, 12)
-            .frame(height: tabBarHeight)
-            .frame(maxWidth: .infinity)
-            .glassEffect(in: RoundedRectangle(cornerRadius: 24))
-            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: -2)
+            .padding(.leading, 16)
+            
+            Spacer()
+            
+            // Floating action buttons (right side)
+            HStack(spacing: 12) {
+                if viewModel.showPlusButton {
+                    FloatingActionButton(
+                        iconName: "plus",
+                        primaryColor: primaryColor,
+                        action: onPlusButtonTapped
+                    )
+                    .transition(.scale.combined(with: .opacity))
+                }
+                
+                if viewModel.showChecklistButton {
+                    FloatingActionButton(
+                        iconName: "checklist",
+                        primaryColor: primaryColor,
+                        action: onChecklistButtonTapped
+                    )
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .padding(.trailing, 16)
+            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showPlusButton)
+            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showChecklistButton)
         }
-        .frame(height: tabBarHeight)
+        .padding(.vertical, 12)
+        .frame(height: 72)
+        .frame(maxWidth: .infinity)
+        .background(Color.clear)
+        .glassEffect(in: .capsule)
     }
 }
 
+// MARK: - Tab Button with matchedGeometryEffect
+
 @available(iOS 26, *)
-struct WorkspaceTabButton: View {
+private struct TabButton: View {
     let workspace: WorkspaceType
     let isSelected: Bool
+    let namespace: Namespace.ID
+    let primaryColor: Color
+    let secondaryColor: Color
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 Image(systemName: workspace.iconName)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 14, weight: .medium))
                 
-                Text(workspace.title)
-                    .font(.custom("Usual-Regular", size: 14))
-                    .fontWeight(isSelected ? .semibold : .regular)
-            }
-            .foregroundColor(isSelected ? Color(red: 0.07, green: 0.11, blue: 0.29) : Color(red: 0.47, green: 0.49, blue: 0.57))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(
-                Group {
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
-                            .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
-                    }
+                if isSelected {
+                    Text(workspace.title)
+                        .font(.custom("Usual-Regular", size: 13))
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
                 }
-            )
+            }
+            .foregroundStyle(isSelected ? primaryColor : secondaryColor)
+            .padding(.horizontal, isSelected ? 14 : 12)
+            .padding(.vertical, 10)
+            .background {
+                if isSelected {
+                    Capsule()
+                        .fill(.white.opacity(0.9))
+                        .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+                        .matchedGeometryEffect(id: "selectedTab", in: namespace)
+                }
+            }
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(TabButtonStyle())
+        .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isSelected)
     }
 }
 
+// MARK: - Floating Action Button with Liquid Glass
+
 @available(iOS 26, *)
-struct ActionButton: View {
+private struct FloatingActionButton: View {
     let iconName: String
+    let primaryColor: Color
     let action: () -> Void
+    
+    @State private var isPressed = false
     
     var body: some View {
         Button(action: action) {
             Image(systemName: iconName)
-                .font(.system(size: 20, weight: .medium))
-                .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(primaryColor)
                 .frame(width: 44, height: 44)
-                .background(
+                .background {
                     Circle()
-                        .fill(Color.white)
-                        .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
-                )
+                        .fill(.white.opacity(0.85))
+                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                }
+                .glassEffect(in: .circle)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(FABButtonStyle())
+        .scaleEffect(isPressed ? 0.92 : 1.0)
+        .animation(.spring(response: 0.2, dampingFraction: 0.6), value: isPressed)
+    }
+}
+
+// MARK: - Custom Button Styles
+
+@available(iOS 26, *)
+private struct TabButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+@available(iOS 26, *)
+private struct FABButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .opacity(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.spring(response: 0.15, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 
@@ -127,15 +185,25 @@ struct WorkspaceTabBarView_Previews: PreviewProvider {
         viewModel.showPlusButton = true
         viewModel.showChecklistButton = true
         
-        return WorkspaceTabBarView(
-            viewModel: viewModel,
-            onWorkspaceSelected: { _ in },
-            onPlusButtonTapped: {},
-            onChecklistButtonTapped: {}
+        return VStack {
+            Spacer()
+            WorkspaceTabBarView(
+                viewModel: viewModel,
+                onWorkspaceSelected: { _ in },
+                onPlusButtonTapped: {},
+                onChecklistButtonTapped: {}
+            )
+            .padding(.horizontal, 16)
+            .padding(.bottom, 8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [.blue.opacity(0.3), .purple.opacity(0.2)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         )
-        .previewLayout(.sizeThatFits)
-        .padding()
-        .background(Color.gray.opacity(0.1))
     }
 }
 #endif

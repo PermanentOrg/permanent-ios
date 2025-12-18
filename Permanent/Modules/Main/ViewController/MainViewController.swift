@@ -22,6 +22,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     private var isGridView = false
     
+    // Phase 4: SwiftUI File List (feature flag)
+    private let useSwiftUIFileList = false // Set to true to enable SwiftUI list
+    var fileListViewModel: FileListViewModel?
+    private var fileListHostingController: UIHostingController<FileListView>?
+    
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
     private let screenLockManager = ScreenLockManager()
@@ -223,6 +228,58 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func setupCollectionView() {
+        if useSwiftUIFileList {
+            setupSwiftUIFileList()
+        } else {
+            setupUIKitCollectionView()
+        }
+    }
+    
+    private func setupSwiftUIFileList() {
+        // Initialize SwiftUI file list view model
+        fileListViewModel = FileListViewModel()
+        fileListViewModel?.isGridView = viewModel?.isGridView ?? false
+        
+        // Populate with initial data if available
+        if let currentFiles = viewModel?.viewModels {
+            fileListViewModel?.updateFiles(currentFiles)
+        }
+        
+        // Create SwiftUI view
+        let fileListView = FileListView(
+            viewModel: fileListViewModel!,
+            coordinator: self
+        )
+        
+        // Wrap in hosting controller
+        let hostingController = UIHostingController(rootView: fileListView)
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Store reference
+        fileListHostingController = hostingController
+        
+        // Add as child
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        // Layout constraints - match collectionView's frame
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: collectionView.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor)
+        ])
+        
+        // Hide UIKit collection view
+        collectionView.isHidden = true
+        
+        // Update switch view button
+        switchViewButton.setImage(UIImage(systemName: fileListViewModel?.isGridView ?? false ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
+    }
+    
+    private func setupUIKitCollectionView() {
         isGridView = viewModel?.isGridView ?? false
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
@@ -251,7 +308,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func refreshCollectionView() {
         handleTableBackgroundView()
-        collectionView.reloadData()
+        
+        if useSwiftUIFileList {
+            // Update SwiftUI list
+            print("🔄 RefreshCollectionView - Files count: \(viewModel?.viewModels.count ?? 0)")
+            fileListViewModel?.updateFiles(viewModel?.viewModels ?? [])
+            print("🔄 FileListViewModel files count: \(fileListViewModel?.files.count ?? 0)")
+        } else {
+            // Update UIKit collection view
+            collectionView.reloadData()
+        }
     }
     
     func handleTableBackgroundView() {
@@ -266,7 +332,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.backgroundView = nil
     }
     
-    fileprivate func setupBottomActionSheet() {
+    func setupBottomActionSheet() {
         guard let selectedFiles = viewModel?.selectedFiles,
               let action = viewModel?.fileAction,
               !selectedFiles.isEmpty else {
@@ -426,7 +492,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width, right: 6)
     }
     
-    fileprivate func setupBottomActionSheetForMultipleFiles() {
+    func setupBottomActionSheetForMultipleFiles() {
         let itemsNumber: FloatingActionTextItem
         let blankImage = UIColor.clear.imageWithColor(width: 0, height: 0)
         let numberOfItems = viewModel?.selectedFiles?.count ?? 0
@@ -522,7 +588,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         guard
             let viewModel = viewModel,
             let currentFolder = viewModel.currentFolder else { return }
@@ -635,17 +701,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         isGridView.toggle()
         viewModel?.isGridView = isGridView
         
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
-    
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
-        collectionView.reloadData()
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 6
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.estimatedItemSize = .zero
-        collectionView.collectionViewLayout = flowLayout
-        collectionView.collectionViewLayout.invalidateLayout()
+        if useSwiftUIFileList {
+            // Update SwiftUI list
+            fileListViewModel?.isGridView = isGridView
+        } else {
+            // Update UIKit collection view
+            collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+            collectionView.reloadData()
+            let flowLayout = UICollectionViewFlowLayout()
+            flowLayout.minimumInteritemSpacing = 6
+            flowLayout.minimumLineSpacing = 0
+            flowLayout.estimatedItemSize = .zero
+            collectionView.collectionViewLayout = flowLayout
+            collectionView.collectionViewLayout.invalidateLayout()
+        }
     }
     
     @objc func searchButtonPressed(_ sender: Any) {
