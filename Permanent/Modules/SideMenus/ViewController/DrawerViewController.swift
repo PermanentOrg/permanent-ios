@@ -8,6 +8,23 @@
 import UIKit
 import SwiftUI
 
+/// Custom view that passes through touch events to views below when not hitting actual content
+@available(iOS 26, *)
+class PassThroughHostingView: UIView {
+    weak var actualContentView: UIView?
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hitView = super.hitTest(point, with: event)
+        
+        // If we hit ourselves (not a subview), pass through
+        if hitView == self {
+            return nil
+        }
+        
+        return hitView
+    }
+}
+
 protocol DrawerMenuDelegate: AnyObject {
     func didTapDrawerMenuButton()
     func didTapRightSideMenuButton()
@@ -224,17 +241,33 @@ class DrawerViewController: UIViewController {
         // This prevents UIKit from adding extra padding
         hostingController.safeAreaRegions = []
         
+        // CRITICAL: Allow touches to pass through to views below when not hitting the tab bar
+        // This ensures FloatingActionIsland can receive touches
+        let passThroughView = PassThroughHostingView()
+        passThroughView.actualContentView = hostingController.view
+        passThroughView.backgroundColor = .clear
+        passThroughView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Add hosting controller view to pass-through container
+        passThroughView.addSubview(hostingController.view)
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: passThroughView.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: passThroughView.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: passThroughView.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: passThroughView.bottomAnchor)
+        ])
+        
         // Add as child view controller
         addChild(hostingController)
-        view.addSubview(hostingController.view)
+        view.addSubview(passThroughView)
         hostingController.didMove(toParent: self)
         
         // Position at bottom with horizontal padding for floating effect
         NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            hostingController.view.heightAnchor.constraint(equalToConstant: 72)
+            passThroughView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            passThroughView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            passThroughView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            passThroughView.heightAnchor.constraint(equalToConstant: 72)
         ])
         
         // Force clear background on all subviews recursively

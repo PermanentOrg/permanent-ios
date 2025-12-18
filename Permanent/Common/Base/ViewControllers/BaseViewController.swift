@@ -118,6 +118,9 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         floatingActionIsland?.willMove(toParent: self)
         addChild(floatingActionIsland!)
         view.addSubview(floatingActionIsland!.view)
+        
+        // Ensure FloatingActionIsland is always on top (above workspace tab bar)
+        view.bringSubviewToFront(floatingActionIsland!.view)
 
         NSLayoutConstraint.activate([
             floatingActionIsland!.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),

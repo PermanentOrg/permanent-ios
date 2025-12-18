@@ -71,33 +71,42 @@ class FloatingActionTextSubtitleItem: FloatingActionTextItem {
     }
 
     override var barButtonItem: UIBarButtonItem? {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .leading
-        stackView.spacing = 2
-        
+        let view = UIView()
         let label = UILabel()
         label.text = text
         label.font = TextFontStyle.style42.font
-        label.textColor = .primary
+        label.textColor = .lightGray
+        label.translatesAutoresizingMaskIntoConstraints = false
 
         let subtitleLabel = UILabel()
         subtitleLabel.text = subtitle
         subtitleLabel.font = TextFontStyle.style12.font
-        subtitleLabel.textColor = .middleGray
-        subtitleLabel.lineBreakMode = .byTruncatingTail
-        
-        stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(subtitleLabel)
-        
-        // Calculate proper size
-        label.sizeToFit()
-        subtitleLabel.sizeToFit()
-        let width = max(label.frame.width, min(subtitleLabel.frame.width, 100))
-        let height = label.frame.height + subtitleLabel.frame.height + 2
-        stackView.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        subtitleLabel.textColor = .dustyGray
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        let barButton = UIBarButtonItem(customView: stackView)
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(barButtonItemPressed(_:)), for: .touchUpInside)
+
+        view.addSubview(label)
+        view.addSubview(subtitleLabel)
+        view.addSubview(button)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: view.topAnchor),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            subtitleLabel.topAnchor.constraint(equalTo: label.bottomAnchor, constant: -2),
+            subtitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            subtitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            button.topAnchor.constraint(equalTo: view.topAnchor),
+            button.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        let barButton = UIBarButtonItem(customView: view)
         barButton.accessibilityLabel = "\(text), \(subtitle)"
         return barButton
     }
@@ -195,16 +204,13 @@ class FloatingActionImageTextItem: FloatingActionTextItem {
 }
 
 class FloatingActionIslandViewController: UIViewController {
-    private let toolbar = UIToolbar()
+    private let containerView = UIView()
     private let bgView = UIView()
 
     private var activityIndicator: UIActivityIndicatorView?
     private var doneCheckmarkImageView: UIImageView?
 
     private var widthConstraint: NSLayoutConstraint!
-    
-    // iOS 26 glass effect view
-    private var glassEffectView: UIView?
 
     var leftItems: [FloatingActionItem] = [] {
         didSet {
@@ -228,43 +234,22 @@ class FloatingActionIslandViewController: UIViewController {
         view.backgroundColor = .clear
 
         bgView.translatesAutoresizingMaskIntoConstraints = false
+        bgView.backgroundColor = .white
         bgView.layer.shadowColor = UIColor.black.withAlphaComponent(0.16).cgColor
         bgView.layer.shadowOffset = CGSize(width: 0, height: 16)
         bgView.layer.shadowRadius = 32
         bgView.layer.shadowOpacity = 1
         bgView.layer.cornerRadius = 32
-        
-        // Use blur effect for iOS 26+
-        if #available(iOS 26, *) {
-            let blurEffect = UIBlurEffect(style: .systemUltraThinMaterial)
-            let blurView = UIVisualEffectView(effect: blurEffect)
-            blurView.translatesAutoresizingMaskIntoConstraints = false
-            blurView.layer.cornerRadius = 32
-            blurView.clipsToBounds = true
-            bgView.addSubview(blurView)
-            NSLayoutConstraint.activate([
-                blurView.topAnchor.constraint(equalTo: bgView.topAnchor),
-                blurView.leadingAnchor.constraint(equalTo: bgView.leadingAnchor),
-                blurView.trailingAnchor.constraint(equalTo: bgView.trailingAnchor),
-                blurView.bottomAnchor.constraint(equalTo: bgView.bottomAnchor)
-            ])
-            bgView.backgroundColor = .clear
-        } else {
-            bgView.backgroundColor = .white
-        }
 
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
-        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-        toolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
-        toolbar.backgroundColor = .clear
-        toolbar.barTintColor = .clear
-        toolbar.isTranslucent = true
-        toolbar.layer.cornerRadius = 32
-        toolbar.clipsToBounds = true
-        toolbar.isHidden = true
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = .white
+        containerView.layer.cornerRadius = 32
+        containerView.clipsToBounds = true
+        containerView.isHidden = true
+        containerView.isUserInteractionEnabled = true
 
         view.addSubview(bgView)
-        view.addSubview(toolbar)
+        view.addSubview(containerView)
 
         widthConstraint = bgView.widthAnchor.constraint(equalToConstant: 32)
         NSLayoutConstraint.activate([
@@ -272,11 +257,11 @@ class FloatingActionIslandViewController: UIViewController {
             bgView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             bgView.heightAnchor.constraint(equalToConstant: 64),
             widthConstraint,
-            toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            toolbar.heightAnchor.constraint(equalToConstant: 64),
-            toolbar.topAnchor.constraint(equalTo: view.topAnchor)
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            containerView.heightAnchor.constraint(equalToConstant: 64),
+            containerView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
 
         updateToolbarItems()
@@ -285,16 +270,19 @@ class FloatingActionIslandViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        // Bring to front to ensure it's above workspace tab bar
+        view.superview?.bringSubviewToFront(view)
+
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
-            self.widthConstraint.constant = self.toolbar.frame.width
+            self.widthConstraint.constant = self.containerView.frame.width
             self.view.layoutIfNeeded()
         }, completion: { _ in
-            self.toolbar.isHidden = false
+            self.containerView.isHidden = false
         })
     }
 
     func animateDismiss(_ completion: (() -> Void)? = nil) {
-        toolbar.isHidden = true
+        containerView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
             self.widthConstraint.constant = 64
             self.view.layoutIfNeeded()
@@ -311,7 +299,7 @@ class FloatingActionIslandViewController: UIViewController {
         activityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(activityIndicator!)
 
-        toolbar.isHidden = true
+        containerView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
             self.widthConstraint.constant = 64
             self.view.layoutIfNeeded()
@@ -330,7 +318,7 @@ class FloatingActionIslandViewController: UIViewController {
         doneCheckmarkImageView?.contentMode = .scaleAspectFit
         view.addSubview(doneCheckmarkImageView!)
 
-        toolbar.isHidden = true
+        containerView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
             self.widthConstraint.constant = 64
             self.view.layoutIfNeeded()
@@ -353,19 +341,70 @@ class FloatingActionIslandViewController: UIViewController {
         leftItems.forEach({ $0.actionIslandVC = self })
         rightItems.forEach({ $0.actionIslandVC = self })
 
-        let leftToolbarItems = leftItems.compactMap { $0.barButtonItem }
-        let rightToolbarItems = rightItems.compactMap { $0.barButtonItem }
+        // Clear existing subviews
+        containerView.subviews.forEach { $0.removeFromSuperview() }
 
-        var items: [UIBarButtonItem] = []
+        let leftViews = leftItems.compactMap { $0.barButtonItem?.customView }
+        let rightViews = rightItems.compactMap { $0.barButtonItem?.customView }
 
-        leftToolbarItems.forEach { (item: UIBarButtonItem) in
-            items.append(item)
+        // Calculate proper sizes for all views
+        leftViews.forEach { view in
+            view.sizeToFit()
+            view.layoutIfNeeded()
         }
-        items.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
-        rightToolbarItems.forEach { (item: UIBarButtonItem) in
-            items.append(item)
+        rightViews.forEach { view in
+            view.sizeToFit()
+            view.layoutIfNeeded()
+        }
+
+        // Add left items
+        var previousView: UIView?
+        for view in leftViews {
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.isUserInteractionEnabled = true
+            containerView.addSubview(view)
+            
+            if let prev = previousView {
+                NSLayoutConstraint.activate([
+                    view.leadingAnchor.constraint(equalTo: prev.trailingAnchor, constant: 32),
+                    view.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+                    view.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+                ])
+            }
+            previousView = view
         }
         
-        toolbar.setItems(items, animated: true)
+        // Add right items (from the right side)
+        var previousRightView: UIView?
+        for view in rightViews.reversed() {
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.isUserInteractionEnabled = true
+            containerView.addSubview(view)
+            
+            if let prev = previousRightView {
+                NSLayoutConstraint.activate([
+                    view.trailingAnchor.constraint(equalTo: prev.leadingAnchor, constant: -32),
+                    view.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+                    view.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+                ])
+            }
+            previousRightView = view
+        }
+        
+        // Force layout and ensure all interactive elements are accessible
+        containerView.layoutIfNeeded()
+        containerView.subviews.forEach { subview in
+            subview.isUserInteractionEnabled = true
+            // Enable interaction on all child views (buttons)
+            subview.subviews.forEach { $0.isUserInteractionEnabled = true }
+        }
     }
 }
