@@ -158,7 +158,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        overlayView.frame = view.bounds
+        // Position overlay below navigation bar to prevent showing through
+        let topInset = view.safeAreaInsets.top
+        overlayView.frame = CGRect(
+            x: 0,
+            y: topInset,
+            width: view.bounds.width,
+            height: view.bounds.height - topInset
+        )
     }
     
     // MARK: - Tab bar is now managed by DrawerViewController (fixed at root level)
