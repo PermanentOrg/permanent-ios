@@ -22,63 +22,34 @@ struct FileListView: View {
     weak var coordinator: FileListCoordinatorProtocol?
     
     var body: some View {
-        ZStack {
-            Color.white // Debug: make view visible
-            
-            VStack(spacing: 0) {
-                // Debug info at top
-                VStack(spacing: 8) {
-                    Text("Files count: \(viewModel.files.count)")
-                        .foregroundColor(.black)
-                        .font(.system(size: 20, weight: .bold))
-                    
-                    if let firstFile = viewModel.files.first {
-                        Text("First file: \(firstFile.name)")
-                            .foregroundColor(.blue)
-                    }
-                    
-                    Text("isGridView: \(viewModel.isGridView ? "YES" : "NO")")
-                        .foregroundColor(.gray)
-                }
-                .padding()
-                
-                // Actual content
-                if viewModel.files.isEmpty {
-                    Spacer()
-                    VStack(spacing: 16) {
-                        Image(systemName: "folder")
-                            .font(.system(size: 64))
-                            .foregroundColor(.gray)
-                        Text("No files")
-                            .font(.custom("Usual-Regular", size: 17))
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                } else {
-                    // Simple test: just show file names
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 12) {
-                            ForEach(viewModel.files) { file in
-                                HStack {
-                                    Image(systemName: file.isFolder ? "folder.fill" : "doc.fill")
-                                        .foregroundColor(.blue)
-                                    Text(file.name)
-                                        .foregroundColor(.black)
-                                }
-                                .padding()
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(8)
-                            }
-                        }
-                        .padding()
-                    }
-                }
+        Group {
+            if viewModel.files.isEmpty {
+                emptyStateView
+            } else if viewModel.isGridView {
+                gridView
+            } else {
+                listView
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .refreshable {
             await coordinator?.didRefresh()
         }
+    }
+    
+    // MARK: - Empty State
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image(systemName: "folder")
+                .font(.system(size: 64))
+                .foregroundColor(Color(UIColor.lightGray))
+            Text("No files")
+                .font(.custom("Usual-Regular", size: 17))
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     // MARK: - List Layout

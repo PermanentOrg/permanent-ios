@@ -29,7 +29,7 @@ struct WorkspaceTabBarView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Workspace tabs in glass container
+            // Workspace tabs in clean white container (iOS tab bar style)
             HStack(spacing: 0) {
                 ForEach(WorkspaceType.allCases, id: \.self) { workspace in
                     TabButtonContent(
@@ -53,7 +53,7 @@ struct WorkspaceTabBarView: View {
                     }
                 }
             }
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 4)
             .coordinateSpace(name: "tabBar")
             .onPreferenceChange(TabFramePreferenceKey.self) { frames in
                 tabFrames = frames
@@ -88,11 +88,13 @@ struct WorkspaceTabBarView: View {
                         }
                     }
             )
-            .padding(.vertical, 12)
+            .padding(.vertical, 8)
             .frame(height: 72)
-            .background(.ultraThinMaterial)
-            .clipShape(Capsule())
-            .glassEffect(in: .capsule)
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(.white)
+                    .shadow(color: .black.opacity(0.08), radius: 16, x: 0, y: 4)
+            )
             
             // Floating action buttons OUTSIDE the tab bar
             if viewModel.showPlusButton {
@@ -153,25 +155,16 @@ private struct TabButtonContent: View {
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: workspace.iconName)
-                .font(.system(size: 20, weight: .medium))
+                .font(.system(size: 24, weight: .regular))
             
             Text(workspace.title)
-                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                .font(.system(size: 11, weight: .medium))
         }
         .foregroundStyle(isSelected ? primaryColor : secondaryColor)
-        .frame(width: 80)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background {
-            if isSelected {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.white.opacity(0.95))
-                    .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
-                    .matchedGeometryEffect(id: "selectedTab", in: namespace)
-            }
-        }
-        .contentShape(RoundedRectangle(cornerRadius: 16))
-        .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isSelected)
+        .frame(maxWidth: .infinity)
+        .frame(height: 56)
+        .contentShape(Rectangle())
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isSelected)
     }
 }
 

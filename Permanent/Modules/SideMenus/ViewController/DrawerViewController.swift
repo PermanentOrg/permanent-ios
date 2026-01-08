@@ -38,9 +38,29 @@ class DrawerViewController: UIViewController {
     var settingsRouter: SettingsRouter
     var showArchives: Bool
     
+    // MARK: - Feature Flags
+    
+    /// Feature flag to enable native SwiftUI TabView for workspace navigation
+    /// Set to true to use WorkspaceTabContainerView with native TabView
+    /// Requires iOS 17+
+    private let useNativeTabView = true
+    
+    /// Feature flag to enable full SwiftUI workspace container (Phase 6)
+    /// Set to true to use WorkspaceContainerView instead of individual view controllers
+    private let useSwiftUIWorkspaceContainer = false
+    
+    /// Feature flag to enable SwiftUI MainView (Phase 5)
+    /// Set to true to use SwiftUIMainView instead of MainViewController
+    /// Requires iOS 17+
+    static var useSwiftUIMainView: Bool = true
+    
     // iOS 26+ Workspace Tab Bar (fixed at root level)
     private var workspaceTabViewModel: WorkspaceTabViewModel?
     private var workspaceTabBarHostingController: UIHostingController<AnyView>?
+    
+    // iOS 26+ Full SwiftUI Workspace Container (Phase 6)
+    // Note: Using Any to avoid @available constraint on stored property
+    private var workspaceContainerHostingController: Any?
     
     fileprivate var leftSideMenuOrigin: CGPoint { CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight) }
     fileprivate var rightSideMenuOrigin: CGPoint { CGPoint(x: view.bounds.width - (view.bounds.width * 0.75), y: view.safeAreaInsets.top + rootViewController.barHeight + 0.5) }
@@ -73,7 +93,13 @@ class DrawerViewController: UIViewController {
     
         // Setup fixed workspace tab bar for iOS 26+
         if #available(iOS 26, *) {
-            setupWorkspaceTabBar()
+            if useSwiftUIWorkspaceContainer {
+                setupSwiftUIWorkspaceContainer()
+            } else if useNativeTabView {
+                setupSwiftUIWorkspaceTabView()
+            } else {
+                setupWorkspaceTabBar()
+            }
         }
     
         configureGestures()
@@ -277,6 +303,41 @@ class DrawerViewController: UIViewController {
         workspaceTabBarHostingController = hostingController
     }
     
+    /// Sets up native SwiftUI TabView for workspace navigation (iOS 17+)
+    /// Replaces the custom tab bar with Apple's native TabView component
+    @available(iOS 17, *)
+    private func setupSwiftUIWorkspaceTabView() {
+        // Create the native TabView container
+        let tabContainerView = WorkspaceTabContainerView()
+        let hostingController = UIHostingController(rootView: tabContainerView)
+        
+        // Configure hosting controller
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        hostingController.view.backgroundColor = UIColor.systemBackground
+        
+        // Add as child view controller
+        addChild(hostingController)
+        
+        // Replace the rootViewController's view with the TabView
+        // Insert below the navigation bar but above everything else
+        view.insertSubview(hostingController.view, belowSubview: rootViewController.view)
+        
+        hostingController.didMove(toParent: self)
+        
+        // Pin to edges - the TabView fills the entire content area
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        // Hide the old rootViewController since TabView now handles workspace switching
+        rootViewController.view.isHidden = true
+        
+        workspaceContainerHostingController = hostingController
+    }
+    
     /// Recursively clears background color on all subviews
     /// This is necessary because UIHostingController can add intermediate views with backgrounds
     @available(iOS 26, *)
@@ -322,12 +383,16 @@ class DrawerViewController: UIViewController {
             switch workspace {
             case .private:
                 let privateViewModel = MyFilesViewModel()
-                let mainVC = UIViewController.create(
-                    withIdentifier: .main,
-                    from: .main
-                ) as! MainViewController
-                mainVC.viewModel = privateViewModel
-                newVC = mainVC
+                if Self.useSwiftUIMainView {
+                    newVC = createSwiftUIMainViewController(viewModel: privateViewModel)
+                } else {
+                    let mainVC = UIViewController.create(
+                        withIdentifier: .main,
+                        from: .main
+                    ) as! MainViewController
+                    mainVC.viewModel = privateViewModel
+                    newVC = mainVC
+                }
             case .shared:
                 newVC = UIViewController.create(
                     withIdentifier: .shares,
@@ -335,12 +400,16 @@ class DrawerViewController: UIViewController {
                 )
             case .public:
                 let publicViewModel = PublicFilesViewModel()
-                let mainVC = UIViewController.create(
-                    withIdentifier: .main,
-                    from: .main
-                ) as! MainViewController
-                mainVC.viewModel = publicViewModel
-                newVC = mainVC
+                if Self.useSwiftUIMainView {
+                    newVC = createSwiftUIMainViewController(viewModel: publicViewModel)
+                } else {
+                    let mainVC = UIViewController.create(
+                        withIdentifier: .main,
+                        from: .main
+                    ) as! MainViewController
+                    mainVC.viewModel = publicViewModel
+                    newVC = mainVC
+                }
             }
             
             // Cache the new view controller
@@ -349,6 +418,20 @@ class DrawerViewController: UIViewController {
             // Display with fade transition
             changeRoot(viewController: newVC, useTabTransition: true)
         }
+    }
+    
+    /// Creates a UIHostingController wrapping SwiftUIMainView
+    /// - Parameter viewModel: The FilesViewModel (MyFilesViewModel or PublicFilesViewModel)
+    /// - Returns: A UIHostingController that can be used as a view controller
+    @available(iOS 26, *)
+    private func createSwiftUIMainViewController(viewModel: FilesViewModel) -> UIViewController {
+        let swiftUIMainView = SwiftUIMainView(viewModel: viewModel)
+        let hostingController = UIHostingController(rootView: swiftUIMainView)
+        
+        // Configure hosting controller
+        hostingController.view.backgroundColor = UIColor.systemBackground
+        
+        return hostingController
     }
     
     @available(iOS 26, *)
@@ -361,6 +444,60 @@ class DrawerViewController: UIViewController {
     
     @available(iOS 26, *)
     private func handleChecklistButtonTapped() {
+        // Delegate to current view controller
+        if let mainVC = rootViewController.viewControllers.first as? MainViewController {
+            mainVC.didTapChecklist()
+        }
+    }
+    
+    // MARK: - Full SwiftUI Workspace Container (Phase 6)
+    
+    @available(iOS 26, *)
+    private func setupSwiftUIWorkspaceContainer() {
+        // Create the full SwiftUI workspace container
+        let containerView = WorkspaceContainerView()
+        let hostingController = UIHostingController(rootView: containerView)
+        
+        // Setup hosting controller
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        hostingController.view.backgroundColor = UIColor.clear
+        
+        // Add as child view controller
+        addChild(hostingController)
+        
+        // Insert below any existing content (rootViewController)
+        if let rootView = rootViewController.view {
+            view.insertSubview(hostingController.view, belowSubview: rootView)
+        } else {
+            view.addSubview(hostingController.view)
+        }
+        
+        hostingController.didMove(toParent: self)
+        
+        // Pin to edges - fills entire screen
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        // Hide the root navigation controller since SwiftUI container handles everything
+        rootViewController.view.isHidden = true
+        
+        workspaceContainerHostingController = hostingController
+    }
+    
+    @available(iOS 26, *)
+    func showUploadMenu() {
+        // Delegate to current view controller
+        if let mainVC = rootViewController.viewControllers.first as? MainViewController {
+            mainVC.didTap()
+        }
+    }
+    
+    @available(iOS 26, *)
+    func showChecklist() {
         // Delegate to current view controller
         if let mainVC = rootViewController.viewControllers.first as? MainViewController {
             mainVC.didTapChecklist()
