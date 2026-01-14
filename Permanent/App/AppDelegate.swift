@@ -300,39 +300,75 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     fileprivate func navigateFromUniversalLink(url: URL) -> Bool {
-        guard let sharePreviewVC = UIViewController.create(
-            withIdentifier: .sharePreview,
-            from: .share
-        ) as? SharePreviewViewController else { return false }
+        let viewController: UIViewController
         
-        let viewModel = SharePreviewViewModel()
-        viewModel.urlToken = url.lastPathComponent
-        sharePreviewVC.viewModel = viewModel
-        
-        sharePreviewVC.navigateTo = { [weak self] params in
-            self?.navigateToFolder(params: params)
+        if Constants.FeatureFlags.useSwiftUISharePreview {
+            // Use new SwiftUI version
+            let hostingController = SharePreviewHostingController(shareToken: url.lastPathComponent)
+            hostingController.navigateTo = { [weak self] params in
+                self?.navigateToFolder(params: params)
+            }
+            hostingController.wireCallbacks()
+            viewController = hostingController
+        } else {
+            // Use legacy UIKit version
+            guard let sharePreviewVC = UIViewController.create(
+                withIdentifier: .sharePreview,
+                from: .share
+            ) as? SharePreviewViewController else { return false }
+            
+            let viewModel = SharePreviewViewModel()
+            viewModel.urlToken = url.lastPathComponent
+            sharePreviewVC.viewModel = viewModel
+            
+            sharePreviewVC.navigateTo = { [weak self] params in
+                self?.navigateToFolder(params: params)
+            }
+            viewController = sharePreviewVC
         }
         
         // Dismiss any presented SwiftUI views or modal controllers before navigating
-        dismissPresentedViewsAndNavigate(to: sharePreviewVC)
+        dismissPresentedViewsAndNavigate(to: viewController)
         
         return true
     }
     
     private func dismissPresentedViewsAndNavigate(to viewController: UIViewController) {
-        // Find the topmost presented view controller
+        // If the root is a DrawerViewController, update its navigation stack to remove any
+        // existing SharePreviewHostingController instances so we don't stack multiple share previews.
+        if let drawer = rootViewController.current as? DrawerViewController {
+            let nav = drawer.rootViewController
+            let filteredStack = nav.viewControllers.filter { !($0 is SharePreviewHostingController) }
+            var newStack = filteredStack
+            newStack.append(viewController)
+            // Replace the stack without animation so the previous share preview is removed immediately
+            nav.setViewControllers(newStack, animated: false)
+            return
+        }
+
+        // Otherwise fall back to dismissing presented (modal) view controllers if present
         var topMostPresentedVC: UIViewController = rootViewController
         while let presentedVC = topMostPresentedVC.presentedViewController {
             topMostPresentedVC = presentedVC
         }
-        
+
         // If we found any presented view controllers, dismiss from the root
         if topMostPresentedVC != rootViewController {
-            rootViewController.dismiss(animated: true) { [weak self] in
-                self?.rootViewController.navigateTo(viewController: viewController)
+            let isSharePreview = topMostPresentedVC is SharePreviewHostingController ||
+                (topMostPresentedVC as? UINavigationController)?.topViewController is SharePreviewHostingController
+
+            if isSharePreview {
+                // Dismiss faster (no animation) for quick sequential navigation between share previews
+                rootViewController.dismiss(animated: false) { [weak self] in
+                    self?.rootViewController.navigateTo(viewController: viewController)
+                }
+            } else {
+                rootViewController.dismiss(animated: true) { [weak self] in
+                    self?.rootViewController.navigateTo(viewController: viewController)
+                }
             }
         } else {
-            // No presented view controllers, navigate directly
+            // No presented view controllers and no special nav case, navigate directly
             rootViewController.navigateTo(viewController: viewController)
         }
     }

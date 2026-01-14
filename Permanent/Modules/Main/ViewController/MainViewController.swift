@@ -713,20 +713,37 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     fileprivate func checkForSavedUniversalLink() {
         guard
-            let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.shareURLToken),
-            let sharePreviewVC = UIViewController.create(
-                withIdentifier: .sharePreview,
-                from: .share
-            ) as? SharePreviewViewController
+            let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.shareURLToken)
         else {
             return
         }
         
-        let viewModel = SharePreviewViewModel()
-        viewModel.urlToken = token
-        sharePreviewVC.viewModel = viewModel
+        let viewController: UIViewController
         
-        navigationController?.display(viewController: sharePreviewVC)
+        if Constants.FeatureFlags.useSwiftUISharePreview {
+            // Use new SwiftUI version
+            let hostingController = SharePreviewHostingController(shareToken: token)
+            hostingController.navigateTo = { [weak self] params in
+                self?.navigateToFolder(withParams: params, backNavigation: false)
+            }
+            hostingController.wireCallbacks()
+            viewController = hostingController
+        } else {
+            // Use legacy UIKit version
+            guard let sharePreviewVC = UIViewController.create(
+                withIdentifier: .sharePreview,
+                from: .share
+            ) as? SharePreviewViewController else {
+                return
+            }
+            
+            let viewModel = SharePreviewViewModel()
+            viewModel.urlToken = token
+            sharePreviewVC.viewModel = viewModel
+            viewController = sharePreviewVC
+        }
+        
+        navigationController?.display(viewController: viewController)
     }
     
     func checkForRequestShareAccess() {
