@@ -12,13 +12,12 @@ struct SharePreviewArchiveSelectorView: View {
     let availableArchives: [ArchiveVOData]
     let onSelect: (ArchiveVOData) -> Void
     let onViewInArchive: () -> Void
-
-    @State private var showArchivePicker = false
+    let externalShowPicker: Binding<Bool>?
 
     var body: some View {
         VStack(spacing: 0) {
             Button(action: {
-                showArchivePicker = true
+                externalShowPicker?.wrappedValue = true
             }) {
                 HStack(spacing: 12) {
                     if let archive = currentArchive {
@@ -47,18 +46,24 @@ struct SharePreviewArchiveSelectorView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text("VIEW SHARED ITEMS IN")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.secondary)
+                            .font(.custom("Usual", size: 10))
+                            .foregroundColor(.blue600)
+                            .kerning(1.6)
                         
                         if let archive = currentArchive {
-                            Text("The \(archive.fullName ?? "Unknown") Archive")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.primary)
+                            HStack {
+                                Text("The ") +
+                                Text("\(archive.fullName ?? "Unknown")").fontWeight(.semibold) +
+                                Text(" Archive")
+                            }
+                                .font(.custom("Usual", size: 14))
+                                .foregroundColor(.blue900)
                                 .lineLimit(1)
                         } else {
                             Text("Select an archive...")
-                                .font(.system(size: 16))
-                                .foregroundColor(.secondary)
+                                .font(.custom("Usual", size: 14))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue900)
                         }
                     }
                     
@@ -67,7 +72,7 @@ struct SharePreviewArchiveSelectorView: View {
                     if availableArchives.count > 1 {
                         Image(systemName: "chevron.down")
                             .foregroundColor(.secondary)
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.custom("Usual", size: 14))
                     }
                 }
                 .padding(.horizontal, 20)
@@ -80,10 +85,11 @@ struct SharePreviewArchiveSelectorView: View {
                     onViewInArchive()
                 }) {
                     Text("Open")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.custom("Usual", size: 14))
+                        .fontWeight(.medium)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 52)
+                        .frame(height: 56)
                         .background(Color(red: 0.15, green: 0.18, blue: 0.35))
                         .cornerRadius(12)
                 }
@@ -96,48 +102,57 @@ struct SharePreviewArchiveSelectorView: View {
         .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: -5)
         .padding(.horizontal, 48)
         .padding(.bottom, 16)
-        .sheet(isPresented: $showArchivePicker) {
-            ArchivePickerView(archives: availableArchives, selectedArchive: currentArchive) { archive in
-                onSelect(archive)
-                showArchivePicker = false
-            }
-        }
     }
 }
 
 struct ArchivePickerView: View {
     let archives: [ArchiveVOData]
     let selectedArchive: ArchiveVOData?
+    let maxHeight: CGFloat
     let onSelect: (ArchiveVOData) -> Void
+    var onClose: (() -> Void)? = nil
     @Environment(\.presentationMode) var presentationMode
+    
+    // Fixed header height
+    private let headerHeight: CGFloat = 72
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             // Header
-            HStack {
+            HStack(alignment: .center, spacing: 16) {
+                Image(.sharePreviewArchive)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 24, height: 24)
+                    .padding(.horizontal, 8)
+                
                 Text("Select an archive...")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.custom("Usual", size: 14))
+                    .fontWeight(.semibold)
                     .foregroundColor(.primary)
                 Spacer()
                 Button(action: {
-                    presentationMode.wrappedValue.dismiss()
+                    if let onClose = onClose { onClose() } else { presentationMode.wrappedValue.dismiss() }
                 }) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.custom("Usual", size: 17))
+                        .frame(width: 24, height: 24)
                         .foregroundColor(.gray)
                 }
             }
             .padding(.horizontal, 24)
-            .padding(.vertical, 20)
+            .padding(.vertical, 16)
+            .frame(height: headerHeight)
             
             Divider()
             
             // Archive list
             ScrollView {
-                VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     ForEach(archives, id: \.archiveID) { archive in
                         Button(action: {
                             onSelect(archive)
+                            if let onClose = onClose { onClose() }
                         }) {
                             HStack(spacing: 16) {
                                 // Archive thumbnail or gradient placeholder
@@ -148,7 +163,7 @@ struct ArchivePickerView: View {
                                             image
                                                 .resizable()
                                                 .aspectRatio(contentMode: .fill)
-                                                .frame(width: 56, height: 56)
+                                                .frame(width: 40, height: 40)
                                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                         case .failure(_), .empty:
                                             gradientPlaceholder(for: archive)
@@ -160,39 +175,35 @@ struct ArchivePickerView: View {
                                     gradientPlaceholder(for: archive)
                                 }
                                 
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("The \(archive.fullName ?? "Unknown") Archive")
-                                        .font(.system(size: 17, weight: .bold))
-                                        .foregroundColor(.primary)
-                                    
-                                    if archive.archiveID == AuthenticationManager.shared.session?.account.defaultArchiveID {
-                                        Text("Default")
-                                            .font(.system(size: 15))
-                                            .foregroundColor(.secondary)
-                                    }
+                                HStack(alignment: .center) {
+                                    Text("The ") +
+                                    Text("\(archive.fullName ?? "Unknown")").fontWeight(.semibold) +
+                                    Text(" Archive")
                                 }
+                                .font(.custom("Usual", size: 14))
+                                .multilineTextAlignment(.leading)
+                                .lineSpacing(0.9)
+                                .foregroundColor(.primary)
                                 
                                 Spacer()
                                 
-                                if archive.archiveID == selectedArchive?.archiveID {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 17, weight: .semibold))
-                                        .foregroundColor(.blue)
-                                }
                             }
+
                             .padding(.horizontal, 24)
                             .padding(.vertical, 16)
                         }
-                        
-                        if archive.archiveID != archives.last?.archiveID {
-                            Divider()
-                                .padding(.leading, 96)
-                        }
+                        .background(archive.archiveID == selectedArchive?.archiveID ? .blue25 : Color.clear)
                     }
                 }
             }
+            .frame(height: maxHeight)
+            .scrollDisabled(archives.count <= 5)
         }
         .background(Color(UIColor.systemBackground))
+        .safeAreaInset(edge: .bottom) {
+            Color(UIColor.systemBackground)
+                .frame(height: 0)
+        }
     }
     
     @ViewBuilder
@@ -208,10 +219,10 @@ struct ArchivePickerView: View {
             )
             
             Text(extractInitials(from: archive.fullName ?? ""))
-                .font(.system(size: 20, weight: .semibold))
+                .font(.custom("Usual", size: 20))
                 .foregroundColor(.white)
         }
-        .frame(width: 56, height: 56)
+        .frame(width: 40, height: 40)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     
@@ -230,7 +241,7 @@ struct ArchivePickerView: View {
 
 struct SharePreviewArchiveSelectorView_Previews: PreviewProvider {
     static var previews: some View {
-        SharePreviewArchiveSelectorView(currentArchive: ArchiveVOData.mock(), availableArchives: [ArchiveVOData.mock()], onSelect: { _ in }, onViewInArchive: { })
+        SharePreviewArchiveSelectorView(currentArchive: ArchiveVOData.mock(), availableArchives: [ArchiveVOData.mock()], onSelect: { _ in }, onViewInArchive: { }, externalShowPicker: .constant(false))
             .previewLayout(.sizeThatFits)
     }
 }

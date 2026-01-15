@@ -70,7 +70,6 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
     }
     
     deinit {
-        print("SharePreviewHostingController deinit - token: \(shareToken)")
     }
     
     override func viewWillAppear(_ animated: Bool) {

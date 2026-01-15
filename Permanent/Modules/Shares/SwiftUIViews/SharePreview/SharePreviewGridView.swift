@@ -127,7 +127,7 @@ struct FolderItemView: View {
                     .blur(radius: isBlurred ? 10 : 0)
                 
                 Text(item.name)
-                    .font(.system(size: 14))
+                    .font(.custom("Usual", size: 14))
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                     .frame(width: width, alignment: .center)

@@ -385,6 +385,7 @@
 		5EA106E62E67177C0083B6A0 /* ShareLinkV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */; };
 		5EA106E72E67177C0083B6A0 /* ShareLinkV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */; };
 		5EA4EC062F15176E00D05FF2 /* SharePreviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0932F150F6300F85282 /* SharePreviewViewModelTests.swift */; };
+		5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */; };
 		5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */; };
 		5EA70D8B2B2C78E200175D9C /* NewBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */; };
 		5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */; };
@@ -1371,6 +1372,7 @@
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
 		5EA106E22E65AA340083B6A0 /* ShareLinksV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinksV2Endpoint.swift; sourceTree = "<group>"; };
 		5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkV2.swift; sourceTree = "<group>"; };
+		5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewSwiftUIViewModelTests.swift; sourceTree = "<group>"; };
 		5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomButtonsSectionView.swift; sourceTree = "<group>"; };
 		5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBadgeView.swift; sourceTree = "<group>"; };
 		5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomListItemView.swift; sourceTree = "<group>"; };
@@ -3279,6 +3281,7 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */,
 				5EF3A0932F150F6300F85282 /* SharePreviewViewModelTests.swift */,
 				5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */,
 				5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */,
@@ -3696,10 +3699,10 @@
 		5EF3A0872F143F3600F85282 /* SharePreview */ = {
 			isa = PBXGroup;
 			children = (
+				5EF3A0862F143F3600F85282 /* SharePreviewView.swift */,
 				5EF3A0832F143F3600F85282 /* SharePreviewArchiveSelectorView.swift */,
 				5EF3A0842F143F3600F85282 /* SharePreviewGridView.swift */,
 				5EF3A0852F143F3600F85282 /* SharePreviewHeaderView.swift */,
-				5EF3A0862F143F3600F85282 /* SharePreviewView.swift */,
 			);
 			path = SharePreview;
 			sourceTree = "<group>";
@@ -5650,6 +5653,7 @@
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
+				5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */,
 				5E991EE92A4AFB89006229C0 /* EnvVars.generated.swift in Sources */,
 				5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */,
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,

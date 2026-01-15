@@ -15,7 +15,7 @@ struct SharePreviewHeaderView: View {
     let thumbnailURL: String?
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 10) {
             if let urlString = thumbnailURL, let url = URL(string: urlString) {
                 WebImage(url: url)
                     .resizable()
@@ -23,7 +23,7 @@ struct SharePreviewHeaderView: View {
                         // Subtle neutral placeholder to avoid a bright blue block during load
                         RoundedRectangle(cornerRadius: 6)
                             .fill(Color.gray.opacity(0.12))
-                            .overlay(Text(extractInitials(from: sharedByName)).font(.system(size: 16, weight: .medium)).foregroundColor(.secondary))
+                            .overlay(Text(extractInitials(from: sharedByName)).font(.custom("Usual", size: 16)).foregroundColor(.secondary))
                     }
                     .indicator(.activity)
                     .transition(.fade(duration: 0.15)) // smooth fade when the image appears
@@ -34,17 +34,26 @@ struct SharePreviewHeaderView: View {
             } else {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(Color.gray.opacity(0.12))
-                    .overlay(Text(extractInitials(from: sharedByName)).font(.system(size: 16, weight: .medium)).foregroundColor(.secondary))
+                    .overlay(Text(extractInitials(from: sharedByName)).font(.custom("Usual", size: 16)).foregroundColor(.secondary))
                     .frame(width: 40, height: 40)
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(sharedByName)
-                    .font(.system(size: 14))
-                    .foregroundColor(.secondary)
-                Text(archiveName)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.secondary)
+                HStack(alignment: .center, spacing: 0) {
+                    Text("Shared by ") +
+                    Text(sharedByName).fontWeight(.semibold) +
+                    Text(" from")
+                }
+                .font(.custom("Usual", size: 12))
+                .foregroundColor(.blue600)
+                
+                HStack(alignment: .center, spacing: 0) {
+                    Text("The ") +
+                    Text(archiveName).fontWeight(.semibold) +
+                    Text(" Archive")
+                }
+                .font(.custom("Usual", size: 14))
+                .foregroundColor(.blue900)
             }
 
             Spacer()

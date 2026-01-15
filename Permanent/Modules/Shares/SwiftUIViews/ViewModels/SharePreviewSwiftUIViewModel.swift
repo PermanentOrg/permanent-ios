@@ -23,6 +23,12 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var availableArchives: [ArchiveVOData] = []
     @Published var shareStatus: ShareStatus = .needsApproval
     @Published var shareLinkV2Data: ShareLinkV2Data?
+
+    // New flags & state for archive switching
+    @Published var needsWorkspaceReload: Bool = false
+    @Published var previousArchive: ArchiveVOData?
+    @Published var originalArchiveNbr: String?
+    @Published var cleanArchiveName: String?
     
     enum ContentDisplayMode {
         case actualThumbnails
@@ -55,26 +61,18 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         let previewToggle = shareDataCache?.previewToggle ?? 1
         let hasAccess = shareDataCache?.shareVO != nil
         
-        print("🎯 displayMode evaluation:")
-        print("  - accessRestrictions: \(accessRestrictions)")
-        print("  - previewToggle: \(previewToggle)")
-        print("  - hasAccess: \(hasAccess)")
-        
         // Unrestricted shares always show actual thumbnails
         if accessRestrictions == "none" {
-            print("  ✅ Result: actualThumbnails (unrestricted)")
             return .actualThumbnails
         }
         
         // Restricted shares: if preview is disabled, always show placeholders
         // (backend returns fake placeholder items when previewToggle=0)
         if previewToggle == 0 {
-            print("  🔒 Result: blurredPlaceholders (preview disabled)")
             return .blurredPlaceholders
         }
         
         // Restricted shares with preview enabled: show actual thumbnails
-        print("  ✅ Result: actualThumbnails (restricted but preview enabled)")
         return .actualThumbnails
     }
 
@@ -105,13 +103,58 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
 
     func selectArchive(_ archive: ArchiveVOData) {
+        // Immediate feedback: set currentArchive so UI updates instantly
+        let didChange = archive.archiveNbr != currentArchive?.archiveNbr
+        previousArchive = currentArchive
         currentArchive = archive
+        errorMessage = nil
+        isLoading = true
+
+        AuthenticationManager.shared.changeArchive(archive) { [weak self] result in
+            Task { @MainActor in
+                guard let self = self else { return }
+
+                switch result {
+                case .success(let changed):
+                    if changed {
+                        if didChange {
+                            self.needsWorkspaceReload = true
+                            // Post notification immediately after successful archive change
+                            NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
+                        }
+                        // Reload share data in the context of the newly selected archive
+                        self.start()
+                    } else {
+                        self.errorMessage = "Failed to change archive"
+                        self.currentArchive = self.previousArchive
+                    }
+
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                    self.currentArchive = self.previousArchive
+                }
+
+                self.isLoading = false
+            }
+        }
     }
+
+    @Published var showArchiveMismatchAlert: Bool = false
+    @Published var shouldOpenArchivePicker: Bool = false
 
     func viewInArchive() {
         let isShareCreator = checkIfUserIsCreator()
         
         if isShareCreator {
+            // If creator, ensure they have selected the original archive where the share was created
+            if let original = originalArchiveNbr, !original.isEmpty,
+               let current = currentArchive?.archiveNbr,
+               current != original {
+                // Prompt user to change archive
+                showArchiveMismatchAlert = true
+                return
+            }
+
             // For share creators, navigate to folder location using stored params
             if let callback = onNavigateToFolder,
                let archiveNbr = currentArchive?.archiveNbr,
@@ -137,27 +180,18 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
     
     private func loadV2ShareLinkData(shareLinkId: Int) {
-        print("🔄 loadV2ShareLinkData called with shareLinkId: \(shareLinkId)")
         shareManagementRepository.getShareLinkV2(shareLinkId: "\(shareLinkId)") { [weak self] result, error in
             guard let self = self else { return }
             
             Task { @MainActor in
                 if let v2Data = result {
-                    print("✅ V2 data received: \(v2Data.accessRestrictions ?? "nil")")
                     self.shareLinkV2Data = v2Data
                     // Re-extract files with updated display mode
-                    if let cachedData = self.shareDataCache, cachedData.previewToggle == 1 {
-                        print("🔄 Re-extracting files after V2 load (previewToggle=1)")
-                        self.extractFiles(from: cachedData)
-                    } else if let cachedData = self.shareDataCache {
-                        print("🔄 Re-extracting files after V2 load (previewToggle=\(cachedData.previewToggle ?? -1))")
+                    if let cachedData = self.shareDataCache {
                         self.extractFiles(from: cachedData)
                     }
                 }
                 // V2 data is supplementary - don't show error to user
-                if let error = error {
-                    print("Failed to load V2 share link data: \(error)")
-                }
             }
         }
     }
@@ -171,13 +205,12 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             Task { @MainActor in
                 switch result {
                 case .success(let archiveVOs):
-                    // Convert ArchiveVO to ArchiveVOData
+                    // Convert ArchiveVO to ArchiveVOData and filter out placeholders (e.g., 'create new')
                     self.availableArchives = archiveVOs.compactMap { $0.archiveVO }
-                        .filter { $0.status == .ok }
+                        .filter { $0.status == .ok && $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }
                     // Don't auto-select - user must choose
                     
                 case .failure(let error):
-                    print("Failed to load archives: \(error)")
                     // If fetch fails, keep empty list
                     self.availableArchives = []
                 }
@@ -229,13 +262,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         // Cache for later use
         shareDataCache = shareByURL
         
-        // Debug: Check what data we received
-        print("📊 SharePreview DEBUG:")
-        print("  - Has folderData: \(shareByURL.folderData != nil)")
-        print("  - Has recordData: \(shareByURL.recordData != nil)")
-        print("  - FolderData childItemVOS count: \(shareByURL.folderData?.childItemVOS?.count ?? 0)")
-        print("  - PreviewToggle: \(shareByURL.previewToggle ?? -1)")
-        
         // Fetch V2 data for accessRestrictions
         if let sharebyURLID = shareByURL.sharebyURLID {
             loadV2ShareLinkData(shareLinkId: sharebyURLID)
@@ -243,12 +269,15 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         
         // Parse archive info
         if let archive = shareByURL.archiveVO?.fullName {
-            archiveName = String(format: .fromArchive, archive)
+            archiveName = archive
+            // Store original archive metadata from share for validation if user is creator
+            originalArchiveNbr = shareByURL.archiveVO?.archiveNbr
+            cleanArchiveName = "The \(archive) Archive"
         }
         
         // Parse creator info
         if let name = shareByURL.accountVO?.fullName {
-            sharedByName = String(format: .sharedBy, name)
+            sharedByName = name
         }
         
         // Parse archive thumbnail
@@ -290,11 +319,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
     
     private func extractFiles(from shareByURL: SharebyURLVOData) {
-        print("🔍 extractFiles called - displayMode: \(displayMode)")
-        
         // Check if we should show placeholders
         if displayMode == .blurredPlaceholders {
-            print("  ✅ Using blurred placeholders (\(Self.placeholderItems.count) items)")
             items = Self.placeholderItems
             return
         }
@@ -304,13 +330,13 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         // Extract from folder data (folder share)
         if let folderData = shareByURL.folderData,
            let children = folderData.childItemVOS {
-            print("  📁 Found folder with \(children.count) children")
             for (index, child) in children.enumerated() {
                 // Use folderLinkID if available, otherwise use index to ensure unique IDs
-                let uniqueID = if let linkID = child.folderLinkID, linkID != 0 {
-                    "\(linkID)"
+                let uniqueID: String
+                if let linkID = child.folderLinkID, linkID != 0 {
+                    uniqueID = "\(linkID)"
                 } else {
-                    "item_\(index)"
+                    uniqueID = "item_\(index)"
                 }
                 
                 let item = SharePreviewItem(
@@ -325,7 +351,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         }
         // Extract from record data (file share)
         else if let recordData = shareByURL.recordData {
-            print("  📄 Found single record")
             let item = SharePreviewItem(
                 id: "\(recordData.recordID ?? 0)",
                 name: recordData.displayName ?? "",
@@ -334,11 +359,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 type: .image
             )
             extractedItems.append(item)
-        } else {
-            print("  ⚠️ No folder data or record data found")
         }
         
-        print("  📊 Extracted \(extractedItems.count) items")
         items = extractedItems
     }
     
