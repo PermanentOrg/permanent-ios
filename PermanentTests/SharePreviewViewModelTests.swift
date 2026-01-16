@@ -37,8 +37,8 @@ final class SharePreviewViewModelTests: XCTestCase {
         
         XCTAssertFalse(vm.isLoading)
         XCTAssertNil(vm.errorMessage)
-        XCTAssertEqual(vm.sharedByName, "Shared by Robert Friedman")
-        XCTAssertEqual(vm.archiveName, "From the Family Archive")
+        XCTAssertEqual(vm.sharedByName, "Robert Friedman")
+        XCTAssertEqual(vm.archiveName, "Family")
         // Status should be accepted since mock has shareVO
         XCTAssertEqual(vm.shareStatus, .accepted)
     }
