@@ -103,8 +103,13 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
 
     func selectArchive(_ archive: ArchiveVOData) {
+        // Early return if selecting the same archive
+        guard archive.archiveNbr != currentArchive?.archiveNbr else {
+            return
+        }
+        
         // Immediate feedback: set currentArchive so UI updates instantly
-        let didChange = archive.archiveNbr != currentArchive?.archiveNbr
+        let didChange = true
         previousArchive = currentArchive
         currentArchive = archive
         errorMessage = nil
@@ -117,11 +122,9 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 switch result {
                 case .success(let changed):
                     if changed {
-                        if didChange {
-                            self.needsWorkspaceReload = true
-                            // Post notification immediately after successful archive change
-                            NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
-                        }
+                        self.needsWorkspaceReload = true
+                        // Post notification immediately after successful archive change
+                        NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
                         // Reload share data in the context of the newly selected archive
                         self.start()
                     } else {
@@ -218,7 +221,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         }
     }
 
-    private func buildShareDetailsFromState() throws -> ShareDetails {
+    func buildShareDetailsFromState() throws -> ShareDetails {
         // Building ShareDetails is not supported in this simplified ViewModel - throw
         throw NSError(domain: "SharePreview", code: -1, userInfo: nil)
     }
