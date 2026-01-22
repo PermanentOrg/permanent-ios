@@ -384,6 +384,8 @@
 		5EA106E42E65AA350083B6A0 /* ShareLinksV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA106E22E65AA340083B6A0 /* ShareLinksV2Endpoint.swift */; };
 		5EA106E62E67177C0083B6A0 /* ShareLinkV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */; };
 		5EA106E72E67177C0083B6A0 /* ShareLinkV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */; };
+		5EA4EC062F15176E00D05FF2 /* SharePreviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0932F150F6300F85282 /* SharePreviewViewModelTests.swift */; };
+		5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */; };
 		5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */; };
 		5EA70D8B2B2C78E200175D9C /* NewBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */; };
 		5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */; };
@@ -571,6 +573,12 @@
 		5EF300382D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */; };
 		5EF3003A2D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */; };
 		5EF3003C2D4AC773001FFEE7 /* TwoStepChoosePhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */; };
+		5EF3A0882F143F3700F85282 /* SharePreviewArchiveSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0832F143F3600F85282 /* SharePreviewArchiveSelectorView.swift */; };
+		5EF3A0892F143F3700F85282 /* SharePreviewGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0842F143F3600F85282 /* SharePreviewGridView.swift */; };
+		5EF3A08A2F143F3700F85282 /* SharePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0862F143F3600F85282 /* SharePreviewView.swift */; };
+		5EF3A08B2F143F3700F85282 /* SharePreviewHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0852F143F3600F85282 /* SharePreviewHeaderView.swift */; };
+		5EF3A0902F1447F300F85282 /* SharePreviewHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A08F2F1447F300F85282 /* SharePreviewHostingController.swift */; };
+		5EF3A0962F15132B00F85282 /* SharePreviewSwiftUIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0952F15132B00F85282 /* SharePreviewSwiftUIViewModel.swift */; };
 		5EFC5B3B2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */; };
 		5EFCE3E52CFE022100D7E802 /* TwoFactorMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */; };
 		5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */; };
@@ -1364,6 +1372,7 @@
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
 		5EA106E22E65AA340083B6A0 /* ShareLinksV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinksV2Endpoint.swift; sourceTree = "<group>"; };
 		5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkV2.swift; sourceTree = "<group>"; };
+		5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewSwiftUIViewModelTests.swift; sourceTree = "<group>"; };
 		5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomButtonsSectionView.swift; sourceTree = "<group>"; };
 		5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBadgeView.swift; sourceTree = "<group>"; };
 		5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomListItemView.swift; sourceTree = "<group>"; };
@@ -1508,6 +1517,13 @@
 		5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseEmailViewModel.swift; sourceTree = "<group>"; };
 		5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChoosePhoneViewModel.swift; sourceTree = "<group>"; };
 		5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChoosePhoneView.swift; sourceTree = "<group>"; };
+		5EF3A0832F143F3600F85282 /* SharePreviewArchiveSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewArchiveSelectorView.swift; sourceTree = "<group>"; };
+		5EF3A0842F143F3600F85282 /* SharePreviewGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewGridView.swift; sourceTree = "<group>"; };
+		5EF3A0852F143F3600F85282 /* SharePreviewHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewHeaderView.swift; sourceTree = "<group>"; };
+		5EF3A0862F143F3600F85282 /* SharePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewView.swift; sourceTree = "<group>"; };
+		5EF3A08F2F1447F300F85282 /* SharePreviewHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewHostingController.swift; sourceTree = "<group>"; };
+		5EF3A0932F150F6300F85282 /* SharePreviewViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewViewModelTests.swift; sourceTree = "<group>"; };
+		5EF3A0952F15132B00F85282 /* SharePreviewSwiftUIViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewSwiftUIViewModel.swift; sourceTree = "<group>"; };
 		5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideViewModel.swift; sourceTree = "<group>"; };
 		5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorMethod.swift; sourceTree = "<group>"; };
 		5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordView.swift; sourceTree = "<group>"; };
@@ -3265,6 +3281,8 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */,
+				5EF3A0932F150F6300F85282 /* SharePreviewViewModelTests.swift */,
 				5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */,
 				5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */,
 				5E9977AB284898C7003E0C46 /* PublicGalleryTests.swift */,
@@ -3447,6 +3465,7 @@
 		5EA9C2B82E45FF78003BA1E9 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				5EF3A0952F15132B00F85282 /* SharePreviewSwiftUIViewModel.swift */,
 				5EA9C2B72E45FF78003BA1E9 /* ShareItemViewModel.swift */,
 			);
 			path = ViewModels;
@@ -3455,6 +3474,7 @@
 		5EA9C2C12E45FF78003BA1E9 /* SwiftUIViews */ = {
 			isa = PBXGroup;
 			children = (
+				5EF3A0872F143F3600F85282 /* SharePreview */,
 				5E72081C2E9D455D001300CA /* ArchiveAccessManagementView.swift */,
 				5E08C0D42E6F063600374D0F /* ShareContainerView.swift */,
 				5EA9C2BE2E45FF78003BA1E9 /* ShareItemView.swift */,
@@ -3674,6 +3694,17 @@
 				BCB0725825221494003E2F66 /* PreferencesManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		5EF3A0872F143F3600F85282 /* SharePreview */ = {
+			isa = PBXGroup;
+			children = (
+				5EF3A0862F143F3600F85282 /* SharePreviewView.swift */,
+				5EF3A0832F143F3600F85282 /* SharePreviewArchiveSelectorView.swift */,
+				5EF3A0842F143F3600F85282 /* SharePreviewGridView.swift */,
+				5EF3A0852F143F3600F85282 /* SharePreviewHeaderView.swift */,
+			);
+			path = SharePreview;
 			sourceTree = "<group>";
 		};
 		5EFC4048292D71CC00FD244B /* Remote */ = {
@@ -4072,6 +4103,7 @@
 		BC59BAAE25C2B7D6005A45D3 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				5EF3A08F2F1447F300F85282 /* SharePreviewHostingController.swift */,
 				BC59BAAF25C2B7D6005A45D3 /* SharePreviewViewController.swift */,
 			);
 			path = ViewControllers;
@@ -5288,6 +5320,7 @@
 				5E865D0D2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift in Sources */,
 				BC59BABC25C2B7D6005A45D3 /* FileLargeCollectionViewCell.swift in Sources */,
 				5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */,
+				5EF3A0962F15132B00F85282 /* SharePreviewSwiftUIViewModel.swift in Sources */,
 				F5BC105C278D991400595F94 /* PublicFilesViewModel.swift in Sources */,
 				F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */,
 				BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */,
@@ -5335,6 +5368,7 @@
 				5EA106E72E67177C0083B6A0 /* ShareLinkV2.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				5EEEA00F2E1E92CF00777E2C /* InviteCodeManager.swift in Sources */,
+				5EF3A0902F1447F300F85282 /* SharePreviewHostingController.swift in Sources */,
 				F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */,
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
@@ -5437,6 +5471,10 @@
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
 				F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */,
+				5EF3A0882F143F3700F85282 /* SharePreviewArchiveSelectorView.swift in Sources */,
+				5EF3A0892F143F3700F85282 /* SharePreviewGridView.swift in Sources */,
+				5EF3A08A2F143F3700F85282 /* SharePreviewView.swift in Sources */,
+				5EF3A08B2F143F3700F85282 /* SharePreviewHeaderView.swift in Sources */,
 				F50E135528F43359003DF4CC /* FilesRepository.swift in Sources */,
 				5E66240F27A97F4500D533CA /* MilestoneProfileItem.swift in Sources */,
 				5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */,
@@ -5604,6 +5642,7 @@
 			files = (
 				F559F87F28F9C0640015A522 /* FolderSortViewModelTests.swift in Sources */,
 				5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */,
+				5EA4EC062F15176E00D05FF2 /* SharePreviewViewModelTests.swift in Sources */,
 				5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */,
 				5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */,
 				F59C3B7F29C3146000337E45 /* AuthenticationManagerTests.swift in Sources */,
@@ -5614,6 +5653,7 @@
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
+				5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */,
 				5E991EE92A4AFB89006229C0 /* EnvVars.generated.swift in Sources */,
 				5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */,
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,

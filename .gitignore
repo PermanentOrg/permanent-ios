@@ -95,3 +95,6 @@ env-vars.sh
 
 # Build configuration files
 buildServer.json
+
+# Local documentation and context
+.docs-local/
