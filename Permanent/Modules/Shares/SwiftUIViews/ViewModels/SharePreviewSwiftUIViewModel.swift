@@ -23,8 +23,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var availableArchives: [ArchiveVOData] = []
     @Published var shareStatus: ShareStatus = .needsApproval
     @Published var shareLinkV2Data: ShareLinkV2Data?
-
-    // New flags & state for archive switching
     @Published var needsWorkspaceReload: Bool = false
     @Published var previousArchive: ArchiveVOData?
     @Published var originalArchiveNbr: String?
@@ -35,7 +33,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         case blurredPlaceholders
     }
     
-    // Sample placeholder items for blurred grid
     private static let placeholderItems: [SharePreviewItem] = [
         SharePreviewItem(id: "ph1", name: "Folder", thumbnailURL: nil, isFolder: true, type: .folder, placeholderImageName: "sharePreviewFolder"),
         SharePreviewItem(id: "ph2", name: "Photo", thumbnailURL: nil, isFolder: false, type: .image, placeholderImageName: "sharePreviewImageOne"),
@@ -52,48 +49,53 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     private var loadTask: Task<Void, Never>?
     
     var displayMode: ContentDisplayMode {
+        let isCreator = checkIfUserIsCreator()
+        if isCreator {
+            return .actualThumbnails
+        }
+        
         guard let v2Data = shareLinkV2Data else {
-            // Default to actual thumbnails if V2 data not loaded yet
             return .actualThumbnails
         }
         
         let accessRestrictions = v2Data.accessRestrictions ?? "none"
         let previewToggle = shareDataCache?.previewToggle ?? 1
-        let hasAccess = shareDataCache?.shareVO != nil
         
-        // Unrestricted shares always show actual thumbnails
         if accessRestrictions == "none" {
             return .actualThumbnails
         }
         
-        // Restricted shares: if preview is disabled, always show placeholders
-        // (backend returns fake placeholder items when previewToggle=0)
+        if let shareVO = shareDataCache?.shareVO,
+           let currentArchiveId = currentArchive?.archiveID,
+           shareVO.archiveID == currentArchiveId,
+           let status = shareVO.status?.lowercased(),
+           status.contains("ok") {
+            return .actualThumbnails
+        }
+        
         if previewToggle == 0 {
             return .blurredPlaceholders
         }
         
-        // Restricted shares with preview enabled: show actual thumbnails
         return .actualThumbnails
     }
 
-    // Navigation callbacks
     var onNavigateToFolder: ((NavigateMinParams) -> Void)?
     var onNavigateToShares: ((String) -> Void)?
+    var onNavigateToSharedWithMe: ((NavigateMinParams?) -> Void)?
+    var onNavigateToSharedByMe: (() -> Void)?
 
-    // MARK: - Init
     init(shareToken: String,
          repository: SharePreviewRepositoryProtocol = SharePreviewAPIService(),
          shareManagementRepository: ShareManagementRepository = ShareManagementRepository()) {
         self.shareToken = shareToken
         self.repository = repository
         self.shareManagementRepository = shareManagementRepository
-        // Don't auto-select archive - let user choose
         self.currentArchive = nil
     }
 
     // MARK: - Public
     func start() {
-        // Cancel previous task if any (ensures previous requests are cancelled when a new link is opened)
         loadTask?.cancel()
         loadTask = Task { [weak self] in
             guard let self = self else { return }
@@ -103,12 +105,10 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
 
     func selectArchive(_ archive: ArchiveVOData) {
-        // Early return if selecting the same archive
         guard archive.archiveNbr != currentArchive?.archiveNbr else {
             return
         }
         
-        // Immediate feedback: set currentArchive so UI updates instantly
         let didChange = true
         previousArchive = currentArchive
         currentArchive = archive
@@ -123,9 +123,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 case .success(let changed):
                     if changed {
                         self.needsWorkspaceReload = true
-                        // Post notification immediately after successful archive change
                         NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
-                        // Reload share data in the context of the newly selected archive
                         self.start()
                     } else {
                         self.errorMessage = "Failed to change archive"
@@ -144,42 +142,115 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
 
     @Published var showArchiveMismatchAlert: Bool = false
     @Published var shouldOpenArchivePicker: Bool = false
+    
+    enum ShareButtonState {
+        case open
+        case requestAccess
+        case accessRequested
+    }
+    
+    var buttonState: ShareButtonState {
+        let isCreator = checkIfUserIsCreator()
+        
+        if isCreator {
+            return .open
+        }
+        
+        let isUnrestricted = (shareLinkV2Data?.accessRestrictions ?? "none") == "none"
+        if isUnrestricted {
+            return .open
+        }
+        
+        if let shareVO = shareDataCache?.shareVO,
+           let currentArchiveId = currentArchive?.archiveID,
+           shareVO.archiveID == currentArchiveId {
+            let status = shareVO.status ?? ""
+            if status.contains("pending") {
+                return .accessRequested
+            } else if status.contains("ok") {
+                return .open
+            }
+        }
+        
+        return .requestAccess
+    }
+    
+    var buttonTitle: String {
+        switch buttonState {
+        case .open:
+            return "Open"
+        case .requestAccess:
+            return "Request Access"
+        case .accessRequested:
+            return "Access Requested"
+        }
+    }
+    
+    var isButtonDisabled: Bool {
+        return buttonState == .accessRequested
+    }
 
     func viewInArchive() {
+        let currentButtonState = buttonState
+        
+        switch currentButtonState {
+        case .open:
+            handleOpenAction()
+            
+        case .requestAccess:
+            handleRequestAccessAction()
+            
+        case .accessRequested:
+            break
+        }
+    }
+    
+    private func handleOpenAction() {
         let isShareCreator = checkIfUserIsCreator()
         
         if isShareCreator {
-            // If creator, ensure they have selected the original archive where the share was created
-            if let original = originalArchiveNbr, !original.isEmpty,
-               let current = currentArchive?.archiveNbr,
-               current != original {
-                // Prompt user to change archive
-                showArchiveMismatchAlert = true
-                return
-            }
-
-            // For share creators, navigate to folder location using stored params
-            if let callback = onNavigateToFolder,
-               let archiveNbr = currentArchive?.archiveNbr,
-               let folderLinkId = shareDataCache?.folderData?.folderLinkID {
-                let folderName = shareDataCache?.folderData?.displayName ?? shareName
-                callback((archiveNo: archiveNbr, folderLinkId: folderLinkId, folderName: folderName))
-            }
+            onNavigateToSharedByMe?()
         } else {
-            // For non-creators, navigate to Shared With Me tab
-            if let navigateToShares = onNavigateToShares,
-               let archiveNbr = currentArchive?.archiveNbr {
-                navigateToShares(archiveNbr)
+            navigateToFolder()
+        }
+    }
+    
+    private func handleRequestAccessAction() {
+        Task { @MainActor in
+            do {
+                let shareData = try await repository.requestShareAccess(shareToken: shareToken)
+                await loadShareData()
+                
+            } catch let error as NSError where error.code == 409 {
+                await loadShareData()
+            } catch {
+                errorMessage = "Unable to request access. Please try again."
             }
         }
     }
     
+    private func navigateToFolder() {
+        if let folderData = self.shareDataCache?.folderData,
+           let folderLinkId = folderData.folderLinkID,
+           let archiveNbr = self.currentArchive?.archiveNbr {
+            let params: NavigateMinParams = (archiveNo: archiveNbr, folderLinkId: folderLinkId, folderName: folderData.displayName)
+            self.onNavigateToSharedWithMe?(params)
+        } else if let navigateToShares = self.onNavigateToShares,
+                  let archiveNbr = self.currentArchive?.archiveNbr {
+            navigateToShares(archiveNbr)
+        }
+    }
+    
     private func checkIfUserIsCreator() -> Bool {
-        guard let shareCreatorEmail = shareDataCache?.accountVO?.primaryEmail,
-              let currentUserEmail = AuthenticationManager.shared.session?.account.primaryEmail else {
+        guard let shareCreatorAccountId = shareDataCache?.byAccountID,
+              let shareCreatorArchiveId = shareDataCache?.byArchiveID,
+              let currentUserAccountId = AuthenticationManager.shared.session?.account.accountID,
+              let currentArchiveId = currentArchive?.archiveID else {
             return false
         }
-        return shareCreatorEmail == currentUserEmail
+        
+        let isCreator = shareCreatorAccountId == currentUserAccountId && shareCreatorArchiveId == currentArchiveId
+        return isCreator
     }
     
     private func loadV2ShareLinkData(shareLinkId: Int) {
@@ -189,32 +260,88 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             Task { @MainActor in
                 if let v2Data = result {
                     self.shareLinkV2Data = v2Data
-                    // Re-extract files with updated display mode
-                    if let cachedData = self.shareDataCache {
-                        self.extractFiles(from: cachedData)
+                    
+                    let accessRestrictions = v2Data.accessRestrictions ?? "none"
+                    let isCreator = self.checkIfUserIsCreator()
+                    
+                    if isCreator || accessRestrictions == "none" || self.displayMode == .actualThumbnails {
+                        await self.loadV2FolderContent()
+                    } else {
+                        if let cachedData = self.shareDataCache {
+                            self.extractFiles(from: cachedData)
+                        }
                     }
                 }
-                // V2 data is supplementary - don't show error to user
+            }
+        }
+    }
+    
+    private func loadV2FolderContent() async {
+        guard let folderId = shareDataCache?.folderData?.folderID,
+              let _ = shareLinkV2Data else {
+            return
+        }
+        
+        do {
+            let children = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[FolderChildV2Data], Error>) in
+                let operation = APIOperation(FolderV2Endpoint.getFolderChildren(
+                    folderId: "\(folderId)",
+                    shareToken: shareToken,
+                    pageSize: 99999999
+                ))
+                operation.execute(in: APIRequestDispatcher()) { result in
+                    switch result {
+                    case .json(let response, _):
+                        guard let model: FolderChildrenV2Response = JSONHelper.decoding(
+                            from: response,
+                            with: FolderChildrenV2Response.decoder
+                        ) else {
+                            continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: nil))
+                            return
+                        }
+                        continuation.resume(returning: model.items ?? [])
+                    case .error(let error, _):
+                        continuation.resume(throwing: error ?? NSError(domain: "SharePreview", code: -1, userInfo: nil))
+                    default:
+                        continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: nil))
+                    }
+                }
+            }
+            
+            var extractedItems: [SharePreviewItem] = []
+            for (index, child) in children.enumerated() {
+                let uniqueID = child.itemId ?? "item_\(index)"
+                let item = SharePreviewItem(
+                    id: uniqueID,
+                    name: child.displayName ?? "",
+                    thumbnailURL: child.bestThumbnailURL,
+                    isFolder: child.isFolder,
+                    type: child.isFolder ? .folder : .image
+                )
+                extractedItems.append(item)
+            }
+            
+            items = extractedItems
+            
+        } catch {
+            if let cachedData = shareDataCache {
+                extractFiles(from: cachedData)
             }
         }
     }
 
     // MARK: - Private
     private func loadAvailableArchives() {
-        // Fetch all archives - don't auto-select any
         AuthenticationManager.shared.getAccountArchives { [weak self] result in
             guard let self = self else { return }
             
             Task { @MainActor in
                 switch result {
                 case .success(let archiveVOs):
-                    // Convert ArchiveVO to ArchiveVOData and filter out placeholders (e.g., 'create new')
                     self.availableArchives = archiveVOs.compactMap { $0.archiveVO }
                         .filter { $0.status == .ok && $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }
-                    // Don't auto-select - user must choose
                     
-                case .failure(let error):
-                    // If fetch fails, keep empty list
+                case .failure:
                     self.availableArchives = []
                 }
             }
@@ -222,7 +349,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
 
     func buildShareDetailsFromState() throws -> ShareDetails {
-        // Building ShareDetails is not supported in this simplified ViewModel - throw
         throw NSError(domain: "SharePreview", code: -1, userInfo: nil)
     }
 
@@ -234,10 +360,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             let shareByURL = try await repository.fetchSharePreview(shareToken: shareToken)
             await parseShareData(shareByURL)
             
-            // Clean up stored token after successful load
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.shareURLToken)
         } catch is CancellationError {
-            // User-initiated cancellation - silently ignore and ensure loading UI is cleared
             await MainActor.run {
                 self.errorMessage = nil
             }
@@ -262,79 +386,58 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
 
     private func parseShareData(_ shareByURL: SharebyURLVOData) async {
-        // Cache for later use
         shareDataCache = shareByURL
         
-        // Fetch V2 data for accessRestrictions
         if let sharebyURLID = shareByURL.sharebyURLID {
             loadV2ShareLinkData(shareLinkId: sharebyURLID)
         }
         
-        // Parse archive info
         if let archive = shareByURL.archiveVO?.fullName {
             archiveName = archive
-            // Store original archive metadata from share for validation if user is creator
             originalArchiveNbr = shareByURL.archiveVO?.archiveNbr
             cleanArchiveName = "The \(archive) Archive"
         }
         
-        // Parse creator info
         if let name = shareByURL.accountVO?.fullName {
             sharedByName = name
         }
         
-        // Parse archive thumbnail
         thumbnailURL = shareByURL.archiveVO?.thumbURL200
-        
-        // Parse shared item name
         shareName = shareByURL.recordData?.displayName ?? shareByURL.folderData?.displayName ?? ""
         
-        // Check if user is the share creator
         _ = checkIfUserIsCreator(shareByURL: shareByURL)
         
-        // Determine access status
-        let hasAccess = shareByURL.shareVO != nil
-        let autoApprove = shareByURL.autoApproveToggle == 1
-        
-        // Set initial status based on shareVO
         if let shareVO = shareByURL.shareVO {
             shareStatus = ShareStatus.status(forValue: shareVO.status)
         } else {
             shareStatus = .needsApproval
         }
         
-        // Always extract files - displayMode will determine if we show placeholders or actual content
         extractFiles(from: shareByURL)
-        
-        // Auto-approve flow: if auto-approve is enabled and user doesn't have access, request it automatically
-        if autoApprove && !hasAccess {
-            await requestShareAccessAutomatically()
-        }
     }
     
     private func checkIfUserIsCreator(shareByURL: SharebyURLVOData) -> Bool {
-        guard let shareCreatorEmail = shareByURL.accountVO?.primaryEmail,
-              let currentUserEmail = AuthenticationManager.shared.session?.account.primaryEmail else {
+        guard let shareCreatorAccountId = shareByURL.byAccountID,
+              let shareCreatorArchiveId = shareByURL.byArchiveID,
+              let currentUserAccountId = AuthenticationManager.shared.session?.account.accountID,
+              let currentArchiveId = currentArchive?.archiveID else {
             return false
         }
-        
-        return shareCreatorEmail == currentUserEmail
+        return shareCreatorAccountId == currentUserAccountId && shareCreatorArchiveId == currentArchiveId
     }
     
     private func extractFiles(from shareByURL: SharebyURLVOData) {
-        // Check if we should show placeholders
-        if displayMode == .blurredPlaceholders {
+        let mode = displayMode
+        if mode == .blurredPlaceholders {
             items = Self.placeholderItems
             return
         }
         
         var extractedItems: [SharePreviewItem] = []
         
-        // Extract from folder data (folder share)
         if let folderData = shareByURL.folderData,
            let children = folderData.childItemVOS {
             for (index, child) in children.enumerated() {
-                // Use folderLinkID if available, otherwise use index to ensure unique IDs
                 let uniqueID: String
                 if let linkID = child.folderLinkID, linkID != 0 {
                     uniqueID = "\(linkID)"
@@ -352,7 +455,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 extractedItems.append(item)
             }
         }
-        // Extract from record data (file share)
         else if let recordData = shareByURL.recordData {
             let item = SharePreviewItem(
                 id: "\(recordData.recordID ?? 0)",
@@ -365,16 +467,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         }
         
         items = extractedItems
-    }
-    
-    private func requestShareAccessAutomatically() async {
-        do {
-            let shareVO = try await repository.requestShareAccess(shareToken: shareToken)
-            shareStatus = ShareStatus.status(forValue: shareVO.status)
-        } catch {
-            // Silent fail for auto-approve - don't show error to user
-            // They can manually request access if needed
-        }
     }
 }
 
@@ -432,7 +524,6 @@ struct SharePreviewAPIService: SharePreviewRepositoryProtocol {
                         continuation.resume(returning: shareByURL)
                         
                     case .error(let error, _):
-                        // Map cancellation to CancellationError to allow Task cancellation propagation
                         if let nsErr = error as NSError?, nsErr.code == NSURLErrorCancelled {
                             continuation.resume(throwing: CancellationError())
                         } else {
@@ -461,8 +552,19 @@ struct SharePreviewAPIService: SharePreviewRepositoryProtocol {
                         guard let model: APIResults<ShareVO> = JSONHelper.decoding(
                             from: response,
                             with: APIResults<ShareVO>.decoder
-                        ),
-                              model.isSuccessful,
+                        ) else {
+                            continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to request access"]))
+                            return
+                        }
+                        
+                        if let firstResult = model.results.first,
+                           let message = firstResult.message.first,
+                           message.contains("already_exists") {
+                            continuation.resume(throwing: NSError(domain: "SharePreview", code: 409, userInfo: [NSLocalizedDescriptionKey: "Share already exists"]))
+                            return
+                        }
+                        
+                        guard model.isSuccessful,
                               let shareVO = model.results.first?.data?.first?.shareVO else {
                             continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to request access"]))
                             return

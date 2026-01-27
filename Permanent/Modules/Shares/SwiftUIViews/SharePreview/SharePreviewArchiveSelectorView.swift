@@ -13,6 +13,8 @@ struct SharePreviewArchiveSelectorView: View {
     let onSelect: (ArchiveVOData) -> Void
     let onViewInArchive: () -> Void
     let externalShowPicker: Binding<Bool>?
+    let buttonTitle: String
+    let isButtonDisabled: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -82,17 +84,20 @@ struct SharePreviewArchiveSelectorView: View {
             
             if currentArchive != nil {
                 Button(action: {
-                    onViewInArchive()
+                    if !isButtonDisabled {
+                        onViewInArchive()
+                    }
                 }) {
-                    Text("Open")
+                    Text(buttonTitle)
                         .font(.custom("Usual", size: 14))
                         .fontWeight(.medium)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
-                        .background(Color(red: 0.15, green: 0.18, blue: 0.35))
+                        .background(isButtonDisabled ? Color.gray.opacity(0.5) : Color(red: 0.15, green: 0.18, blue: 0.35))
                         .cornerRadius(12)
                 }
+                .disabled(isButtonDisabled)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 20)
             }
@@ -241,7 +246,15 @@ struct ArchivePickerView: View {
 
 struct SharePreviewArchiveSelectorView_Previews: PreviewProvider {
     static var previews: some View {
-        SharePreviewArchiveSelectorView(currentArchive: ArchiveVOData.mock(), availableArchives: [ArchiveVOData.mock()], onSelect: { _ in }, onViewInArchive: { }, externalShowPicker: .constant(false))
+        SharePreviewArchiveSelectorView(
+            currentArchive: ArchiveVOData.mock(),
+            availableArchives: [ArchiveVOData.mock()],
+            onSelect: { _ in },
+            onViewInArchive: { },
+            externalShowPicker: .constant(false),
+            buttonTitle: "Open",
+            isButtonDisabled: false
+        )
             .previewLayout(.sizeThatFits)
     }
 }

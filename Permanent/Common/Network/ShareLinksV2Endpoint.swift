@@ -23,6 +23,7 @@ enum ShareLinksV2Endpoint {
         expirationTimestamp: String? = nil
     )
     case getShareLink(shareLinkId: String)
+    case getShareLinkByToken(token: String)
     case deleteShareLink(shareLinkId: String)
 }
 
@@ -46,6 +47,8 @@ extension ShareLinksV2Endpoint: RequestProtocol {
             )
         case .getShareLink:
             return nil
+        case .getShareLinkByToken:
+            return nil
         case .deleteShareLink:
             return nil
         }
@@ -63,6 +66,8 @@ extension ShareLinksV2Endpoint: RequestProtocol {
             return .patch
         case .getShareLink:
             return .get
+        case .getShareLinkByToken:
+            return .get
         case .deleteShareLink:
             return .delete
         }
@@ -76,6 +81,8 @@ extension ShareLinksV2Endpoint: RequestProtocol {
             return ["content-type": "application/json; charset=utf-8"]
         case .getShareLink:
             return nil
+        case .getShareLinkByToken:
+            return ["Content-Type": "application/json", "Request-Version": "2"]
         case .deleteShareLink:
             return nil
         }
@@ -109,6 +116,8 @@ extension ShareLinksV2Endpoint: RequestProtocol {
             return "\(endpointPath)api/v2/share-links/\(shareLinkId)"
         case .getShareLink(let shareLinkId):
             return "\(endpointPath)api/v2/share-links?shareLinkIds[]=\(shareLinkId)"
+        case .getShareLinkByToken(let token):
+            return "\(endpointPath)api/v2/share-links?shareTokens[]=\(token)"
         case .deleteShareLink(let shareLinkId):
             return "\(endpointPath)api/v2/share-links/\(shareLinkId)"
         }

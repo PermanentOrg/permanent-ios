@@ -386,6 +386,10 @@
 		5EA106E72E67177C0083B6A0 /* ShareLinkV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */; };
 		5EA4EC062F15176E00D05FF2 /* SharePreviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3A0932F150F6300F85282 /* SharePreviewViewModelTests.swift */; };
 		5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */; };
+		5EA522D92F23CE16003072FB /* FolderV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA522D82F23CE16003072FB /* FolderV2Models.swift */; };
+		5EA522DA2F23CE16003072FB /* FolderV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA522D82F23CE16003072FB /* FolderV2Models.swift */; };
+		5EA522DC2F23CE33003072FB /* FolderV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */; };
+		5EA522DD2F23CE33003072FB /* FolderV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */; };
 		5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */; };
 		5EA70D8B2B2C78E200175D9C /* NewBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */; };
 		5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */; };
@@ -1373,6 +1377,8 @@
 		5EA106E22E65AA340083B6A0 /* ShareLinksV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinksV2Endpoint.swift; sourceTree = "<group>"; };
 		5EA106E52E67177C0083B6A0 /* ShareLinkV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkV2.swift; sourceTree = "<group>"; };
 		5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewSwiftUIViewModelTests.swift; sourceTree = "<group>"; };
+		5EA522D82F23CE16003072FB /* FolderV2Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderV2Models.swift; sourceTree = "<group>"; };
+		5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderV2Endpoint.swift; sourceTree = "<group>"; };
 		5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomButtonsSectionView.swift; sourceTree = "<group>"; };
 		5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBadgeView.swift; sourceTree = "<group>"; };
 		5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomListItemView.swift; sourceTree = "<group>"; };
@@ -3890,6 +3896,7 @@
 		BC1BDF18251355ED00F2D239 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */,
 				BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */,
 				BC326AAE2526195E00A69597 /* APIErrors.swift */,
 				BC6D3B592514F62400390927 /* AuthenticationEndpoint.swift */,
@@ -4001,6 +4008,7 @@
 		BC4526E3251CACAB00E24A51 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				5EA522D82F23CE16003072FB /* FolderV2Models.swift */,
 				5E7141432AFD25B2003952CD /* Billing */,
 				BC42EDBB25BB119B0031B965 /* Invitations */,
 				5ECBAF9F2A1B5F0200FACFDF /* LegacyPlanning */,
@@ -5027,6 +5035,7 @@
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				5E05D39E2CECDDB000CD9837 /* LoginSecurityViewModel.swift in Sources */,
 				F5E793D7294B5AB000CFCCA5 /* AuthTextField.swift in Sources */,
+				5EA522DA2F23CE16003072FB /* FolderV2Models.swift in Sources */,
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
 				5EE291B326F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
@@ -5530,6 +5539,7 @@
 				5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
 				5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */,
+				5EA522DD2F23CE33003072FB /* FolderV2Endpoint.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				5E1582BB2C5CD6CB00103EA8 /* OnboardingCreateFirstArchiveViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
@@ -5685,6 +5695,7 @@
 				F559F89628FEE9A50015A522 /* NavigateMinResponse.swift in Sources */,
 				F5ADBF3B290BBF900007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				5E4739DC2A4185A700A20D85 /* FilePreviewNavigationController.swift in Sources */,
+				5EA522D92F23CE16003072FB /* FolderV2Models.swift in Sources */,
 				F5ADBF36290ADB7C0007A516 /* ArchivesViewController.swift in Sources */,
 				5ED4B9C52876DF0E00CF044B /* ArchiveVO.swift in Sources */,
 				F559F89F28FEEAD50015A522 /* RelocateFolderPayload.swift in Sources */,
@@ -5860,6 +5871,7 @@
 				5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */,
 				5ED4B9D12876E03F00CF044B /* RecordVO.swift in Sources */,
 				5EA106E42E65AA350083B6A0 /* ShareLinksV2Endpoint.swift in Sources */,
+				5EA522DC2F23CE33003072FB /* FolderV2Endpoint.swift in Sources */,
 				925FF46D2D00688E000B44D4 /* EventsEndpoint.swift in Sources */,
 				5E1CCC19287EE4B900913EEA /* ShareExtensionNavigationController.swift in Sources */,
 				92E3FB5A2A176A5B00E9E5A6 /* LegacyArchiveCreateCell.swift in Sources */,

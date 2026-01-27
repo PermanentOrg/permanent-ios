@@ -12,10 +12,14 @@ struct SharePreviewView: View {
     
     init(shareToken: String,
          onNavigateToFolder: ((NavigateMinParams) -> Void)? = nil,
-         onNavigateToShares: ((String) -> Void)? = nil) {
+         onNavigateToShares: ((String) -> Void)? = nil,
+         onNavigateToSharedWithMe: ((NavigateMinParams?) -> Void)? = nil,
+         onNavigateToSharedByMe: (() -> Void)? = nil) {
         let vm = SharePreviewSwiftUIViewModel(shareToken: shareToken)
         vm.onNavigateToFolder = onNavigateToFolder
         vm.onNavigateToShares = onNavigateToShares
+        vm.onNavigateToSharedWithMe = onNavigateToSharedWithMe
+        vm.onNavigateToSharedByMe = onNavigateToSharedByMe
         _viewModel = StateObject(wrappedValue: vm)
     }
     
@@ -64,7 +68,9 @@ struct SharePreviewView: View {
                         availableArchives: viewModel.availableArchives,
                         onSelect: { archive in viewModel.selectArchive(archive) },
                         onViewInArchive: { viewModel.viewInArchive() },
-                        externalShowPicker: $viewModel.shouldOpenArchivePicker
+                        externalShowPicker: $viewModel.shouldOpenArchivePicker,
+                        buttonTitle: viewModel.buttonTitle,
+                        isButtonDisabled: viewModel.isButtonDisabled
                     )
                 }
             }
