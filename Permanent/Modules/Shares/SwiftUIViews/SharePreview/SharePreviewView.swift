@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SharePreviewView: View {
     @StateObject private var viewModel: SharePreviewSwiftUIViewModel
+    @Environment(\.presentationMode) var presentationMode
+    @State private var isDismissing = false
     
     init(shareToken: String,
          onNavigateToFolder: ((NavigateMinParams) -> Void)? = nil,
@@ -27,6 +29,18 @@ struct SharePreviewView: View {
         mainContent
             .navigationTitle(viewModel.shareName.isEmpty ? "Share Preview" : viewModel.shareName)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        handleBackAction()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
             .onAppear {
                 viewModel.start()
             }
@@ -98,6 +112,15 @@ struct SharePreviewView: View {
                 primaryButton: .default(Text("Change Archive"), action: { viewModel.shouldOpenArchivePicker = true }),
                 secondaryButton: .cancel()
             )
+        }
+    }
+    
+    private func handleBackAction() {
+        guard !isDismissing else { return }
+        isDismissing = true
+        
+        viewModel.restoreInitialArchive {
+            self.presentationMode.wrappedValue.dismiss()
         }
     }
     

@@ -28,6 +28,9 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var originalArchiveNbr: String?
     @Published var cleanArchiveName: String?
     
+    private var initialArchive: ArchiveVOData?
+    private var archiveBeforePreview: ArchiveVOData?
+    
     enum ContentDisplayMode {
         case actualThumbnails
         case blurredPlaceholders
@@ -47,37 +50,54 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     private let shareManagementRepository: ShareManagementRepository
     private var shareDataCache: SharebyURLVOData?
     private var loadTask: Task<Void, Never>?
+    private var hasLoadedRealThumbnails: Bool = false
     
-    var displayMode: ContentDisplayMode {
+    private func shouldShowActualThumbnails() -> Bool {
         let isCreator = checkIfUserIsCreator()
         if isCreator {
-            return .actualThumbnails
+            return true
         }
         
         guard let v2Data = shareLinkV2Data else {
-            return .actualThumbnails
+            return false
         }
         
         let accessRestrictions = v2Data.accessRestrictions ?? "none"
         let previewToggle = shareDataCache?.previewToggle ?? 1
         
         if accessRestrictions == "none" {
-            return .actualThumbnails
+            return true
         }
         
+        // Check if current archive has approved access
         if let shareVO = shareDataCache?.shareVO,
            let currentArchiveId = currentArchive?.archiveID,
            shareVO.archiveID == currentArchiveId,
            let status = shareVO.status?.lowercased(),
            status.contains("ok") {
-            return .actualThumbnails
+            // Archive has approved access - always show real thumbnails regardless of previewToggle
+            return true
         }
         
+        // Archive doesn't have access - check previewToggle to decide if preview is allowed
         if previewToggle == 0 {
+            return false
+        }
+
+        
+        // Archive doesn't have access and preview is disabled
+        if previewToggle == 0 {
+            return false
+        }
+        
+        return false
+    }
+    
+    var displayMode: ContentDisplayMode {
+        if !hasLoadedRealThumbnails {
             return .blurredPlaceholders
         }
-        
-        return .actualThumbnails
+        return shouldShowActualThumbnails() ? .actualThumbnails : .blurredPlaceholders
     }
 
     var onNavigateToFolder: ((NavigateMinParams) -> Void)?
@@ -96,6 +116,17 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
 
     // MARK: - Public
     func start() {
+        // Capture the archive user had before entering share preview
+        if archiveBeforePreview == nil {
+            archiveBeforePreview = AuthenticationManager.shared.session?.selectedArchive
+        }
+        
+        // For unrestricted (public) shares, keep thumbnails visible during archive switches
+        let isUnrestricted = (shareLinkV2Data?.accessRestrictions ?? "none") == "none"
+        if !isUnrestricted {
+            hasLoadedRealThumbnails = false
+        }
+        
         loadTask?.cancel()
         loadTask = Task { [weak self] in
             guard let self = self else { return }
@@ -211,11 +242,31 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         if isShareCreator {
             onNavigateToSharedByMe?()
         } else {
-            navigateToFolder()
+            // Add share to account before navigating
+            isLoading = true
+            errorMessage = nil
+            
+            Task { @MainActor in
+                do {
+                    _ = try await repository.requestShareAccess(shareToken: shareToken)
+                    self.isLoading = false
+                    self.navigateToFolder()
+                } catch let error as NSError where error.code == 409 {
+                    // Share already added to account
+                    self.isLoading = false
+                    self.navigateToFolder()
+                } catch {
+                    self.errorMessage = "Unable to open share. Please try again."
+                    self.isLoading = false
+                }
+            }
         }
     }
     
     private func handleRequestAccessAction() {
+        isLoading = true
+        errorMessage = nil
+        
         Task { @MainActor in
             do {
                 let shareData = try await repository.requestShareAccess(shareToken: shareToken)
@@ -225,6 +276,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 await loadShareData()
             } catch {
                 errorMessage = "Unable to request access. Please try again."
+                isLoading = false
             }
         }
     }
@@ -264,14 +316,19 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                     let accessRestrictions = v2Data.accessRestrictions ?? "none"
                     let isCreator = self.checkIfUserIsCreator()
                     
-                    if isCreator || accessRestrictions == "none" || self.displayMode == .actualThumbnails {
+                    if (isCreator || accessRestrictions == "none" || self.shouldShowActualThumbnails()) {
                         await self.loadV2FolderContent()
                     } else {
                         if let cachedData = self.shareDataCache {
                             self.extractFiles(from: cachedData)
                         }
                     }
+                } else {
+                    if let cachedData = self.shareDataCache {
+                        self.extractFiles(from: cachedData)
+                    }
                 }
+                self.isLoading = false
             }
         }
     }
@@ -322,6 +379,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             }
             
             items = extractedItems
+            hasLoadedRealThumbnails = true
             
         } catch {
             if let cachedData = shareDataCache {
@@ -367,9 +425,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             }
         } catch {
             errorMessage = error.localizedDescription
+            isLoading = false
         }
-
-        isLoading = false
     }
     
     func cancelLoadingTask() {
@@ -378,6 +435,43 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         Task { @MainActor in
             self.isLoading = false
             self.errorMessage = nil
+        }
+    }
+    
+    func restoreInitialArchive(completion: @escaping () -> Void) {
+        guard let archiveToRestore = archiveBeforePreview,
+              let current = currentArchive,
+              archiveToRestore.archiveNbr != current.archiveNbr else {
+            completion()
+            return
+        }
+        
+        isLoading = true
+        
+        AuthenticationManager.shared.changeArchive(archiveToRestore) { [weak self] result in
+            Task { @MainActor in
+                guard let self = self else { 
+                    completion()
+                    return 
+                }
+                
+                switch result {
+                case .success(let changed):
+                    if changed {
+                        NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
+                    }
+                    
+                    // Wait for workspace to reload before dismissing to avoid showing loading state in background
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        self.isLoading = false
+                        completion()
+                    }
+                    
+                case .failure:
+                    self.isLoading = false
+                    completion()
+                }
+            }
         }
     }
     
@@ -412,8 +506,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         } else {
             shareStatus = .needsApproval
         }
-        
-        extractFiles(from: shareByURL)
     }
     
     private func checkIfUserIsCreator(shareByURL: SharebyURLVOData) -> Bool {
@@ -427,8 +519,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
     
     private func extractFiles(from shareByURL: SharebyURLVOData) {
-        let mode = displayMode
-        if mode == .blurredPlaceholders {
+        if !shouldShowActualThumbnails() {
             items = Self.placeholderItems
             return
         }
@@ -467,6 +558,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         }
         
         items = extractedItems
+        hasLoadedRealThumbnails = true
     }
 }
 

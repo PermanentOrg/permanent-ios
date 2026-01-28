@@ -30,7 +30,7 @@ struct SharePreviewArchiveSelectorView: View {
                             } placeholder: {
                                 Color.gray.opacity(0.3)
                             }
-                            .frame(width: 48, height: 48)
+                            .frame(width: 40, height: 40)
                             .cornerRadius(8)
                         } else {
                             Image(systemName: "archivebox.fill")
@@ -48,6 +48,7 @@ struct SharePreviewArchiveSelectorView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text("VIEW SHARED ITEMS IN")
+                            .lineLimit(1)
                             .font(.custom("Usual", size: 10))
                             .foregroundColor(.blue600)
                             .kerning(1.6)
