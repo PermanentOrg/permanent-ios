@@ -11,6 +11,7 @@ struct SharePreviewView: View {
     @StateObject private var viewModel: SharePreviewSwiftUIViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var isDismissing = false
+    @State private var animatedShowBanner = false
     
     init(shareToken: String,
          onNavigateToFolder: ((NavigateMinParams) -> Void)? = nil,
@@ -85,8 +86,17 @@ struct SharePreviewView: View {
                         externalShowPicker: $viewModel.shouldOpenArchivePicker,
                         buttonTitle: viewModel.buttonTitle,
                         isButtonDisabled: viewModel.isButtonDisabled,
-                        showButton: viewModel.hasCompletedInitialLoad
+                        showButton: viewModel.hasCompletedInitialLoad,
+                        showOriginalArchiveBanner: animatedShowBanner
                     )
+                    .onChange(of: viewModel.isOriginalArchiveSelected) { newValue in
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            animatedShowBanner = newValue
+                        }
+                    }
+                    .onAppear {
+                        animatedShowBanner = viewModel.isOriginalArchiveSelected
+                    }
                 }
             }
             

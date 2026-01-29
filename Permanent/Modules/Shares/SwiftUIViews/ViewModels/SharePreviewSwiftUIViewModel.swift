@@ -233,6 +233,14 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     var isButtonDisabled: Bool {
         return currentButtonState == .accessRequested
     }
+    
+    var isOriginalArchiveSelected: Bool {
+        guard let originalNbr = originalArchiveNbr,
+              let currentNbr = displayedArchive?.archiveNbr else {
+            return false
+        }
+        return originalNbr == currentNbr
+    }
 
     func viewInArchive() {
         let currentState = currentButtonState
