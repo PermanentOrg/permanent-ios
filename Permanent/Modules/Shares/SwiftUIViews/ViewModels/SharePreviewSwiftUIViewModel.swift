@@ -20,6 +20,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var thumbnailURL: String?
     @Published var items: [SharePreviewItem] = []
     @Published var currentArchive: ArchiveVOData?
+    @Published var displayedArchive: ArchiveVOData?  // Archive shown in UI
     @Published var availableArchives: [ArchiveVOData] = []
     @Published var shareStatus: ShareStatus = .needsApproval
     @Published var shareLinkV2Data: ShareLinkV2Data?
@@ -27,9 +28,11 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var previousArchive: ArchiveVOData?
     @Published var originalArchiveNbr: String?
     @Published var cleanArchiveName: String?
+    @Published var hasCompletedInitialLoad: Bool = false
     
     private var initialArchive: ArchiveVOData?
     private var archiveBeforePreview: ArchiveVOData?
+    private var pendingArchive: ArchiveVOData?  // Archive being switched to during loading
     
     enum ContentDisplayMode {
         case actualThumbnails
@@ -142,7 +145,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         
         let didChange = true
         previousArchive = currentArchive
-        currentArchive = archive
+        currentArchive = archive  // Update immediately for business logic
+        pendingArchive = archive  // Store for UI update after parsing
         errorMessage = nil
         isLoading = true
 
@@ -156,17 +160,20 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                         self.needsWorkspaceReload = true
                         NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
                         self.start()
+                        // Don't set isLoading = false here, let loadShareData() handle it
                     } else {
                         self.errorMessage = "Failed to change archive"
                         self.currentArchive = self.previousArchive
+                        self.pendingArchive = nil
+                        self.isLoading = false
                     }
 
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                     self.currentArchive = self.previousArchive
+                    self.pendingArchive = nil
+                    self.isLoading = false
                 }
-
-                self.isLoading = false
             }
         }
     }
@@ -180,7 +187,9 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         case accessRequested
     }
     
-    var buttonState: ShareButtonState {
+    @Published private(set) var currentButtonState: ShareButtonState = .requestAccess
+    
+    private var computedButtonState: ShareButtonState {
         let isCreator = checkIfUserIsCreator()
         
         if isCreator {
@@ -206,8 +215,12 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         return .requestAccess
     }
     
+    var buttonState: ShareButtonState {
+        return currentButtonState
+    }
+    
     var buttonTitle: String {
-        switch buttonState {
+        switch currentButtonState {
         case .open:
             return "Open"
         case .requestAccess:
@@ -218,13 +231,13 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
     
     var isButtonDisabled: Bool {
-        return buttonState == .accessRequested
+        return currentButtonState == .accessRequested
     }
 
     func viewInArchive() {
-        let currentButtonState = buttonState
+        let currentState = currentButtonState
         
-        switch currentButtonState {
+        switch currentState {
         case .open:
             handleOpenAction()
             
@@ -317,7 +330,15 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                     let isCreator = self.checkIfUserIsCreator()
                     
                     if (isCreator || accessRestrictions == "none" || self.shouldShowActualThumbnails()) {
-                        await self.loadV2FolderContent()
+                        // Check if it's a folder or record share
+                        if self.shareDataCache?.folderData != nil {
+                            await self.loadV2FolderContent()
+                        } else if self.shareDataCache?.recordData != nil {
+                            // For record shares, just extract the record data
+                            if let cachedData = self.shareDataCache {
+                                self.extractFiles(from: cachedData)
+                            }
+                        }
                     } else {
                         if let cachedData = self.shareDataCache {
                             self.extractFiles(from: cachedData)
@@ -486,18 +507,26 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             loadV2ShareLinkData(shareLinkId: sharebyURLID)
         }
         
+        // Store temporary values
+        var tempArchiveName = ""
+        var tempCleanArchiveName = ""
+        var tempThumbnailURL: String?
+        var tempShareName = ""
+        var tempSharedByName = ""
+        var tempOriginalArchiveNbr: String?
+        
         if let archive = shareByURL.archiveVO?.fullName {
-            archiveName = archive
-            originalArchiveNbr = shareByURL.archiveVO?.archiveNbr
-            cleanArchiveName = "The \(archive) Archive"
+            tempArchiveName = archive
+            tempOriginalArchiveNbr = shareByURL.archiveVO?.archiveNbr
+            tempCleanArchiveName = "The \(archive) Archive"
         }
         
         if let name = shareByURL.accountVO?.fullName {
-            sharedByName = name
+            tempSharedByName = name
         }
         
-        thumbnailURL = shareByURL.archiveVO?.thumbURL200
-        shareName = shareByURL.recordData?.displayName ?? shareByURL.folderData?.displayName ?? ""
+        tempThumbnailURL = shareByURL.archiveVO?.thumbURL200
+        tempShareName = shareByURL.recordData?.displayName ?? shareByURL.folderData?.displayName ?? ""
         
         _ = checkIfUserIsCreator(shareByURL: shareByURL)
         
@@ -506,6 +535,32 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         } else {
             shareStatus = .needsApproval
         }
+        
+        hasCompletedInitialLoad = true
+        
+        // Update visual properties at once after parsing is complete
+        // Only update these if we have pending archive (meaning we're switching archives)
+        if pendingArchive != nil {
+            archiveName = tempArchiveName
+            cleanArchiveName = tempCleanArchiveName
+            thumbnailURL = tempThumbnailURL
+            shareName = tempShareName
+            sharedByName = tempSharedByName
+            originalArchiveNbr = tempOriginalArchiveNbr
+            displayedArchive = pendingArchive  // Update displayed archive
+            pendingArchive = nil
+        } else {
+            // Initial load - update everything immediately
+            archiveName = tempArchiveName
+            cleanArchiveName = tempCleanArchiveName
+            thumbnailURL = tempThumbnailURL
+            shareName = tempShareName
+            sharedByName = tempSharedByName
+            originalArchiveNbr = tempOriginalArchiveNbr
+            displayedArchive = currentArchive  // Set initial displayed archive
+        }
+        
+        currentButtonState = computedButtonState
     }
     
     private func checkIfUserIsCreator(shareByURL: SharebyURLVOData) -> Bool {

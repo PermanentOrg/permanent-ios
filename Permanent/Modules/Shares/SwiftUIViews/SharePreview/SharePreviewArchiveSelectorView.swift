@@ -15,6 +15,21 @@ struct SharePreviewArchiveSelectorView: View {
     let externalShowPicker: Binding<Bool>?
     let buttonTitle: String
     let isButtonDisabled: Bool
+    let showButton: Bool
+    
+    private var buttonBackgroundColor: Color {
+        if buttonTitle == "Access Requested" {
+            return Color.clear
+        }
+        return buttonTitle == "Request Access" ? Color.success500 : Color(red: 0.15, green: 0.18, blue: 0.35)
+    }
+    
+    private var buttonTextColor: Color {
+        if buttonTitle == "Access Requested" {
+            return Color.success500
+        }
+        return Color.white
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -83,26 +98,39 @@ struct SharePreviewArchiveSelectorView: View {
             }
             .buttonStyle(PlainButtonStyle())
             
-            if currentArchive != nil {
+            if currentArchive != nil && showButton {
                 Button(action: {
                     if !isButtonDisabled {
                         onViewInArchive()
                     }
                 }) {
-                    Text(buttonTitle)
-                        .font(.custom("Usual", size: 14))
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(isButtonDisabled ? Color.gray.opacity(0.5) : Color(red: 0.15, green: 0.18, blue: 0.35))
-                        .cornerRadius(12)
+                    HStack(spacing: 8) {
+                        Text(buttonTitle)
+                            .font(.custom("Usual", size: 14))
+                            .fontWeight(.medium)
+                        
+                        if buttonTitle == "Access Requested" {
+                            Image(systemName: "checkmark")
+                                .font(.custom("Usual", size: 14))
+                                .fontWeight(.medium)
+                        }
+                    }
+                    .foregroundColor(buttonTextColor)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(buttonBackgroundColor)
+                    .cornerRadius(12)
                 }
+                .buttonStyle(SharePreviewButtonStyle())
                 .disabled(isButtonDisabled)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 20)
+                .id(buttonTitle)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: buttonTitle)
+        .animation(.easeInOut(duration: 0.3), value: showButton)
         .background(Color.white)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: -5)
@@ -245,6 +273,14 @@ struct ArchivePickerView: View {
     }
 }
 
+// Custom button style to prevent white flash on press
+struct SharePreviewButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+    }
+}
+
 struct SharePreviewArchiveSelectorView_Previews: PreviewProvider {
     static var previews: some View {
         SharePreviewArchiveSelectorView(
@@ -254,7 +290,8 @@ struct SharePreviewArchiveSelectorView_Previews: PreviewProvider {
             onViewInArchive: { },
             externalShowPicker: .constant(false),
             buttonTitle: "Open",
-            isButtonDisabled: false
+            isButtonDisabled: false,
+            showButton: true
         )
             .previewLayout(.sizeThatFits)
     }

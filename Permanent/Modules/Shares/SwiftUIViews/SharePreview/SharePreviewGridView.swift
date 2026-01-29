@@ -60,7 +60,17 @@ struct SharePreviewGridView: View {
             let tallHeight = columnWidth * 2 + itemSpacing
             let arrangedItems = arrangeItems(items)
             
-            VStack(spacing: itemSpacing) {
+            // Single record - show as large 2x2 grid item
+            if items.count == 1 && !items[0].isFolder {
+                let bigItemSize = availableWidth
+                VStack {
+                    ImageItemView(item: items[0], width: bigItemSize, height: bigItemSize, isBlurred: isBlurred)
+                    Spacer()
+                }
+                .padding(.horizontal, lateralPadding)
+            } else {
+                // Multiple items or folder - use regular grid layout
+                VStack(spacing: itemSpacing) {
                 // Pattern repeats every 4 items: square + tall, square, full width
                 ForEach(0..<((arrangedItems.count + 3) / 4), id: \.self) { cycleIndex in
                     let baseIndex = cycleIndex * 4
@@ -109,6 +119,7 @@ struct SharePreviewGridView: View {
             }
             .padding(.horizontal, lateralPadding)
             .padding(.top, 8)
+            }
         }
     }
 }

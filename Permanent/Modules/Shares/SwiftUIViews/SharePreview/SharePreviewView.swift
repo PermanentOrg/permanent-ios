@@ -78,13 +78,14 @@ struct SharePreviewView: View {
                     .disabled(viewModel.displayMode == .blurredPlaceholders)
                     
                     SharePreviewArchiveSelectorView(
-                        currentArchive: viewModel.currentArchive,
+                        currentArchive: viewModel.displayedArchive,
                         availableArchives: viewModel.availableArchives,
                         onSelect: { archive in viewModel.selectArchive(archive) },
                         onViewInArchive: { viewModel.viewInArchive() },
                         externalShowPicker: $viewModel.shouldOpenArchivePicker,
                         buttonTitle: viewModel.buttonTitle,
-                        isButtonDisabled: viewModel.isButtonDisabled
+                        isButtonDisabled: viewModel.isButtonDisabled,
+                        showButton: viewModel.hasCompletedInitialLoad
                     )
                 }
             }
