@@ -9,13 +9,19 @@ import SwiftUI
 
 struct SharePreviewView: View {
     @StateObject private var viewModel: SharePreviewSwiftUIViewModel
+    @Environment(\.presentationMode) var presentationMode
+    @State private var isDismissing = false
     
     init(shareToken: String,
          onNavigateToFolder: ((NavigateMinParams) -> Void)? = nil,
-         onNavigateToShares: ((String) -> Void)? = nil) {
+         onNavigateToShares: ((String) -> Void)? = nil,
+         onNavigateToSharedWithMe: ((NavigateMinParams?) -> Void)? = nil,
+         onNavigateToSharedByMe: (() -> Void)? = nil) {
         let vm = SharePreviewSwiftUIViewModel(shareToken: shareToken)
         vm.onNavigateToFolder = onNavigateToFolder
         vm.onNavigateToShares = onNavigateToShares
+        vm.onNavigateToSharedWithMe = onNavigateToSharedWithMe
+        vm.onNavigateToSharedByMe = onNavigateToSharedByMe
         _viewModel = StateObject(wrappedValue: vm)
     }
     
@@ -23,6 +29,18 @@ struct SharePreviewView: View {
         mainContent
             .navigationTitle(viewModel.shareName.isEmpty ? "Share Preview" : viewModel.shareName)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        handleBackAction()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
             .onAppear {
                 viewModel.start()
             }
@@ -60,11 +78,14 @@ struct SharePreviewView: View {
                     .disabled(viewModel.displayMode == .blurredPlaceholders)
                     
                     SharePreviewArchiveSelectorView(
-                        currentArchive: viewModel.currentArchive,
+                        currentArchive: viewModel.displayedArchive,
                         availableArchives: viewModel.availableArchives,
                         onSelect: { archive in viewModel.selectArchive(archive) },
                         onViewInArchive: { viewModel.viewInArchive() },
-                        externalShowPicker: $viewModel.shouldOpenArchivePicker
+                        externalShowPicker: $viewModel.shouldOpenArchivePicker,
+                        buttonTitle: viewModel.buttonTitle,
+                        isButtonDisabled: viewModel.isButtonDisabled,
+                        showButton: viewModel.hasCompletedInitialLoad
                     )
                 }
             }
@@ -92,6 +113,15 @@ struct SharePreviewView: View {
                 primaryButton: .default(Text("Change Archive"), action: { viewModel.shouldOpenArchivePicker = true }),
                 secondaryButton: .cancel()
             )
+        }
+    }
+    
+    private func handleBackAction() {
+        guard !isDismissing else { return }
+        isDismissing = true
+        
+        viewModel.restoreInitialArchive {
+            self.presentationMode.wrappedValue.dismiss()
         }
     }
     

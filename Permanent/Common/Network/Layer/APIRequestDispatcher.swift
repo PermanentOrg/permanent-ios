@@ -59,6 +59,11 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         
+        // Share token header for V2 folder endpoints
+        if let shareToken = request.shareToken {
+            urlRequest.setValue(shareToken, forHTTPHeaderField: "X-Permanent-Share-Token")
+        }
+        
         NetworkLogger.log(request: urlRequest)
         
         let shouldIgnoreErrors = request.ignoreErrors

@@ -63,6 +63,7 @@ protocol RequestProtocol {
     
     var customURL: String? { get }
     var ignoreErrors: Bool { get }
+    var shareToken: String? { get }
 }
 
 extension RequestProtocol {
@@ -146,5 +147,9 @@ extension RequestProtocol {
     
     var ignoreErrors: Bool {
         return false
+    }
+    
+    var shareToken: String? {
+        return nil
     }
 }

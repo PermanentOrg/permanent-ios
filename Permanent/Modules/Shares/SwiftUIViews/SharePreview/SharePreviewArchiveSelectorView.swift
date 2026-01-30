@@ -13,6 +13,23 @@ struct SharePreviewArchiveSelectorView: View {
     let onSelect: (ArchiveVOData) -> Void
     let onViewInArchive: () -> Void
     let externalShowPicker: Binding<Bool>?
+    let buttonTitle: String
+    let isButtonDisabled: Bool
+    let showButton: Bool
+    
+    private var buttonBackgroundColor: Color {
+        if buttonTitle == "Access Requested" {
+            return Color.clear
+        }
+        return buttonTitle == "Request Access" ? Color.success500 : Color(red: 0.15, green: 0.18, blue: 0.35)
+    }
+    
+    private var buttonTextColor: Color {
+        if buttonTitle == "Access Requested" {
+            return Color.success500
+        }
+        return Color.white
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -28,7 +45,7 @@ struct SharePreviewArchiveSelectorView: View {
                             } placeholder: {
                                 Color.gray.opacity(0.3)
                             }
-                            .frame(width: 48, height: 48)
+                            .frame(width: 40, height: 40)
                             .cornerRadius(8)
                         } else {
                             Image(systemName: "archivebox.fill")
@@ -46,6 +63,7 @@ struct SharePreviewArchiveSelectorView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text("VIEW SHARED ITEMS IN")
+                            .lineLimit(1)
                             .font(.custom("Usual", size: 10))
                             .foregroundColor(.blue600)
                             .kerning(1.6)
@@ -80,23 +98,39 @@ struct SharePreviewArchiveSelectorView: View {
             }
             .buttonStyle(PlainButtonStyle())
             
-            if currentArchive != nil {
+            if currentArchive != nil && showButton {
                 Button(action: {
-                    onViewInArchive()
+                    if !isButtonDisabled {
+                        onViewInArchive()
+                    }
                 }) {
-                    Text("Open")
-                        .font(.custom("Usual", size: 14))
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(Color(red: 0.15, green: 0.18, blue: 0.35))
-                        .cornerRadius(12)
+                    HStack(spacing: 8) {
+                        Text(buttonTitle)
+                            .font(.custom("Usual", size: 14))
+                            .fontWeight(.medium)
+                        
+                        if buttonTitle == "Access Requested" {
+                            Image(systemName: "checkmark")
+                                .font(.custom("Usual", size: 14))
+                                .fontWeight(.medium)
+                        }
+                    }
+                    .foregroundColor(buttonTextColor)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(buttonBackgroundColor)
+                    .cornerRadius(12)
                 }
+                .buttonStyle(SharePreviewButtonStyle())
+                .disabled(isButtonDisabled)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 20)
+                .id(buttonTitle)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: buttonTitle)
+        .animation(.easeInOut(duration: 0.3), value: showButton)
         .background(Color.white)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: -5)
@@ -239,9 +273,26 @@ struct ArchivePickerView: View {
     }
 }
 
+// Custom button style to prevent white flash on press
+struct SharePreviewButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+    }
+}
+
 struct SharePreviewArchiveSelectorView_Previews: PreviewProvider {
     static var previews: some View {
-        SharePreviewArchiveSelectorView(currentArchive: ArchiveVOData.mock(), availableArchives: [ArchiveVOData.mock()], onSelect: { _ in }, onViewInArchive: { }, externalShowPicker: .constant(false))
+        SharePreviewArchiveSelectorView(
+            currentArchive: ArchiveVOData.mock(),
+            availableArchives: [ArchiveVOData.mock()],
+            onSelect: { _ in },
+            onViewInArchive: { },
+            externalShowPicker: .constant(false),
+            buttonTitle: "Open",
+            isButtonDisabled: false,
+            showButton: true
+        )
             .previewLayout(.sizeThatFits)
     }
 }

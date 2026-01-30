@@ -24,7 +24,7 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
     init(shareToken: String) {
         self.shareToken = shareToken
         
-        // Create SwiftUI view with navigation callbacks
+        // Create SwiftUI view with navigation callbacks that will be set later
         let rootView = SharePreviewView(
             shareToken: shareToken,
             onNavigateToFolder: nil,  // Will be wired up after properties are set
@@ -51,7 +51,38 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
                 sharesVC.sharedFolderArchiveNo = archiveNbr
                 sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
                 
-                self?.navigationController?.popViewController(animated: true)
+                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+            },
+            onNavigateToSharedWithMe: { [weak self] params in
+                guard let self = self else { return }
+                
+                guard let sharesVC = UIViewController.create(
+                    withIdentifier: .shares,
+                    from: .share
+                ) as? SharesViewController else { return }
+                
+                sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+                
+                // If params provided, navigate into the folder
+                if let params = params {
+                    sharesVC.sharedFolderArchiveNo = params.archiveNo
+                    sharesVC.sharedFolderLinkId = params.folderLinkId
+                    sharesVC.sharedFolderName = params.folderName ?? "Shared Folder"
+                    sharesVC.fileType = .sharedFolder // Set fileType to trigger folder navigation
+                }
+                
+                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+            },
+            onNavigateToSharedByMe: { [weak self] in
+                guard let self = self else { return }
+                
+                guard let sharesVC = UIViewController.create(
+                    withIdentifier: .shares,
+                    from: .share
+                ) as? SharesViewController else { return }
+                
+                sharesVC.selectedIndex = ShareListType.sharedByMe.rawValue
+                
                 AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
             }
         )

@@ -334,43 +334,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func dismissPresentedViewsAndNavigate(to viewController: UIViewController) {
-        // If the root is a DrawerViewController, update its navigation stack to remove any
-        // existing SharePreviewHostingController instances so we don't stack multiple share previews.
-        if let drawer = rootViewController.current as? DrawerViewController {
-            let nav = drawer.rootViewController
-            let filteredStack = nav.viewControllers.filter { !($0 is SharePreviewHostingController) }
-            var newStack = filteredStack
-            newStack.append(viewController)
-            // Replace the stack without animation so the previous share preview is removed immediately
-            nav.setViewControllers(newStack, animated: false)
-            return
-        }
-
-        // Otherwise fall back to dismissing presented (modal) view controllers if present
+        // First, dismiss any presented modal view controllers (like SwiftUI sheets)
         var topMostPresentedVC: UIViewController = rootViewController
         while let presentedVC = topMostPresentedVC.presentedViewController {
             topMostPresentedVC = presentedVC
         }
-
-        // If we found any presented view controllers, dismiss from the root
+        
+        // If there are presented view controllers, dismiss them first
         if topMostPresentedVC != rootViewController {
-            let isSharePreview = topMostPresentedVC is SharePreviewHostingController ||
-                (topMostPresentedVC as? UINavigationController)?.topViewController is SharePreviewHostingController
-
-            if isSharePreview {
-                // Dismiss faster (no animation) for quick sequential navigation between share previews
-                rootViewController.dismiss(animated: false) { [weak self] in
-                    self?.rootViewController.navigateTo(viewController: viewController)
-                }
-            } else {
-                rootViewController.dismiss(animated: true) { [weak self] in
-                    self?.rootViewController.navigateTo(viewController: viewController)
-                }
+            rootViewController.dismiss(animated: false) { [weak self] in
+                self?.navigateAfterDismissal(to: viewController)
             }
         } else {
-            // No presented view controllers and no special nav case, navigate directly
-            rootViewController.navigateTo(viewController: viewController)
+            navigateAfterDismissal(to: viewController)
         }
+    }
+    
+    private func navigateAfterDismissal(to viewController: UIViewController) {
+        // If the root is a DrawerViewController, update its navigation stack to remove any
+        // existing SharePreviewHostingController instances and other SwiftUI views
+        if let drawer = rootViewController.current as? DrawerViewController {
+            let nav = drawer.rootViewController
+            
+            // Filter out SharePreviewHostingController and other UIHostingControllers (SwiftUI views)
+            let filteredStack = nav.viewControllers.filter { vc in
+                // Keep only non-SwiftUI view controllers (like MainViewController, FilesViewController, etc.)
+                let isSharePreview = vc is SharePreviewHostingController
+                let isHostingController = String(describing: type(of: vc)).contains("UIHostingController")
+                return !isSharePreview && !isHostingController
+            }
+            
+            var newStack = filteredStack
+            newStack.append(viewController)
+            // Replace the stack without animation so any SwiftUI views are removed immediately
+            nav.setViewControllers(newStack, animated: false)
+            return
+        }
+
+        // Otherwise navigate directly
+        rootViewController.navigateTo(viewController: viewController)
     }
     
     fileprivate func navigateToFolder(params: NavigateMinParams) {
