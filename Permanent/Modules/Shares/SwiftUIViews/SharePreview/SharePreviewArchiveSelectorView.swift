@@ -102,7 +102,7 @@ struct SharePreviewArchiveSelectorView: View {
             
             // Original archive banner with animated height
             if showOriginalArchiveBanner {
-                Text("The shared item belongs here.")
+                Text("Shared from this archive.")
                     .font(.custom("Usual", size: 12))
                     .foregroundColor(.warning600)
                     .padding(8)

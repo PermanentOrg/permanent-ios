@@ -106,7 +106,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     var onNavigateToFolder: ((NavigateMinParams) -> Void)?
     var onNavigateToShares: ((String) -> Void)?
     var onNavigateToSharedWithMe: ((NavigateMinParams?) -> Void)?
-    var onNavigateToSharedByMe: (() -> Void)?
+    var onNavigateToSharedByMe: ((NavigateMinParams?) -> Void)?
 
     init(shareToken: String,
          repository: SharePreviewRepositoryProtocol = SharePreviewAPIService(),
@@ -261,7 +261,16 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         let isShareCreator = checkIfUserIsCreator()
         
         if isShareCreator {
-            onNavigateToSharedByMe?()
+            // For creators, navigate to the folder in Shared by Me section
+            if let folderData = shareDataCache?.folderData,
+               let folderLinkId = folderData.folderLinkID,
+               let archiveNbr = currentArchive?.archiveNbr {
+                let params: NavigateMinParams = (archiveNo: archiveNbr, folderLinkId: folderLinkId, folderName: folderData.displayName)
+                onNavigateToSharedByMe?(params)
+            } else {
+                // For non-folder shares or when folder data is missing, go to shared by me
+                onNavigateToSharedByMe?(nil)
+            }
         } else {
             // Add share to account before navigating
             isLoading = true

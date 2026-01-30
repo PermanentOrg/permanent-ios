@@ -73,7 +73,7 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
                 
                 AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
             },
-            onNavigateToSharedByMe: { [weak self] in
+            onNavigateToSharedByMe: { [weak self] params in
                 guard let self = self else { return }
                 
                 guard let sharesVC = UIViewController.create(
@@ -82,6 +82,14 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
                 ) as? SharesViewController else { return }
                 
                 sharesVC.selectedIndex = ShareListType.sharedByMe.rawValue
+                
+                // If params provided, navigate into the folder
+                if let params = params {
+                    sharesVC.sharedFolderArchiveNo = params.archiveNo
+                    sharesVC.sharedFolderLinkId = params.folderLinkId
+                    sharesVC.sharedFolderName = params.folderName ?? "Shared Folder"
+                    sharesVC.fileType = .sharedFolder // Set fileType to trigger folder navigation
+                }
                 
                 AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
             }
