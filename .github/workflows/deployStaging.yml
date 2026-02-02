@@ -14,6 +14,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      
       - name: Update Bundler
         uses: ruby/setup-ruby@v1
         with: 
@@ -37,7 +46,10 @@ jobs:
           STRIPE_PUB_KEY: ${{ secrets.MOBILE_STRIPE_TEST_PUB_KEY }}
           SKIPLINT: true
           TEST_PLAN: 'unit-tests'
-        run: bundle exec fastlane tests
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 180
+          FASTLANE_XCODE_LIST_TIMEOUT: 60
+        run: bundle exec fastlane tests --verbose
+        timeout-minutes: 30
   
   build:
     needs: test
@@ -48,6 +60,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      
       - name: Update Bundler
         uses: ruby/setup-ruby@v1
         with: 
