@@ -70,13 +70,18 @@ platform :ios do
           )
 
     # get the latest release build # from firebase
-    latest_release = firebase_app_distribution_get_latest_release(
-      app: ENV['FIREBASEAPPDISTRO_APP'],
-      firebase_cli_token: ENV['FIREBASEAPPDISTRO_CLI_TOKEN']
-    )
-    if latest_release
-      # update the app build number
-      increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+    begin
+      latest_release = firebase_app_distribution_get_latest_release(
+        app: ENV['FIREBASEAPPDISTRO_APP'],
+        firebase_cli_token: ENV['FIREBASEAPPDISTRO_CLI_TOKEN']
+      )
+      if latest_release
+        # update the app build number
+        increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+      end
+    rescue => exception
+      UI.important("⚠️  Could not fetch latest release from Firebase: #{exception.message}")
+      UI.important("Continuing with current build number...")
     end
 
     # actually build the app
