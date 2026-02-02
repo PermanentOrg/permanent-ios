@@ -16,6 +16,7 @@ struct SharePreviewArchiveSelectorView: View {
     let buttonTitle: String
     let isButtonDisabled: Bool
     let showButton: Bool
+    let showOriginalArchiveBanner: Bool
     
     private var buttonBackgroundColor: Color {
         if buttonTitle == "Access Requested" {
@@ -77,6 +78,7 @@ struct SharePreviewArchiveSelectorView: View {
                                 .font(.custom("Usual", size: 14))
                                 .foregroundColor(.blue900)
                                 .lineLimit(1)
+                                .animation(nil, value: currentArchive?.archiveID)
                         } else {
                             Text("Select an archive...")
                                 .font(.custom("Usual", size: 14))
@@ -97,6 +99,25 @@ struct SharePreviewArchiveSelectorView: View {
                 .padding(.vertical, 16)
             }
             .buttonStyle(PlainButtonStyle())
+            
+            // Original archive banner with animated height
+            if showOriginalArchiveBanner {
+                Text("Shared from this archive.")
+                    .font(.custom("Usual", size: 12))
+                    .foregroundColor(.warning600)
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.warning100)
+                    .cornerRadius(7)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+                    .opacity(showOriginalArchiveBanner ? 1.0 : 0.0)
+                    .scaleEffect(showOriginalArchiveBanner ? 1.0 : 0.95, anchor: .top)
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.95, anchor: .top).combined(with: .opacity),
+                        removal: .scale(scale: 0.95, anchor: .top).combined(with: .opacity)
+                    ))
+            }
             
             if currentArchive != nil && showButton {
                 Button(action: {
@@ -129,11 +150,12 @@ struct SharePreviewArchiveSelectorView: View {
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: buttonTitle)
-        .animation(.easeInOut(duration: 0.3), value: showButton)
         .background(Color.white)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: -5)
+        .animation(.easeInOut(duration: 0.3), value: showOriginalArchiveBanner)
+        .animation(.easeInOut(duration: 0.3), value: buttonTitle)
+        .animation(.easeInOut(duration: 0.3), value: showButton)
         .padding(.horizontal, 48)
         .padding(.bottom, 16)
     }
@@ -291,7 +313,8 @@ struct SharePreviewArchiveSelectorView_Previews: PreviewProvider {
             externalShowPicker: .constant(false),
             buttonTitle: "Open",
             isButtonDisabled: false,
-            showButton: true
+            showButton: true,
+            showOriginalArchiveBanner: true
         )
             .previewLayout(.sizeThatFits)
     }
