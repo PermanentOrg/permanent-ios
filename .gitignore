@@ -93,6 +93,9 @@ env-vars.sh
 .idea/
 *.DS_Store
 
+# VSCode settings
+.vscode/
+
 # Build configuration files
 buildServer.json
 
