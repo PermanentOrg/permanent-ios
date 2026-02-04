@@ -22,6 +22,12 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.2'
+      - name: Check Firebase token present
+        run: |
+          echo "FIREBASE_TOKEN_LENGTH=${#FIREBASE_TOKEN}"
+          echo "FIREBASE_TOKEN_PREFIX=${FIREBASE_TOKEN:0:3}"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.IOS_FIREBASE_APP_CLI_TOKEN }}
       - name: Run Fastlane Beta
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
