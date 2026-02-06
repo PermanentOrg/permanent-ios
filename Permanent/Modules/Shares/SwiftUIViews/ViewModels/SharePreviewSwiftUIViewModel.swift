@@ -242,6 +242,47 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         return originalNbr == currentNbr
     }
 
+    var accessRoleText: String? {
+        guard let shareDataCache = shareDataCache,
+              currentArchive != nil else {
+            return nil
+        }
+
+        if checkIfUserIsCreator() {
+            return nil
+        }
+
+        let isUnrestricted = (shareLinkV2Data?.accessRestrictions ?? "none") == "none"
+
+        if shareStatus == .pending {
+            return nil
+        }
+
+        if !isUnrestricted && shareStatus != .accepted {
+            return nil
+        }
+
+        var rawRole: String?
+        if let shareVO = shareDataCache.shareVO,
+           let currentArchiveId = currentArchive?.archiveID,
+           shareVO.archiveID == currentArchiveId {
+            rawRole = shareVO.accessRole
+        } else if isUnrestricted {
+            rawRole = shareDataCache.defaultAccessRole
+        }
+
+        guard let rawRole = rawRole else {
+            return nil
+        }
+
+        let role = AccessRole.roleForValue(rawRole)
+        if role == .owner {
+            return nil
+        }
+
+        return role.title.uppercased()
+    }
+
     func viewInArchive() {
         let currentState = currentButtonState
         

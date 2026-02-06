@@ -17,6 +17,7 @@ struct SharePreviewArchiveSelectorView: View {
     let isButtonDisabled: Bool
     let showButton: Bool
     let showOriginalArchiveBanner: Bool
+    let accessRoleText: String?
     
     private var buttonBackgroundColor: Color {
         if buttonTitle == "Access Requested" {
@@ -118,6 +119,39 @@ struct SharePreviewArchiveSelectorView: View {
                         removal: .scale(scale: 0.95, anchor: .top).combined(with: .opacity)
                     ))
             }
+
+            let showAccessRole = accessRoleText != nil
+            if let accessRoleText = accessRoleText {
+                HStack(spacing: 8) {
+                    Text("Access role:")
+                        .font(.custom("Usual", size: 12))
+                        .foregroundColor(.blue600)
+                        .padding(.leading, 4)
+
+                    ZStack {
+                        Text(accessRoleText)
+                            .font(.custom("Usual", size: 10))
+                            .kerning(1.6)
+                            .foregroundColor(.blue600)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(Color.blue25)
+                            .cornerRadius(4)
+                            .id(accessRoleText)
+                            .transition(.opacity)
+                    }
+                    .animation(.easeInOut(duration: 0.2), value: accessRoleText)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+                .opacity(showAccessRole ? 1.0 : 0.0)
+                .scaleEffect(showAccessRole ? 1.0 : 0.95, anchor: .top)
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.95, anchor: .top).combined(with: .opacity),
+                    removal: .scale(scale: 0.95, anchor: .top).combined(with: .opacity)
+                ))
+            }
             
             if currentArchive != nil && showButton {
                 Button(action: {
@@ -154,6 +188,7 @@ struct SharePreviewArchiveSelectorView: View {
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: -5)
         .animation(.easeInOut(duration: 0.3), value: showOriginalArchiveBanner)
+        .animation(.easeInOut(duration: 0.3), value: accessRoleText != nil)
         .animation(.easeInOut(duration: 0.3), value: buttonTitle)
         .animation(.easeInOut(duration: 0.3), value: showButton)
         .padding(.horizontal, 48)
@@ -314,7 +349,8 @@ struct SharePreviewArchiveSelectorView_Previews: PreviewProvider {
             buttonTitle: "Open",
             isButtonDisabled: false,
             showButton: true,
-            showOriginalArchiveBanner: true
+            showOriginalArchiveBanner: true,
+            accessRoleText: "VIEWER"
         )
             .previewLayout(.sizeThatFits)
     }
