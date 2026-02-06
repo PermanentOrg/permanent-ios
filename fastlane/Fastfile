@@ -13,6 +13,9 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "8"
+
 default_platform(:ios)
 
 platform :ios do
@@ -26,7 +29,7 @@ platform :ios do
               podfile: "./Podfile")
     run_tests(workspace: "Permanent.xcworkspace",
               scheme: "Permanent-DEV",
-              destination: "platform=iOS Simulator,name=iPhone 26,OS=latest",
+              destination: "platform=iOS Simulator",
               configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",
 	          reset_simulator: true)
