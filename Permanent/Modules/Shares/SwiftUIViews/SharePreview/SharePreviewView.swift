@@ -12,6 +12,10 @@ struct SharePreviewView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var isDismissing = false
     @State private var animatedShowBanner = false
+    @State private var delayedAccessRoleText: String?
+    @State private var accessRoleUpdateID = UUID()
+    @State private var isBannerTransitioning = false
+    @State private var accessRoleWasVisibleBeforeLoad = false
     
     init(shareToken: String,
          onNavigateToFolder: ((NavigateMinParams) -> Void)? = nil,
@@ -87,15 +91,52 @@ struct SharePreviewView: View {
                         buttonTitle: viewModel.buttonTitle,
                         isButtonDisabled: viewModel.isButtonDisabled,
                         showButton: viewModel.hasCompletedInitialLoad,
-                        showOriginalArchiveBanner: animatedShowBanner
+                        showOriginalArchiveBanner: animatedShowBanner,
+                        accessRoleText: delayedAccessRoleText
                     )
                     .onChange(of: viewModel.isOriginalArchiveSelected) { newValue in
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            animatedShowBanner = newValue
+                        isBannerTransitioning = true
+                        if newValue {
+                            scheduleAccessRoleUpdate(nil, delay: 0.0)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    animatedShowBanner = true
+                                }
+                            }
+                        } else {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                animatedShowBanner = false
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                scheduleAccessRoleUpdate(viewModel.accessRoleText, delay: 0.0)
+                            }
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            isBannerTransitioning = false
+                        }
+                    }
+                    .onChange(of: viewModel.accessRoleText) { newValue in
+                        if viewModel.isLoading && !accessRoleWasVisibleBeforeLoad {
+                            return
+                        }
+                        if isBannerTransitioning {
+                            return
+                        }
+                        let delay: TimeInterval = isBannerTransitioning ? 0.2 : 0.0
+                        scheduleAccessRoleUpdate(newValue, delay: delay)
+                    }
+                    .onChange(of: viewModel.isLoading) { isLoading in
+                        if isLoading {
+                            accessRoleWasVisibleBeforeLoad = delayedAccessRoleText != nil
+                        } else {
+                            let delay: TimeInterval = isBannerTransitioning ? 0.2 : 0.0
+                            scheduleAccessRoleUpdate(viewModel.accessRoleText, delay: delay)
+                            accessRoleWasVisibleBeforeLoad = false
                         }
                     }
                     .onAppear {
                         animatedShowBanner = viewModel.isOriginalArchiveSelected
+                        delayedAccessRoleText = viewModel.accessRoleText
                     }
                 }
             }
@@ -132,6 +173,16 @@ struct SharePreviewView: View {
         
         viewModel.restoreInitialArchive {
             self.presentationMode.wrappedValue.dismiss()
+        }
+    }
+
+    private func scheduleAccessRoleUpdate(_ newValue: String?, delay: TimeInterval) {
+        let updateID = UUID()
+        accessRoleUpdateID = updateID
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            if accessRoleUpdateID == updateID {
+                delayedAccessRoleText = newValue
+            }
         }
     }
     

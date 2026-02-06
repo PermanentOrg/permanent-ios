@@ -96,6 +96,9 @@ env-vars.sh
 # VSCode settings
 .vscode/
 
+# Copilot documentation
+.copilot/
+
 # Build configuration files
 buildServer.json
 

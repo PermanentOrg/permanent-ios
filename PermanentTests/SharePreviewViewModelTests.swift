@@ -201,6 +201,80 @@ final class SharePreviewViewModelTests: XCTestCase {
         XCTAssertEqual(vm.shareName, "")
         XCTAssertTrue(vm.items.isEmpty)
     }
+
+    // MARK: - Access Role Display Tests
+
+    func testAccessRoleShownForAcceptedNonOwner() async {
+        let shareVO = makeShareVO(status: Constants.API.AccountStatus.ok, accessRole: AccessRole.viewer.apiValue, archiveID: 1850)
+        let data = makeShareData(shareVO: shareVO, defaultAccessRole: AccessRole.viewer.apiValue)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+
+        await waitForLoad(vm)
+
+        vm.currentArchive = makeArchive(id: 1850)
+
+        XCTAssertEqual(vm.accessRoleText, "VIEWER")
+    }
+
+    func testAccessRoleHiddenForPending() async {
+        let shareVO = makeShareVO(status: Constants.API.AccountStatus.pending, accessRole: AccessRole.viewer.apiValue, archiveID: 1850)
+        let data = makeShareData(shareVO: shareVO, defaultAccessRole: AccessRole.viewer.apiValue)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+
+        await waitForLoad(vm)
+
+        vm.currentArchive = makeArchive(id: 1850)
+
+        XCTAssertNil(vm.accessRoleText)
+    }
+
+    func testAccessRoleHiddenForOwner() async {
+        let shareVO = makeShareVO(status: Constants.API.AccountStatus.ok, accessRole: AccessRole.owner.apiValue, archiveID: 1850)
+        let data = makeShareData(shareVO: shareVO, defaultAccessRole: AccessRole.owner.apiValue)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+
+        await waitForLoad(vm)
+
+        vm.currentArchive = makeArchive(id: 1850)
+
+        XCTAssertNil(vm.accessRoleText)
+    }
+
+    func testAccessRoleShownForUnrestrictedWithoutShareVO() async {
+        let data = makeShareData(shareVO: nil, defaultAccessRole: AccessRole.viewer.apiValue)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+
+        await waitForLoad(vm)
+
+        vm.currentArchive = makeArchive(id: 1850)
+
+        XCTAssertEqual(vm.accessRoleText, "VIEWER")
+    }
+
+    func testAccessRoleHiddenWhenNeedsAccessRestricted() async {
+        let data = makeShareData(shareVO: nil, defaultAccessRole: AccessRole.viewer.apiValue)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+
+        await waitForLoad(vm)
+
+        vm.currentArchive = makeArchive(id: 1850)
+        vm.shareLinkV2Data = ShareLinkV2Data(
+            id: nil,
+            itemId: nil,
+            itemType: nil,
+            token: nil,
+            permissionsLevel: nil,
+            accessRestrictions: "restricted",
+            maxUses: nil,
+            usesExpended: nil,
+            expirationTimestamp: nil,
+            creatorAccount: nil,
+            createdAt: nil,
+            updatedAt: nil
+        )
+
+        XCTAssertNil(vm.accessRoleText)
+    }
     
     // MARK: - Archive Selection Tests
     
@@ -239,6 +313,60 @@ final class SharePreviewViewModelTests: XCTestCase {
         
         // Current implementation is a no-op, so callback shouldn't be invoked yet
         XCTAssertFalse(callbackInvoked)
+    }
+
+    // MARK: - Test Helpers
+
+    private func waitForLoad(_ vm: SharePreviewSwiftUIViewModel) async {
+        let finishedLoading = expectation(description: "Finished loading")
+        var cancellables = Set<AnyCancellable>()
+
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in finishedLoading.fulfill() }
+            .store(in: &cancellables)
+
+        vm.start()
+
+        await fulfillment(of: [finishedLoading], timeout: 3.0)
+    }
+
+    private func makeArchive(id: Int) -> ArchiveVOData {
+        return ArchiveVOData(
+            childFolderVOS: nil, folderSizeVOS: nil, recordVOS: nil,
+            accessRole: AccessRole.viewer.apiValue, fullName: "Family",
+            spaceTotal: nil, spaceLeft: nil, fileTotal: nil, fileLeft: nil,
+            relationType: nil, homeCity: nil, homeState: nil, homeCountry: nil,
+            itemVOS: nil, birthDay: nil, company: nil, archiveVODescription: nil,
+            archiveID: id, publicDT: nil, archiveNbr: "0001-0000",
+            view: nil, viewProperty: nil, archiveVOPublic: nil, vaultKey: nil,
+            thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil,
+            thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil,
+            thumbDT: nil, createdDT: nil, updatedDT: nil, status: .ok
+        )
+    }
+
+    private func makeShareVO(status: String, accessRole: String, archiveID: Int) -> ShareVOData {
+        return ShareVOData(
+            shareID: 1, folderLinkID: 100, archiveID: archiveID,
+            accessRole: accessRole, type: nil,
+            status: status, requestToken: nil, previewToggle: nil,
+            folderVO: nil, recordVO: nil, archiveVO: nil, accountVO: nil,
+            createdDT: nil, updatedDT: nil
+        )
+    }
+
+    private func makeShareData(shareVO: ShareVOData?, defaultAccessRole: String?) -> SharebyURLVOData {
+        return SharebyURLVOData(
+            sharebyURLID: nil, status: Constants.API.AccountStatus.ok, urlToken: "mock",
+            folderLinkID: nil, shareURL: nil, uses: nil, maxUses: nil,
+            autoApproveToggle: nil, previewToggle: nil, defaultAccessRole: defaultAccessRole,
+            expiresDT: nil, byAccountID: 1000, byArchiveID: 1850,
+            createdDT: nil, updatedDT: nil, accountVO: nil, folderData: nil,
+            recordData: nil, archiveVO: nil, shareVO: shareVO
+        )
     }
 }
 
@@ -280,6 +408,23 @@ private struct EmptyRepository: SharePreviewRepositoryProtocol {
         )
     }
     
+    func requestShareAccess(shareToken: String) async throws -> ShareVOData {
+        return ShareVOData(
+            shareID: nil, folderLinkID: nil, archiveID: nil, accessRole: nil,
+            type: nil, status: nil, requestToken: nil, previewToggle: nil,
+            folderVO: nil, recordVO: nil, archiveVO: nil, accountVO: nil,
+            createdDT: nil, updatedDT: nil
+        )
+    }
+}
+
+private struct SharePreviewAccessRoleRepository: SharePreviewRepositoryProtocol {
+    let shareData: SharebyURLVOData
+
+    func fetchSharePreview(shareToken: String) async throws -> SharebyURLVOData {
+        return shareData
+    }
+
     func requestShareAccess(shareToken: String) async throws -> ShareVOData {
         return ShareVOData(
             shareID: nil, folderLinkID: nil, archiveID: nil, accessRole: nil,
