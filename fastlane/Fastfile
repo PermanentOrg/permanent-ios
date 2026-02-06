@@ -27,9 +27,9 @@ platform :ios do
     run_tests(workspace: "Permanent.xcworkspace",
               scheme: "Permanent-DEV",
               destination: "platform=iOS Simulator,name=iPhone 26,OS=latest",
-	            configuration: "DEV-Debug",
+              configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",
-	            reset_simulator: true)
+	          reset_simulator: true)
   end
 
   lane :cocopods do
