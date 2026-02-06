@@ -40,9 +40,10 @@ struct SharePreviewView: View {
                     Button(action: {
                         handleBackAction()
                     }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.white)
+                        Image("shareLinkBackArrow")
+                            .resizable()
+                            .frame(width: 48, height: 48)
+                            .padding(.leading, -10)
                     }
                 }
             }
