@@ -25,8 +25,8 @@ platform :ios do
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
     run_tests(workspace: "Permanent.xcworkspace",
-              devices: ["iPhone 14"],
               scheme: "Permanent-DEV",
+              destination: "platform=iOS Simulator,name=iPhone 26,OS=latest",
 	            configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",
 	            reset_simulator: true)
