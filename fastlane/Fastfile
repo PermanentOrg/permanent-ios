@@ -91,7 +91,7 @@ platform :ios do
 
     # upload to firebase
 	  firebase_app_distribution(release_notes: changelog,
-                              firebase_cli_token: ENV['FIREBASEAPPDISTRO_CLI_TOKEN'])
+                              firebase_cli_token: ENV['FIREBASE_TOKEN'])
   end
   
   lane :app_store do 
