@@ -70,6 +70,8 @@ platform :ios do
           )
 
     # get the latest release build # from firebase
+    UI.message(ENV["FIREBASEAPPDISTRO_APP"])
+    UI.message(ENV["FIREBASE_SERVICE_ACCOUNT_PATH"])
     latest_release = firebase_app_distribution_get_latest_release(app: ENV['FIREBASEAPPDISTRO_APP'],
                       service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT_PATH"])
     if latest_release
