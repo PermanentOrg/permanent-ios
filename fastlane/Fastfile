@@ -35,7 +35,7 @@ platform :ios do
               podfile: "./Podfile")
     run_tests(workspace: "Permanent.xcworkspace",
               scheme: "Permanent-DEV",
-              destination: "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5",
+              destination: "platform=iOS Simulator,name=iPhone 13 mini,OS=18.6",
               configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",
 	          reset_simulator: true)
