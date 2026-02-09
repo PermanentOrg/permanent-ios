@@ -28,14 +28,14 @@ platform :ios do
    sh("xcodebuild -version")
    sh("xcodebuild -showsdks")
    sh("xcrun simctl list runtimes")
-   sh("xcrun simctl list devicetypes | grep iPhone | tail -n 20")
+   sh("xcrun simctl list devices available | head -n 60")
 
     # add actions here: https://docs.fastlane.tools/actions
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
     run_tests(workspace: "Permanent.xcworkspace",
               scheme: "Permanent-DEV",
-              destination: "platform=iOS Simulator,name=iPhone 13 mini,OS=18.6",
+              destination: "platform=iOS Simulator,name=iPhone 13 mini,OS=26.1",
               configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",
 	          reset_simulator: true)
