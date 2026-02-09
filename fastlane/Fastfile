@@ -15,6 +15,7 @@
 
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "8"
+opt_out_usage
 
 default_platform(:ios)
 
@@ -23,6 +24,11 @@ platform :ios do
   
   lane :tests do
     setup_ci
+
+   sh("xcodebuild -version")
+   sh("xcodebuild -showsdks")
+   sh("xcrun simctl list runtimes")
+   sh("xcrun simctl list devicetypes | grep iPhone | tail -n 20")
 
     # add actions here: https://docs.fastlane.tools/actions
     cocoapods(use_bundle_exec: true,
