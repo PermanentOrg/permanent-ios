@@ -24,12 +24,17 @@ platform :ios do
   lane :tests do
     setup_ci
 
+   UDID=$(xcrun simctl list devices available | grep -m 1 -E "iPhone (16|15|14)" | awk -F '[()]' '{print $2}')
+
+   echo "Using simulator UDID: $UDID"
+   xcrun simctl boot "$UDID" || true
+
     # add actions here: https://docs.fastlane.tools/actions
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
     run_tests(workspace: "Permanent.xcworkspace",
               scheme: "Permanent-DEV",
-              destination: "platform=iOS Simulator,name=iPhone 14,OS=latest",
+              destination: "platform=iOS Simulator,id=#{ENV['UDID']}",
               configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",
 	          reset_simulator: true)
