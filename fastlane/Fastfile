@@ -93,7 +93,7 @@ platform :ios do
 
     # upload to firebase
           firebase_app_distribution(release_notes: changelog,
-                              firebase_cli_token: ENV['FIREBASE_TOKEN'])
+                              service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT"])
   end
   
   lane :app_store do 
