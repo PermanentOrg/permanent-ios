@@ -70,7 +70,7 @@ platform :ios do
           )
 
     # get the latest release build # from firebase
-    latest_release = firebase_app_distribution_get_latest_release(app: ENV['GOOGLE_APP_ID'],
+    latest_release = firebase_app_distribution_get_latest_release(app: ENV['FIREBASEAPPDISTRO_APP'],
                       service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT_PATH"])
     if latest_release
       # update the app build number
