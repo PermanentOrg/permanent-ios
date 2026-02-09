@@ -30,7 +30,7 @@ jobs:
           GCM_SENDER_ID: ${{ secrets.IOS_FIREBASE_GCM_SENDER_ID }}
           PROJECT_ID: ${{ secrets.IOS_FIREBASE_PROJECT_ID }}
           STORAGE_BUCKET: ${{ secrets.IOS_FIREBASE_STORAGE_BUCKET }}
-          GOOGLE_APP_ID: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           AUTH_TENANT_ID: ${{ secrets.MOBILE_AUTH_TENANT_ID }}
           AUTH_CLIENT_ID: ${{ secrets.MOBILE_AUTH_CLIENT_ID }}
           AUTH_CLIENT_SECRET: ${{ secrets.MOBILE_AUTH_CLIENT_SECRET }}
