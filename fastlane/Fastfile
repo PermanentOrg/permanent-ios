@@ -71,8 +71,7 @@ platform :ios do
 
     # get the latest release build # from firebase
     latest_release = firebase_app_distribution_get_latest_release(app: ENV['GOOGLE_APP_ID'],
-                      service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT"],
-                      debug: true)
+                      service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT_PATH"])
     if latest_release
       # update the app build number
       increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
@@ -93,7 +92,7 @@ platform :ios do
 
     # upload to firebase
           firebase_app_distribution(release_notes: changelog,
-                              service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT"])
+                              service_credentials_file: ENV["FIREBASE_SERVICE_ACCOUNT_PATH"])
   end
   
   lane :app_store do 
