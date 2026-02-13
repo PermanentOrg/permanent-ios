@@ -412,7 +412,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         // Give extra time for V2 loading and parsing
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // The view model should complete initial load successfully
         XCTAssertTrue(vm.hasCompletedInitialLoad, "Should complete initial load")
@@ -433,7 +433,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         // Give extra time for V2 loading and parsing
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // The view model should complete initial load successfully
         XCTAssertTrue(vm.hasCompletedInitialLoad, "Should complete initial load")
@@ -665,7 +665,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         vm.viewInArchive()
         
         // Wait for async navigation
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // Navigation logic tested - may not trigger without proper button state
         // This test verifies the callback mechanism exists
@@ -1030,7 +1030,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         // Wait for V2 data callback to potentially execute
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // Verify initial load completed (V2 callback may or may not succeed)
         XCTAssertTrue(vm.hasCompletedInitialLoad, "Should complete initial load")
@@ -1049,7 +1049,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         // Wait for archives to load via AuthenticationManager callback
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // Archives may or may not be populated depending on AuthenticationManager state
         // Test verifies the callback path is executed
@@ -1126,7 +1126,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         // Wait for all async parsing and callbacks
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // Verify parsing completed
         XCTAssertNotNil(vm.archiveName, "Should have parsed archive name")
@@ -1146,7 +1146,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         // Wait for file extraction
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // extractFiles is called with folder data
         // This exercises the folder data branch
@@ -1165,7 +1165,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         // Wait for file extraction
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // extractFiles is called with record data
         // This exercises the record data branch
@@ -1336,7 +1336,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         
         vm.viewInArchive()
         
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // Record data should trigger shares navigation instead of folder navigation
         _ = onNavigateToSharesCalled

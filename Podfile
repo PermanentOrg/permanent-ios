@@ -27,18 +27,21 @@ target 'Permanent' do
   target 'ShareExtension' do
         inherit! :search_paths
 	pod 'KeychainSwift', '20.0'
+	pod 'SkeletonView', '1.30.4'
+	pod 'SDWebImage', '5.10.0'
   end
 end
 
 post_install do |installer|
   installer.pods_project.build_configurations.each do |config|
-    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "x86_64"
   end
 
   installer.generated_projects.each do |project|
     project.targets.each do |target|
         target.build_configurations.each do |config|
             config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.7'
+            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "x86_64"
          end
     end
   end
@@ -46,6 +49,19 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['DEVELOPMENT_TEAM'] = 'C8YKZNBVWT'
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "x86_64"
     end
   end
+  
+  # Configure main project targets 
+  project = installer.aggregate_targets[0].user_project
+  project.build_configurations.each do |config|
+    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "x86_64"
+  end
+  project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "x86_64"
+    end
+  end
+  project.save
 end

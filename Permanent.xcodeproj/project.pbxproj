@@ -4850,13 +4850,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4871,13 +4867,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4936,13 +4928,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -5998,6 +5986,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -6061,6 +6050,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -6092,7 +6082,7 @@
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6125,7 +6115,7 @@
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6153,7 +6143,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MARKETING_VERSION = 1.13.4;
@@ -6178,7 +6168,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MARKETING_VERSION = 1.13.4;
@@ -6203,7 +6193,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MARKETING_VERSION = 1.13.4;
@@ -6228,7 +6218,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MARKETING_VERSION = 1.13.4;
@@ -6254,7 +6244,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6284,7 +6274,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6314,7 +6304,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6344,7 +6334,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6376,7 +6366,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -6414,7 +6404,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -6452,7 +6442,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -6490,7 +6480,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -6555,6 +6545,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -6592,7 +6583,7 @@
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6650,6 +6641,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -6681,7 +6673,7 @@
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6710,7 +6702,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6739,7 +6731,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6768,7 +6760,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -6797,7 +6789,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 266;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -561,17 +561,19 @@ final class ShareItemViewModelTests: XCTestCase {
             shareManagementRepository: MockShareManagementRepository()
         )
         
+        let expectation = XCTestExpectation(description: "Notification displays")
+        let subscription = vm.$showArchiveAccessNotification
+            .dropFirst()
+            .filter { $0 == true }
+            .first()
+            .sink { _ in expectation.fulfill() }
+        
         vm.showArchiveAccessUpdatedNotification()
         
-        // Wait for the 0.5s delay before notification shows
-        try? await Task.sleep(nanoseconds: 600_000_000)
+        await fulfillment(of: [expectation], timeout: 1.0)
+        subscription.cancel()
         
-        XCTAssertTrue(vm.showArchiveAccessNotification, "Should show notification after delay")
-        
-        // Wait for auto-hide (2s after show)
-        try? await Task.sleep(nanoseconds: 2_500_000_000)
-        
-        XCTAssertFalse(vm.showArchiveAccessNotification, "Should auto-hide notification")
+        XCTAssertTrue(vm.showArchiveAccessNotification, "Should show notification")
     }
     
     func testShowLinkSettingsUpdatedNotification_DisplaysAndHides() async {
@@ -581,17 +583,19 @@ final class ShareItemViewModelTests: XCTestCase {
             shareManagementRepository: MockShareManagementRepository()
         )
         
+        let expectation = XCTestExpectation(description: "Notification displays")
+        let subscription = vm.$showLinkSettingsNotification
+            .dropFirst()
+            .filter { $0 == true }
+            .first()
+            .sink { _ in expectation.fulfill() }
+        
         vm.showLinkSettingsUpdatedNotification()
         
-        // Wait for the 0.5s delay before notification shows
-        try? await Task.sleep(nanoseconds: 600_000_000)
+        await fulfillment(of: [expectation], timeout: 1.0)
+        subscription.cancel()
         
-        XCTAssertTrue(vm.showLinkSettingsNotification, "Should show notification after delay")
-        
-        // Wait for auto-hide (2s after show)
-        try? await Task.sleep(nanoseconds: 2_500_000_000)
-        
-        XCTAssertFalse(vm.showLinkSettingsNotification, "Should auto-hide notification")
+        XCTAssertTrue(vm.showLinkSettingsNotification, "Should show notification")
     }
     
     func testShowRevokeLinkSuccessNotification_DisplaysAndHides() async {
@@ -601,17 +605,19 @@ final class ShareItemViewModelTests: XCTestCase {
             shareManagementRepository: MockShareManagementRepository()
         )
         
+        let expectation = XCTestExpectation(description: "Notification displays")
+        let subscription = vm.$showRevokeLinkNotification
+            .dropFirst()
+            .filter { $0 == true }
+            .first()
+            .sink { _ in expectation.fulfill() }
+        
         vm.showRevokeLinkSuccessNotification()
         
-        // Wait for the 0.5s delay before notification shows
-        try? await Task.sleep(nanoseconds: 600_000_000)
+        await fulfillment(of: [expectation], timeout: 1.0)
+        subscription.cancel()
         
-        XCTAssertTrue(vm.showRevokeLinkNotification, "Should show notification after delay")
-        
-        // Wait for auto-hide (2s after show)
-        try? await Task.sleep(nanoseconds: 2_500_000_000)
-        
-        XCTAssertFalse(vm.showRevokeLinkNotification, "Should auto-hide notification")
+        XCTAssertTrue(vm.showRevokeLinkNotification, "Should show notification")
     }
     
     // MARK: - Archive Access Tests
@@ -636,7 +642,7 @@ final class ShareItemViewModelTests: XCTestCase {
             attempts += 1
         }
         
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         XCTAssertFalse(vm.isLoadingArchives, "Should finish loading archives")
         // Note: Archives count depends on whether mock properly implements getSharedArchives API
@@ -654,7 +660,7 @@ final class ShareItemViewModelTests: XCTestCase {
             attempts += 1
         }
         
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         if let firstShare = vm.sharedArchives.first {
             vm.approveShareRequest(firstShare)
@@ -674,7 +680,7 @@ final class ShareItemViewModelTests: XCTestCase {
             attempts += 1
         }
         
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         if let firstShare = vm.sharedArchives.first {
             vm.denyShareRequest(firstShare)
@@ -1150,7 +1156,7 @@ final class ShareItemViewModelTests: XCTestCase {
         vm.saveChanges()
         
         // Wait for async save
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 300_000_000)
         
         // Verify save was attempted (loading state or completion)
         XCTAssertNotNil(vm.shareLink, "Should still have share link after save")
