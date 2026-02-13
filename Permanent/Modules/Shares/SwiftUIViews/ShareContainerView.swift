@@ -107,5 +107,8 @@ struct ShareContainerView: View {
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showArchiveAccessNotification)
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showLinkSettingsNotification)
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showRevokeLinkNotification)
+        .onAppear {
+            viewModel.refreshData()
+        }
     }
 }

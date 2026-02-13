@@ -63,7 +63,7 @@ struct ShareItemView: View {
                     .padding(24)
                     
                     // Current Requests and Access Section - Scrollable
-                    if !viewModel.sharedArchives.isEmpty || viewModel.isLoadingArchives {
+                    if viewModel.shouldShowArchivesSection {
                         currentRequestsAndAccessSection
                     } else {
                         // Spacer to fill remaining space with blue25 background when no archives
@@ -76,7 +76,7 @@ struct ShareItemView: View {
             }
             .background(Color.blue25)
             .overlay {
-                if viewModel.isLoading && !viewModel.genLinkLoading {
+                if (viewModel.isLoading && !viewModel.genLinkLoading) || viewModel.isLoadingArchives {
                     loadingOverlay
                 }
             }
@@ -498,7 +498,8 @@ struct ShareItemView: View {
         }()
         
         return Group {
-            if let thumbURL = archiveVO?.thumbURL500,
+            // Try all available thumbnail URLs in order of preference
+            if let thumbURL = archiveVO?.thumbURL2000 ?? archiveVO?.thumbURL1000 ?? archiveVO?.thumbURL500 ?? archiveVO?.thumbURL200,
                let url = URL(string: thumbURL) {
                 AsyncImage(url: url) { image in
                     image

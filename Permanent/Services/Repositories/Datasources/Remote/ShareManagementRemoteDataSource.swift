@@ -17,6 +17,7 @@ protocol ShareManagementRemoteDataSourceInterface {
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void)
     func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
     func getShareLinkV2(shareLinkId: String, then handler: @escaping ShareLinkV2Handler)
+    func getShareLinkV2ByToken(token: String, then handler: @escaping ShareLinkV2Handler)
     func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
     func updateShareLinkV2(
         shareLinkId: String,
@@ -319,6 +320,37 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
         }
     }
     
+    func getShareLinkV2ByToken(token: String, then handler: @escaping ShareLinkV2Handler) {
+        let apiOperation = APIOperation(ShareLinksV2Endpoint.getShareLinkByToken(token: token))
+
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: ShareLinkV2Response = JSONHelper.decoding(
+                        from: response,
+                        with: ShareLinkV2Response.decoder
+                    )
+                else {
+                    handler(nil, .errorMessage)
+                    return
+                }
+                
+                // Extract the first share link from the response
+                if let firstShareLink = model.items?.first {
+                    handler(firstShareLink, nil)
+                } else {
+                    handler(nil, "Share link not found")
+                }
+
+            case .error(let error, _):
+                handler(nil, error?.localizedDescription)
+            default:
+                handler(nil, .errorMessage)
+            }
+        }
+    }
+    
     func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
         let apiOperation = APIOperation(ShareLinksV2Endpoint.createShareLink(file: file))
 
@@ -479,6 +511,25 @@ class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterf
             itemId: "mock-item-id", 
             itemType: "record",
             token: "mock-token-123",
+            permissionsLevel: "viewer",
+            accessRestrictions: "none",
+            maxUses: nil,
+            usesExpended: 0,
+            expirationTimestamp: nil,
+            creatorAccount: nil,
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z"
+        )
+        handler(mockV2Data, nil)
+    }
+    
+    func getShareLinkV2ByToken(token: String, then handler: @escaping ShareLinkV2Handler) {
+        // Mock implementation - create a sample V2 data using the provided token
+        let mockV2Data = ShareLinkV2Data(
+            id: "mock-id",
+            itemId: "mock-item-id",
+            itemType: "record",
+            token: token,
             permissionsLevel: "viewer",
             accessRestrictions: "none",
             maxUses: nil,

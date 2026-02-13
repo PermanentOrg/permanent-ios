@@ -438,7 +438,9 @@ extension AppDelegate {
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         if let fcmToken = fcmToken {
+            #if STAGING_ENVIRONMENT
             print("Saving push token: " + fcmToken)
+            #endif
             PreferencesManager.shared.set(fcmToken, forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
             
             if rootViewController.isDrawerRootActive && AuthenticationManager.shared.session != nil {
@@ -484,19 +486,24 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = notification.request.content.userInfo
         let name: String
         let folderLinkId: Int
+        let isFolder: Bool
         
-        if let linkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
+        // Check for record (file) first - most specific check
+        if let itemName = userInfo["recordName"] as? String,
+           let linkId: Int = Int(userInfo["recordLinkId"] as? String ?? userInfo["folderLinkId"] as? String ?? "") {
+            folderLinkId = linkId
+            name = itemName
+            isFolder = false
+        } else if let linkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
         let itemName = userInfo["shareName"] as? String {
             folderLinkId = linkId
             name = itemName
+            isFolder = true
         } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
             let itemName = userInfo["folderName"] as? String {
             folderLinkId = linkId
             name = itemName
-        } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
-            let itemName = userInfo["recordName"] as? String {
-                   folderLinkId = linkId
-                   name = itemName
+            isFolder = true
         } else {
             return
         }
@@ -509,7 +516,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
         
         DispatchQueue.main.async {
-            let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+            let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, isFolder: isFolder, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
             try? PreferencesManager.shared.setNonPlistObject(requestAccessNotifPayload, forKey: Constants.Keys.StorageKeys.requestLinkAccess)
             
             if let drawerVC = self.rootViewController.current as? DrawerViewController {

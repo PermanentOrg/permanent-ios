@@ -57,6 +57,10 @@
 		5E086BEA2BEE4408007B1AF3 /* OnboardingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */; };
 		5E08C0D52E6F063600374D0F /* ShareContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E08C0D42E6F063600374D0F /* ShareContainerView.swift */; };
 		5E08C0D62E6F063600374D0F /* LinkSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E08C0D32E6F063600374D0F /* LinkSettingsView.swift */; };
+		5E09133A2F3E1BD400425568 /* RecordV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0913392F3E1BD400425568 /* RecordV2Endpoint.swift */; };
+		5E09133B2F3E1BD400425568 /* RecordV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0913392F3E1BD400425568 /* RecordV2Endpoint.swift */; };
+		5E09133D2F3E1BEF00425568 /* RecordV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E09133C2F3E1BEF00425568 /* RecordV2Models.swift */; };
+		5E09133E2F3E1BEF00425568 /* RecordV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E09133C2F3E1BEF00425568 /* RecordV2Models.swift */; };
 		5E0950862D6F58EE0002EFC5 /* BannerBottomMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */; };
 		5E0AA7EF2C937561003FBCF2 /* CustomLoginFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */; };
 		5E0AA7F12C937714003FBCF2 /* AuthBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */; };
@@ -1126,6 +1130,8 @@
 		5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingItemView.swift; sourceTree = "<group>"; };
 		5E08C0D32E6F063600374D0F /* LinkSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkSettingsView.swift; sourceTree = "<group>"; };
 		5E08C0D42E6F063600374D0F /* ShareContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareContainerView.swift; sourceTree = "<group>"; };
+		5E0913392F3E1BD400425568 /* RecordV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordV2Endpoint.swift; sourceTree = "<group>"; };
+		5E09133C2F3E1BEF00425568 /* RecordV2Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordV2Models.swift; sourceTree = "<group>"; };
 		5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerBottomMessage.swift; sourceTree = "<group>"; };
 		5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLoginFormView.swift; sourceTree = "<group>"; };
 		5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBannerView.swift; sourceTree = "<group>"; };
@@ -3899,6 +3905,7 @@
 		BC1BDF18251355ED00F2D239 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				5E0913392F3E1BD400425568 /* RecordV2Endpoint.swift */,
 				5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */,
 				BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */,
 				BC326AAE2526195E00A69597 /* APIErrors.swift */,
@@ -4011,6 +4018,7 @@
 		BC4526E3251CACAB00E24A51 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				5E09133C2F3E1BEF00425568 /* RecordV2Models.swift */,
 				5EA522D82F23CE16003072FB /* FolderV2Models.swift */,
 				5E7141432AFD25B2003952CD /* Billing */,
 				BC42EDBB25BB119B0031B965 /* Invitations */,
@@ -5118,6 +5126,7 @@
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				5E633A742B28D7EE004D561C /* StorageViewModel.swift in Sources */,
 				5E1C3C5428F59703007C1A63 /* TagManagementViewController.swift in Sources */,
+				5E09133E2F3E1BEF00425568 /* RecordV2Models.swift in Sources */,
 				5E2F721C2D94A2FC009F02D3 /* ChangePasswordViewModel.swift in Sources */,
 				5E633A722B28D7E1004D561C /* StorageView.swift in Sources */,
 				5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */,
@@ -5482,6 +5491,7 @@
 				5EB503B72C04CB5500534F09 /* OnboardingWhatsImportant.swift in Sources */,
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
+				5E09133A2F3E1BD400425568 /* RecordV2Endpoint.swift in Sources */,
 				F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */,
 				5EF3A0882F143F3700F85282 /* SharePreviewArchiveSelectorView.swift in Sources */,
 				5EF3A0892F143F3700F85282 /* SharePreviewGridView.swift in Sources */,
@@ -5778,6 +5788,7 @@
 				F559F8AC28FF02AE0015A522 /* UploadOperation.swift in Sources */,
 				F51B3320288B0A7D00EA15DA /* FileModel.swift in Sources */,
 				5E4455D42A08F1F100A56235 /* TrustedStewardViewController.swift in Sources */,
+				5E09133B2F3E1BD400425568 /* RecordV2Endpoint.swift in Sources */,
 				9220ACC62A1B8706003797C9 /* ArchivesRepository.swift in Sources */,
 				5ED3B3BA29F95D16000CFF48 /* NavigationController.swift in Sources */,
 				F51B3325288B0B9E00EA15DA /* DateUtils.swift in Sources */,
@@ -5788,6 +5799,7 @@
 				F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
 				92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */,
+				5E09133D2F3E1BEF00425568 /* RecordV2Models.swift in Sources */,
 				F5A87F9A2996C51100C4272B /* WorkspacesContentViewModel.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
 				5ECB0C912E856F15006EFDA7 /* RevokeBottomAlertView.swift in Sources */,

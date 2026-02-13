@@ -755,9 +755,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
         
         func _presentShare() {
-            let file = FileModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
+            let fileType = sharedFilePayload.isFolder ? FileType.privateFolder.rawValue : FileType.miscellaneous.rawValue
+            let file = FileModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: fileType, permissions: viewModel!.archivePermissions)
             
-            showFileActionSheet(file: file, atIndexPath: [0, 0])
+            presentShareManagement(for: file)
         }
         
         let currentArchive: ArchiveVOData? = viewModel?.currentArchive

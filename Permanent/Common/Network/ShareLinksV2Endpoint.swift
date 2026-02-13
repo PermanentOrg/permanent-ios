@@ -92,6 +92,15 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         return .data
     }
     
+    var skipAuthentication: Bool {
+        switch self {
+        case .getShareLinkByToken:
+            return true
+        default:
+            return false
+        }
+    }
+    
     var responseType: ResponseType {
         return .json
     }

@@ -120,6 +120,8 @@ class ShareItemViewModel: ObservableObject {
     // Properties for archives with access
     @Published var sharedArchives: [ShareVOData] = []
     @Published var isLoadingArchives = false
+    @Published var shouldShowArchivesSection = false
+    private var hasLoadedArchivesOnce = false
     
     // Loading states for approve/deny actions
     @Published var approvingShareIDs: Set<Int> = []
@@ -163,6 +165,8 @@ class ShareItemViewModel: ObservableObject {
     private let shareManagementRepository: ShareManagementRepository
     private var shareVO: SharebyURLVOData?
     private var shareLinkV2Data: ShareLinkV2Data?
+    private var correctFolderLinkId: Int?
+    private var recordV2ThumbnailURL: String?
     
     var hasShareLink: Bool {
         shareLink != nil && !shareLink!.isEmpty
@@ -185,11 +189,21 @@ class ShareItemViewModel: ObservableObject {
     }
     
     var thumbnailURL: String? {
-        fileModel.thumbnailURL500
+        // Use V2 record thumbnail if available, otherwise use fileModel
+        if let v2Data = shareLinkV2Data, v2Data.itemType == "record",
+           let recordThumb = recordV2ThumbnailURL {
+            return recordThumb
+        }
+        return fileModel.thumbnailURL500
     }
     
     var isFolder: Bool {
-        fileModel.type.isFolder
+        // V2 data is authoritative - check it first
+        if let v2Data = shareLinkV2Data, let itemType = v2Data.itemType {
+            return itemType == "folder"
+        }
+        // Fallback to fileModel
+        return fileModel.type.isFolder
     }
     
     var shareDisplayData: String {
@@ -266,7 +280,16 @@ class ShareItemViewModel: ObservableObject {
         errorMessage = nil
         
         getShareLink(option: .retrieve)
-        fetchSharedArchives()
+        // Don't fetch shared archives yet - wait for V2 data to load first
+        // fetchSharedArchives() will be called from tryLoadV2DataForExistingLink()
+    }
+    
+    func refreshData() {
+        // Only refresh archives if they've already been loaded once
+        // This prevents double-loading on initial view appearance
+        if hasLoadedArchivesOnce {
+            fetchSharedArchives()
+        }
     }
     
     private func getShareLink(option: ShareLinkOption) {
@@ -285,10 +308,9 @@ class ShareItemViewModel: ObservableObject {
                     await MainActor.run {
                         guard let self = self else { return }
                         
-                        self.isLoading = false
-                        
                         if let error = error {
-                            // End genLinkLoading on error
+                            // End loading states on error
+                            self.isLoading = false
                             if option == .create {
                                 self.genLinkLoading = false
                             }
@@ -302,12 +324,26 @@ class ShareItemViewModel: ObservableObject {
                             self.shareVO = result
                             self.shareLink = result.shareURL
                             
+                            // For records, extract the correct folder_linkId from recordData
+                            if !self.isFolder,
+                               let recordData = result.recordData,
+                               let folderLinkIdInt = recordData.folderLinkID {
+                                self.correctFolderLinkId = folderLinkIdInt
+                            }
+                            
                             // Set the correct expiration option based on existing data
                             self.setSelectedExpirationFromShareVO(result)
+                            
+                            // Start loading archives before ending share link loading for seamless transition
+                            self.isLoadingArchives = true
+                            self.isLoading = false
                             
                             // Try to get V2 data for existing share links to get access level info
                             if option == .retrieve {
                                 self.tryLoadV2DataForExistingLink()
+                            } else {
+                                // For create option, always fetch archives
+                                self.fetchSharedArchives()
                             }
                             
                             if option == .create {
@@ -1023,7 +1059,8 @@ class ShareItemViewModel: ObservableObject {
                             self.shareLinkV2Data = v2Data
                             self.setAccessLevelFromV2Data(v2Data)
                         }
-                        // If V2 data is not available, we keep the default UI state
+                        // Fetch shared archives after V2 data is loaded
+                        self.fetchSharedArchives()
                     }
                 }
             }
@@ -1038,17 +1075,158 @@ class ShareItemViewModel: ObservableObject {
                             self.shareLinkV2Data = v2Data
                             self.setAccessLevelFromV2Data(v2Data)
                         }
-                        // If V2 data is not available, we keep the default UI state
+                        // Fetch shared archives after V2 data is loaded
+                        self.fetchSharedArchives()
                     }
                 }
             }
         }
     }
     
-    // MARK: - Fetch Shared Archives
-    private func fetchSharedArchives() {
-        guard fileModel.folderLinkId > 0,
-              fileModel.parentFolderLinkId > 0 else {
+    // MARK: - Fetch Record Details (V2 API)
+    private func fetchRecordV2(recordId: String, shareToken: String?) {
+        isLoadingArchives = true
+        
+        let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: recordId, shareToken: shareToken))
+        
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+                    
+                    self.isLoadingArchives = false
+                    
+                    switch result {
+                    case .json(let response, _):
+                        guard let model: RecordV2Response = JSONHelper.decoding(
+                            from: response,
+                            with: RecordV2Response.decoder
+                        ), let recordData = model.data else {
+                            self.fetchSharedArchivesV1()
+                            return
+                        }
+                        
+                        // Store V2 thumbnail for display
+                        self.recordV2ThumbnailURL = recordData.thumbUrl500 ?? recordData.thumbnailUrls?.url500
+                        
+                        // Update folderLinkId from V2 response if available
+                        if let folderLinkIdString = recordData.folderLinkId,
+                           let folderLinkIdInt = Int(folderLinkIdString) {
+                            self.correctFolderLinkId = folderLinkIdInt
+                            
+                            // Convert V2 shares to V1 format if available
+                            if let sharesV2 = recordData.shares, !sharesV2.isEmpty {
+                                let convertedShares = self.convertV2SharesToV1(sharesV2)
+                                // Sort: pending first, then approved
+                                self.sharedArchives = convertedShares.sorted { share1, share2 in
+                                    let isPending1 = share1.status?.contains("pending") ?? false
+                                    let isPending2 = share2.status?.contains("pending") ?? false
+                                    return isPending1 && !isPending2  // Pending shares come first
+                                }
+                            } else {
+                                // No shares means empty list
+                                self.sharedArchives = []
+                            }
+                            // Mark as loaded and update visibility
+                            self.hasLoadedArchivesOnce = true
+                            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
+                        } else {
+                            // No folder_linkId in V2 response, fall back to V1
+                            self.fetchSharedArchivesV1()
+                        }
+                        
+                    case .error(let error, _):
+                        // Fall back to V1 API
+                        self.fetchSharedArchivesV1()
+                        
+                    default:
+                        self.fetchSharedArchivesV1()
+                    }
+                }
+            }
+        }
+    }
+    
+    // Convert V2 shares to V1 ShareVOData format
+    private func convertV2SharesToV1(_ sharesV2: [RecordShareV2]) -> [ShareVOData] {
+        // Get the user's own archive ID
+        let userOwnArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
+        
+        return sharesV2.compactMap { share -> ShareVOData? in
+            guard let shareIdString = share.shareId,
+                  let shareId = Int(shareIdString),
+                  let archiveData = share.archive,
+                  let archiveIdString = archiveData.archiveId,
+                  let archiveId = Int(archiveIdString) else {
+                return nil
+            }
+            
+            // Skip if this share is from the user's own archive
+            if let userOwnId = userOwnArchiveId, archiveId == userOwnId {
+                return nil
+            }
+            
+            let folderLinkId = self.correctFolderLinkId ?? self.fileModel.folderLinkId
+            let archiveVO = self.makeArchiveVO(from: archiveData)
+
+            return ShareVOData(
+                shareID: shareId,
+                folderLinkID: folderLinkId > 0 ? folderLinkId : nil,
+                archiveID: archiveId,
+                accessRole: share.accessRole,
+                type: nil,
+                status: share.status,
+                requestToken: nil,
+                previewToggle: nil,
+                folderVO: nil,
+                recordVO: nil,
+                archiveVO: archiveVO,
+                accountVO: nil,
+                createdDT: nil,
+                updatedDT: nil
+            )
+        }
+    }
+
+    private func makeArchiveVO(from archiveData: RecordShareArchiveV2) -> ArchiveVOData? {
+        guard let archiveIdString = archiveData.archiveId,
+              let archiveId = Int(archiveIdString) else {
+            return nil
+        }
+
+        // Build archive dictionary with all available thumbnail URLs
+        var archiveDict: [String: Any] = [
+            "archiveId": archiveId,
+            "fullName": archiveData.name as Any
+        ]
+        
+        // Add thumbnail URLs in priority order (use highest quality available)
+        if let thumbUrl2000 = archiveData.thumbUrl2000 {
+            archiveDict["thumbURL2000"] = thumbUrl2000
+        }
+        if let thumbUrl1000 = archiveData.thumbUrl1000 {
+            archiveDict["thumbURL1000"] = thumbUrl1000
+        }
+        if let thumbUrl500 = archiveData.thumbUrl500 {
+            archiveDict["thumbURL500"] = thumbUrl500
+        }
+        if let thumbUrl200 = archiveData.thumbUrl200 {
+            archiveDict["thumbURL200"] = thumbUrl200
+        }
+
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: archiveDict, options: []) else {
+            return nil
+        }
+
+        return try? JSONDecoder().decode(ArchiveVOData.self, from: jsonData)
+    }
+    
+    // MARK: - Fetch Shared Archives (V1 API)
+    private func fetchSharedArchivesV1() {
+        // Use correct folderLinkId if available, otherwise use the one from fileModel
+        let folderLinkId = correctFolderLinkId ?? fileModel.folderLinkId
+        
+        guard folderLinkId > 0 else {
             return
         }
         
@@ -1057,7 +1235,7 @@ class ShareItemViewModel: ObservableObject {
         let downloader = DownloadManagerGCD()
         let fileDownloadInfo = FileDownloadInfoVM(
             fileType: fileModel.type,
-            folderLinkId: fileModel.folderLinkId,
+            folderLinkId: folderLinkId,
             parentFolderLinkId: fileModel.parentFolderLinkId
         )
         
@@ -1071,14 +1249,29 @@ class ShareItemViewModel: ObservableObject {
                         self.isLoadingArchives = false
                         
                         if let error = error {
-                            print("Error fetching folder details: \(error)")
+                            // If folder API fails, it might actually be a record - try V2 record API
+                            if let v2Data = self.shareLinkV2Data,
+                               let itemId = v2Data.itemId,
+                               let token = v2Data.token {
+                                self.fetchRecordV2(recordId: itemId, shareToken: token)
+                            }
                             return
                         }
                         
                         if let folderVO = folderVO,
-                           let folderData = folderVO.folderVO,
-                           let shareVOs = folderData.shareVOS {
-                            self.sharedArchives = shareVOs
+                           let folderData = folderVO.folderVO {
+                            if let shareVOs = folderData.shareVOS, !shareVOs.isEmpty {
+                                // Sort pending shares first, then approved shares
+                                self.sharedArchives = shareVOs.sorted { share1, share2 in
+                                    let isPending1 = share1.status?.contains("pending") ?? false
+                                    let isPending2 = share2.status?.contains("pending") ?? false
+                                    return isPending1 && !isPending2
+                                }
+                            } else {
+                                self.sharedArchives = []
+                            }
+                            self.hasLoadedArchivesOnce = true
+                            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
                         }
                     }
                 }
@@ -1092,18 +1285,55 @@ class ShareItemViewModel: ObservableObject {
                         self.isLoadingArchives = false
                         
                         if let error = error {
-                            print("Error fetching record details: \(error)")
+                            // If V1 record API fails, try V2 record API
+                            if let v2Data = self.shareLinkV2Data,
+                               let itemId = v2Data.itemId,
+                               let token = v2Data.token {
+                                self.fetchRecordV2(recordId: itemId, shareToken: token)
+                            }
                             return
                         }
                         
                         if let recordVO = recordVO,
-                           let recordData = recordVO.recordVO,
-                           let shareVOs = recordData.shareVOS {
-                            self.sharedArchives = shareVOs
+                           let recordData = recordVO.recordVO {
+                            if let shareVOs = recordData.shareVOS, !shareVOs.isEmpty {
+                                // Sort pending shares first, then approved shares
+                                self.sharedArchives = shareVOs.sorted { share1, share2 in
+                                    let isPending1 = share1.status?.contains("pending") ?? false
+                                    let isPending2 = share2.status?.contains("pending") ?? false
+                                    return isPending1 && !isPending2
+                                }
+                            } else {
+                                self.sharedArchives = []
+                            }
+                            self.hasLoadedArchivesOnce = true
+                            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
                         }
                     }
                 }
             }
+        }
+    }
+    
+    // MARK: - Fetch Shared Archives
+    private func fetchSharedArchives() {
+        // Check V2 data first - it's more reliable than initial fileModel type
+        if let v2Data = shareLinkV2Data,
+           let itemId = v2Data.itemId,
+           let itemType = v2Data.itemType,
+           itemType == "record" {
+            // V2 data says it's a record - use V2 API to fetch by recordId
+            let shareToken = v2Data.token
+            fetchRecordV2(recordId: itemId, shareToken: shareToken)
+        } else if !isFolder,
+                  let recordData = shareVO?.recordData,
+                  let folderLinkIdInt = recordData.folderLinkID {
+            // Already have correct folder_linkId from share link response, use V1
+            correctFolderLinkId = folderLinkIdInt
+            fetchSharedArchivesV1()
+        } else {
+            // Use V1 API (original behavior)
+            fetchSharedArchivesV1()
         }
     }
     
@@ -1173,6 +1403,7 @@ class ShareItemViewModel: ObservableObject {
                     switch result {
                     case .success:
                         self.sharedArchives.removeAll { $0.shareID == shareVO.shareID }
+                        self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
                         
                     case .error(let message):
                         self.errorMessage = message
@@ -1187,8 +1418,7 @@ class ShareItemViewModel: ObservableObject {
             return
         }
         
-        guard fileModel.folderLinkId > 0,
-              fileModel.parentFolderLinkId > 0 else {
+        guard fileModel.folderLinkId > 0 else {
             return
         }
         
@@ -1207,6 +1437,9 @@ class ShareItemViewModel: ObservableObject {
                         guard let self = self else { return }
                         
                         if error != nil {
+                            if clearLoadingState, let loadingID = loadingShareID {
+                                self.approvingShareIDs.remove(loadingID)
+                            }
                             return
                         }
                         
@@ -1239,6 +1472,9 @@ class ShareItemViewModel: ObservableObject {
                         guard let self = self else { return }
                         
                         if error != nil {
+                            if clearLoadingState, let loadingID = loadingShareID {
+                                self.approvingShareIDs.remove(loadingID)
+                            }
                             return
                         }
                         

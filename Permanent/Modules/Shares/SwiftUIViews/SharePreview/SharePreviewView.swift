@@ -81,6 +81,7 @@ struct SharePreviewView: View {
                             .padding(.top, 16)
                             .padding(.bottom, 200)
                     }
+                    .scrollDisabled(true)
                     .disabled(viewModel.displayMode == .blurredPlaceholders)
                     
                     SharePreviewArchiveSelectorView(

@@ -64,6 +64,7 @@ protocol RequestProtocol {
     var customURL: String? { get }
     var ignoreErrors: Bool { get }
     var shareToken: String? { get }
+    var skipAuthentication: Bool { get }
 }
 
 extension RequestProtocol {
@@ -151,5 +152,9 @@ extension RequestProtocol {
     
     var shareToken: String? {
         return nil
+    }
+    
+    var skipAuthentication: Bool {
+        return false
     }
 }

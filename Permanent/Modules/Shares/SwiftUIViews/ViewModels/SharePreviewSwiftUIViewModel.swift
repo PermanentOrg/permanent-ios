@@ -376,8 +376,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         return isCreator
     }
     
-    private func loadV2ShareLinkData(shareLinkId: Int) {
-        shareManagementRepository.getShareLinkV2(shareLinkId: "\(shareLinkId)") { [weak self] result, error in
+    private func loadV2ShareLinkData() {
+        shareManagementRepository.getShareLinkV2ByToken(token: shareToken) { [weak self] result, error in
             guard let self = self else { return }
             
             Task { @MainActor in
@@ -561,9 +561,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     private func parseShareData(_ shareByURL: SharebyURLVOData) async {
         shareDataCache = shareByURL
         
-        if let sharebyURLID = shareByURL.sharebyURLID {
-            loadV2ShareLinkData(shareLinkId: sharebyURLID)
-        }
+        // Load V2 data using share token instead of share link ID
+        loadV2ShareLinkData()
         
         // Store temporary values
         var tempArchiveName = ""
