@@ -199,7 +199,8 @@ final class SharePreviewViewModelTests: XCTestCase {
         // With empty data, the view model should handle gracefully
         XCTAssertNil(vm.errorMessage)
         XCTAssertEqual(vm.shareName, "")
-        XCTAssertTrue(vm.items.isEmpty)
+        // Empty data shows placeholder items (4 items) instead of crashing
+        XCTAssertEqual(vm.items.count, 4, "Should show placeholder items when data is empty")
     }
 
     // MARK: - Access Role Display Tests

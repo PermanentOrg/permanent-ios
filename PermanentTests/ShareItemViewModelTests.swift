@@ -64,14 +64,18 @@ final class ShareItemViewModelTests: XCTestCase {
         let repo = MockShareManagementRepository(shouldReturnLink: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
-        // Wait for async load
-        var attempts = 0
-        while vm.isLoading && attempts < 100 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        // Wait for async load to complete
+        let loadComplete = expectation(description: "Loading completed")
+        var cancellables = Set<AnyCancellable>()
         
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in loadComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [loadComplete], timeout: 5.0)
         
         XCTAssertFalse(vm.isLoading, "Should finish loading")
         // Note: shareLink may be nil if V1 API doesn't return shareURL property
@@ -84,13 +88,17 @@ final class ShareItemViewModelTests: XCTestCase {
         let repo = MockShareManagementRepository(shouldReturnLink: false)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
-        var attempts = 0
-        while vm.isLoading && attempts < 100 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        let loadComplete = expectation(description: "Loading completed")
+        var cancellables = Set<AnyCancellable>()
         
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in loadComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [loadComplete], timeout: 5.0)
         
         XCTAssertFalse(vm.isLoading, "Should finish loading")
         XCTAssertNil(vm.shareLink, "Should not have share link")
@@ -103,13 +111,17 @@ final class ShareItemViewModelTests: XCTestCase {
         let repo = ErrorShareManagementRepository()
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
-        var attempts = 0
-        while vm.isLoading && attempts < 100 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        let loadComplete = expectation(description: "Loading completed")
+        var cancellables = Set<AnyCancellable>()
         
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in loadComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [loadComplete], timeout: 5.0)
         
         XCTAssertFalse(vm.isLoading, "Should finish loading")
         XCTAssertNil(vm.shareLink, "Should not have share link on error")
@@ -123,15 +135,22 @@ final class ShareItemViewModelTests: XCTestCase {
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
         // Wait for initial load
-        var attempts = 0
-        while vm.isLoading && attempts < 100 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        let initialLoadComplete = expectation(description: "Initial load completed")
+        var cancellables = Set<AnyCancellable>()
+        
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in initialLoadComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [initialLoadComplete], timeout: 5.0)
         
         vm.createShareLink()
         
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Check that genLinkLoading is true shortly after
+        try? await Task.sleep(nanoseconds: 10_000_000)
         
         XCTAssertTrue(vm.genLinkLoading, "Should be generating link")
     }
@@ -142,28 +161,37 @@ final class ShareItemViewModelTests: XCTestCase {
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
         // Wait for initial load
-        var attempts = 0
-        while vm.isLoading && attempts < 100 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        let initialLoadComplete = expectation(description: "Initial load completed")
+        var cancellables = Set<AnyCancellable>()
+        
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in initialLoadComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [initialLoadComplete], timeout: 5.0)
         
         XCTAssertNil(vm.shareLink, "Should not have link initially")
         
         vm.createShareLink()
         
-        // Wait for async Task to complete
-        attempts = 0
-        while vm.genLinkLoading && attempts < 150 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        // Wait for genLinkLoading to complete
+        let linkCreationComplete = expectation(description: "Link creation completed")
         
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        vm.$genLinkLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in linkCreationComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [linkCreationComplete], timeout: 5.0)
         
         // Note: shareLink depends on ShareVO.shareURL from API which mock may not provide
         // Testing that the loading state completes is the main success criteria
-        XCTAssertFalse(vm.isLoading, "Should finish main loading")
+        XCTAssertFalse(vm.genLinkLoading, "Should finish link generation")
     }
     
     func testCreateShareLinkV2_NavigatesToSettings() async {
@@ -171,22 +199,36 @@ final class ShareItemViewModelTests: XCTestCase {
         let repo = MockShareManagementRepository(shouldReturnLink: false)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
-        // Wait for initial load
-        var attempts = 0
-        while vm.isLoading && attempts < 100 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        // Wait for initial load to complete using Combine
+        let initialLoadComplete = expectation(description: "Initial load completed")
+        var cancellables = Set<AnyCancellable>()
         
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in initialLoadComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [initialLoadComplete], timeout: 5.0)
+        
+        // Now create the share link
         vm.createShareLinkV2()
         
-        // Wait longer for async operation
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        // Wait for genLinkLoading to complete
+        let linkCreationComplete = expectation(description: "Link creation completed")
         
-        // Check if navigation happened - V2 API behavior may vary
-        // Note: showLinkSettings and isCreatingLink depend on successful V2 API completion
-        // with mock, these may not trigger as expected
-        XCTAssertFalse(vm.isLoading, "Should not be in main loading state")
+        vm.$genLinkLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in linkCreationComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [linkCreationComplete], timeout: 5.0)
+        
+        // V2 API behavior may vary - the main thing is genLinkLoading should be false
+        XCTAssertFalse(vm.genLinkLoading, "Should not be creating link")
     }
     
     // MARK: - Copy Link Tests
@@ -197,13 +239,17 @@ final class ShareItemViewModelTests: XCTestCase {
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
         // Wait for link to load
-        var attempts = 0
-        while vm.isLoading && attempts < 100 {
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            attempts += 1
-        }
+        let loadComplete = expectation(description: "Loading completed")
+        var cancellables = Set<AnyCancellable>()
         
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        vm.$isLoading
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in loadComplete.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [loadComplete], timeout: 5.0)
         
         // Manually set share link since copyLink() requires it
         vm.shareLink = "https://example.com/share/token"
@@ -213,7 +259,16 @@ final class ShareItemViewModelTests: XCTestCase {
         XCTAssertTrue(vm.showCopyNotification, "Should show copy notification")
         
         // Wait for notification to auto-hide
-        try? await Task.sleep(nanoseconds: 2_500_000_000)
+        let notificationHidden = expectation(description: "Notification hidden")
+        
+        vm.$showCopyNotification
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .sink { _ in notificationHidden.fulfill() }
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [notificationHidden], timeout: 5.0)
         
         XCTAssertFalse(vm.showCopyNotification, "Notification should auto-hide")
     }
