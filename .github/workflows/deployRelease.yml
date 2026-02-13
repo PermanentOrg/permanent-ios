@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build and deploy a release build to TestFlight
-    runs-on: macos-26-large
+    runs-on: macos-26
     environment: production
 
     steps:

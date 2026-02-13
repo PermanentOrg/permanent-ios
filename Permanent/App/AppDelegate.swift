@@ -486,6 +486,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = notification.request.content.userInfo
         let name: String
         let folderLinkId: Int
+        let recordId: Int
         let isFolder: Bool
         
         // Check for record (file) first - most specific check
@@ -494,16 +495,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             folderLinkId = linkId
             name = itemName
             isFolder = false
+            // Try to get recordId if available
+            recordId = Int(userInfo["recordId"] as? String ?? "") ?? 0
         } else if let linkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
         let itemName = userInfo["shareName"] as? String {
             folderLinkId = linkId
             name = itemName
             isFolder = true
+            recordId = 0
         } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
             let itemName = userInfo["folderName"] as? String {
             folderLinkId = linkId
             name = itemName
             isFolder = true
+            recordId = 0
         } else {
             return
         }
@@ -516,7 +521,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
         
         DispatchQueue.main.async {
-            let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, isFolder: isFolder, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+            let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, isFolder: isFolder, recordId: recordId, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
             try? PreferencesManager.shared.setNonPlistObject(requestAccessNotifPayload, forKey: Constants.Keys.StorageKeys.requestLinkAccess)
             
             if let drawerVC = self.rootViewController.current as? DrawerViewController {
@@ -553,6 +558,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
                 
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                    // For record notifications, ALWAYS navigate to SharesViewController first
+                    // Don't show preview from MainViewController
                     drawerVC.dismiss(animated: false) {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             if let sharesVC = drawerVC.rootViewController.visibleViewController as? SharesViewController {

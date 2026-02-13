@@ -351,6 +351,19 @@ class ShareItemViewModel: ObservableObject {
                                 self.showLinkSettings = true
                                 self.setDefaultShareSettings()
                             }
+                        } else {
+                            // Handle case where both result and error are nil (e.g., retrieve with no existing link)
+                            self.isLoading = false
+                            if option == .create {
+                                self.genLinkLoading = false
+                            }
+                            
+                            if option == .retrieve {
+                                self.shareLink = nil
+                                // For retrieve with no link, we still want to load archives for UI
+                                self.isLoadingArchives = true
+                                self.fetchSharedArchives()
+                            }
                         }
                     }
                 }

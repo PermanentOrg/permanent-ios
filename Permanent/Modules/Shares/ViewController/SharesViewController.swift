@@ -491,6 +491,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = fileVM
         
+        // Add close action for modal presentation
+        filePreviewVC.closeAction = { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
+        }
+        
         let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
         fileDetailsNavigationController.filePreviewNavDelegate = self
         fileDetailsNavigationController.modalPresentationStyle = .fullScreen

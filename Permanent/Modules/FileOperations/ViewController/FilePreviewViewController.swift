@@ -44,6 +44,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var recordLoadedCB: ((FilePreviewViewController) -> Void)?
+    var closeAction: (() -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -117,6 +118,17 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 
         let shareButton = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
         navigationItem.rightBarButtonItem = shareButton
+        
+        // If opened from notification, add close button
+        if closeAction != nil {
+            let closeButton = UIBarButtonItem(
+                image: UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular)),
+                style: .plain,
+                target: self,
+                action: #selector(closeButtonTapped)
+            )
+            navigationItem.leftBarButtonItem = closeButton
+        }
         
         title = file.name
         
@@ -323,6 +335,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     // MARK: - Actions
 
+    @objc func closeButtonTapped() {
+        closeAction?()
+    }
+    
     @objc func showShareMenu(_ sender: Any) {
         var menuItems: [FileMenuViewModel.MenuItem] = []
         

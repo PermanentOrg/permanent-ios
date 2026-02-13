@@ -35,6 +35,9 @@ class FilePreviewNavigationController: UINavigationController {
     
     override init(rootViewController: UIViewController) {
         super.init(rootViewController: rootViewController)
+        // Ensure navigation bar is always visible
+        self.isNavigationBarHidden = false
+        self.setNavigationBarHidden(false, animated: false)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -47,6 +50,23 @@ class FilePreviewNavigationController: UINavigationController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Explicitly show navigation bar
+        setNavigationBarHidden(false, animated: false)
+        navigationBar.isHidden = false
+        
+        // Configure navigation bar appearance
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .darkBlue
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor.white
+        ]
+        
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.compactAppearance = appearance
+        navigationBar.tintColor = .white
     }
     
     override func viewWillDisappear(_ animated: Bool) {

@@ -756,9 +756,25 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         func _presentShare() {
             let fileType = sharedFilePayload.isFolder ? FileType.privateFolder.rawValue : FileType.miscellaneous.rawValue
-            let file = FileModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: fileType, permissions: viewModel!.archivePermissions)
+            let file = FileModel(name: sharedFilePayload.name, recordId: sharedFilePayload.recordId, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: fileType, permissions: viewModel!.archivePermissions)
             
-            presentShareManagement(for: file)
+            if sharedFilePayload.isFolder {
+                // For folders, show share management
+                presentShareManagement(for: file)
+            } else {
+                // For records/files, open in file preview with proper navigation and close button
+                let filePreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
+                filePreviewVC.modalPresentationStyle = .fullScreen
+                filePreviewVC.viewModel = self.viewModel
+                filePreviewVC.currentFile = file
+                filePreviewVC.isFromNotification = true
+                
+                let navController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+                navController.filePreviewNavDelegate = self
+                navController.modalPresentationStyle = .fullScreen
+                
+                self.present(navController, animated: true)
+            }
         }
         
         let currentArchive: ArchiveVOData? = viewModel?.currentArchive
