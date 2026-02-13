@@ -97,7 +97,8 @@ platform :ios do
     changelog = changelog_from_git_commits(merge_commit_filtering: 'exclude_merges')
 
     # upload to firebase
-	  firebase_app_distribution(
+	firebase_app_distribution(
+      app: ENV['FIREBASEAPPDISTRO_APP'],
       release_notes: changelog,
       service_credentials_json_data: ENV['FIREBASE_SERVICE_ACCOUNT_KEY']
     )
