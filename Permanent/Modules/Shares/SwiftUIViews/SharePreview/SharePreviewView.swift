@@ -21,12 +21,14 @@ struct SharePreviewView: View {
          onNavigateToFolder: ((NavigateMinParams) -> Void)? = nil,
          onNavigateToShares: ((String) -> Void)? = nil,
          onNavigateToSharedWithMe: ((NavigateMinParams?) -> Void)? = nil,
-         onNavigateToSharedByMe: ((NavigateMinParams?) -> Void)? = nil) {
+         onNavigateToSharedByMe: ((NavigateMinParams?) -> Void)? = nil,
+         onNavigateToFilePreview: ((FilePreviewParams) -> Void)? = nil) {
         let vm = SharePreviewSwiftUIViewModel(shareToken: shareToken)
         vm.onNavigateToFolder = onNavigateToFolder
         vm.onNavigateToShares = onNavigateToShares
         vm.onNavigateToSharedWithMe = onNavigateToSharedWithMe
         vm.onNavigateToSharedByMe = onNavigateToSharedByMe
+        vm.onNavigateToFilePreview = onNavigateToFilePreview
         _viewModel = StateObject(wrappedValue: vm)
     }
     

@@ -1179,6 +1179,12 @@ class ShareItemViewModel: ObservableObject {
                 return nil
             }
             
+            // Skip if the access role is owner
+            if let accessRole = share.accessRole,
+               AccessRole.roleForValue(accessRole) == .owner {
+                return nil
+            }
+            
             let folderLinkId = self.correctFolderLinkId ?? self.fileModel.folderLinkId
             let archiveVO = self.makeArchiveVO(from: archiveData)
 
@@ -1274,8 +1280,25 @@ class ShareItemViewModel: ObservableObject {
                         if let folderVO = folderVO,
                            let folderData = folderVO.folderVO {
                             if let shareVOs = folderData.shareVOS, !shareVOs.isEmpty {
+                                // Filter out owner archives (same as V2 API)
+                                let userOwnArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
+                                let filteredShares = shareVOs.filter { share in
+                                    // Exclude if this is the user's own archive
+                                    if let userOwnId = userOwnArchiveId,
+                                       let shareArchiveId = share.archiveID,
+                                       shareArchiveId == userOwnId {
+                                        return false
+                                    }
+                                    // Exclude if the access role is owner
+                                    if let accessRole = share.accessRole,
+                                       AccessRole.roleForValue(accessRole) == .owner {
+                                        return false
+                                    }
+                                    return true
+                                }
+                                
                                 // Sort pending shares first, then approved shares
-                                self.sharedArchives = shareVOs.sorted { share1, share2 in
+                                self.sharedArchives = filteredShares.sorted { share1, share2 in
                                     let isPending1 = share1.status?.contains("pending") ?? false
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2
@@ -1310,8 +1333,25 @@ class ShareItemViewModel: ObservableObject {
                         if let recordVO = recordVO,
                            let recordData = recordVO.recordVO {
                             if let shareVOs = recordData.shareVOS, !shareVOs.isEmpty {
+                                // Filter out owner archives (same as V2 API)
+                                let userOwnArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
+                                let filteredShares = shareVOs.filter { share in
+                                    // Exclude if this is the user's own archive
+                                    if let userOwnId = userOwnArchiveId,
+                                       let shareArchiveId = share.archiveID,
+                                       shareArchiveId == userOwnId {
+                                        return false
+                                    }
+                                    // Exclude if the access role is owner
+                                    if let accessRole = share.accessRole,
+                                       AccessRole.roleForValue(accessRole) == .owner {
+                                        return false
+                                    }
+                                    return true
+                                }
+                                
                                 // Sort pending shares first, then approved shares
-                                self.sharedArchives = shareVOs.sorted { share1, share2 in
+                                self.sharedArchives = filteredShares.sorted { share1, share2 in
                                     let isPending1 = share1.status?.contains("pending") ?? false
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2

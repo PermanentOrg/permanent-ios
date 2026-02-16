@@ -92,6 +92,53 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
                 }
                 
                 AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+            },
+            onNavigateToFilePreview: { [weak self] params in
+                guard let self = self else { return }
+                
+                // Navigate to Shared with Me tab first
+                guard let sharesVC = UIViewController.create(
+                    withIdentifier: .shares,
+                    from: .share
+                ) as? SharesViewController else { return }
+                
+                sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+                
+                // Get current archive permissions
+                let permissions = AuthenticationManager.shared.session?.selectedArchive?.accessRole.flatMap { 
+                    ArchiveVOData.permissions(forAccessRole: $0) 
+                } ?? []
+                
+                // Create the file model
+                let file = FileModel(
+                    name: params.name,
+                    recordId: params.recordId,
+                    folderLinkId: params.folderLinkId,
+                    archiveNbr: params.archiveNbr,
+                    type: params.type,
+                    permissions: permissions,
+                    thumbnailURL2000: params.thumbnailURL
+                )
+                
+                // Change to shares view
+                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                
+                // After a short delay to allow the view to load, present the file preview
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    let filePreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
+                    filePreviewVC.modalPresentationStyle = .fullScreen
+                    filePreviewVC.currentFile = file
+                    filePreviewVC.isFromNotification = true
+                    
+                    // Use a minimal view model
+                    let viewModel = MyFilesViewModel()
+                    filePreviewVC.viewModel = viewModel
+                    
+                    let navController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+                    navController.modalPresentationStyle = .fullScreen
+                    
+                    sharesVC.present(navController, animated: true)
+                }
             }
         )
     }

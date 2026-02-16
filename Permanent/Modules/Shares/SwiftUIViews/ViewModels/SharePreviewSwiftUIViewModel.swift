@@ -107,6 +107,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     var onNavigateToShares: ((String) -> Void)?
     var onNavigateToSharedWithMe: ((NavigateMinParams?) -> Void)?
     var onNavigateToSharedByMe: ((NavigateMinParams?) -> Void)?
+    var onNavigateToFilePreview: ((FilePreviewParams) -> Void)?
 
     init(shareToken: String,
          repository: SharePreviewRepositoryProtocol = SharePreviewAPIService(),
@@ -353,9 +354,28 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
     
     private func navigateToFolder() {
-        if let folderData = self.shareDataCache?.folderData,
-           let folderLinkId = folderData.folderLinkID,
+        // Check if it's a single file/record - open in file preview directly
+        if let recordData = self.shareDataCache?.recordData,
+           let recordId = recordData.recordID,
+           let folderLinkId = recordData.folderLinkID,
            let archiveNbr = self.currentArchive?.archiveNbr {
+            let fileType = recordData.type ?? FileType.miscellaneous.rawValue
+            let fileName = recordData.displayName ?? "File"
+            let thumbnailURL = recordData.thumbURL2000 ?? recordData.thumbURL500 ?? ""
+            let params = FilePreviewParams(
+                name: fileName,
+                recordId: recordId,
+                folderLinkId: folderLinkId,
+                archiveNbr: archiveNbr,
+                type: fileType,
+                thumbnailURL: thumbnailURL
+            )
+            self.onNavigateToFilePreview?(params)
+        }
+        // For folders, navigate to shared with me folder view
+        else if let folderData = self.shareDataCache?.folderData,
+                let folderLinkId = folderData.folderLinkID,
+                let archiveNbr = self.currentArchive?.archiveNbr {
             let params: NavigateMinParams = (archiveNo: archiveNbr, folderLinkId: folderLinkId, folderName: folderData.displayName)
             self.onNavigateToSharedWithMe?(params)
         } else if let navigateToShares = self.onNavigateToShares,
@@ -697,6 +717,15 @@ enum SharePreviewItemType: String, Codable {
     case folder = "folder"
     case image = "image"
     case other = "other"
+}
+
+struct FilePreviewParams {
+    let name: String
+    let recordId: Int
+    let folderLinkId: Int
+    let archiveNbr: String
+    let type: String
+    let thumbnailURL: String
 }
 
 // MARK: - Repository Protocol
