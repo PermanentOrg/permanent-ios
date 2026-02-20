@@ -6,7 +6,48 @@ on:
     branches: [ "Release-**" ]
 
 jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: macos-26
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Update Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.0'
+          bundler-cache: true
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.2'
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      - name: Run Unit Tests
+        env:
+          CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
+          REVERSED_CLIENT_ID: ${{ secrets.IOS_FIREBASE_REVERSED_CLIENT_ID }}
+          API_KEY: ${{ secrets.IOS_FIREBASE_API_KEY }}
+          GCM_SENDER_ID: ${{ secrets.IOS_FIREBASE_GCM_SENDER_ID }}
+          PROJECT_ID: ${{ secrets.IOS_FIREBASE_PROJECT_ID }}
+          STORAGE_BUCKET: ${{ secrets.IOS_FIREBASE_STORAGE_BUCKET }}
+          GOOGLE_APP_ID: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
+          AUTH_TENANT_ID: ${{ secrets.MOBILE_PROD_AUTH_TENANT_ID }}
+          AUTH_CLIENT_ID: ${{ secrets.MOBILE_PROD_AUTH_CLIENT_ID }}
+          AUTH_CLIENT_SECRET: ${{ secrets.MOBILE_PROD_AUTH_CLIENT_SECRET }}
+          STRIPE_PUB_KEY: ${{ secrets.MOBILE_PROD_STRIPE_PUB_KEY }}
+          SKIPLINT: true
+          TEST_PLAN: 'unit-tests'
+        run: bundle exec fastlane tests
+
   build:
+    needs: test
     name: Build and deploy a release build to TestFlight
     runs-on: macos-26
     environment: production
@@ -22,6 +63,13 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '26.2'
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
       - name: Run Fastlane AppStore
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
