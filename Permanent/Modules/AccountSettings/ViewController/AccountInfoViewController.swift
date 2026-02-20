@@ -29,19 +29,53 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         viewModel?.trackEvents(action: AccountEventAction.openLoginInfo)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+        let inset = keyboardFrame.height - view.safeAreaInsets.bottom
+        UIView.animate(withDuration: duration) {
+            self.scrollView.contentInset.bottom = inset
+            self.scrollView.verticalScrollIndicatorInsets.bottom = inset
+        }
+    }
+
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+        UIView.animate(withDuration: duration) {
+            self.scrollView.contentInset.bottom = 0
+            self.scrollView.verticalScrollIndicatorInsets.bottom = 0
+        }
+    }
+    
+    @objc private func moveToNextFromPhone() {
+        addressView.textField?.becomeFirstResponder()
+    }
+
     private func initUI() {
         title = .accountInfo
         view.backgroundColor = .white
         
-        accountNameView.configureElementUI(label: .accountName, returnKey: UIReturnKeyType.done)
-        primaryEmailView.configureElementUI(label: .primaryEmail, returnKey: UIReturnKeyType.done)
-        mobilePhoneView.configureElementUI(label: .mobilePhone, returnKey: UIReturnKeyType.done, keyboardType: .numbersAndPunctuation)
-        addressView.configureElementUI(label: "Address Line 1".localized(), returnKey: UIReturnKeyType.done)
-        addressView2.configureElementUI(label: "Address Line 2".localized(), returnKey: UIReturnKeyType.done)
-        cityView.configureElementUI(label: .city, returnKey: UIReturnKeyType.done)
-        stateView.configureElementUI(label: .stateOrRegion, returnKey: UIReturnKeyType.done)
-        postalCodeView.configureElementUI(label: .postalcode, returnKey: UIReturnKeyType.done)
-        countryView.configureElementUI(label: .country, returnKey: UIReturnKeyType.done)
+        accountNameView.configureElementUI(label: .accountName, returnKey: .next)
+        primaryEmailView.configureElementUI(label: .primaryEmail, returnKey: .next)
+        mobilePhoneView.configureElementUI(label: .mobilePhone, returnKey: .next, keyboardType: .phonePad)
+        addressView.configureElementUI(label: "Address Line 1".localized(), returnKey: .next)
+        addressView2.configureElementUI(label: "Address Line 2".localized(), returnKey: .next)
+        cityView.configureElementUI(label: .city, returnKey: .next)
+        stateView.configureElementUI(label: .stateOrRegion, returnKey: .next)
+        postalCodeView.configureElementUI(label: .postalcode, returnKey: .next)
+        countryView.configureElementUI(label: .country, returnKey: .done)
         contentUpdateButton.configureActionButtonUI(title: .save)
         deleteAccountButton.configureActionButtonUI(title: "Delete Account".localized(), bgColor: .deepRed)
         
@@ -54,10 +88,27 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         stateView.delegate = self
         postalCodeView.delegate = self
         countryView.delegate = self
-        
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        scrollView.addGestureRecognizer(tapGesture)
+
         getUserDetails()
+        
+        
+        //toolbar for having a next button on phone number introduction
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let nextButton = UIBarButtonItem(title: "Next", style: .done, target: self, action: #selector(moveToNextFromPhone))
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbar.items = [spacer, nextButton]
+        mobilePhoneView.textField?.inputAccessoryView = toolbar
     }
     
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
     @IBAction func pressedUpdateButton(_ sender: RoundedButton) {
         attemptValuesChange()
     }
@@ -147,41 +198,32 @@ extension AccountInfoViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        
-        switch textField {
-        case postalCodeView.textField, countryView.textField, cityView.textField, stateView.textField:
-            let point = CGPoint.zero
-            scrollView.setContentOffset(point, animated: true)
-            
-        default:
-            break
+        let fields = [
+            accountNameView.textField,
+            primaryEmailView.textField,
+            mobilePhoneView.textField,
+            addressView.textField,
+            addressView2.textField,
+            cityView.textField,
+            stateView.textField,
+            postalCodeView.textField,
+            countryView.textField
+        ]
+        if let index = fields.firstIndex(of: textField), index < fields.count - 1 {
+            fields[index + 1]?.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
         }
         return true
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        let changePosition: [CGFloat] = [view.frame.height / 10, view.frame.height / 7]
         (textField as? PETextField)?.toggleBorder(active: true)
-        
-        let point: CGPoint
-        switch textField {
-        case cityView.textField:
-            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[0])
-            
-        case stateView.textField:
-            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[0])
-            
-        case postalCodeView.textField:
-            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[1])
-            
-        case countryView.textField:
-            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[1])
-            
-        default:
-            point = CGPoint.zero
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let fieldFrame = self.scrollView.convert(textField.bounds, from: textField)
+            let visibleRect = fieldFrame.insetBy(dx: 0, dy: -16)
+            self.scrollView.scrollRectToVisible(visibleRect, animated: true)
         }
-        scrollView.setContentOffset(point, animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {

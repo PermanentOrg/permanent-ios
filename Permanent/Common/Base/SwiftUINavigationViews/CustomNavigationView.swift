@@ -84,7 +84,13 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
             .navigationViewStyle(StackNavigationViewStyle())
         }
         .onAppear {
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+            if #available(iOS 16.0, *) {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                    windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
+                }
+            } else {
+                UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+            }
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .portrait
             ScrollViewAppearanceManager.shared.pushScrollViewBounce(enabled: false, identifier: "CustomNavigationView")
