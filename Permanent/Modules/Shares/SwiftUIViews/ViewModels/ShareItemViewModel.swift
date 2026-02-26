@@ -116,6 +116,8 @@ class ShareItemViewModel: ObservableObject {
     @Published var showArchiveAccessManagement = false
     @Published var selectedArchiveForEdit: ShareVOData?
     @Published var selectedRoleForArchive: AccessRole?
+    @Published var showFindArchiveByEmail = false
+    @Published var showSelectArchiveFromPastShares = false
     
     // Properties for archives with access
     @Published var sharedArchives: [ShareVOData] = []
@@ -853,6 +855,26 @@ class ShareItemViewModel: ObservableObject {
                 self.showEmailAddressField = true
             }
         }
+    }
+
+    func openFindArchiveByEmail() {
+        navigationDirection = .forward
+        showFindArchiveByEmail = true
+    }
+
+    func closeFindArchiveByEmail() {
+        navigationDirection = .backward
+        showFindArchiveByEmail = false
+    }
+
+    func openSelectArchiveFromPastShares() {
+        navigationDirection = .forward
+        showSelectArchiveFromPastShares = true
+    }
+
+    func closeSelectArchiveFromPastShares() {
+        navigationDirection = .backward
+        showSelectArchiveFromPastShares = false
     }
     
     func submitEmailInvitation() {

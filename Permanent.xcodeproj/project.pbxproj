@@ -71,6 +71,8 @@
 		5E0AB9E72CB026D800C80A94 /* ForgotPasswordConfimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AB9E62CB026D800C80A94 /* ForgotPasswordConfimationView.swift */; };
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0B1BD42B961CE800B10BB5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */; };
+		5E0CFF442F50833A004151CE /* FindArchiveByEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF432F50833A004151CE /* FindArchiveByEmailView.swift */; };
+		5E0CFF462F508346004151CE /* SelectArchiveFromPastSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF452F508346004151CE /* SelectArchiveFromPastSharesView.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
 		5E10173B2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */; };
@@ -1142,6 +1144,8 @@
 		5E0AB9E62CB026D800C80A94 /* ForgotPasswordConfimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordConfimationView.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		5E0CFF432F50833A004151CE /* FindArchiveByEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindArchiveByEmailView.swift; sourceTree = "<group>"; };
+		5E0CFF452F508346004151CE /* SelectArchiveFromPastSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectArchiveFromPastSharesView.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
 		5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveNameProfileItem.swift; sourceTree = "<group>"; };
 		5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewAppearanceManager.swift; sourceTree = "<group>"; };
@@ -3498,6 +3502,8 @@
 				5E98C9802E706A28002AEFA5 /* GeneralAccessView.swift */,
 				5EA9C2B62E45FF78003BA1E9 /* Components */,
 				5EA9C2B82E45FF78003BA1E9 /* ViewModels */,
+				5E0CFF432F50833A004151CE /* FindArchiveByEmailView.swift */,
+				5E0CFF452F508346004151CE /* SelectArchiveFromPastSharesView.swift */,
 			);
 			path = SwiftUIViews;
 			sourceTree = "<group>";
@@ -4850,9 +4856,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4867,9 +4877,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4928,9 +4942,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -5257,6 +5275,7 @@
 				92C95C512CCFB445002CE018 /* EventsPayload.swift in Sources */,
 				5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
+				5E0CFF442F50833A004151CE /* FindArchiveByEmailView.swift in Sources */,
 				5EF300362D4AC010001FFEE7 /* TwoStepChooseEmailView.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */,
@@ -5285,6 +5304,7 @@
 				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
 				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
+				5E0CFF462F508346004151CE /* SelectArchiveFromPastSharesView.swift in Sources */,
 				5E7141452AFD25D5003952CD /* GiftingModel.swift in Sources */,
 				5E9F5CEF2D53591600F6213E /* CustomPhoneFieldView.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,

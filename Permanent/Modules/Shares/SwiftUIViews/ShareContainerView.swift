@@ -38,6 +38,20 @@ struct ShareContainerView: View {
                         insertion: viewModel.insertionViewTransition,
                         removal: .opacity
                     ))
+            } else if viewModel.showFindArchiveByEmail {
+                FindArchiveByEmailView(viewModel: viewModel)
+                    .id("FindArchiveByEmailView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
+            } else if viewModel.showSelectArchiveFromPastShares {
+                SelectArchiveFromPastSharesView(viewModel: viewModel)
+                    .id("SelectArchiveFromPastSharesView")
+                    .transition(.asymmetric(
+                        insertion: viewModel.insertionViewTransition,
+                        removal: .opacity
+                    ))
             } else if viewModel.showLinkSettings {
                 LinkSettingsView(viewModel: viewModel)
                     .id("LinkSettingsView")
@@ -102,6 +116,8 @@ struct ShareContainerView: View {
         .animation(.easeInOut(duration: 0.3), value: viewModel.showGeneralAccess)
         .animation(.easeInOut(duration: 0.3), value: viewModel.showRoleSelection)
         .animation(.easeInOut(duration: 0.3), value: viewModel.showArchiveAccessManagement)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.showFindArchiveByEmail)
+        .animation(.easeInOut(duration: 0.3), value: viewModel.showSelectArchiveFromPastShares)
         .animation(.easeInOut(duration: 0.3), value: viewModel.navigationDirection)
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showCopyNotification)
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.showArchiveAccessNotification)
