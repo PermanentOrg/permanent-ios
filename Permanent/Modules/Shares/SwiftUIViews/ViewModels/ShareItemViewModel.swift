@@ -859,21 +859,25 @@ class ShareItemViewModel: ObservableObject {
 
     func openFindArchiveByEmail() {
         navigationDirection = .forward
+        showSelectArchiveFromPastShares = false
         showFindArchiveByEmail = true
     }
 
     func closeFindArchiveByEmail() {
         navigationDirection = .backward
+        showSelectArchiveFromPastShares = false
         showFindArchiveByEmail = false
     }
 
     func openSelectArchiveFromPastShares() {
         navigationDirection = .forward
+        showFindArchiveByEmail = false
         showSelectArchiveFromPastShares = true
     }
 
     func closeSelectArchiveFromPastShares() {
         navigationDirection = .backward
+        showFindArchiveByEmail = false
         showSelectArchiveFromPastShares = false
     }
     

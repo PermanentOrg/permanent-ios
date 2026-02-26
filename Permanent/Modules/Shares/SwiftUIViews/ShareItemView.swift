@@ -367,7 +367,7 @@ struct ShareItemView: View {
                 Image(systemName: systemIcon)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 40, height: 40)
                     .background(
                         LinearGradient(
                         stops: [
