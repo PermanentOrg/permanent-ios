@@ -75,6 +75,8 @@
 		5E0CFF462F508346004151CE /* ShareArchivesFromPastSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF452F508346004151CE /* ShareArchivesFromPastSharesView.swift */; };
 		5E0CFF482F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF472F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift */; };
 		5E0CFF4A2F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF492F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift */; };
+		5E0CFF4C2F51D68C004151CE /* ShareGrantArchiveAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF4B2F51D68C004151CE /* ShareGrantArchiveAccessView.swift */; };
+		5E0CFF4E2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF4D2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
 		5E10173B2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */; };
@@ -1150,6 +1152,8 @@
 		5E0CFF452F508346004151CE /* ShareArchivesFromPastSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesFromPastSharesView.swift; sourceTree = "<group>"; };
 		5E0CFF472F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFindArchiveByEmailViewModel.swift; sourceTree = "<group>"; };
 		5E0CFF492F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesFromPastSharesViewModel.swift; sourceTree = "<group>"; };
+		5E0CFF4B2F51D68C004151CE /* ShareGrantArchiveAccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareGrantArchiveAccessView.swift; sourceTree = "<group>"; };
+		5E0CFF4D2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareInviteAndGrantAccessView.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
 		5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveNameProfileItem.swift; sourceTree = "<group>"; };
 		5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewAppearanceManager.swift; sourceTree = "<group>"; };
@@ -3510,6 +3514,8 @@
 				5EA9C2B82E45FF78003BA1E9 /* ViewModels */,
 				5E0CFF432F50833A004151CE /* ShareFindArchiveByEmailView.swift */,
 				5E0CFF452F508346004151CE /* ShareArchivesFromPastSharesView.swift */,
+				5E0CFF4B2F51D68C004151CE /* ShareGrantArchiveAccessView.swift */,
+				5E0CFF4D2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift */,
 			);
 			path = SwiftUIViews;
 			sourceTree = "<group>";
@@ -5201,6 +5207,7 @@
 				5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				5E29FA572E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */,
+				5E0CFF4C2F51D68C004151CE /* ShareGrantArchiveAccessView.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
@@ -5490,6 +5497,7 @@
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
 				5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */,
 				5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */,
+				5E0CFF4E2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				5E0AB9E72CB026D800C80A94 /* ForgotPasswordConfimationView.swift in Sources */,
 				BC42EDDD25C06D080031B965 /* InviteVOPayload.swift in Sources */,

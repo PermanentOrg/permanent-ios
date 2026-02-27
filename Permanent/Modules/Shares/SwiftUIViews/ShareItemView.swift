@@ -426,6 +426,7 @@ struct ShareItemView: View {
         HStack(spacing: 12) {
             // Check if this is a pending request or approved archive
             let isPending = shareVO.status?.contains("pending") == true
+            let isInvited = shareVO.status?.contains("invited") == true
             
             if isPending {
                 userAvatarView(shareVO: shareVO)
@@ -507,6 +508,34 @@ struct ShareItemView: View {
                         }
                     }
                 }
+            } else if isInvited {
+                userAvatarView(shareVO: shareVO)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 8) {
+                        Text(shareVO.accountVO?.fullName ?? "Invited user")
+                            .font(.custom("Usual-Medium", size: 14))
+                            .foregroundColor(Color.blue900)
+                            .lineLimit(1)
+
+                        Text("Invited")
+                            .font(.custom("Usual-Regular", size: 12))
+                            .foregroundColor(Color.success500)
+                    }
+
+                    Text(shareVO.accountVO?.primaryEmail ?? "")
+                        .font(.custom("Usual-Regular", size: 12))
+                        .foregroundColor(Color.blue300)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Button(action: {}) {
+                    Image(.shareArchiveEditShare)
+                        .frame(width: 24, height: 24)
+                }
+                .buttonStyle(PlainButtonStyle())
             } else {
                 archiveThumbnailView(shareVO: shareVO)
                 

@@ -10,10 +10,15 @@ import UIKit
 
 struct ShareFindArchiveByEmailView: View {
     @ObservedObject var viewModel: ShareItemViewModel
-    @StateObject private var findArchiveViewModel = ShareFindArchiveByEmailViewModel()
+    @ObservedObject private var findArchiveViewModel: ShareFindArchiveByEmailViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var isSearchFocused: Bool = false
     @State private var isKeyboardVisible: Bool = false
+
+    init(viewModel: ShareItemViewModel) {
+        self.viewModel = viewModel
+        self._findArchiveViewModel = ObservedObject(wrappedValue: viewModel.findArchiveByEmailViewModel)
+    }
 
     private var contentBackgroundColor: Color {
         switch findArchiveViewModel.visibleSearchOutcome {
@@ -247,8 +252,15 @@ struct ShareFindArchiveByEmailView: View {
 
     private var noAccountBottomInviteSection: some View {
         Button(action: {
-            if isSearchFocused {
+            if isSearchFocused || isKeyboardVisible {
                 isSearchFocused = false
+                if case .noAccount(let email) = findArchiveViewModel.visibleSearchOutcome {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        viewModel.openInviteAndGrantAccess(recipientEmail: email)
+                    }
+                }
+            } else if case .noAccount(let email) = findArchiveViewModel.visibleSearchOutcome {
+                viewModel.openInviteAndGrantAccess(recipientEmail: email)
             }
         }) {
             HStack(spacing: 8) {
@@ -271,8 +283,21 @@ struct ShareFindArchiveByEmailView: View {
 
     private func mockArchiveRow(_ archive: ShareFindArchiveByEmailViewModel.ArchiveResult) -> some View {
         Button(action: {
-            if isSearchFocused {
+            if isSearchFocused || isKeyboardVisible {
                 isSearchFocused = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    viewModel.openGrantArchiveAccess(
+                        archiveName: archive.name,
+                        archiveInitials: archive.initials,
+                        source: .findByEmail
+                    )
+                }
+            } else {
+                viewModel.openGrantArchiveAccess(
+                    archiveName: archive.name,
+                    archiveInitials: archive.initials,
+                    source: .findByEmail
+                )
             }
         }) {
             HStack(spacing: 16) {
@@ -290,7 +315,7 @@ struct ShareFindArchiveByEmailView: View {
                             .frame(width: 14, height: 2)
 
                         Text(archive.initials)
-                            .font(.custom("Usual-Medium", size: 30))
+                            .font(.custom("Usual-Medium", size: 10))
                             .foregroundColor(.white)
                     }
                 }

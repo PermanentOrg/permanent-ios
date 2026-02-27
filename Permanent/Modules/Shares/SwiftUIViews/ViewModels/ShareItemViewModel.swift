@@ -14,6 +14,11 @@ enum NavigationDirection {
     case backward
 }
 
+enum ArchiveGrantSource {
+    case findByEmail
+    case pastShares
+}
+
 enum ShareViewAccessLevel: CaseIterable {
     case anyoneCanView
     case restricted
@@ -88,6 +93,12 @@ enum ShareExpirationOption: CaseIterable {
 
 @MainActor
 class ShareItemViewModel: ObservableObject {
+    struct PendingArchiveGrant {
+        let name: String
+        let initials: String
+        let source: ArchiveGrantSource
+    }
+
     @Published var isLoading = false
     @Published var genLinkLoading = false
     @Published var shareLink: String?
@@ -99,6 +110,7 @@ class ShareItemViewModel: ObservableObject {
     @Published var selectedExpiration: ShareExpirationOption = .none
     @Published var showCopyNotification = false
     @Published var showArchiveAccessNotification = false
+    @Published var archiveAccessNotificationMessage = "Archive access has been updated."
     @Published var showLinkSettingsNotification = false
     @Published var showRevokeLinkNotification = false
     @Published var hasUnsavedChanges = false
@@ -117,6 +129,14 @@ class ShareItemViewModel: ObservableObject {
     @Published var selectedRoleForArchive: AccessRole?
     @Published var showFindArchiveByEmail = false
     @Published var showSelectArchiveFromPastShares = false
+    @Published var showGrantArchiveAccess = false
+    @Published var showInviteAndGrantAccess = false
+    @Published var pendingArchiveGrant: PendingArchiveGrant?
+    @Published var selectedRoleForGrantAccess: AccessRole = .viewer
+    @Published var invitationRecipientFullName = ""
+    @Published var invitationRecipientEmail = ""
+    @Published var selectedRoleForInviteAccess: AccessRole = .viewer
+    let findArchiveByEmailViewModel = ShareFindArchiveByEmailViewModel()
     
     // Properties for archives with access
     @Published var sharedArchives: [ShareVOData] = []
@@ -636,7 +656,8 @@ class ShareItemViewModel: ObservableObject {
         trackCopyLinkEvent()
     }
     
-    func showArchiveAccessUpdatedNotification() {
+    func showArchiveAccessUpdatedNotification(message: String = "Archive access has been updated.") {
+        archiveAccessNotificationMessage = message
         // Delay showing the notification to allow view transition to complete
         Task {
             try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds delay
@@ -858,6 +879,9 @@ class ShareItemViewModel: ObservableObject {
 
     func openFindArchiveByEmail() {
         navigationDirection = .forward
+        findArchiveByEmailViewModel.reset()
+        showInviteAndGrantAccess = false
+        showGrantArchiveAccess = false
         showSelectArchiveFromPastShares = false
         showFindArchiveByEmail = true
     }
@@ -878,6 +902,232 @@ class ShareItemViewModel: ObservableObject {
         navigationDirection = .backward
         showFindArchiveByEmail = false
         showSelectArchiveFromPastShares = false
+    }
+
+    func openGrantArchiveAccess(archiveName: String, archiveInitials: String, source: ArchiveGrantSource) {
+        navigationDirection = .forward
+        pendingArchiveGrant = PendingArchiveGrant(name: archiveName, initials: archiveInitials, source: source)
+        selectedRoleForGrantAccess = .viewer
+        showInviteAndGrantAccess = false
+        showFindArchiveByEmail = false
+        showSelectArchiveFromPastShares = false
+        showGrantArchiveAccess = true
+    }
+
+    func closeGrantArchiveAccess() {
+        navigationDirection = .backward
+        showGrantArchiveAccess = false
+
+        switch pendingArchiveGrant?.source {
+        case .findByEmail:
+            showFindArchiveByEmail = true
+            showSelectArchiveFromPastShares = false
+        case .pastShares:
+            showFindArchiveByEmail = false
+            showSelectArchiveFromPastShares = true
+        case .none:
+            showFindArchiveByEmail = false
+            showSelectArchiveFromPastShares = false
+        }
+    }
+
+    func submitGrantArchiveAccess() {
+        if let pendingArchiveGrant {
+            addGrantedArchiveToCurrentAccessList(
+                archiveName: pendingArchiveGrant.name,
+                role: selectedRoleForGrantAccess
+            )
+        }
+
+        navigationDirection = .backward
+        showGrantArchiveAccess = false
+        showInviteAndGrantAccess = false
+        showFindArchiveByEmail = false
+        showSelectArchiveFromPastShares = false
+        pendingArchiveGrant = nil
+        showArchiveAccessUpdatedNotification(message: "Access granted for new archive.")
+    }
+
+    func openInviteAndGrantAccess(recipientEmail: String) {
+        navigationDirection = .forward
+        invitationRecipientEmail = recipientEmail
+        if invitationRecipientFullName.isEmpty {
+            invitationRecipientFullName = recipientEmail.split(separator: "@").first.map { String($0) } ?? ""
+        }
+        selectedRoleForInviteAccess = .viewer
+        showGrantArchiveAccess = false
+        showSelectArchiveFromPastShares = false
+        showFindArchiveByEmail = false
+        showInviteAndGrantAccess = true
+    }
+
+    func closeInviteAndGrantAccess() {
+        navigationDirection = .backward
+        showInviteAndGrantAccess = false
+        showFindArchiveByEmail = true
+    }
+
+    func submitInviteAndGrantAccess() {
+        addInvitedRecipientToCurrentAccessList(
+            fullName: invitationRecipientFullName,
+            email: invitationRecipientEmail,
+            role: selectedRoleForInviteAccess
+        )
+
+        navigationDirection = .backward
+        showInviteAndGrantAccess = false
+        showFindArchiveByEmail = false
+        showSelectArchiveFromPastShares = false
+        showGrantArchiveAccess = false
+        showArchiveAccessUpdatedNotification(message: "Invitation sent.")
+    }
+
+    private func addInvitedRecipientToCurrentAccessList(fullName: String, email: String, role: AccessRole) {
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedEmail.isEmpty else { return }
+
+        let trimmedName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let displayName = trimmedName.isEmpty ? trimmedEmail.split(separator: "@").first.map(String.init) ?? "Invited user" : trimmedName
+
+        if let existingIndex = sharedArchives.firstIndex(where: { $0.accountVO?.primaryEmail?.caseInsensitiveCompare(trimmedEmail) == .orderedSame }) {
+            sharedArchives[existingIndex].accessRole = role.apiValue
+            shouldShowArchivesSection = !sharedArchives.isEmpty
+            return
+        }
+
+        let now = ISO8601DateFormatter().string(from: Date())
+        let shareID = -Int.random(in: 100_000...999_999)
+
+        let localAccount = AccountVOData(
+            accountID: nil,
+            primaryEmail: trimmedEmail,
+            fullName: displayName,
+            address: nil,
+            address2: nil,
+            country: nil,
+            city: nil,
+            state: nil,
+            zip: nil,
+            primaryPhone: nil,
+            defaultArchiveID: nil,
+            level: nil,
+            apiToken: nil,
+            betaParticipant: nil,
+            facebookAccountID: nil,
+            googleAccountID: nil,
+            status: nil,
+            type: nil,
+            emailStatus: nil,
+            phoneStatus: nil,
+            notificationPreferences: nil,
+            agreed: nil,
+            optIn: nil,
+            emailArray: nil,
+            inviteCode: nil,
+            rememberMe: nil,
+            keepLoggedIn: nil,
+            accessRole: nil,
+            spaceTotal: nil,
+            spaceLeft: nil,
+            fileTotal: nil,
+            fileLeft: nil,
+            changePrimaryEmail: nil,
+            changePrimaryPhone: nil,
+            createdDT: now,
+            updatedDT: now,
+            hideChecklist: nil
+        )
+
+        let localShare = ShareVOData(
+            shareID: shareID,
+            folderLinkID: nil,
+            archiveID: nil,
+            accessRole: role.apiValue,
+            type: nil,
+            status: "status.generic.invited",
+            requestToken: nil,
+            previewToggle: nil,
+            folderVO: nil,
+            recordVO: nil,
+            archiveVO: nil,
+            accountVO: localAccount,
+            createdDT: now,
+            updatedDT: now
+        )
+
+        sharedArchives.append(localShare)
+        shouldShowArchivesSection = !sharedArchives.isEmpty
+    }
+
+    private func addGrantedArchiveToCurrentAccessList(archiveName: String, role: AccessRole) {
+        if let existingIndex = sharedArchives.firstIndex(where: { $0.archiveVO?.fullName == archiveName }) {
+            sharedArchives[existingIndex].accessRole = role.apiValue
+            shouldShowArchivesSection = !sharedArchives.isEmpty
+            return
+        }
+
+        let archiveID = Int.random(in: 100_000...999_999)
+        let shareID = -Int.random(in: 100_000...999_999)
+        let now = ISO8601DateFormatter().string(from: Date())
+
+        let localArchive = ArchiveVOData(
+            childFolderVOS: nil,
+            folderSizeVOS: nil,
+            recordVOS: nil,
+            accessRole: role.apiValue,
+            fullName: archiveName,
+            spaceTotal: nil,
+            spaceLeft: nil,
+            fileTotal: nil,
+            fileLeft: nil,
+            relationType: nil,
+            homeCity: nil,
+            homeState: nil,
+            homeCountry: nil,
+            itemVOS: nil,
+            birthDay: nil,
+            company: nil,
+            archiveVODescription: nil,
+            archiveID: archiveID,
+            publicDT: nil,
+            archiveNbr: nil,
+            view: nil,
+            viewProperty: nil,
+            archiveVOPublic: nil,
+            vaultKey: nil,
+            thumbArchiveNbr: nil,
+            type: nil,
+            thumbStatus: .ok,
+            imageRatio: nil,
+            thumbURL200: nil,
+            thumbURL500: nil,
+            thumbURL1000: nil,
+            thumbURL2000: nil,
+            thumbDT: nil,
+            createdDT: now,
+            updatedDT: now,
+            status: .ok
+        )
+
+        let localShare = ShareVOData(
+            shareID: shareID,
+            folderLinkID: nil,
+            archiveID: archiveID,
+            accessRole: role.apiValue,
+            type: nil,
+            status: "status.generic.ok",
+            requestToken: nil,
+            previewToggle: nil,
+            folderVO: nil,
+            recordVO: nil,
+            archiveVO: localArchive,
+            accountVO: nil,
+            createdDT: now,
+            updatedDT: now
+        )
+
+        sharedArchives.insert(localShare, at: 0)
+        shouldShowArchivesSection = !sharedArchives.isEmpty
     }
     
     func submitEmailInvitation() {

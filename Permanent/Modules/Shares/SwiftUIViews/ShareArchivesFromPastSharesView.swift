@@ -209,7 +209,7 @@ struct ShareArchivesFromPastSharesView: View {
                         .frame(width: 14, height: 2)
 
                     Text(initials)
-                        .font(.custom("Usual-Medium", size: 20))
+                        .font(.custom("Usual-Medium", size: 12))
                         .foregroundColor(.white)
                 }
             }

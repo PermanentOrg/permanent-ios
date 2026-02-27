@@ -105,4 +105,10 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
             }
         }
     }
+
+    func reset() {
+        searchText = ""
+        submittedSearchEmail = nil
+        searchOutcome = .idle
+    }
 }

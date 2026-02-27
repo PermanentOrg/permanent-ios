@@ -218,6 +218,7 @@ struct LinkCopyNotificationView: View {
 }
 
 struct ArchiveAccessNotificationView: View {
+    let message: String
     @State private var isVisible = false
     @State private var checkmarkScale: CGFloat = 0.5
     
@@ -229,7 +230,7 @@ struct ArchiveAccessNotificationView: View {
                 .scaleEffect(checkmarkScale)
                 .animation(.spring(response: 0.4, dampingFraction: 0.6), value: checkmarkScale)
             
-            Text("Archive access has been updated.")
+            Text(message)
                 .foregroundColor(.white)
                 .font(.custom("Usual-Regular", size: 14))
                 .opacity(isVisible ? 1.0 : 0.0)
