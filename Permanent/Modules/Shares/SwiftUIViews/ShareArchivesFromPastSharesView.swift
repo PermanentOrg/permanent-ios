@@ -1,5 +1,5 @@
 //
-//  SelectArchiveFromPastSharesView.swift
+//  ShareArchivesFromPastSharesView.swift
 //  Permanent
 //
 //  Created by Lucian Cerbu on 26.02.2026.
@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-struct SelectArchiveFromPastSharesView: View {
+struct ShareArchivesFromPastSharesView: View {
     @ObservedObject var viewModel: ShareItemViewModel
+    @StateObject private var archivesViewModel = ShareArchivesFromPastSharesViewModel()
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -26,11 +27,11 @@ struct SelectArchiveFromPastSharesView: View {
                 .background(Color.blue50)
 
             VStack(alignment: .leading, spacing: 16) {
-                Text("Select an archive from past shares")
+                Text(archivesViewModel.title)
                     .font(.custom("Usual-Medium", size: 16))
                     .foregroundColor(Color.blue900)
 
-                Text("This screen is ready for the archive selection list implementation.")
+                Text(archivesViewModel.placeholderDescription)
                     .font(.custom("Usual-Regular", size: 14))
                     .foregroundColor(Color.blue600)
 

@@ -96,7 +96,6 @@ class ShareItemViewModel: ObservableObject {
     @Published var isCreatingLink = false
     @Published var showEmailAddressField = false
     @Published var emailAddress = ""
-    @Published var searchText = ""
     @Published var selectedExpiration: ShareExpirationOption = .none
     @Published var showCopyNotification = false
     @Published var showArchiveAccessNotification = false

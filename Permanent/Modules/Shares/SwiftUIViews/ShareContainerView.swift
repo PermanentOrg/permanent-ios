@@ -39,15 +39,15 @@ struct ShareContainerView: View {
                         removal: .opacity
                     ))
             } else if viewModel.showFindArchiveByEmail {
-                FindArchiveByEmailView(viewModel: viewModel)
-                    .id("FindArchiveByEmailView")
+                ShareFindArchiveByEmailView(viewModel: viewModel)
+                    .id("ShareFindArchiveByEmailView")
                     .transition(.asymmetric(
                         insertion: viewModel.insertionViewTransition,
                         removal: .opacity
                     ))
             } else if viewModel.showSelectArchiveFromPastShares {
-                SelectArchiveFromPastSharesView(viewModel: viewModel)
-                    .id("SelectArchiveFromPastSharesView")
+                ShareArchivesFromPastSharesView(viewModel: viewModel)
+                    .id("ShareArchivesFromPastSharesView")
                     .transition(.asymmetric(
                         insertion: viewModel.insertionViewTransition,
                         removal: .opacity
