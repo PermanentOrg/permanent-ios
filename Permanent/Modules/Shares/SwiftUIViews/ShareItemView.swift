@@ -62,15 +62,7 @@ struct ShareItemView: View {
                     }
                     .padding(24)
                     
-                    // Current Requests and Access Section - Scrollable
-                    if viewModel.shouldShowArchivesSection {
-                        currentRequestsAndAccessSection
-                    } else {
-                        // Spacer to fill remaining space with blue25 background when no archives
-                        Spacer()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.blue25)
-                    }
+                    shareManagementSections
                 }
                 .background(Color.blue25)
             }
@@ -299,38 +291,111 @@ struct ShareItemView: View {
         )
     }
     
-    // MARK: - Current Requests and Access Section
-    private var currentRequestsAndAccessSection: some View {
+    // MARK: - Share Management Sections
+    private var shareManagementSections: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("CURRENT REQUESTS AND ACCESS:")
-                .font(.custom("Usual", size: 11))
-                .foregroundColor(Color.blue900)
-                .textCase(.uppercase)
-                .kerning(1.6)
-                .padding(.top, 32)
-                .padding(.bottom, 16)
-                .padding(.horizontal, 24)
-                .background(Color.white)
-            
-            Group {
-                if #available(iOS 16.4, *) {
-                    ScrollView(showsIndicators: false) {
-                        scrollableContent
-                    }
-                    .scrollBounceBehavior(.basedOnSize, axes: .vertical)
+            grantAccessToOtherArchivesSection
+
+            if viewModel.shouldShowArchivesSection {
+                Text("CURRENT REQUESTS AND ACCESS:")
+                    .font(.custom("Usual", size: 11))
+                    .foregroundColor(Color.blue900)
+                    .textCase(.uppercase)
+                    .kerning(1.6)
+                    .padding(.top, 20)
+                    .padding(.bottom, 16)
+                    .padding(.horizontal, 24)
                     .background(Color.white)
-                } else {
-                    ScrollView(showsIndicators: false) {
-                        scrollableContent
+
+                Group {
+                    if #available(iOS 16.4, *) {
+                        ScrollView(showsIndicators: false) {
+                            scrollableContent
+                        }
+                        .scrollBounceBehavior(.basedOnSize, axes: .vertical)
+                        .background(Color.white)
+                    } else {
+                        ScrollView(showsIndicators: false) {
+                            scrollableContent
+                        }
+                        .background(Color.white)
                     }
-                    .background(Color.white)
                 }
+            } else {
+                Spacer(minLength: 0)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.white)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(Color.white)
     }
-    
+
+    private var grantAccessToOtherArchivesSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("GRANT ACCESS TO OTHER ARCHIVES")
+                .font(.custom("Usual", size: 11))
+                .foregroundColor(Color.blue900)
+                .textCase(.uppercase)
+                .kerning(1.6)
+                .padding(.bottom, 2)
+
+            grantAccessRow(
+                systemIcon: "magnifyingglass",
+                title: "Find an archive using email address",
+                action: {
+                    viewModel.openFindArchiveByEmail()
+                }
+            )
+
+            grantAccessRow(
+                systemIcon: "archivebox",
+                title: "Select an archive from past shares",
+                action: {
+                    viewModel.openSelectArchiveFromPastShares()
+                }
+            )
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 32)
+        .background(Color.white)
+    }
+
+    private func grantAccessRow(systemIcon: String, title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: systemIcon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 40, height: 40)
+                    .background(
+                        LinearGradient(
+                        stops: [
+                        Gradient.Stop(color: Color(red: 0.07, green: 0.11, blue: 0.29), location: 0.00),
+                        Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00),
+                        ],
+                        startPoint: UnitPoint(x: 0, y: 0),
+                        endPoint: UnitPoint(x: 1, y: 1)
+                        )
+                    )
+                    .cornerRadius(6)
+
+                Text(title)
+                    .font(.custom("Usual-Medium", size: 14))
+                    .foregroundColor(Color.blue900)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color.blue200)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 8)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+
     private var scrollableContent: some View {
         VStack(alignment: .leading, spacing: 16) {
             if viewModel.isLoadingArchives {
@@ -361,6 +426,7 @@ struct ShareItemView: View {
         HStack(spacing: 12) {
             // Check if this is a pending request or approved archive
             let isPending = shareVO.status?.contains("pending") == true
+            let isInvited = shareVO.status?.contains("invited") == true
             
             if isPending {
                 userAvatarView(shareVO: shareVO)
@@ -442,6 +508,34 @@ struct ShareItemView: View {
                         }
                     }
                 }
+            } else if isInvited {
+                userAvatarView(shareVO: shareVO)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 8) {
+                        Text(shareVO.accountVO?.fullName ?? "Invited user")
+                            .font(.custom("Usual-Medium", size: 14))
+                            .foregroundColor(Color.blue900)
+                            .lineLimit(1)
+
+                        Text("Invited")
+                            .font(.custom("Usual-Regular", size: 12))
+                            .foregroundColor(Color.success500)
+                    }
+
+                    Text(shareVO.accountVO?.primaryEmail ?? "")
+                        .font(.custom("Usual-Regular", size: 12))
+                        .foregroundColor(Color.blue300)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Button(action: {}) {
+                    Image(.shareArchiveEditShare)
+                        .frame(width: 24, height: 24)
+                }
+                .buttonStyle(PlainButtonStyle())
             } else {
                 archiveThumbnailView(shareVO: shareVO)
                 

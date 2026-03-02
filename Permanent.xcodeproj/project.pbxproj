@@ -71,6 +71,12 @@
 		5E0AB9E72CB026D800C80A94 /* ForgotPasswordConfimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AB9E62CB026D800C80A94 /* ForgotPasswordConfimationView.swift */; };
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0B1BD42B961CE800B10BB5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */; };
+		5E0CFF442F50833A004151CE /* ShareFindArchiveByEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF432F50833A004151CE /* ShareFindArchiveByEmailView.swift */; };
+		5E0CFF462F508346004151CE /* ShareArchivesFromPastSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF452F508346004151CE /* ShareArchivesFromPastSharesView.swift */; };
+		5E0CFF482F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF472F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift */; };
+		5E0CFF4A2F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF492F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift */; };
+		5E0CFF4C2F51D68C004151CE /* ShareGrantArchiveAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF4B2F51D68C004151CE /* ShareGrantArchiveAccessView.swift */; };
+		5E0CFF4E2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0CFF4D2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
 		5E10173B2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */; };
@@ -1142,6 +1148,12 @@
 		5E0AB9E62CB026D800C80A94 /* ForgotPasswordConfimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordConfimationView.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		5E0CFF432F50833A004151CE /* ShareFindArchiveByEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFindArchiveByEmailView.swift; sourceTree = "<group>"; };
+		5E0CFF452F508346004151CE /* ShareArchivesFromPastSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesFromPastSharesView.swift; sourceTree = "<group>"; };
+		5E0CFF472F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFindArchiveByEmailViewModel.swift; sourceTree = "<group>"; };
+		5E0CFF492F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesFromPastSharesViewModel.swift; sourceTree = "<group>"; };
+		5E0CFF4B2F51D68C004151CE /* ShareGrantArchiveAccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareGrantArchiveAccessView.swift; sourceTree = "<group>"; };
+		5E0CFF4D2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareInviteAndGrantAccessView.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
 		5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveNameProfileItem.swift; sourceTree = "<group>"; };
 		5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewAppearanceManager.swift; sourceTree = "<group>"; };
@@ -3482,6 +3494,8 @@
 			children = (
 				5EF3A0952F15132B00F85282 /* SharePreviewSwiftUIViewModel.swift */,
 				5EA9C2B72E45FF78003BA1E9 /* ShareItemViewModel.swift */,
+				5E0CFF472F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift */,
+				5E0CFF492F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -3498,6 +3512,10 @@
 				5E98C9802E706A28002AEFA5 /* GeneralAccessView.swift */,
 				5EA9C2B62E45FF78003BA1E9 /* Components */,
 				5EA9C2B82E45FF78003BA1E9 /* ViewModels */,
+				5E0CFF432F50833A004151CE /* ShareFindArchiveByEmailView.swift */,
+				5E0CFF452F508346004151CE /* ShareArchivesFromPastSharesView.swift */,
+				5E0CFF4B2F51D68C004151CE /* ShareGrantArchiveAccessView.swift */,
+				5E0CFF4D2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift */,
 			);
 			path = SwiftUIViews;
 			sourceTree = "<group>";
@@ -4850,9 +4868,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4867,9 +4889,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4928,9 +4954,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -5177,6 +5207,7 @@
 				5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				5E29FA572E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */,
+				5E0CFF4C2F51D68C004151CE /* ShareGrantArchiveAccessView.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
@@ -5257,6 +5288,7 @@
 				92C95C512CCFB445002CE018 /* EventsPayload.swift in Sources */,
 				5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
+				5E0CFF442F50833A004151CE /* ShareFindArchiveByEmailView.swift in Sources */,
 				5EF300362D4AC010001FFEE7 /* TwoStepChooseEmailView.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */,
@@ -5285,6 +5317,7 @@
 				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
 				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
+				5E0CFF462F508346004151CE /* ShareArchivesFromPastSharesView.swift in Sources */,
 				5E7141452AFD25D5003952CD /* GiftingModel.swift in Sources */,
 				5E9F5CEF2D53591600F6213E /* CustomPhoneFieldView.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
@@ -5464,6 +5497,7 @@
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
 				5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */,
 				5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */,
+				5E0CFF4E2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				5E0AB9E72CB026D800C80A94 /* ForgotPasswordConfimationView.swift in Sources */,
 				BC42EDDD25C06D080031B965 /* InviteVOPayload.swift in Sources */,
@@ -5542,6 +5576,7 @@
 				5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */,
 				5EA522DD2F23CE33003072FB /* FolderV2Endpoint.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
+				5E0CFF4A2F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift in Sources */,
 				5E1582BB2C5CD6CB00103EA8 /* OnboardingCreateFirstArchiveViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
@@ -5589,6 +5624,7 @@
 				5E0AA7F42C937747003FBCF2 /* NoTapAnimationStyle.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
+				5E0CFF482F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift in Sources */,
 				5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
 				5E1017422DF1A6B80097A649 /* ScrollViewAppearanceManager.swift in Sources */,

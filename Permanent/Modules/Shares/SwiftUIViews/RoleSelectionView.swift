@@ -109,6 +109,10 @@ struct RoleSelectionView: View {
     private func isRoleSelected(_ role: AccessRole) -> Bool {
         if viewModel.showArchiveAccessManagement {
             return viewModel.selectedRoleForArchive == role
+        } else if viewModel.showInviteAndGrantAccess {
+            return viewModel.selectedRoleForInviteAccess == role
+        } else if viewModel.showGrantArchiveAccess {
+            return viewModel.selectedRoleForGrantAccess == role
         } else {
             return viewModel.selectedAccessRole == role
         }
@@ -117,6 +121,14 @@ struct RoleSelectionView: View {
     private func handleRoleSelection(_ role: AccessRole) {
         if viewModel.showArchiveAccessManagement {
             viewModel.selectedRoleForArchive = role
+            viewModel.navigationDirection = .backward
+            viewModel.showRoleSelection = false
+        } else if viewModel.showInviteAndGrantAccess {
+            viewModel.selectedRoleForInviteAccess = role
+            viewModel.navigationDirection = .backward
+            viewModel.showRoleSelection = false
+        } else if viewModel.showGrantArchiveAccess {
+            viewModel.selectedRoleForGrantAccess = role
             viewModel.navigationDirection = .backward
             viewModel.showRoleSelection = false
         } else {
