@@ -153,4 +153,19 @@ struct Payloads {
                 ]
         ]
     }
+
+    static func searchArchiveByEmail(email: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "SearchVO": [
+                                "query": email
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
 }

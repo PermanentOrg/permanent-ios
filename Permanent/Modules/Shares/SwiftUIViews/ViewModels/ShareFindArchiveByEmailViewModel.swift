@@ -5,14 +5,17 @@
 //  Created by Lucian Cerbu on 26.02.2026.
 //
 
+import Foundation
 import SwiftUI
 
 @MainActor
 final class ShareFindArchiveByEmailViewModel: ObservableObject {
     struct ArchiveResult: Identifiable {
         let id = UUID()
+        let archiveID: Int?
         let initials: String
         let name: String
+        let thumbnailURL: String?
     }
 
     enum SearchOutcome {
@@ -25,15 +28,7 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
     @Published private(set) var submittedSearchEmail: String?
     @Published private(set) var searchOutcome: SearchOutcome = .idle
 
-    private let mockArchiveResults: [ArchiveResult] = [
-        ArchiveResult(initials: "TP", name: "The Tiberiu Paliuc Long Archive"),
-        ArchiveResult(initials: "F", name: "The Family Archive"),
-        ArchiveResult(initials: "V", name: "The VSP Archive")
-    ]
-
-    private let mockEmailsWithArchives: Set<String> = [
-        "tiberiupaliuc@gmail.com"
-    ]
+    private var searchOperation: APIOperation?
 
     private var trimmedSearchText: String {
         searchText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -79,18 +74,56 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
             return false
         }
 
+        submittedSearchEmail = emailToSearch
         withAnimation(.easeInOut(duration: 0.2)) {
-            submittedSearchEmail = emailToSearch
-            if mockEmailsWithArchives.contains(emailToSearch) {
-                searchOutcome = .found(mockArchiveResults)
-            } else {
-                searchOutcome = .noAccount(emailToSearch)
+            searchOutcome = .idle
+        }
+
+        searchOperation?.cancel()
+        searchOperation = APIOperation(SearchEndpoint.archiveByEmail(email: emailToSearch))
+        searchOperation?.execute(in: APIRequestDispatcher()) { [weak self] result in
+            Task { @MainActor in
+                guard let self else { return }
+                defer { self.searchOperation = nil }
+
+                switch result {
+                case .json(let response, _):
+                    guard let model: APIResults<ArchiveVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<ArchiveVO>.decoder
+                    ), model.isSuccessful else {
+                        self.setNoAccount(for: emailToSearch)
+                        return
+                    }
+
+                    let archives = model.results
+                        .flatMap { $0.data ?? [] }
+                        .compactMap { $0.archiveVO }
+                        .map { self.mapArchiveResult(from: $0) }
+
+                    if archives.isEmpty {
+                        self.setNoAccount(for: emailToSearch)
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            self.searchOutcome = .found(archives)
+                        }
+                    }
+
+                case .error:
+                    self.setNoAccount(for: emailToSearch)
+
+                default:
+                    self.setNoAccount(for: emailToSearch)
+                }
             }
         }
+
         return true
     }
 
     func clearSearch() {
+        searchOperation?.cancel()
+        searchOperation = nil
         searchText = ""
         withAnimation(.easeInOut(duration: 0.2)) {
             submittedSearchEmail = nil
@@ -107,8 +140,53 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
     }
 
     func reset() {
+        searchOperation?.cancel()
+        searchOperation = nil
         searchText = ""
         submittedSearchEmail = nil
         searchOutcome = .idle
+    }
+
+    private func setNoAccount(for email: String) {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            searchOutcome = .noAccount(email)
+        }
+    }
+
+    private func mapArchiveResult(from archive: ArchiveVOData) -> ArchiveResult {
+        let fullName = archive.fullName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "Unknown"
+        return ArchiveResult(
+            archiveID: archive.archiveID,
+            initials: initials(for: fullName),
+            name: formattedArchiveName(from: fullName),
+            thumbnailURL: archive.thumbURL200 ?? archive.thumbURL500
+        )
+    }
+
+    private func formattedArchiveName(from fullName: String) -> String {
+        let lowercased = fullName.lowercased()
+        if lowercased.hasPrefix("the ") && lowercased.hasSuffix(" archive") {
+            return fullName
+        }
+        return "The \(fullName) Archive"
+    }
+
+    private func initials(for fullName: String) -> String {
+        let parts = fullName
+            .split(separator: " ")
+            .map(String.init)
+            .filter { !$0.isEmpty }
+
+        if parts.count >= 2 {
+            let first = parts[0].prefix(1)
+            let second = parts[1].prefix(1)
+            return (first + second).uppercased()
+        }
+
+        if let first = parts.first {
+            return String(first.prefix(2)).uppercased()
+        }
+
+        return "A"
     }
 }
