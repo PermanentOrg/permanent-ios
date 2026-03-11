@@ -201,6 +201,7 @@ struct ArchivePickerView: View {
     let selectedArchive: ArchiveVOData?
     let maxHeight: CGFloat
     let onSelect: (ArchiveVOData) -> Void
+    let onCreateArchive: () -> Void
     var onClose: (() -> Void)? = nil
     @Environment(\.presentationMode) var presentationMode
     
@@ -240,6 +241,28 @@ struct ArchivePickerView: View {
             // Archive list
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    Button(action: {
+                        onCreateArchive()
+                    }) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "plus")
+                                .font(.custom("Usual", size: 20))
+                                .foregroundColor(.white)
+                                .frame(width: 40, height: 40)
+                                .background(Color.blue900)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            
+                            Text("Create a new Archive...")
+                                .font(.custom("Usual", size: 14))
+                                .foregroundColor(.blue900)
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 16)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
                     ForEach(archives, id: \.archiveID) { archive in
                         Button(action: {
                             onSelect(archive)

@@ -488,18 +488,90 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
 
     // MARK: - Private
-    private func loadAvailableArchives() {
+    private func loadAvailableArchives(afterReload: (([ArchiveVOData]) -> Void)? = nil) {
         AuthenticationManager.shared.getAccountArchives { [weak self] result in
             guard let self = self else { return }
             
             Task { @MainActor in
                 switch result {
                 case .success(let archiveVOs):
-                    self.availableArchives = archiveVOs.compactMap { $0.archiveVO }
+                    let archives = archiveVOs.compactMap { $0.archiveVO }
                         .filter { $0.status == .ok && $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }
+                    self.availableArchives = archives
+                    afterReload?(archives)
                     
                 case .failure:
                     self.availableArchives = []
+                    afterReload?([])
+                }
+            }
+        }
+    }
+    
+    func createArchive(name: String, type: ArchiveType, completion: ((Bool) -> Void)? = nil) {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            errorMessage = "Archive name is required."
+            completion?(false)
+            return
+        }
+        
+        let existingArchiveIDs = Set(availableArchives.compactMap { $0.archiveID })
+        isLoading = true
+        errorMessage = nil
+        
+        let createArchiveOperation = APIOperation(ArchivesEndpoint.create(name: trimmedName, type: type.rawValue))
+        createArchiveOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+            
+            Task { @MainActor in
+                switch result {
+                case .json(let response, _):
+                    guard
+                        let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                        model.isSuccessful
+                    else {
+                        self.errorMessage = "Unable to create archive. Please try again."
+                        self.isLoading = false
+                        completion?(false)
+                        return
+                    }
+                    
+                    self.loadAvailableArchives(afterReload: { [weak self] refreshedArchives in
+                        guard let self = self else { return }
+                        
+                        let lowercasedName = trimmedName.lowercased()
+                        let exactNameMatch = { (archive: ArchiveVOData) -> Bool in
+                            archive.fullName?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == lowercasedName
+                        }
+                        
+                        let newlyCreatedArchive = refreshedArchives
+                            .filter { archive in
+                                exactNameMatch(archive) && !existingArchiveIDs.contains(archive.archiveID ?? -1)
+                            }
+                            .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
+                            ?? refreshedArchives
+                            .filter(exactNameMatch)
+                            .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
+                        
+                        if let newlyCreatedArchive = newlyCreatedArchive {
+                            self.selectArchive(newlyCreatedArchive)
+                            completion?(true)
+                        } else {
+                            self.isLoading = false
+                            completion?(true)
+                        }
+                    })
+                    
+                case .error:
+                    self.errorMessage = "Unable to create archive. Please try again."
+                    self.isLoading = false
+                    completion?(false)
+                    
+                default:
+                    self.errorMessage = "Unable to create archive. Please try again."
+                    self.isLoading = false
+                    completion?(false)
                 }
             }
         }
@@ -888,4 +960,3 @@ struct SharePreviewMockRepository: SharePreviewRepositoryProtocol {
         )
     }
 }
-
