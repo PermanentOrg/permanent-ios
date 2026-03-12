@@ -226,9 +226,9 @@ struct SharePreviewView: View {
                 Spacer()
                 
                 ArchivePickerView(
-                    archives: viewModel.availableArchives.filter { $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) },
+                    archives: viewModel.selectableArchives,
                     selectedArchive: viewModel.currentArchive,
-                    maxHeight: min(CGFloat(viewModel.availableArchives.filter { $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }.count + 1), 6) * 72,
+                    maxHeight: min(CGFloat(viewModel.selectableArchives.count + 1), 6) * 72,
                     onSelect: { archive in
                         viewModel.shouldOpenArchivePicker = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {

@@ -91,6 +91,8 @@
 		5E1582BF2C5CD7C600103EA8 /* OnboardingChartYourPathViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582BE2C5CD7C600103EA8 /* OnboardingChartYourPathViewModel.swift */; };
 		5E1582C12C5CD7D200103EA8 /* OnboardingWhatsImportantViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582C02C5CD7D200103EA8 /* OnboardingWhatsImportantViewModel.swift */; };
 		5E1582C32C5CD7DF00103EA8 /* OnboardingCongratulationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582C22C5CD7DF00103EA8 /* OnboardingCongratulationsViewModel.swift */; };
+		5E173EAF2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EAE2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift */; };
+		5E173EB12F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EB02F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift */; };
 		5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B7E2AF0640E002DE69A /* GiftStorageView.swift */; };
 		5E181B822AF10100002DE69A /* GiftStorageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */; };
 		5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */; };
@@ -1167,6 +1169,8 @@
 		5E1582BE2C5CD7C600103EA8 /* OnboardingChartYourPathViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingChartYourPathViewModel.swift; sourceTree = "<group>"; };
 		5E1582C02C5CD7D200103EA8 /* OnboardingWhatsImportantViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWhatsImportantViewModel.swift; sourceTree = "<group>"; };
 		5E1582C22C5CD7DF00103EA8 /* OnboardingCongratulationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCongratulationsViewModel.swift; sourceTree = "<group>"; };
+		5E173EAE2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewCreateArchiveCoordinator.swift; sourceTree = "<group>"; };
+		5E173EB02F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewCreateArchiveCoordinatorTests.swift; sourceTree = "<group>"; };
 		5E181B7E2AF0640E002DE69A /* GiftStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftStorageView.swift; sourceTree = "<group>"; };
 		5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftStorageViewModel.swift; sourceTree = "<group>"; };
 		5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBarProgressStyle.swift; sourceTree = "<group>"; };
@@ -3331,6 +3335,7 @@
 				374554B71E0322714462588A /* ShareManagementTests.swift */,
 				5E1E4FA82988897F0062984C /* ManageTagsTests.swift */,
 				F59C3B7E29C3146000337E45 /* AuthenticationManagerTests.swift */,
+				5E173EB02F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -3499,6 +3504,7 @@
 				5EA9C2B72E45FF78003BA1E9 /* ShareItemViewModel.swift */,
 				5E0CFF472F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift */,
 				5E0CFF492F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift */,
+				5E173EAE2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -5076,6 +5082,7 @@
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
+				5E173EAF2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift in Sources */,
 				5EB2D2362C245EEA0029D0DE /* OnboardingArchive.swift in Sources */,
 				5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */,
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
@@ -5708,6 +5715,7 @@
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
 				5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */,
 				5E991EE92A4AFB89006229C0 /* EnvVars.generated.swift in Sources */,
+				5E173EB12F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift in Sources */,
 				5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */,
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,
 				F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */,

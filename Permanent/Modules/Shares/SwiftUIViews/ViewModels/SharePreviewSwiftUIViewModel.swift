@@ -11,11 +11,6 @@ import Combine
 
 @MainActor
 final class SharePreviewSwiftUIViewModel: ObservableObject {
-    enum ArchiveTypeNavigationDirection {
-        case forward
-        case backward
-    }
-
     // MARK: - Published
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -36,7 +31,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var hasCompletedInitialLoad: Bool = false
     @Published var showCreateArchiveSheet: Bool = false
     @Published var showArchiveTypeSelection: Bool = false
-    @Published var archiveTypeNavigationDirection: ArchiveTypeNavigationDirection = .forward
     @Published var newArchiveName: String = ""
     @Published var selectedArchiveType: ArchiveType = .person
     @Published var isCreatingArchive: Bool = false
@@ -62,6 +56,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let repository: SharePreviewRepositoryProtocol
     private let shareManagementRepository: ShareManagementRepository
+    private let createArchiveCoordinator = SharePreviewCreateArchiveCoordinator()
     private var shareDataCache: SharebyURLVOData?
     private var loadTask: Task<Void, Never>?
     private var hasLoadedRealThumbnails: Bool = false
@@ -83,28 +78,17 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             return true
         }
         
-        // Check if current archive has approved access
+        // Check if current archive has approved access.
         if let shareVO = shareDataCache?.shareVO,
            let currentArchiveId = currentArchive?.archiveID,
            shareVO.archiveID == currentArchiveId,
            let status = shareVO.status?.lowercased(),
            status.contains("ok") {
-            // Archive has approved access - always show real thumbnails regardless of previewToggle
             return true
         }
-        
-        // Archive doesn't have access - check previewToggle to decide if preview is allowed
-        if previewToggle == 0 {
-            return false
-        }
 
-        
-        // Archive doesn't have access and preview is disabled
-        if previewToggle == 0 {
-            return false
-        }
-        
-        return false
+        // Restricted share + no approved access: respect preview toggle.
+        return previewToggle != 0
     }
     
     var displayMode: ContentDisplayMode {
@@ -112,6 +96,12 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             return .blurredPlaceholders
         }
         return shouldShowActualThumbnails() ? .actualThumbnails : .blurredPlaceholders
+    }
+
+    var selectableArchives: [ArchiveVOData] {
+        availableArchives.filter { archive in
+            archive.archiveNbr != nil && !(archive.fullName?.isEmpty ?? true)
+        }
     }
 
     var onNavigateToFolder: ((NavigateMinParams) -> Void)?
@@ -406,38 +396,37 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         return isCreator
     }
     
-    private func loadV2ShareLinkData() {
-        shareManagementRepository.getShareLinkV2ByToken(token: shareToken) { [weak self] result, error in
-            guard let self = self else { return }
-            
-            Task { @MainActor in
-                if let v2Data = result {
-                    self.shareLinkV2Data = v2Data
-                    
-                    let accessRestrictions = v2Data.accessRestrictions ?? "none"
-                    let isCreator = self.checkIfUserIsCreator()
-                    
-                    if (isCreator || accessRestrictions == "none" || self.shouldShowActualThumbnails()) {
-                        // Check if it's a folder or record share
-                        if self.shareDataCache?.folderData != nil {
-                            await self.loadV2FolderContent()
-                        } else if self.shareDataCache?.recordData != nil {
-                            // For record shares, just extract the record data
-                            if let cachedData = self.shareDataCache {
-                                self.extractFiles(from: cachedData)
-                            }
-                        }
-                    } else {
-                        if let cachedData = self.shareDataCache {
-                            self.extractFiles(from: cachedData)
-                        }
-                    }
-                } else {
-                    if let cachedData = self.shareDataCache {
-                        self.extractFiles(from: cachedData)
-                    }
+    private func loadV2ShareLinkData() async {
+        let v2Data = await fetchShareLinkV2ByToken()
+
+        if let v2Data {
+            shareLinkV2Data = v2Data
+
+            let accessRestrictions = v2Data.accessRestrictions ?? "none"
+            let isCreator = checkIfUserIsCreator()
+
+            if isCreator || accessRestrictions == "none" || shouldShowActualThumbnails() {
+                // Check if it's a folder or record share.
+                if shareDataCache?.folderData != nil {
+                    await loadV2FolderContent()
+                } else if shareDataCache?.recordData != nil, let cachedData = shareDataCache {
+                    // For record shares, just extract the record data.
+                    extractFiles(from: cachedData)
                 }
-                self.isLoading = false
+            } else if let cachedData = shareDataCache {
+                extractFiles(from: cachedData)
+            }
+        } else if let cachedData = shareDataCache {
+            extractFiles(from: cachedData)
+        }
+
+        isLoading = false
+    }
+
+    private func fetchShareLinkV2ByToken() async -> ShareLinkV2Data? {
+        await withCheckedContinuation { continuation in
+            shareManagementRepository.getShareLinkV2ByToken(token: shareToken) { result, _ in
+                continuation.resume(returning: result)
             }
         }
     }
@@ -505,8 +494,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             Task { @MainActor in
                 switch result {
                 case .success(let archiveVOs):
-                    let archives = archiveVOs.compactMap { $0.archiveVO }
-                        .filter { $0.status == .ok && $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }
+                    let archives = self.filterSelectableArchives(archiveVOs.compactMap { $0.archiveVO })
                     self.availableArchives = archives
                     self.syncArchiveReferences(with: archives)
                     afterReload?(archives)
@@ -542,14 +530,21 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 Task { @MainActor in
                     switch result {
                     case .success(let archiveVOs):
-                        let archives = archiveVOs.compactMap { $0.archiveVO }
-                            .filter { $0.status == .ok && $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }
+                        let archives = self.filterSelectableArchives(archiveVOs.compactMap { $0.archiveVO })
                         continuation.resume(returning: archives)
                     case .failure:
                         continuation.resume(returning: [])
                     }
                 }
             }
+        }
+    }
+
+    private func filterSelectableArchives(_ archives: [ArchiveVOData]) -> [ArchiveVOData] {
+        archives.filter { archive in
+            archive.status == .ok &&
+            archive.archiveNbr != nil &&
+            !(archive.fullName?.isEmpty ?? true)
         }
     }
 
@@ -598,12 +593,10 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     }
 
     func openArchiveTypeSelection() {
-        archiveTypeNavigationDirection = .forward
         showArchiveTypeSelection = true
     }
 
     func closeArchiveTypeSelection() {
-        archiveTypeNavigationDirection = .backward
         showArchiveTypeSelection = false
     }
 
@@ -643,39 +636,34 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
 
         Task { @MainActor in
             do {
-                try await repository.createArchive(name: trimmedName, type: type.rawValue)
-
-                self.loadAvailableArchives(afterReload: { [weak self] refreshedArchives in
-                    guard let self = self else { return }
-
-                    let lowercasedName = trimmedName.lowercased()
-                    let exactNameMatch = { (archive: ArchiveVOData) -> Bool in
-                        archive.fullName?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == lowercasedName
+                let outcome = try await createArchiveCoordinator.performCreateArchive(
+                    name: trimmedName,
+                    type: type,
+                    existingArchiveIDs: existingArchiveIDs,
+                    createArchiveRequest: { [repository] name, archiveType in
+                        try await repository.createArchive(name: name, type: archiveType)
+                    },
+                    refreshArchives: { [weak self] in
+                        guard let self = self else { return [] }
+                        return await self.fetchAccountArchives()
+                    },
+                    resolveThumbnail: { [weak self] archive in
+                        guard let self = self else { return archive }
+                        return await self.waitForThumbnailIfNeeded(for: archive)
                     }
+                )
 
-                    let newlyCreatedArchive = refreshedArchives
-                        .filter { archive in
-                            exactNameMatch(archive) && !existingArchiveIDs.contains(archive.archiveID ?? -1)
-                        }
-                        .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
-                        ?? refreshedArchives
-                        .filter(exactNameMatch)
-                        .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
+                self.availableArchives = outcome.refreshedArchives
+                self.syncArchiveReferences(with: outcome.refreshedArchives)
 
-                    if let newlyCreatedArchive = newlyCreatedArchive {
-                        Task { @MainActor [weak self] in
-                            guard let self = self else { return }
-                            let archiveToSelect = await self.waitForThumbnailIfNeeded(for: newlyCreatedArchive)
-                            self.selectArchive(archiveToSelect)
-                            self.isCreatingArchive = false
-                            completion?(true)
-                        }
-                    } else {
-                        self.isLoading = false
-                        self.isCreatingArchive = false
-                        completion?(true)
-                    }
-                })
+                if let selectedArchive = outcome.selectedArchive {
+                    self.selectArchive(selectedArchive)
+                } else {
+                    self.isLoading = false
+                }
+
+                self.isCreatingArchive = false
+                completion?(true)
             } catch {
                 self.errorMessage = "Unable to create archive. Please try again."
                 self.isLoading = false
@@ -761,8 +749,12 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     private func parseShareData(_ shareByURL: SharebyURLVOData) async {
         shareDataCache = shareByURL
         
-        // Load V2 data using share token instead of share link ID
-        loadV2ShareLinkData()
+        // Load V2 data using share token instead of share link ID.
+        // Keep this non-blocking so core share metadata is populated immediately.
+        Task { [weak self] in
+            guard let self = self else { return }
+            await self.loadV2ShareLinkData()
+        }
         
         // Store temporary values
         var tempArchiveName = ""
@@ -925,6 +917,16 @@ protocol SharePreviewRepositoryProtocol {
     func fetchSharePreview(shareToken: String) async throws -> SharebyURLVOData
     func requestShareAccess(shareToken: String) async throws -> ShareVOData
     func createArchive(name: String, type: String) async throws
+}
+
+extension SharePreviewRepositoryProtocol {
+    func createArchive(name: String, type: String) async throws {
+        throw NSError(
+            domain: "SharePreview",
+            code: -1,
+            userInfo: [NSLocalizedDescriptionKey: "Create archive not implemented for this repository"]
+        )
+    }
 }
 
 // MARK: - Production API Service
