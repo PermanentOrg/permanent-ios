@@ -11,6 +11,11 @@ import Combine
 
 @MainActor
 final class SharePreviewSwiftUIViewModel: ObservableObject {
+    enum ArchiveTypeNavigationDirection {
+        case forward
+        case backward
+    }
+
     // MARK: - Published
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -29,6 +34,12 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var originalArchiveNbr: String?
     @Published var cleanArchiveName: String?
     @Published var hasCompletedInitialLoad: Bool = false
+    @Published var showCreateArchiveSheet: Bool = false
+    @Published var showArchiveTypeSelection: Bool = false
+    @Published var archiveTypeNavigationDirection: ArchiveTypeNavigationDirection = .forward
+    @Published var newArchiveName: String = ""
+    @Published var selectedArchiveType: ArchiveType = .person
+    @Published var isCreatingArchive: Bool = false
     
     private var initialArchive: ArchiveVOData?
     private var archiveBeforePreview: ArchiveVOData?
@@ -144,7 +155,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             return
         }
         
-        let didChange = true
         previousArchive = currentArchive
         currentArchive = archive  // Update immediately for business logic
         pendingArchive = archive  // Store for UI update after parsing
@@ -341,7 +351,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         
         Task { @MainActor in
             do {
-                let shareData = try await repository.requestShareAccess(shareToken: shareToken)
+                _ = try await repository.requestShareAccess(shareToken: shareToken)
                 await loadShareData()
                 
             } catch let error as NSError where error.code == 409 {
@@ -498,6 +508,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                     let archives = archiveVOs.compactMap { $0.archiveVO }
                         .filter { $0.status == .ok && $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }
                     self.availableArchives = archives
+                    self.syncArchiveReferences(with: archives)
                     afterReload?(archives)
                     
                 case .failure:
@@ -507,72 +518,169 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             }
         }
     }
+
+    private func syncArchiveReferences(with archives: [ArchiveVOData]) {
+        if let pendingId = pendingArchive?.archiveID,
+           let refreshedPending = archives.first(where: { $0.archiveID == pendingId }) {
+            pendingArchive = refreshedPending
+        }
+
+        if let currentId = currentArchive?.archiveID,
+           let refreshedCurrent = archives.first(where: { $0.archiveID == currentId }) {
+            currentArchive = refreshedCurrent
+        }
+
+        if let displayedId = displayedArchive?.archiveID,
+           let refreshedDisplayed = archives.first(where: { $0.archiveID == displayedId }) {
+            displayedArchive = refreshedDisplayed
+        }
+    }
+
+    private func fetchAccountArchives() async -> [ArchiveVOData] {
+        await withCheckedContinuation { continuation in
+            AuthenticationManager.shared.getAccountArchives { result in
+                Task { @MainActor in
+                    switch result {
+                    case .success(let archiveVOs):
+                        let archives = archiveVOs.compactMap { $0.archiveVO }
+                            .filter { $0.status == .ok && $0.archiveNbr != nil && !($0.fullName?.isEmpty ?? true) }
+                        continuation.resume(returning: archives)
+                    case .failure:
+                        continuation.resume(returning: [])
+                    }
+                }
+            }
+        }
+    }
+
+    private func archiveHasUsableThumbnail(_ archive: ArchiveVOData) -> Bool {
+        guard let thumbURL = archive.thumbURL200, !thumbURL.isEmpty else {
+            return false
+        }
+        return archive.thumbStatus != .genAvatar
+    }
+
+    private func waitForThumbnailIfNeeded(for archive: ArchiveVOData) async -> ArchiveVOData {
+        guard !archiveHasUsableThumbnail(archive) else {
+            return archive
+        }
+
+        var latestArchive = archive
+        for _ in 0..<4 {
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            let refreshedArchives = await fetchAccountArchives()
+            if let refreshed = refreshedArchives.first(where: { $0.archiveID == archive.archiveID }) {
+                latestArchive = refreshed
+                availableArchives = refreshedArchives
+                syncArchiveReferences(with: refreshedArchives)
+                if archiveHasUsableThumbnail(refreshed) {
+                    break
+                }
+            }
+        }
+
+        return latestArchive
+    }
+
+    func openCreateArchiveSheet() {
+        resetCreateArchiveForm()
+        showCreateArchiveSheet = true
+    }
+
+    func closeCreateArchiveSheet() {
+        showCreateArchiveSheet = false
+        showArchiveTypeSelection = false
+    }
+
+    func resetCreateArchiveForm() {
+        newArchiveName = ""
+        selectedArchiveType = .person
+    }
+
+    func openArchiveTypeSelection() {
+        archiveTypeNavigationDirection = .forward
+        showArchiveTypeSelection = true
+    }
+
+    func closeArchiveTypeSelection() {
+        archiveTypeNavigationDirection = .backward
+        showArchiveTypeSelection = false
+    }
+
+    func selectArchiveType(_ type: ArchiveType) {
+        selectedArchiveType = type
+        closeArchiveTypeSelection()
+    }
+
+    func isArchiveTypeSelected(_ type: ArchiveType) -> Bool {
+        selectedArchiveType.tag == type.tag
+    }
+
+    func submitCreateArchive(completion: ((Bool) -> Void)? = nil) {
+        createArchive(name: newArchiveName, type: selectedArchiveType) { [weak self] success in
+            guard let self = self else { return }
+            if success {
+                self.closeCreateArchiveSheet()
+                self.resetCreateArchiveForm()
+            }
+            completion?(success)
+        }
+    }
     
     func createArchive(name: String, type: ArchiveType, completion: ((Bool) -> Void)? = nil) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
             errorMessage = "Archive name is required."
+            isCreatingArchive = false
             completion?(false)
             return
         }
         
         let existingArchiveIDs = Set(availableArchives.compactMap { $0.archiveID })
         isLoading = true
+        isCreatingArchive = true
         errorMessage = nil
-        
-        let createArchiveOperation = APIOperation(ArchivesEndpoint.create(name: trimmedName, type: type.rawValue))
-        createArchiveOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
-            guard let self = self else { return }
-            
-            Task { @MainActor in
-                switch result {
-                case .json(let response, _):
-                    guard
-                        let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                        model.isSuccessful
-                    else {
-                        self.errorMessage = "Unable to create archive. Please try again."
-                        self.isLoading = false
-                        completion?(false)
-                        return
+
+        Task { @MainActor in
+            do {
+                try await repository.createArchive(name: trimmedName, type: type.rawValue)
+
+                self.loadAvailableArchives(afterReload: { [weak self] refreshedArchives in
+                    guard let self = self else { return }
+
+                    let lowercasedName = trimmedName.lowercased()
+                    let exactNameMatch = { (archive: ArchiveVOData) -> Bool in
+                        archive.fullName?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == lowercasedName
                     }
-                    
-                    self.loadAvailableArchives(afterReload: { [weak self] refreshedArchives in
-                        guard let self = self else { return }
-                        
-                        let lowercasedName = trimmedName.lowercased()
-                        let exactNameMatch = { (archive: ArchiveVOData) -> Bool in
-                            archive.fullName?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == lowercasedName
+
+                    let newlyCreatedArchive = refreshedArchives
+                        .filter { archive in
+                            exactNameMatch(archive) && !existingArchiveIDs.contains(archive.archiveID ?? -1)
                         }
-                        
-                        let newlyCreatedArchive = refreshedArchives
-                            .filter { archive in
-                                exactNameMatch(archive) && !existingArchiveIDs.contains(archive.archiveID ?? -1)
-                            }
-                            .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
-                            ?? refreshedArchives
-                            .filter(exactNameMatch)
-                            .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
-                        
-                        if let newlyCreatedArchive = newlyCreatedArchive {
-                            self.selectArchive(newlyCreatedArchive)
-                            completion?(true)
-                        } else {
-                            self.isLoading = false
+                        .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
+                        ?? refreshedArchives
+                        .filter(exactNameMatch)
+                        .max { ($0.archiveID ?? 0) < ($1.archiveID ?? 0) }
+
+                    if let newlyCreatedArchive = newlyCreatedArchive {
+                        Task { @MainActor [weak self] in
+                            guard let self = self else { return }
+                            let archiveToSelect = await self.waitForThumbnailIfNeeded(for: newlyCreatedArchive)
+                            self.selectArchive(archiveToSelect)
+                            self.isCreatingArchive = false
                             completion?(true)
                         }
-                    })
-                    
-                case .error:
-                    self.errorMessage = "Unable to create archive. Please try again."
-                    self.isLoading = false
-                    completion?(false)
-                    
-                default:
-                    self.errorMessage = "Unable to create archive. Please try again."
-                    self.isLoading = false
-                    completion?(false)
-                }
+                    } else {
+                        self.isLoading = false
+                        self.isCreatingArchive = false
+                        completion?(true)
+                    }
+                })
+            } catch {
+                self.errorMessage = "Unable to create archive. Please try again."
+                self.isLoading = false
+                self.isCreatingArchive = false
+                completion?(false)
             }
         }
     }
@@ -696,7 +804,13 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             shareName = tempShareName
             sharedByName = tempSharedByName
             originalArchiveNbr = tempOriginalArchiveNbr
-            displayedArchive = pendingArchive  // Update displayed archive
+            if let pendingArchive = pendingArchive,
+               let pendingId = pendingArchive.archiveID,
+               let refreshedPending = availableArchives.first(where: { $0.archiveID == pendingId }) {
+                displayedArchive = refreshedPending
+            } else {
+                displayedArchive = pendingArchive
+            }
             pendingArchive = nil
         } else {
             // Initial load - update everything immediately
@@ -706,7 +820,13 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             shareName = tempShareName
             sharedByName = tempSharedByName
             originalArchiveNbr = tempOriginalArchiveNbr
-            displayedArchive = currentArchive  // Set initial displayed archive
+            if let currentArchive = currentArchive,
+               let currentId = currentArchive.archiveID,
+               let refreshedCurrent = availableArchives.first(where: { $0.archiveID == currentId }) {
+                displayedArchive = refreshedCurrent
+            } else {
+                displayedArchive = currentArchive
+            }
         }
         
         currentButtonState = computedButtonState
@@ -804,16 +924,15 @@ struct FilePreviewParams {
 protocol SharePreviewRepositoryProtocol {
     func fetchSharePreview(shareToken: String) async throws -> SharebyURLVOData
     func requestShareAccess(shareToken: String) async throws -> ShareVOData
+    func createArchive(name: String, type: String) async throws
 }
 
 // MARK: - Production API Service
 struct SharePreviewAPIService: SharePreviewRepositoryProtocol {
     func fetchSharePreview(shareToken: String) async throws -> SharebyURLVOData {
-        var apiOperation: APIOperation?
+        let operation = APIOperation(ShareEndpoint.checkLink(token: shareToken))
         return try await withTaskCancellationHandler(operation: {
             try await withCheckedThrowingContinuation { continuation in
-                let operation = APIOperation(ShareEndpoint.checkLink(token: shareToken))
-                apiOperation = operation
                 operation.execute(in: APIRequestDispatcher()) { result in
                     switch result {
                     case .json(let response, _):
@@ -841,16 +960,14 @@ struct SharePreviewAPIService: SharePreviewRepositoryProtocol {
                 }
             }
         }, onCancel: {
-            apiOperation?.cancel()
+            operation.cancel()
         })
     }
     
     func requestShareAccess(shareToken: String) async throws -> ShareVOData {
-        var apiOperation: APIOperation?
+        let operation = APIOperation(ShareEndpoint.requestShareAccess(token: shareToken))
         return try await withTaskCancellationHandler(operation: {
             try await withCheckedThrowingContinuation { continuation in
-                let operation = APIOperation(ShareEndpoint.requestShareAccess(token: shareToken))
-                apiOperation = operation
                 operation.execute(in: APIRequestDispatcher()) { result in
                     switch result {
                     case .json(let response, _):
@@ -889,8 +1006,40 @@ struct SharePreviewAPIService: SharePreviewRepositoryProtocol {
                 }
             }
         }, onCancel: {
-            apiOperation?.cancel()
+            operation.cancel()
         })
+    }
+
+    func createArchive(name: String, type: String) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            let operation = APIOperation(ArchivesEndpoint.create(name: name, type: type))
+            operation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    guard
+                        let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                            from: response,
+                            with: APIResults<NoDataModel>.decoder
+                        ),
+                        model.isSuccessful
+                    else {
+                        continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to create archive"]))
+                        return
+                    }
+                    continuation.resume(returning: ())
+
+                case .error(let error, _):
+                    if let nsErr = error as NSError?, nsErr.code == NSURLErrorCancelled {
+                        continuation.resume(throwing: CancellationError())
+                    } else {
+                        continuation.resume(throwing: error ?? NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Network error"]))
+                    }
+
+                default:
+                    continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error"]))
+                }
+            }
+        }
     }
 }
 
@@ -904,6 +1053,10 @@ struct SharePreviewMockRepository: SharePreviewRepositoryProtocol {
     func requestShareAccess(shareToken: String) async throws -> ShareVOData {
         // Return mock ShareVOData for testing
         return createMockShareVOData()
+    }
+
+    func createArchive(name: String, type: String) async throws {
+        // Mock no-op
     }
     
     private func createMockSharebyURLVOData() -> SharebyURLVOData {

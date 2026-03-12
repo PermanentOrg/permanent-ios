@@ -9,11 +9,6 @@ import SwiftUI
 import UIKit
 
 struct SharePreviewView: View {
-    private enum ArchiveTypeNavigationDirection {
-        case forward
-        case backward
-    }
-
     @StateObject private var viewModel: SharePreviewSwiftUIViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var isDismissing = false
@@ -22,11 +17,6 @@ struct SharePreviewView: View {
     @State private var accessRoleUpdateID = UUID()
     @State private var isBannerTransitioning = false
     @State private var accessRoleWasVisibleBeforeLoad = false
-    @State private var showCreateArchiveSheet = false
-    @State private var showArchiveTypeSelection = false
-    @State private var archiveTypeNavigationDirection: ArchiveTypeNavigationDirection = .forward
-    @State private var newArchiveName = ""
-    @State private var selectedArchiveType: ArchiveType = .person
     @State private var isKeyboardVisible = false
     @FocusState private var isArchiveNameFieldFocused: Bool
     
@@ -158,13 +148,14 @@ struct SharePreviewView: View {
                 }
             }
             
-            // Loading overlay
-            if viewModel.isLoading {
-                LoadingOverlay()
-            }
-            
             pickerOverlay
             createArchiveOverlay
+
+            // Keep loader above sheets so create action has visible feedback.
+            if viewModel.isLoading {
+                LoadingOverlay()
+                    .zIndex(100)
+            }
         }
         .alert(isPresented: Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.errorMessage = nil } })) {
             Alert(
@@ -182,11 +173,10 @@ struct SharePreviewView: View {
                 secondaryButton: .cancel()
             )
         }
-        .onChange(of: showCreateArchiveSheet) { isVisible in
+        .onChange(of: viewModel.showCreateArchiveSheet) { isVisible in
             if !isVisible {
                 isArchiveNameFieldFocused = false
                 isKeyboardVisible = false
-                showArchiveTypeSelection = false
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
@@ -248,8 +238,7 @@ struct SharePreviewView: View {
                     onCreateArchive: {
                         viewModel.shouldOpenArchivePicker = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                            resetCreateArchiveForm()
-                            showCreateArchiveSheet = true
+                            viewModel.openCreateArchiveSheet()
                         }
                     },
                     onClose: {
@@ -259,7 +248,7 @@ struct SharePreviewView: View {
                 .background(Color(UIColor.systemBackground))
                 .cornerRadius(16, corners: [.topLeft, .topRight])
                 .shadow(radius: 10)
-                .offset(y: viewModel.shouldOpenArchivePicker ? 0 : 500)
+                .offset(y: viewModel.shouldOpenArchivePicker ? 0 : UIScreen.main.bounds.height + 100)
             }
         }
         .ignoresSafeArea()
@@ -270,24 +259,24 @@ struct SharePreviewView: View {
         GeometryReader { _ in
             ZStack(alignment: .bottom) {
                 Color.black
-                    .opacity(showCreateArchiveSheet ? 0.35 : 0)
+                    .opacity(viewModel.showCreateArchiveSheet ? 0.35 : 0)
                     .ignoresSafeArea()
-                    .allowsHitTesting(showCreateArchiveSheet)
+                    .allowsHitTesting(viewModel.showCreateArchiveSheet)
                 
                 VStack(spacing: 0) {
                     VStack(spacing: 0) {
                         createArchiveHeader
                         
                         ZStack {
-                            if showArchiveTypeSelection {
+                            if viewModel.showArchiveTypeSelection {
                                 archiveTypeSelectionScreen
-                                    .transition(archiveTypeScreenTransition)
+                                    .transition(.move(edge: .trailing).combined(with: .opacity))
                             } else {
                                 createArchiveDetailsScreen
-                                    .transition(archiveTypeScreenTransition)
+                                    .transition(.move(edge: .leading).combined(with: .opacity))
                             }
                         }
-                        .animation(.easeInOut(duration: 0.28), value: showArchiveTypeSelection)
+                        .animation(.easeInOut(duration: 0.28), value: viewModel.showArchiveTypeSelection)
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .frame(maxHeight: .infinity, alignment: .top)
@@ -299,18 +288,18 @@ struct SharePreviewView: View {
                     .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: -5)
                     .ignoresSafeArea(edges: .bottom)
                     .padding(.top, 12)
-                    .offset(y: showCreateArchiveSheet ? 20 : UIScreen.main.bounds.height + 100)
+                    .offset(y: viewModel.showCreateArchiveSheet ? 20 : UIScreen.main.bounds.height + 100)
                 }
             }
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: showCreateArchiveSheet)
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: viewModel.showCreateArchiveSheet)
     }
 
     private var createArchiveHeader: some View {
         HStack {
             Spacer()
 
-            Text(showArchiveTypeSelection ? "Archive type".localized() : "Create archive".localized())
+            Text(viewModel.showArchiveTypeSelection ? "Archive type".localized() : "Create archive".localized())
                 .font(.custom("Usual", size: 16))
                 .fontWeight(.semibold)
                 .foregroundColor(.blue900)
@@ -318,11 +307,10 @@ struct SharePreviewView: View {
             Spacer()
         }
         .overlay(alignment: .leading) {
-            if showArchiveTypeSelection {
+            if viewModel.showArchiveTypeSelection {
                 Button(action: {
-                    archiveTypeNavigationDirection = .backward
                     withAnimation(.easeInOut(duration: 0.28)) {
-                        showArchiveTypeSelection = false
+                        viewModel.closeArchiveTypeSelection()
                     }
                 }) {
                     Image(systemName: "arrow.left")
@@ -335,7 +323,7 @@ struct SharePreviewView: View {
         }
         .overlay(alignment: .trailing) {
             Button(action: {
-                showCreateArchiveSheet = false
+                viewModel.closeCreateArchiveSheet()
             }) {
                 Image(systemName: "xmark")
                     .font(.custom("Usual", size: 17))
@@ -351,6 +339,7 @@ struct SharePreviewView: View {
     private var createArchiveDetailsScreen: some View {
         ScrollViewReader { scrollProxy in
             VStack(spacing: 0) {
+                Divider()
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 24) {
                         VStack(alignment: .leading, spacing: 24) {
@@ -364,7 +353,7 @@ struct SharePreviewView: View {
                                 openArchiveTypeSelection()
                             }) {
                                 HStack(alignment: .center, spacing: 16) {
-                                    selectedArchiveType.onboardingDescriptionIcon
+                                    viewModel.selectedArchiveType.onboardingDescriptionIcon
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .padding(8)
@@ -373,7 +362,7 @@ struct SharePreviewView: View {
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
                                         .frame(width: 32, height: 32)
 
-                                    Text(selectedArchiveType.onboardingType)
+                                    Text(viewModel.selectedArchiveType.onboardingType)
                                         .font(.custom("Usual", size: 14))
                                         .fontWeight(.semibold)
                                         .foregroundColor(.blue900)
@@ -408,42 +397,51 @@ struct SharePreviewView: View {
                                 .kerning(1.6)
                                 .padding(.horizontal, 24)
                             
-                            HStack(spacing: 16) {
-                                Image("SharePreviewArchiveNotselected")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 32, height: 32)
-                                HStack(spacing: 8) {
-                                    Text("The")
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.blue25)
+
+                                HStack(spacing: 16) {
+                                    Image("SharePreviewArchiveNotselected")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 32, height: 32)
+
+                                    HStack(spacing: 8) {
+                                        Text("The")
+                                            .font(.custom("Usual", size: 14))
+                                            .foregroundColor(.blue900)
+
+                                        TextField(
+                                            "",
+                                            text: $viewModel.newArchiveName,
+                                            prompt: Text(viewModel.selectedArchiveType.onboardingType)
+                                                .foregroundColor(.blue300)
+                                        )
                                         .font(.custom("Usual", size: 14))
                                         .foregroundColor(.blue900)
-                                    
-                                    TextField(
-                                        "",
-                                        text: $newArchiveName,
-                                        prompt: Text(selectedArchiveType.onboardingType)
-                                            .foregroundColor(.blue300)
-                                    )
-                                    .font(.custom("Usual", size: 14))
-                                    .foregroundColor(.blue900)
-                                    .textInputAutocapitalization(.words)
-                                    .focused($isArchiveNameFieldFocused)
+                                        .textInputAutocapitalization(.words)
+                                        .focused($isArchiveNameFieldFocused)
+                                    }
+
+                                    Text("Archive")
+                                        .font(.custom("Usual", size: 14))
+                                        .foregroundColor(.blue900)
                                 }
-                                
-                                Text("Archive")
-                                    .font(.custom("Usual", size: 14))
-                                    .foregroundColor(.blue900)
+                                .padding(.leading, 8)
+                                .padding(.trailing, 16)
+                                .frame(height: 48)
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .inset(by: 0.5)
+                                        .stroke(Color.blue50, lineWidth: 1)
+                                )
+                                .padding(8)
                             }
-                            .padding(.leading, 8)
-                            .padding(.trailing, 16)
-                            .frame(height: 48)
-                            .background(Color.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .inset(by: 0.5)
-                                    .stroke(Color.blue50, lineWidth: 1)
-                            )
-                            .cornerRadius(12)
+                            .frame(height: 64)
+                            .animation(.easeInOut(duration: 0.22), value: isArchiveNameFieldFocused)
                             .padding(.horizontal, 24)
                             .id("archiveNameField")
                         }
@@ -457,20 +455,20 @@ struct SharePreviewView: View {
                 if !isKeyboardVisible {
                     VStack(spacing: 12) {
                         Button(action: {
-                            createArchiveAction()
+                            viewModel.submitCreateArchive()
                         }) {
                             Text("Create".localized())
                                 .font(.custom("Usual", size: 14))
                                 .fontWeight(.semibold)
                                 .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 56)
-                                .background(Color.blue900)
-                                .cornerRadius(12)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(Color.blue900)
+                            .cornerRadius(12)
                         }
 
                         Button(action: {
-                            showCreateArchiveSheet = false
+                            viewModel.closeCreateArchiveSheet()
                         }) {
                             Text("Cancel".localized())
                                 .font(.custom("Usual", size: 14))
@@ -514,7 +512,7 @@ struct SharePreviewView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .padding(8)
-                                    .background(isArchiveTypeSelected(type) ? Color.white : Color.blue25)
+                                    .background(viewModel.isArchiveTypeSelected(type) ? Color.white : Color.blue25)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .frame(width: 32, height: 32)
                                 
@@ -532,13 +530,13 @@ struct SharePreviewView: View {
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                                 
-                                archiveTypeSelectionIndicator(isSelected: isArchiveTypeSelected(type))
+                                archiveTypeSelectionIndicator(isSelected: viewModel.isArchiveTypeSelected(type))
                                 
                             }
                             .padding(.horizontal, 24)
                             .padding(.vertical, 32)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(isArchiveTypeSelected(type) ? Color.blue25 : Color.clear)
+                            .background(viewModel.isArchiveTypeSelected(type) ? Color.blue25 : Color.clear)
                         }
                         .buttonStyle(.plain)
                         
@@ -563,30 +561,10 @@ struct SharePreviewView: View {
         }
     }
 
-    private var archiveTypeScreenTransition: AnyTransition {
-        switch archiveTypeNavigationDirection {
-        case .forward:
-            return .asymmetric(
-                insertion: .move(edge: .trailing).combined(with: .opacity),
-                removal: .move(edge: .leading).combined(with: .opacity)
-            )
-        case .backward:
-            return .asymmetric(
-                insertion: .move(edge: .leading).combined(with: .opacity),
-                removal: .move(edge: .trailing).combined(with: .opacity)
-            )
-        }
-    }
-
-    private func isArchiveTypeSelected(_ type: ArchiveType) -> Bool {
-        selectedArchiveType.tag == type.tag
-    }
-
     private func openArchiveTypeSelection() {
         let showSelection = {
-            archiveTypeNavigationDirection = .forward
             withAnimation(.easeInOut(duration: 0.28)) {
-                showArchiveTypeSelection = true
+                viewModel.openArchiveTypeSelection()
             }
         }
 
@@ -602,12 +580,9 @@ struct SharePreviewView: View {
     }
 
     private func selectArchiveType(_ type: ArchiveType) {
-        selectedArchiveType = type
-
         let closeSelection = {
-            archiveTypeNavigationDirection = .backward
             withAnimation(.easeInOut(duration: 0.28)) {
-                showArchiveTypeSelection = false
+                viewModel.selectArchiveType(type)
             }
         }
 
@@ -627,29 +602,10 @@ struct SharePreviewView: View {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
     
-    private func resetCreateArchiveForm() {
-        newArchiveName = ""
-        selectedArchiveType = .person
-    }
-    
     private var onboardingArchiveTypeOptions: [ArchiveType] {
         ArchiveType.allCases.filter { $0 != .nonProfit }
     }
     
-    private func createArchiveAction() {
-        let trimmedName = newArchiveName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else {
-            viewModel.errorMessage = "Archive name is required.".localized()
-            return
-        }
-        
-        viewModel.createArchive(name: trimmedName, type: selectedArchiveType) { success in
-            if success {
-                showCreateArchiveSheet = false
-                resetCreateArchiveForm()
-            }
-        }
-    }
 }
 
 private struct ArchiveTypeOpenButtonStyle: ButtonStyle {
