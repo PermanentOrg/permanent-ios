@@ -93,9 +93,14 @@ enum ShareExpirationOption: CaseIterable {
 
 @MainActor
 class ShareItemViewModel: ObservableObject {
+    private struct ShareInviteResponse: Decodable {
+        let inviteId: Int?
+    }
+
     struct PendingArchiveGrant {
         let name: String
         let initials: String
+        let archiveID: Int?
         let source: ArchiveGrantSource
     }
 
@@ -904,9 +909,9 @@ class ShareItemViewModel: ObservableObject {
         showSelectArchiveFromPastShares = false
     }
 
-    func openGrantArchiveAccess(archiveName: String, archiveInitials: String, source: ArchiveGrantSource) {
+    func openGrantArchiveAccess(archiveName: String, archiveInitials: String, archiveID: Int? = nil, source: ArchiveGrantSource) {
         navigationDirection = .forward
-        pendingArchiveGrant = PendingArchiveGrant(name: archiveName, initials: archiveInitials, source: source)
+        pendingArchiveGrant = PendingArchiveGrant(name: archiveName, initials: archiveInitials, archiveID: archiveID, source: source)
         selectedRoleForGrantAccess = .viewer
         showInviteAndGrantAccess = false
         showFindArchiveByEmail = false
@@ -932,19 +937,76 @@ class ShareItemViewModel: ObservableObject {
     }
 
     func submitGrantArchiveAccess() {
-        if let pendingArchiveGrant {
-            addGrantedArchiveToCurrentAccessList(
-                archiveName: pendingArchiveGrant.name,
-                role: selectedRoleForGrantAccess
+        guard let pendingArchiveGrant else { return }
+
+        let folderLinkId = correctFolderLinkId ?? fileModel.folderLinkId
+
+        if let archiveID = pendingArchiveGrant.archiveID, folderLinkId > 0 {
+            let shareRequest = ShareVOData(
+                shareID: nil,
+                folderLinkID: folderLinkId,
+                archiveID: archiveID,
+                accessRole: selectedRoleForGrantAccess.apiValue,
+                type: nil,
+                status: "status.generic.ok",
+                requestToken: nil,
+                previewToggle: nil,
+                folderVO: nil,
+                recordVO: nil,
+                archiveVO: nil,
+                accountVO: nil,
+                createdDT: nil,
+                updatedDT: nil
             )
+
+            let operation = APIOperation(AccountEndpoint.updateShareRequest(shareVO: shareRequest))
+            operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+                guard let self = self else { return }
+
+                switch result {
+                case .json(let response, _):
+                    guard
+                        let model: APIResults<ShareVO> = JSONHelper.decoding(
+                            from: response,
+                            with: APIResults<ShareVO>.decoder
+                        ),
+                        model.isSuccessful
+                    else {
+                        self.errorMessage = "Unable to grant archive access right now. Please try again."
+                        return
+                    }
+
+                    self.navigationDirection = .backward
+                    self.showGrantArchiveAccess = false
+                    self.showInviteAndGrantAccess = false
+                    self.showFindArchiveByEmail = false
+                    self.showSelectArchiveFromPastShares = false
+                    self.pendingArchiveGrant = nil
+
+                    self.fetchSharedArchives()
+                    self.showArchiveAccessUpdatedNotification(message: "Access granted for new archive.")
+
+                case .error(let error, _):
+                    self.errorMessage = (error as? APIError)?.message ?? "Unable to grant archive access right now. Please try again."
+
+                default:
+                    self.errorMessage = "Unable to grant archive access right now. Please try again."
+                }
+            }
+            return
         }
+
+        addGrantedArchiveToCurrentAccessList(
+            archiveName: pendingArchiveGrant.name,
+            role: selectedRoleForGrantAccess
+        )
 
         navigationDirection = .backward
         showGrantArchiveAccess = false
         showInviteAndGrantAccess = false
         showFindArchiveByEmail = false
         showSelectArchiveFromPastShares = false
-        pendingArchiveGrant = nil
+        self.pendingArchiveGrant = nil
         showArchiveAccessUpdatedNotification(message: "Access granted for new archive.")
     }
 
@@ -968,18 +1030,80 @@ class ShareItemViewModel: ObservableObject {
     }
 
     func submitInviteAndGrantAccess() {
-        addInvitedRecipientToCurrentAccessList(
-            fullName: invitationRecipientFullName,
-            email: invitationRecipientEmail,
-            role: selectedRoleForInviteAccess
+        let trimmedEmail = invitationRecipientEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedName = invitationRecipientFullName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedEmail.isEmpty else { return }
+        guard let byArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else {
+            errorMessage = "Unable to send invitation right now. Please try again."
+            return
+        }
+
+        let folderLinkId = correctFolderLinkId ?? fileModel.folderLinkId
+        guard folderLinkId > 0 else {
+            errorMessage = "Unable to send invitation right now. Please try again."
+            return
+        }
+
+        let folderId: Int = {
+            if isFolder {
+                return fileModel.folderId
+            }
+            if fileModel.parentFolderId > 0 {
+                return fileModel.parentFolderId
+            }
+            return fileModel.folderId
+        }()
+        guard folderId > 0 else {
+            errorMessage = "Unable to send invitation right now. Please try again."
+            return
+        }
+
+        let operation = APIOperation(
+            ShareAccessEndpoint.inviteShare(
+                email: trimmedEmail,
+                byArchiveId: byArchiveId,
+                fullName: trimmedName,
+                accessRole: selectedRoleForInviteAccess.apiValue,
+                folderLinkId: folderLinkId,
+                relationship: "relation.family.uncle",
+                folderId: folderId
+            )
         )
 
-        navigationDirection = .backward
-        showInviteAndGrantAccess = false
-        showFindArchiveByEmail = false
-        showSelectArchiveFromPastShares = false
-        showGrantArchiveAccess = false
-        showArchiveAccessUpdatedNotification(message: "Invitation sent.")
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+
+            switch result {
+            case .json(let response, _):
+                guard
+                    let inviteResponse: ShareInviteResponse = JSONHelper.convertToModel(from: response),
+                    inviteResponse.inviteId != nil
+                else {
+                    self.errorMessage = "Unable to send invitation right now. Please try again."
+                    return
+                }
+
+                self.addInvitedRecipientToCurrentAccessList(
+                    fullName: trimmedName,
+                    email: trimmedEmail,
+                    role: self.selectedRoleForInviteAccess
+                )
+
+                self.navigationDirection = .backward
+                self.showInviteAndGrantAccess = false
+                self.showFindArchiveByEmail = false
+                self.showSelectArchiveFromPastShares = false
+                self.showGrantArchiveAccess = false
+                self.showArchiveAccessUpdatedNotification(message: "Invitation sent.")
+
+            case .error(let error, _):
+                self.errorMessage = (error as? APIError)?.message ?? "Unable to send invitation right now. Please try again."
+
+            default:
+                self.errorMessage = "Unable to send invitation right now. Please try again."
+            }
+        }
     }
 
     private func addInvitedRecipientToCurrentAccessList(fullName: String, email: String, role: AccessRole) {
@@ -1406,18 +1530,16 @@ class ShareItemViewModel: ObservableObject {
                             if let sharesV2 = recordData.shares, !sharesV2.isEmpty {
                                 let convertedShares = self.convertV2SharesToV1(sharesV2)
                                 // Sort: pending first, then approved
-                                self.sharedArchives = convertedShares.sorted { share1, share2 in
+                                let sortedShares = convertedShares.sorted { share1, share2 in
                                     let isPending1 = share1.status?.contains("pending") ?? false
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2  // Pending shares come first
                                 }
+                                self.finalizeSharedArchives(sortedShares)
                             } else {
                                 // No shares means empty list
-                                self.sharedArchives = []
+                                self.finalizeSharedArchives([])
                             }
-                            // Mark as loaded and update visibility
-                            self.hasLoadedArchivesOnce = true
-                            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
                         } else {
                             // No folder_linkId in V2 response, fall back to V1
                             self.fetchSharedArchivesV1()
@@ -1514,6 +1636,132 @@ class ShareItemViewModel: ObservableObject {
 
         return try? JSONDecoder().decode(ArchiveVOData.self, from: jsonData)
     }
+
+    private func fetchPendingShareInvites(completion: @escaping ([ShareVOData]) -> Void) {
+        let operation = APIOperation(InviteEndpoint.getMyInvites)
+        operation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<InviteVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<InviteVO>.decoder
+                    ),
+                    model.isSuccessful
+                else {
+                    completion([])
+                    return
+                }
+
+                let currentArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
+                let invitedShares: [ShareVOData] = model.results
+                    .flatMap { $0.data ?? [] }
+                    .compactMap { $0.invite }
+                    .filter { invite in
+                        guard invite.type == "type.invite.share" else { return false }
+                        guard invite.status == Constants.API.InviteStatus.pending else { return false }
+                        if let currentArchiveId, let byArchiveId = invite.byArchiveID {
+                            return byArchiveId == currentArchiveId
+                        }
+                        return true
+                    }
+                    .compactMap { invite in
+                        let email = invite.email?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                        guard !email.isEmpty else { return nil }
+
+                        let fullName = invite.fullName?.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let displayName = (fullName?.isEmpty == false) ? fullName! : email.split(separator: "@").first.map(String.init) ?? "Invited user"
+
+                        let account = AccountVOData(
+                            accountID: nil,
+                            primaryEmail: email,
+                            fullName: displayName,
+                            address: nil,
+                            address2: nil,
+                            country: nil,
+                            city: nil,
+                            state: nil,
+                            zip: nil,
+                            primaryPhone: nil,
+                            defaultArchiveID: nil,
+                            level: nil,
+                            apiToken: nil,
+                            betaParticipant: nil,
+                            facebookAccountID: nil,
+                            googleAccountID: nil,
+                            status: nil,
+                            type: nil,
+                            emailStatus: nil,
+                            phoneStatus: nil,
+                            notificationPreferences: nil,
+                            agreed: nil,
+                            optIn: nil,
+                            emailArray: nil,
+                            inviteCode: nil,
+                            rememberMe: nil,
+                            keepLoggedIn: nil,
+                            accessRole: nil,
+                            spaceTotal: nil,
+                            spaceLeft: nil,
+                            fileTotal: nil,
+                            fileLeft: nil,
+                            changePrimaryEmail: nil,
+                            changePrimaryPhone: nil,
+                            createdDT: invite.createdDT,
+                            updatedDT: invite.updatedDT,
+                            hideChecklist: nil
+                        )
+
+                        return ShareVOData(
+                            shareID: (invite.inviteID ?? -1) * -1,
+                            folderLinkID: nil,
+                            archiveID: nil,
+                            accessRole: invite.accessRole,
+                            type: invite.type,
+                            status: "status.generic.invited",
+                            requestToken: invite.token,
+                            previewToggle: nil,
+                            folderVO: nil,
+                            recordVO: nil,
+                            archiveVO: nil,
+                            accountVO: account,
+                            createdDT: invite.createdDT,
+                            updatedDT: invite.updatedDT
+                        )
+                    }
+
+                completion(invitedShares)
+
+            case .error:
+                completion([])
+
+            default:
+                completion([])
+            }
+        }
+    }
+
+    private func finalizeSharedArchives(_ baseShares: [ShareVOData]) {
+        fetchPendingShareInvites { [weak self] invitedShares in
+            guard let self = self else { return }
+
+            var mergedShares = baseShares
+            for invitedShare in invitedShares {
+                let invitedEmail = invitedShare.accountVO?.primaryEmail?.lowercased()
+                let alreadyExists = mergedShares.contains { existing in
+                    guard let invitedEmail else { return false }
+                    return existing.accountVO?.primaryEmail?.lowercased() == invitedEmail
+                }
+                if !alreadyExists {
+                    mergedShares.append(invitedShare)
+                }
+            }
+
+            self.sharedArchives = mergedShares
+            self.hasLoadedArchivesOnce = true
+            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
+        }
+    }
     
     // MARK: - Fetch Shared Archives (V1 API)
     private func fetchSharedArchivesV1() {
@@ -1573,16 +1821,15 @@ class ShareItemViewModel: ObservableObject {
                                 }
                                 
                                 // Sort pending shares first, then approved shares
-                                self.sharedArchives = filteredShares.sorted { share1, share2 in
+                                let sortedShares = filteredShares.sorted { share1, share2 in
                                     let isPending1 = share1.status?.contains("pending") ?? false
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2
                                 }
+                                self.finalizeSharedArchives(sortedShares)
                             } else {
-                                self.sharedArchives = []
+                                self.finalizeSharedArchives([])
                             }
-                            self.hasLoadedArchivesOnce = true
-                            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
                         }
                     }
                 }
@@ -1626,16 +1873,15 @@ class ShareItemViewModel: ObservableObject {
                                 }
                                 
                                 // Sort pending shares first, then approved shares
-                                self.sharedArchives = filteredShares.sorted { share1, share2 in
+                                let sortedShares = filteredShares.sorted { share1, share2 in
                                     let isPending1 = share1.status?.contains("pending") ?? false
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2
                                 }
+                                self.finalizeSharedArchives(sortedShares)
                             } else {
-                                self.sharedArchives = []
+                                self.finalizeSharedArchives([])
                             }
-                            self.hasLoadedArchivesOnce = true
-                            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
                         }
                     }
                 }

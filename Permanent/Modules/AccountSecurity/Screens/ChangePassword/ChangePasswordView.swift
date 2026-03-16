@@ -24,6 +24,10 @@ struct ChangePasswordView: View {
     init() {
         self._viewModel = StateObject(wrappedValue: ChangePasswordViewModel())
     }
+
+    init(viewModel: ChangePasswordViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         ZStack {
@@ -324,4 +328,3 @@ struct ChangePasswordView: View {
         }
     }
 }
-

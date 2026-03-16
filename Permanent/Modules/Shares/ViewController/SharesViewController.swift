@@ -40,6 +40,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     var sharedRecordId: Int = -1
     var shareThumbnailURL: String?
     var shareAccessRole: String?
+
+    var getSharesRequest: ((@escaping ServerResponse) -> Void)?
+    var navigateMinRequest: ((NavigateMinParams, Bool, @escaping ServerResponse) -> Void)?
+    var changeArchiveRequest: ((Int, String, @escaping (Bool) -> Void) -> Void)?
     
     private var isGridView = false
     private var sortActionSheet: SortActionSheet?
@@ -374,6 +378,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             fabView.isHidden = true
         }
     }
+
+    private func performChangeArchive(withArchiveId archiveId: Int, archiveNbr: String, completion: @escaping (Bool) -> Void) {
+        if let changeArchiveRequest {
+            changeArchiveRequest(archiveId, archiveNbr, completion)
+        } else {
+            viewModel?.changeArchive(withArchiveId: archiveId, archiveNbr: archiveNbr, completion: completion)
+        }
+    }
     
     func checkSavedFile() -> Bool {
         var hasSavedFile = false
@@ -388,7 +400,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 let action = { [weak self] in
                     self?.actionDialog?.dismiss()
                     
-                    self?.viewModel?.changeArchive(withArchiveId: sharedFile.toArchiveId, archiveNbr: sharedFile.toArchiveNbr, completion: { success in
+                    self?.performChangeArchive(withArchiveId: sharedFile.toArchiveId, archiveNbr: sharedFile.toArchiveNbr, completion: { success in
                         if success {
                             self?.getShares {
                                 self?.presentFileDetails(sharedFile: sharedFile)
@@ -433,7 +445,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 let action = { [weak self] in
                     self?.actionDialog?.dismiss()
                     
-                    self?.viewModel?.changeArchive(withArchiveId: sharedFolder.toArchiveId, archiveNbr: sharedFolder.toArchiveNbr, completion: { success in
+                    self?.performChangeArchive(withArchiveId: sharedFolder.toArchiveId, archiveNbr: sharedFolder.toArchiveNbr, completion: { success in
                         if success {
                             self?.getShares {
                                 self?.navigateToFolder(withParams: navigationParams, backNavigation: false) {
@@ -1102,8 +1114,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         
         fabView.isHidden = true
-        
-        viewModel?.getShares(then: { status in
+
+        let runRequest: (@escaping ServerResponse) -> Void = getSharesRequest ?? { [weak self] handler in
+            self?.viewModel?.getShares(then: handler)
+        }
+
+        runRequest({ status in
             self.hideSpinner()
             switch status {
             case .success:
@@ -1328,8 +1344,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
     public func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
-        
-        viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
+
+        let runRequest: (NavigateMinParams, Bool, @escaping ServerResponse) -> Void = navigateMinRequest ?? { [weak self] requestParams, requestBackNavigation, completion in
+            self?.viewModel?.navigateMin(params: requestParams, backNavigation: requestBackNavigation, then: completion)
+        }
+
+        runRequest(params, backNavigation, { status in
             self.onFilesFetchCompletion(status)
             handler?()
         })

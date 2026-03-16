@@ -289,6 +289,7 @@ struct ShareFindArchiveByEmailView: View {
                     viewModel.openGrantArchiveAccess(
                         archiveName: archive.name,
                         archiveInitials: archive.initials,
+                        archiveID: archive.archiveID,
                         source: .findByEmail
                     )
                 }
@@ -301,25 +302,25 @@ struct ShareFindArchiveByEmailView: View {
             }
         }) {
             HStack(spacing: 16) {
-                ZStack {
-                    LinearGradient(
-                        colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .cornerRadius(8)
-
-                    VStack(spacing: 4) {
-                        Rectangle()
-                            .fill(Color.white.opacity(0.9))
-                            .frame(width: 14, height: 2)
-
-                        Text(archive.initials)
-                            .font(.custom("Usual-Medium", size: 10))
-                            .foregroundColor(.white)
+                Group {
+                    if let thumbnailURL = archive.thumbnailURL,
+                       let url = URL(string: thumbnailURL) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            default:
+                                archiveInitialsThumbnail(archive.initials)
+                            }
+                        }
+                    } else {
+                        archiveInitialsThumbnail(archive.initials)
                     }
                 }
                 .frame(width: 40, height: 40)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 Text(archive.name)
                     .font(.custom("Usual-Regular", size: 14))
@@ -335,6 +336,26 @@ struct ShareFindArchiveByEmailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(PlainButtonStyle())
+    }
+
+    private func archiveInitialsThumbnail(_ initials: String) -> some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 4) {
+                Rectangle()
+                    .fill(Color.white.opacity(0.9))
+                    .frame(width: 14, height: 2)
+
+                Text(initials)
+                    .font(.custom("Usual-Medium", size: 10))
+                    .foregroundColor(.white)
+            }
+        }
     }
 
     private var bottomActionSection: some View {
