@@ -18,6 +18,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     @IBOutlet var sharingWithLabel: UILabel!
     
     private let overlayView = UIView()
+    var shareLinkLoader: ((ShareLinkOption) -> Void)?
     
     var sharedFile: FileModel!
     
@@ -31,7 +32,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         
         configureUI()
         setupTableView()
-        getShareLink(option: .retrieve)
+        triggerGetShareLink(option: .retrieve)
         
         tableView.estimatedRowHeight = 40
     }
@@ -130,7 +131,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     }
 
     @IBAction func createLinkAction(_ sender: UIButton) {
-        getShareLink(option: .create)
+        triggerGetShareLink(option: .create)
     }
     
     @objc func closeButtonPressed(_ sender: UIBarButtonItem) {
@@ -214,6 +215,14 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             self.hideSpinner()
             self.tableView.reloadData()
         }
+    }
+
+    fileprivate func triggerGetShareLink(option: ShareLinkOption) {
+        if let shareLinkLoader = shareLinkLoader {
+            shareLinkLoader(option)
+            return
+        }
+        getShareLink(option: option)
     }
     
     fileprivate func revokeLink() {

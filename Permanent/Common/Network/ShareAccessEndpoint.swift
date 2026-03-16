@@ -2,7 +2,7 @@
 //  ShareAccessEndpoint.swift
 //  Permanent
 //
-//  Created by Codex on 02.03.2026.
+//  Created by Lucian Cerbu on 02.03.2026.
 //
 
 import Foundation

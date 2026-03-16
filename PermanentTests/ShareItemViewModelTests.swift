@@ -723,31 +723,21 @@ final class ShareItemViewModelTests: XCTestCase {
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
-        let shareLinkFinished = expectation(description: "Share link finished loading")
-        let archivesFinished = expectation(description: "Archives finished loading")
+        let transitionObserved = expectation(description: "Observed seamless transition")
         var cancellables = Set<AnyCancellable>()
         
-        // Track when share link loading completes
-        vm.$isLoading
+        // The expected seamless transition is: link loading ends while archives loading is already true.
+        Publishers.CombineLatest(vm.$isLoading, vm.$isLoadingArchives)
             .dropFirst()
-            .filter { !$0 }
+            .filter { !$0 && $1 }
             .first()
-            .sink { _ in shareLinkFinished.fulfill() }
+            .sink { _ in transitionObserved.fulfill() }
             .store(in: &cancellables)
         
-        // Track when archives loading completes
-        vm.$isLoadingArchives
-            .dropFirst()
-            .filter { !$0 }
-            .first()
-            .sink { _ in archivesFinished.fulfill() }
-            .store(in: &cancellables)
-        
-        // Wait for both to complete
-        await fulfillment(of: [shareLinkFinished, archivesFinished], timeout: 3.0)
+        await fulfillment(of: [transitionObserved], timeout: 3.0)
         
         XCTAssertFalse(vm.isLoading, "Share link loading should be complete")
-        XCTAssertFalse(vm.isLoadingArchives, "Archives loading should be complete")
+        XCTAssertTrue(vm.isLoadingArchives, "Archives loading should already be running")
     }
     
     func testRefreshData_PreventsDuplicateInitialLoad() async {

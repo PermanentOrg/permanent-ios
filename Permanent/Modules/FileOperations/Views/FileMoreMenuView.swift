@@ -14,6 +14,18 @@ struct FileMoreMenuView: View {
     private let onRenameRequested: ((FileModel) -> Void)?
     private let onDeleteConfirmed: (([FileModel]) -> Void)?
     private let onLeaveShareConfirmed: ((FileModel) -> Void)?
+
+    init(viewModel: FileMenuViewModel,
+         onShareManagementRequested: ((FileModel) -> Void)? = nil,
+         onRenameRequested: ((FileModel) -> Void)? = nil,
+         onDeleteConfirmed: (([FileModel]) -> Void)? = nil,
+         onLeaveShareConfirmed: ((FileModel) -> Void)? = nil) {
+        self.viewModel = viewModel
+        self.onShareManagementRequested = onShareManagementRequested
+        self.onRenameRequested = onRenameRequested
+        self.onDeleteConfirmed = onDeleteConfirmed
+        self.onLeaveShareConfirmed = onLeaveShareConfirmed
+    }
     
     init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onRenameRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil, menuItemsGenerator: FileMenuViewModel.MenuItemsGenerator? = nil, fileModelUpdateHandler: FileMenuViewModel.FileModelUpdateHandler? = nil) {
         let newViewModel = FileMenuViewModel(

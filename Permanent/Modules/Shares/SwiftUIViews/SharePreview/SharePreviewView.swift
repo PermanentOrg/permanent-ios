@@ -34,6 +34,10 @@ struct SharePreviewView: View {
         vm.onNavigateToFilePreview = onNavigateToFilePreview
         _viewModel = StateObject(wrappedValue: vm)
     }
+
+    init(viewModel: SharePreviewSwiftUIViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         mainContent
@@ -154,9 +158,11 @@ struct SharePreviewView: View {
             // Keep loader above sheets so create action has visible feedback.
             if viewModel.isLoading {
                 LoadingOverlay()
+                    .accessibilityIdentifier("sharePreview.loadingOverlay")
                     .zIndex(100)
             }
         }
+        .accessibilityIdentifier("sharePreview.root")
         .alert(isPresented: Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.errorMessage = nil } })) {
             Alert(
                 title: Text("Error"),
@@ -215,6 +221,7 @@ struct SharePreviewView: View {
             // Dimming backdrop
             Color.black
                 .opacity(viewModel.shouldOpenArchivePicker ? 0.4 : 0)
+                .accessibilityIdentifier("sharePreview.pickerBackdrop")
                 .ignoresSafeArea()
                 .onTapGesture {
                     viewModel.shouldOpenArchivePicker = false

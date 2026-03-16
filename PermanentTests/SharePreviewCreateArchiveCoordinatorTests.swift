@@ -2,7 +2,7 @@
 //  SharePreviewCreateArchiveCoordinatorTests.swift
 //  PermanentTests
 //
-//  Created by Codex on 12.03.2026.
+//  Created by Lucian Cerbu on 12.03.2026.
 //
 
 import XCTest

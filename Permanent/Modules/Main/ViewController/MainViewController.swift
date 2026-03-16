@@ -32,6 +32,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
     var navParams: NavigateMinParams? = nil
+    var makeSearchViewController: (() -> SearchViewController?) = {
+        UIViewController.create(withIdentifier: .search, from: .main) as? SearchViewController
+    }
+    var presentSearchController: ((UIViewController, Bool) -> Void)?
+    var getRootRequest: ((@escaping ServerResponse) -> Void)?
+    var navigateMinRequest: ((NavigateMinParams, Bool, @escaping ServerResponse) -> Void)?
+    var displayController: ((UIViewController) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -604,13 +611,17 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     @objc func searchButtonPressed(_ sender: Any) {
-        guard let searchVC = UIViewController.create(withIdentifier: .search, from: .main) as? SearchViewController else {
+        guard let searchVC = makeSearchViewController() else {
             return
         }
         
         let navController = NavigationController(rootViewController: searchVC)
         navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: false)
+        if let presenter = presentSearchController {
+            presenter(navController, false)
+        } else {
+            present(navController, animated: false)
+        }
     }
     
     func showBanner() {
@@ -650,8 +661,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     private func getRootFolder() {
         showSpinner()
-        
-        viewModel?.getRoot(then: { status in
+
+        let runRequest: (@escaping ServerResponse) -> Void = getRootRequest ?? { [weak self] completion in
+            self?.viewModel?.getRoot(then: completion)
+        }
+
+        runRequest({ status in
             self.onFilesFetchCompletion(status)
             self.checkForSavedUniversalLink()
             self.checkForRequestShareAccess()
@@ -680,8 +695,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
-        
-        viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
+
+        let runRequest: (NavigateMinParams, Bool, @escaping ServerResponse) -> Void = navigateMinRequest ?? { [weak self] requestParams, requestBackNavigation, completion in
+            self?.viewModel?.navigateMin(params: requestParams, backNavigation: requestBackNavigation, then: completion)
+        }
+
+        runRequest(params, backNavigation, { status in
             self.onFilesFetchCompletion(status)
             handler?()
         })
@@ -743,7 +762,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             viewController = sharePreviewVC
         }
         
-        navigationController?.display(viewController: viewController)
+        if let displayController {
+            displayController(viewController)
+        } else {
+            navigationController?.display(viewController: viewController)
+        }
     }
     
     func checkForRequestShareAccess() {

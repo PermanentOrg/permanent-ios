@@ -93,6 +93,14 @@
 		5E1582C32C5CD7DF00103EA8 /* OnboardingCongratulationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582C22C5CD7DF00103EA8 /* OnboardingCongratulationsViewModel.swift */; };
 		5E173EAF2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EAE2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift */; };
 		5E173EB12F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EB02F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift */; };
+		5E173EB32F6373D300C6D151 /* SharePreviewViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EB22F6373D300C6D151 /* SharePreviewViewTests.swift */; };
+		5E173EB52F63FF5A00C6D151 /* ShareItemViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EB42F63FF5A00C6D151 /* ShareItemViewTests.swift */; };
+		5E173EB72F64010E00C6D151 /* FileMoreMenuViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EB62F64010E00C6D151 /* FileMoreMenuViewTests.swift */; };
+		5E173EB92F64032B00C6D151 /* ArchiveAccessManagementViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EB82F64032B00C6D151 /* ArchiveAccessManagementViewTests.swift */; };
+		5E173EBB2F64032C00C6D151 /* ChangePasswordViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EBA2F64032C00C6D151 /* ChangePasswordViewTests.swift */; };
+		5E173EBD2F64050D00C6D151 /* MainViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EBC2F64050D00C6D151 /* MainViewControllerTests.swift */; };
+		5E173EBF2F64050D00C6D151 /* ShareViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EBE2F64050D00C6D151 /* ShareViewControllerTests.swift */; };
+		5E173EC12F643EBD00C6D151 /* SharesViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E173EC02F643EBD00C6D151 /* SharesViewControllerTests.swift */; };
 		5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B7E2AF0640E002DE69A /* GiftStorageView.swift */; };
 		5E181B822AF10100002DE69A /* GiftStorageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */; };
 		5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */; };
@@ -1171,6 +1179,14 @@
 		5E1582C22C5CD7DF00103EA8 /* OnboardingCongratulationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCongratulationsViewModel.swift; sourceTree = "<group>"; };
 		5E173EAE2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewCreateArchiveCoordinator.swift; sourceTree = "<group>"; };
 		5E173EB02F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewCreateArchiveCoordinatorTests.swift; sourceTree = "<group>"; };
+		5E173EB22F6373D300C6D151 /* SharePreviewViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewViewTests.swift; sourceTree = "<group>"; };
+		5E173EB42F63FF5A00C6D151 /* ShareItemViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemViewTests.swift; sourceTree = "<group>"; };
+		5E173EB62F64010E00C6D151 /* FileMoreMenuViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMoreMenuViewTests.swift; sourceTree = "<group>"; };
+		5E173EB82F64032B00C6D151 /* ArchiveAccessManagementViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveAccessManagementViewTests.swift; sourceTree = "<group>"; };
+		5E173EBA2F64032C00C6D151 /* ChangePasswordViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewTests.swift; sourceTree = "<group>"; };
+		5E173EBC2F64050D00C6D151 /* MainViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewControllerTests.swift; sourceTree = "<group>"; };
+		5E173EBE2F64050D00C6D151 /* ShareViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewControllerTests.swift; sourceTree = "<group>"; };
+		5E173EC02F643EBD00C6D151 /* SharesViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharesViewControllerTests.swift; sourceTree = "<group>"; };
 		5E181B7E2AF0640E002DE69A /* GiftStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftStorageView.swift; sourceTree = "<group>"; };
 		5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftStorageViewModel.swift; sourceTree = "<group>"; };
 		5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBarProgressStyle.swift; sourceTree = "<group>"; };
@@ -3336,6 +3352,14 @@
 				5E1E4FA82988897F0062984C /* ManageTagsTests.swift */,
 				F59C3B7E29C3146000337E45 /* AuthenticationManagerTests.swift */,
 				5E173EB02F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift */,
+				5E173EB22F6373D300C6D151 /* SharePreviewViewTests.swift */,
+				5E173EB42F63FF5A00C6D151 /* ShareItemViewTests.swift */,
+				5E173EB62F64010E00C6D151 /* FileMoreMenuViewTests.swift */,
+				5E173EB82F64032B00C6D151 /* ArchiveAccessManagementViewTests.swift */,
+				5E173EBA2F64032C00C6D151 /* ChangePasswordViewTests.swift */,
+				5E173EBC2F64050D00C6D151 /* MainViewControllerTests.swift */,
+				5E173EBE2F64050D00C6D151 /* ShareViewControllerTests.swift */,
+				5E173EC02F643EBD00C6D151 /* SharesViewControllerTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -5701,18 +5725,25 @@
 			files = (
 				F559F87F28F9C0640015A522 /* FolderSortViewModelTests.swift in Sources */,
 				5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */,
+				5E173EBB2F64032C00C6D151 /* ChangePasswordViewTests.swift in Sources */,
 				5EA4EC062F15176E00D05FF2 /* SharePreviewViewModelTests.swift in Sources */,
+				5E173EB52F63FF5A00C6D151 /* ShareItemViewTests.swift in Sources */,
+				5E173EB92F64032B00C6D151 /* ArchiveAccessManagementViewTests.swift in Sources */,
 				5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */,
 				5EC230922F2CD30B00143911 /* ShareItemViewModelTests.swift in Sources */,
 				5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */,
 				F59C3B7F29C3146000337E45 /* AuthenticationManagerTests.swift in Sources */,
+				5E173EBF2F64050D00C6D151 /* ShareViewControllerTests.swift in Sources */,
+				5E173EB72F64010E00C6D151 /* FileMoreMenuViewTests.swift in Sources */,
 				F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */,
 				F559F87D28F9AB070015A522 /* FolderContentViewModelTests.swift in Sources */,
+				5E173EB32F6373D300C6D151 /* SharePreviewViewTests.swift in Sources */,
 				F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */,
 				F54861FA28912F4300500F6F /* SessionTests.swift in Sources */,
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
+				5E173EC12F643EBD00C6D151 /* SharesViewControllerTests.swift in Sources */,
 				5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */,
 				5E991EE92A4AFB89006229C0 /* EnvVars.generated.swift in Sources */,
 				5E173EB12F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift in Sources */,
@@ -5721,6 +5752,7 @@
 				F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */,
 				5E9977AC284898C7003E0C46 /* PublicGalleryTests.swift in Sources */,
 				37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */,
+				5E173EBD2F64050D00C6D151 /* MainViewControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
