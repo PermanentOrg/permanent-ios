@@ -886,4 +886,18 @@ class FileMenuViewModel: ObservableObject {
             return "Edit Metadata"
         }
     }
+
+    func shouldShowPendingInvitationBadge(for itemType: MenuItem.ItemType) -> Bool {
+        pendingInvitationBadgeCount(for: itemType) > 0
+    }
+
+    func pendingInvitationBadgeCount(for itemType: MenuItem.ItemType) -> Int {
+        guard itemType == .shareToPermanent else {
+            return 0
+        }
+
+        return fileViewModel.minArchiveVOS.filter {
+            ArchiveVOData.Status(rawValue: $0.shareStatus) == .pending
+        }.count
+    }
 }
