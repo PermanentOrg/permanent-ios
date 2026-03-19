@@ -108,7 +108,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
             guard let shareLinkVM = notif.object as? ShareLinkViewModel,
-                  let index = self?.viewModel?.viewModels.firstIndex(where: { $0.recordId == shareLinkVM.fileViewModel.recordId })
+                  let index = self?.viewModel?.viewModels.firstIndex(where: {
+                      $0.recordId == shareLinkVM.fileViewModel.recordId &&
+                      $0.folderLinkId == shareLinkVM.fileViewModel.folderLinkId
+                  })
             else {
                 return
             }
@@ -116,6 +119,20 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
             
+            self?.collectionView.reloadData()
+        }
+
+        NotificationCenter.default.addObserver(forName: ShareItemViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
+            guard let updatedFileModel = notif.userInfo?["fileModel"] as? FileModel,
+                  let index = self?.viewModel?.viewModels.firstIndex(where: {
+                      $0.recordId == updatedFileModel.recordId &&
+                      $0.folderLinkId == updatedFileModel.folderLinkId
+                  }) else {
+                return
+            }
+
+            self?.viewModel?.viewModels[index].accessRole = updatedFileModel.accessRole
+            self?.viewModel?.viewModels[index].minArchiveVOS = updatedFileModel.minArchiveVOS
             self?.collectionView.reloadData()
         }
         

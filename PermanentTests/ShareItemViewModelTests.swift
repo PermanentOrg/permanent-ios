@@ -1178,6 +1178,80 @@ final class ShareItemViewModelTests: XCTestCase {
         // Check if error message was set
         XCTAssertNotNil(errorVM.errorMessage, "Should have error message")
     }
+
+    func testDenyShareRequest_PostsUpdatedFileModelNotification() async {
+        let fileModel = FileModel.mockFile()
+        let repo = MockShareManagementRepository()
+        let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
+
+        let deniedShare = makeShareVO(shareID: 101, archiveID: 1001, status: ArchiveVOData.Status.pending.rawValue, accessRole: "viewer")
+        let remainingShare = makeShareVO(shareID: 202, archiveID: 2002, status: ArchiveVOData.Status.ok.rawValue, accessRole: "editor")
+        vm.sharedArchives = [deniedShare, remainingShare]
+
+        let notifExpectation = expectation(description: "Share update notification posted")
+        var receivedFileModel: FileModel?
+        let observer = NotificationCenter.default.addObserver(
+            forName: ShareItemViewModel.didUpdateSharesNotifName,
+            object: vm,
+            queue: .main
+        ) { notif in
+            receivedFileModel = notif.userInfo?["fileModel"] as? FileModel
+            notifExpectation.fulfill()
+        }
+        defer { NotificationCenter.default.removeObserver(observer) }
+
+        vm.denyShareRequest(deniedShare)
+        await fulfillment(of: [notifExpectation], timeout: 2.0)
+
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.count, 1)
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.first?.shareId, 202)
+    }
+
+    func testUpdateArchiveAccessRole_PostsUpdatedFileModelNotification() async {
+        let fileModel = FileModel.mockFile()
+        let repo = MockShareManagementRepository()
+        let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
+
+        let sharedArchive = makeShareVO(shareID: 303, archiveID: 3003, status: ArchiveVOData.Status.ok.rawValue, accessRole: "viewer")
+        vm.sharedArchives = [sharedArchive]
+
+        let notifExpectation = expectation(description: "Share update notification posted")
+        var receivedFileModel: FileModel?
+        let observer = NotificationCenter.default.addObserver(
+            forName: ShareItemViewModel.didUpdateSharesNotifName,
+            object: vm,
+            queue: .main
+        ) { notif in
+            receivedFileModel = notif.userInfo?["fileModel"] as? FileModel
+            notifExpectation.fulfill()
+        }
+        defer { NotificationCenter.default.removeObserver(observer) }
+
+        vm.updateArchiveAccessRole(shareVO: sharedArchive, newRole: .editor) { _, _ in }
+        await fulfillment(of: [notifExpectation], timeout: 2.0)
+
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.count, 1)
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.first?.shareId, 303)
+    }
+
+    private func makeShareVO(shareID: Int, archiveID: Int, status: String, accessRole: String) -> ShareVOData {
+        ShareVOData(
+            shareID: shareID,
+            folderLinkID: 1,
+            archiveID: archiveID,
+            accessRole: accessRole,
+            type: "type.share.archive",
+            status: status,
+            requestToken: nil,
+            previewToggle: nil,
+            folderVO: nil,
+            recordVO: nil,
+            archiveVO: nil,
+            accountVO: nil,
+            createdDT: nil,
+            updatedDT: nil
+        )
+    }
 }
 
 // MARK: - Mock Repositories

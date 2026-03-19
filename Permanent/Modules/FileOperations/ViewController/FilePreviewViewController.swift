@@ -49,6 +49,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareLinkViewModel.didUpdateSharesNotifName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareItemViewModel.didUpdateSharesNotifName, object: nil)
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
@@ -56,6 +58,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         } catch {
             print("Setting category to AVAudioSessionCategoryPlayback failed.")
         }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -415,6 +421,25 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
         present(hostingController, animated: true)
+    }
+
+    @objc private func onDidUpdateShares(_ notification: Notification) {
+        if let shareLinkVM = notification.object as? ShareLinkViewModel,
+           file.recordId == shareLinkVM.fileViewModel.recordId,
+           file.folderLinkId == shareLinkVM.fileViewModel.folderLinkId {
+            file.accessRole = shareLinkVM.fileViewModel.accessRole
+            file.minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
+            return
+        }
+
+        guard let updatedFileModel = notification.userInfo?["fileModel"] as? FileModel,
+              file.recordId == updatedFileModel.recordId,
+              file.folderLinkId == updatedFileModel.folderLinkId else {
+            return
+        }
+
+        file.accessRole = updatedFileModel.accessRole
+        file.minArchiveVOS = updatedFileModel.minArchiveVOS
     }
 
     @IBAction func retryButtonPressed(_ sender: Any) {

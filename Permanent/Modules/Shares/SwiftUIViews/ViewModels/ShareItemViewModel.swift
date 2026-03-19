@@ -93,6 +93,8 @@ enum ShareExpirationOption: CaseIterable {
 
 @MainActor
 class ShareItemViewModel: ObservableObject {
+    static let didUpdateSharesNotifName = Notification.Name("ShareItemViewModel.didUpdateSharesNotifName")
+
     private struct ShareInviteResponse: Decodable {
         let inviteId: Int?
     }
@@ -1978,6 +1980,7 @@ class ShareItemViewModel: ObservableObject {
                     case .success:
                         self.sharedArchives.removeAll { $0.shareID == shareVO.shareID }
                         self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
+                        self.notifyShareUpdates()
                         
                     case .error(let message):
                         self.errorMessage = message
@@ -2035,6 +2038,7 @@ class ShareItemViewModel: ObservableObject {
                             self.approvingShareIDs.remove(loadingID)
                         }
                         
+                        self.notifyShareUpdates()
                         self.objectWillChange.send()
                     }
                 }
@@ -2070,6 +2074,7 @@ class ShareItemViewModel: ObservableObject {
                             self.approvingShareIDs.remove(loadingID)
                         }
                         
+                        self.notifyShareUpdates()
                         self.objectWillChange.send()
                     }
                 }
@@ -2115,6 +2120,7 @@ class ShareItemViewModel: ObservableObject {
                             
                             // Reset the selected role to match the updated role
                             self.selectedRoleForArchive = AccessRole.roleForValue(updatedShare.accessRole ?? "viewer")
+                            self.notifyShareUpdates()
                             
                             completion(.success, nil)
                         } else {
@@ -2157,6 +2163,7 @@ class ShareItemViewModel: ObservableObject {
                         
                         self.selectedArchiveForEdit = nil
                         self.selectedRoleForArchive = nil
+                        self.notifyShareUpdates()
                         
                         completion(.success, nil)
                         
@@ -2169,5 +2176,31 @@ class ShareItemViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    private func notifyShareUpdates() {
+        var updatedFileModel = fileModel
+        updatedFileModel.minArchiveVOS = sharedArchives.compactMap { share in
+            guard let archiveID = share.archiveID,
+                  let shareID = share.shareID else {
+                return nil
+            }
+
+            return MinArchiveVO(
+                name: share.archiveVO?.fullName ?? "",
+                thumbnail: share.archiveVO?.thumbURL200,
+                shareStatus: share.status ?? "",
+                shareId: shareID,
+                archiveID: archiveID,
+                folderLinkID: share.folderLinkID,
+                accessRole: share.accessRole
+            )
+        }
+
+        NotificationCenter.default.post(
+            name: Self.didUpdateSharesNotifName,
+            object: self,
+            userInfo: ["fileModel": updatedFileModel]
+        )
     }
 }
