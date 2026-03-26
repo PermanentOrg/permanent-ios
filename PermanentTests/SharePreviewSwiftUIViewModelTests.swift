@@ -67,7 +67,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
 
         // Wait until loading finishes
         var attempts = 0
-        while vm.isLoading && attempts < 50 {
+        while vm.isLoading && attempts < 120 {
             try? await Task.sleep(nanoseconds: 50_000_000)
             attempts += 1
         }

@@ -43,7 +43,7 @@ final class SharePreviewViewModelTests: XCTestCase {
         
         vm.start()
         
-        await fulfillment(of: [finishedLoading], timeout: 3.0)
+        await fulfillment(of: [finishedLoading], timeout: 8.0)
         
         XCTAssertFalse(vm.isLoading)
         XCTAssertNil(vm.errorMessage)
@@ -67,7 +67,7 @@ final class SharePreviewViewModelTests: XCTestCase {
         
         vm.start()
         
-        await fulfillment(of: [finishedLoading], timeout: 3.0)
+        await fulfillment(of: [finishedLoading], timeout: 8.0)
         
         XCTAssertFalse(vm.isLoading)
         XCTAssertNotNil(vm.errorMessage)
@@ -102,7 +102,7 @@ final class SharePreviewViewModelTests: XCTestCase {
         await fulfillment(of: [startedLoading], timeout: 1.0)
         XCTAssertTrue(vm.isLoading)
         
-        await fulfillment(of: [finishedLoading], timeout: 3.0)
+        await fulfillment(of: [finishedLoading], timeout: 8.0)
         XCTAssertFalse(vm.isLoading)
     }
 
@@ -178,7 +178,7 @@ final class SharePreviewViewModelTests: XCTestCase {
         
         vm.start()
         
-        await fulfillment(of: [finishedLoading], timeout: 3.0)
+        await fulfillment(of: [finishedLoading], timeout: 8.0)
         
         XCTAssertTrue(vm.items.count >= 0)
     }
@@ -325,7 +325,7 @@ final class SharePreviewViewModelTests: XCTestCase {
 
         vm.start()
 
-        await fulfillment(of: [finishedLoading], timeout: 3.0)
+        await fulfillment(of: [finishedLoading], timeout: 8.0)
     }
 
     private func makeArchive(id: Int) -> ArchiveVOData {

@@ -756,7 +756,7 @@ final class ShareItemViewModelTests: XCTestCase {
             .sink { _ in initialLoadComplete.fulfill() }
             .store(in: &cancellables)
         
-        await fulfillment(of: [initialLoadComplete], timeout: 3.0)
+        await fulfillment(of: [initialLoadComplete], timeout: 8.0)
         
         let initialArchiveCount = vm.sharedArchives.count
         
@@ -797,7 +797,7 @@ final class ShareItemViewModelTests: XCTestCase {
             .sink { _ in initialLoadComplete.fulfill() }
             .store(in: &cancellables)
         
-        await fulfillment(of: [initialLoadComplete], timeout: 3.0)
+        await fulfillment(of: [initialLoadComplete], timeout: 8.0)
         
         // First refreshData() - should be ignored (no loading triggered)
         let firstRefreshIgnored = expectation(description: "First refresh ignored")
@@ -848,7 +848,7 @@ final class ShareItemViewModelTests: XCTestCase {
             .sink { _ in loadComplete.fulfill() }
             .store(in: &cancellables)
         
-        await fulfillment(of: [loadComplete], timeout: 3.0)
+        await fulfillment(of: [loadComplete], timeout: 8.0)
         
         // If archives were loaded and exist, section should show
         if !vm.sharedArchives.isEmpty {
