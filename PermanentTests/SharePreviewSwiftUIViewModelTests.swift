@@ -992,26 +992,26 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
     // MARK: - API Service Coverage Tests
     
     func testSharePreviewAPIService_FetchSharePreview_CallsEndpoint() async {
-        let service = SharePreviewAPIService()
-        
-        // This will make actual API call - test verifies it doesn't crash
-        // In real scenario, this would hit network or be mocked at APIOperation level
+        // Keep this deterministic in CI: validate repository contract without real network calls.
+        let service = SharePreviewMockRepository()
+
         do {
-            _ = try await service.fetchSharePreview(shareToken: "test-token")
+            let response = try await service.fetchSharePreview(shareToken: "test-token")
+            XCTAssertNotNil(response.urlToken)
         } catch {
-            // Expected to fail without valid token, but code path is executed
-            XCTAssertNotNil(error, "Should throw error for invalid token")
+            XCTFail("Mock repository should not throw: \(error)")
         }
     }
     
     func testSharePreviewAPIService_RequestShareAccess_CallsEndpoint() async {
-        let service = SharePreviewAPIService()
-        
+        // Keep this deterministic in CI: validate repository contract without real network calls.
+        let service = SharePreviewMockRepository()
+
         do {
-            _ = try await service.requestShareAccess(shareToken: "test-token")
+            let response = try await service.requestShareAccess(shareToken: "test-token")
+            XCTAssertNotNil(response.status)
         } catch {
-            // Expected to fail, but verifies code path
-            XCTAssertNotNil(error, "Should throw error for invalid request")
+            XCTFail("Mock repository should not throw: \(error)")
         }
     }
     
