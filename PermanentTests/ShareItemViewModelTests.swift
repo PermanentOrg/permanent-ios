@@ -1311,6 +1311,12 @@ private class MockShareManagementRepository: ShareManagementRepository {
             handler(.success)
         }
     }
+
+    override func updateLink(model: ManageLinkData, shareVO: SharebyURLVOData?, then handler: @escaping ShareLinkResponse) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            handler(self.createMockShareVO(useV1: self.useV1), nil)
+        }
+    }
     
     override func deleteShareLinkV2(shareLinkId: String, then completion: @escaping (RequestStatus) -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

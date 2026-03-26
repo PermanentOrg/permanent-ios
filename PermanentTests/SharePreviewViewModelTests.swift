@@ -198,13 +198,14 @@ final class SharePreviewViewModelTests: XCTestCase {
     // MARK: - Access Role Display Tests
 
     func testAccessRoleShownForAcceptedNonOwner() async {
-        let shareVO = makeShareVO(status: Constants.API.AccountStatus.ok, accessRole: AccessRole.viewer.apiValue, archiveID: 1850)
+        // Use an archive ID different from share creator archive to force non-creator path.
+        let shareVO = makeShareVO(status: Constants.API.AccountStatus.ok, accessRole: AccessRole.viewer.apiValue, archiveID: 1851)
         let data = makeShareData(shareVO: shareVO, defaultAccessRole: AccessRole.viewer.apiValue)
         let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
 
         await waitForLoad(vm)
 
-        vm.currentArchive = makeArchive(id: 1850)
+        vm.currentArchive = makeArchive(id: 1851)
 
         XCTAssertEqual(vm.accessRoleText, "VIEWER")
     }
@@ -239,7 +240,8 @@ final class SharePreviewViewModelTests: XCTestCase {
 
         await waitForLoad(vm)
 
-        vm.currentArchive = makeArchive(id: 1850)
+        // Use an archive ID different from share creator archive to force non-creator path.
+        vm.currentArchive = makeArchive(id: 1851)
 
         XCTAssertEqual(vm.accessRoleText, "VIEWER")
     }
