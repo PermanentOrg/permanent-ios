@@ -32,6 +32,9 @@ class FileCollectionViewCell: UICollectionViewCell {
     var fileInfoId: String?
     
     var rightButtonTapAction: ((FileCollectionViewCell) -> Void)?
+    private let moreButtonBadgeView = UIView()
+    private let moreButtonBadgeLabel = UILabel()
+    private var moreButtonBadgeWidthConstraint: NSLayoutConstraint?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -62,6 +65,8 @@ class FileCollectionViewCell: UICollectionViewCell {
         for subview in sharingInfoStackView.arrangedSubviews {
             subview.removeFromSuperview()
         }
+        
+        setMoreButtonBadgeCount(0)
     }
     
     private func initUI() {
@@ -84,6 +89,32 @@ class FileCollectionViewCell: UICollectionViewCell {
         rightButtonImageView.tintColor = .iconTintPrimary
         
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
+        
+        moreButtonBadgeView.translatesAutoresizingMaskIntoConstraints = false
+        moreButtonBadgeView.backgroundColor = UIColor(.error500)
+        moreButtonBadgeView.layer.cornerRadius = 8
+        moreButtonBadgeView.layer.masksToBounds = true
+        moreButtonBadgeView.isHidden = true
+        
+        moreButtonBadgeLabel.translatesAutoresizingMaskIntoConstraints = false
+        moreButtonBadgeLabel.textColor = .white
+        moreButtonBadgeLabel.font = TextFontStyle.style52.font
+        moreButtonBadgeLabel.textAlignment = .center
+        moreButtonBadgeView.addSubview(moreButtonBadgeLabel)
+        
+        contentView.addSubview(moreButtonBadgeView)
+        
+        //moreButtonBadgeWidthConstraint = moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 10)
+        
+        NSLayoutConstraint.activate([
+            //moreButtonBadgeWidthConstraint!,
+            moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 20),
+            moreButtonBadgeView.heightAnchor.constraint(equalToConstant: 16),
+            moreButtonBadgeView.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
+            moreButtonBadgeView.trailingAnchor.constraint(equalTo: moreButton.leadingAnchor, constant: 6),
+            moreButtonBadgeLabel.centerYAnchor.constraint(equalTo: moreButtonBadgeView.centerYAnchor),
+            moreButtonBadgeLabel.centerXAnchor.constraint(equalTo: moreButtonBadgeView.centerXAnchor)
+        ])
     }
     
     func updateCell(model: FileModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isSelecting: Bool = false, isFileSelected: Bool = false) {
@@ -297,5 +328,18 @@ class FileCollectionViewCell: UICollectionViewCell {
     @IBAction
     func moreButtonAction(_ sender: AnyObject) {
         rightButtonTapAction?(self)
+    }
+
+    func setMoreButtonBadgeCount(_ count: Int) {
+        guard count > 0 else {
+            moreButtonBadgeView.isHidden = true
+            moreButtonBadgeLabel.text = nil
+            moreButtonBadgeWidthConstraint?.constant = 24
+            return
+        }
+        
+        let badgeText = count > 9 ? "9+" : "\(count)"
+        moreButtonBadgeLabel.text = badgeText
+        moreButtonBadgeView.isHidden = false
     }
 }

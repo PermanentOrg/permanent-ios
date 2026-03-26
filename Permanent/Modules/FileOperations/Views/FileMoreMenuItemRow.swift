@@ -35,12 +35,16 @@ struct FileMoreMenuItemRow: View {
 
             let pendingInvitationCount = viewModel.pendingInvitationBadgeCount(for: item.type)
             if pendingInvitationCount > 0 {
-                Text(pendingInvitationCount > 9 ? "9+" : "\(pendingInvitationCount)")
-                    .font(.custom("Usual-Regular", size: 8))
+                let badgeText = pendingInvitationCount > 9 ? "9+" : "\(pendingInvitationCount)"
+                Text(badgeText)
+                    .font(
+                        .custom("Usual-Medium", size: 8))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
                     .foregroundColor(.white)
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 16)
                     .background(
-                        Circle()
+                        RoundedRectangle(cornerRadius: 20)
                             .fill(Color.error500)
                     )
             }
