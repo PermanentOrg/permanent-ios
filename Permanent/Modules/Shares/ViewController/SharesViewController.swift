@@ -47,6 +47,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     private var isGridView = false
     private var sortActionSheet: SortActionSheet?
+    private var sharesRefreshRequestId = UUID()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -164,6 +165,27 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             } else {
                 self?.dismissFloatingActionIsland()
             }
+        }
+
+        NotificationCenter.default.addObserver(forName: ArchivesViewModel.didChangeArchiveNotification, object: nil, queue: .main) { [weak self] _ in
+            guard let self = self else { return }
+
+            self.viewModel?.navigationStack.removeAll()
+            self.viewModel?.selectedFiles = []
+            self.viewModel?.fileAction = .none
+
+            if let listType = ShareListType(rawValue: self.segmentedControl.selectedSegmentIndex) {
+                self.viewModel?.shareListType = listType
+            }
+
+            self.fileActionBottomView.isHidden = true
+            self.fabView.isHidden = true
+            self.backButton.isHidden = true
+            self.directoryLabel.text = "Shares".localized()
+            self.collectionView.setContentOffset(.zero, animated: false)
+            self.refreshControl.endRefreshing()
+
+            self.getShares(shouldShowSpinner: true)
         }
         
         NotificationCenter.default.addObserver(forName: SettingsRouter.showMemberChecklistNotifName, object: nil, queue: nil) { [weak self] _ in
@@ -1136,7 +1158,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self?.viewModel?.getShares(then: handler)
         }
 
+        let requestId = UUID()
+        sharesRefreshRequestId = requestId
+
         runRequest({ status in
+            guard self.sharesRefreshRequestId == requestId else { return }
+
             self.hideSpinner()
             switch status {
             case .success:
@@ -1448,12 +1475,20 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         let isFileSelected = viewModel.selectedFiles?.contains(file) ?? false
 
         cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, isSelecting: viewModel.isSelecting, isFileSelected: isFileSelected)
+        let pendingInvitationCount = pendingInvitationBadgeCount(for: file)
+        cell.setMoreButtonBadgeCount(cell.moreButton.isHidden ? 0 : pendingInvitationCount)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
         }
         
         return cell
+    }
+
+    private func pendingInvitationBadgeCount(for file: FileModel) -> Int {
+        file.minArchiveVOS.filter {
+            ArchiveVOData.Status(rawValue: $0.shareStatus) == .pending
+        }.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

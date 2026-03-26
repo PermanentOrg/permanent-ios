@@ -896,8 +896,10 @@ class FileMenuViewModel: ObservableObject {
             return 0
         }
 
-        return fileViewModel.minArchiveVOS.filter {
+        let count = fileViewModel.minArchiveVOS.filter {
             ArchiveVOData.Status(rawValue: $0.shareStatus) == .pending
         }.count
+        
+        return count
     }
 }

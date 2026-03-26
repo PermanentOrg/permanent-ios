@@ -996,6 +996,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         
         cell.moreButton.isHidden = cell.moreButton.isHidden || viewModel.isPickingImage
         cell.rightButtonImageView.isHidden = cell.rightButtonImageView.isHidden || viewModel.isPickingImage
+        let pendingInvitationCount = pendingInvitationBadgeCount(for: file)
+        cell.setMoreButtonBadgeCount(cell.moreButton.isHidden ? 0 : pendingInvitationCount)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
@@ -1057,6 +1059,12 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         guard let viewModel = viewModel else { return }
         
         viewModel.pickerDelegate?.myFilesVMDidPickFile(viewModel: viewModel, file: file)
+    }
+    
+    private func pendingInvitationBadgeCount(for file: FileModel) -> Int {
+        file.minArchiveVOS.filter {
+            ArchiveVOData.Status(rawValue: $0.shareStatus) == .pending
+        }.count
     }
     
     func handlePreviewSelection(file: FileModel) {
