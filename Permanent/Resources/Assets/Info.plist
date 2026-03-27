@@ -57,8 +57,6 @@
 	<string>Add location information to your stored files.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Use your microphone to capture audio for videos to be uploaded directly into your archive.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow access to your Photo Library in order to upload photos and videos from this device to your archive.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Usual-Regular.ttf</string>
@@ -72,7 +70,7 @@
 		<string>OpenSans-SemiBold.ttf</string>
 	</array>
 	<key>UIDesignRequiresCompatibility</key>
-	<true/>
+	<false/>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

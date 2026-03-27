@@ -1835,39 +1835,39 @@ extension SharesViewController: FABActionSheetDelegate {
     }
     
     func openPhotoLibrary() {
-        PHPhotoLibrary.requestAuthorization { (authStatus) in
-            switch authStatus {
-            case .authorized, .limited:
-                DispatchQueue.main.async {
-                    let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
-                    let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
-                    imagePicker.pickerDelegate = self
-                    
-                    self.present(imagePicker, animated: true, completion: nil)
-                }
-                
-            case .denied:
-                let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
-                
-                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
-                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+        var hostingController: UIHostingController<PhotoLibraryPickerView>?
+
+        let pickerView = PhotoLibraryPickerView(
+            onCompletion: { [weak self] selectedFiles in
+                hostingController?.dismiss(animated: true) {
+                    guard let self else {
                         return
                     }
-                    if UIApplication.shared.canOpenURL(settingsUrl) {
-                        UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+
+                    guard let currentFolder = self.viewModel?.currentFolder else {
+                        self.showErrorAlert(message: .cannotUpload)
+                        return
                     }
+
+                    guard selectedFiles.isEmpty == false else {
+                        self.showErrorAlert(message: .cannotUpload)
+                        return
+                    }
+
+                    self.processUpload(toFolder: currentFolder, selectedFiles: selectedFiles)
                 }
-                let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
-                
-                alertController.addAction(cancelAction)
-                alertController.addAction(settingsAction)
-                
-                DispatchQueue.main.async {
-                    self.present(alertController, animated: true, completion: nil)
-                }
-                
-            default: break
+            },
+            onCancel: {
+                hostingController?.dismiss(animated: true)
             }
+        )
+
+        hostingController = UIHostingController(rootView: pickerView)
+        hostingController?.modalPresentationStyle = .overFullScreen
+        hostingController?.view.backgroundColor = .clear
+
+        if let hostingController {
+            present(hostingController, animated: true)
         }
     }
     
@@ -1883,6 +1883,13 @@ extension SharesViewController: FABActionSheetDelegate {
         let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
+        upload(files: files)
+    }
+
+    private func processUpload(toFolder folder: FileModel, selectedFiles: [SelectedUploadFile], loadInMemory: Bool = false) {
+        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
+
+        let files = FileInfo.createFiles(from: selectedFiles, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
     }
     
@@ -1925,23 +1932,6 @@ extension SharesViewController: UIDocumentPickerDelegate {
         }
         
         processUpload(toFolder: currentFolder, forURLS: urls)
-    }
-}
-
-// MARK: - PhotoPickerViewControllerDelegate
-extension SharesViewController: PhotoPickerViewControllerDelegate {
-    func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
-        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
-        present(alert, animated: true)
-        viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-            dismiss(animated: true) { [self] in
-                guard let currentFolder = viewModel?.currentFolder else {
-                    return showErrorAlert(message: .cannotUpload)
-                }
-                
-                processUpload(toFolder: currentFolder, forURLS: urls)
-            }
-        })
     }
 }
 
