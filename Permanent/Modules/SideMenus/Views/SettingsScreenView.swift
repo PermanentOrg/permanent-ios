@@ -8,6 +8,7 @@ import SwiftUI
 
 struct SettingsScreenView: View {
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: SettingsScreenViewModel
     var settingsRouter: SettingsRouter
     
@@ -19,6 +20,48 @@ struct SettingsScreenView: View {
     var dismissAction: ((Bool) -> Void)?
     
     var body: some View {
+        Group {
+            if #available(iOS 26.0, *) {
+                modernBody
+            } else {
+                legacyBody
+            }
+        }
+    }
+
+    @available(iOS 26.0, *)
+    private var modernBody: some View {
+        NavigationStack {
+            ZStack {
+                backgroundView
+                contentView
+            }
+            .ignoresSafeArea(.all)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(role: .close) {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationCornerRadius(20)
+        .onDisappear(perform: {
+            dismissAction?(false)
+        })
+        .onChange(of: viewModel.loggedOut) { loggedOut in
+            if loggedOut {
+                settingsRouter.navigate(to: .signUp, router: settingsRouter)
+            }
+        }
+        .alert(isPresented: $viewModel.showError) {
+            Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                viewModel.showError = false
+            })
+        }
+    }
+
+    private var legacyBody: some View {
         ZStack {
             backgroundView
             contentView
@@ -49,8 +92,14 @@ struct SettingsScreenView: View {
             ZStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
                     VStack {
-                        CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount) {
-                            settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
+                        if #available(iOS 26.0, *) {
+                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount, showCloseButton: false) {
+                                settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
+                            }
+                        } else {
+                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount) {
+                                settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
+                            }
                         }
                     }
 

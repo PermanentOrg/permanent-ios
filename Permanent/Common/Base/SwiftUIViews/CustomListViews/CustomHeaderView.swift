@@ -12,6 +12,7 @@ struct CustomHeaderView: View {
     var descText: String
     var fontType: FontType = .openSans
     var showFinishSetUpAccount: Bool = false
+    var showCloseButton: Bool = true
     var onFinishSetUpAccount: (() -> Void)
     @Environment(\.presentationMode) var presentationMode
     
@@ -35,11 +36,13 @@ struct CustomHeaderView: View {
                         DescriptionText(fontType: fontType, text: descText)
                     }
                     Spacer()
-                    Button {
-                        presentationMode.wrappedValue.dismiss()
-                    } label: {
-                        Image(.closeSettings)
-                            .foregroundColor(.blue900)
+                    if showCloseButton {
+                        Button {
+                            presentationMode.wrappedValue.dismiss()
+                        } label: {
+                            Image(.closeSettings)
+                                .foregroundColor(.blue900)
+                        }
                     }
                 }
                 .padding(.horizontal)

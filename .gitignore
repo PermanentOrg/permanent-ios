@@ -105,3 +105,6 @@ buildServer.json
 # Local documentation and context
 .docs-local/
 docs/
+
+# Claude Code
+.claude/
