@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class RootNavigationController: UINavigationController {
     weak var drawerDelegate: DrawerMenuDelegate?
@@ -27,11 +28,19 @@ class RootNavigationController: UINavigationController {
     }
     
     func configureNavigationItems() {
-        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.hamburger.templated, style: .plain, target: self, action: #selector(didTapDrawerMenuButton))
-        topViewController?.navigationItem.leftBarButtonItem?.tintColor = .white
+        if #available(iOS 26.0, *) {
+            topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.hamburger, style: .prominent, target: self, action: #selector(didTapDrawerMenuButton))
+            topViewController?.navigationItem.leftBarButtonItem?.tintColor = .darkBlue
+        } else {
+            topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.hamburger, style: .plain, target: self, action: #selector(didTapDrawerMenuButton))
+        }
         
-        topViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.settings.templated, style: .plain, target: self, action: #selector(didTapRightSideMenuButton))
-        topViewController?.navigationItem.rightBarButtonItem?.tintColor = .white
+        if #available(iOS 26.0, *) {
+            topViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.settings.templated, style: .prominent, target: self, action: #selector(didTapRightSideMenuButton))
+            topViewController?.navigationItem.rightBarButtonItem?.tintColor = .darkBlue
+        } else {
+            topViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.settings.templated, style: .plain, target: self, action: #selector(didTapRightSideMenuButton))
+        }
     }
     
     func changeRootController(viewController: UIViewController) {

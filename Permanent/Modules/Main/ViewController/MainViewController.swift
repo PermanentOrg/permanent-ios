@@ -210,7 +210,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         navigationItem.backBarButtonItem?.tintColor = .white
 
         if let rightBarItem = navigationItem.rightBarButtonItem, viewModel!.isPickingImage == false {
-            let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonPressed(_:)))
+            var searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(searchButtonPressed(_:)))
+            if #available(iOS 26.0, *) {
+                searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .prominent, target: self, action: #selector(searchButtonPressed(_:)))
+                searchButton.tintColor = .darkBlue
+            }
             navigationItem.rightBarButtonItems = [rightBarItem, searchButton]
         }
         
