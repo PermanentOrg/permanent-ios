@@ -97,9 +97,23 @@ struct ConfirmationBottomAlertView: View {
                     onCancel?()
                 }
             
-            alertCard
-                .offset(y: isPresented ? 0 : 400)
-                .animation(.easeOut(duration: 0.3), value: isPresented)
+            if #available(iOS 26.0, *) {
+                alertCard
+                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                    .offset(y: isPresented ? 0 : 400)
+                    .animation(.easeOut(duration: 0.3), value: isPresented)
+            } else {
+                alertCard
+                    .clipShape(UnevenRoundedRectangle(
+                        topLeadingRadius: 16,
+                        bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 0,
+                        topTrailingRadius: 16,
+                        style: .continuous
+                    ))
+                    .offset(y: isPresented ? 0 : 400)
+                    .animation(.easeOut(duration: 0.3), value: isPresented)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         .ignoresSafeArea()
@@ -151,7 +165,6 @@ struct ConfirmationBottomAlertView: View {
         }
         .frame(maxWidth: .infinity)
         .background(Color(.white))
-        .cornerRadius(12)
         .padding(.horizontal, 0)
     }
     

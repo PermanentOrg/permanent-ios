@@ -25,20 +25,33 @@ struct ShareItemView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                ZStack {
-                    topBar
-                        .padding(.horizontal, 16)
-                        .padding(.top, 12)
-                        .padding(.bottom, 8)
+                if #available(iOS 26.0, *) {
+                    ZStack {
+                        topBar
+                            .padding(.horizontal, 16)
+                            .padding(.top, 16)
+                            .padding(.bottom, 12)
+                    }
+                    .frame(height: 72)
+                    .background(Color.white)
+                } else {
+                    ZStack {
+                        topBar
+                            .padding(.horizontal, 16)
+                            .padding(.top, 12)
+                            .padding(.bottom, 8)
+                    }
+                    .frame(height: 64)
+                    .background(Color.white)
                 }
-                .frame(height: 64)
-                .background(Color.white)
                 
                 VStack(spacing: 0) {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                        .background(Color.blue50)
+                    if #unavailable(iOS 26.0) {
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                            .background(Color.blue50)
+                    }
                     
                     VStack(spacing: 20) {
                         fileInfoSection
@@ -119,12 +132,27 @@ struct ShareItemView: View {
             
             HStack {
                 Spacer()
-                Button(action: { dismiss() }) {
-                    Image(.closeButtonV2)
-                        .resizable()
-                        .renderingMode(.original)
-                        .frame(width: 20, height: 20)
-                        .contentShape(Rectangle())
+                if #available(iOS 26.0, *) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.trailing, -12)
+                } else {
+                    Button(action: { dismiss() }) {
+                        Image(.closeButtonV2)
+                            .resizable()
+                            .renderingMode(.original)
+                            .frame(width: 20, height: 20)
+                            .contentShape(Rectangle())
+                    }
                 }
             }
         }

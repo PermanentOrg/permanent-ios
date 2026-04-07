@@ -54,75 +54,21 @@ struct PublishView: View {
                 }
             
             VStack(spacing: 0) {
-                VStack(spacing: 0) {
-                    ZStack(alignment: .center) {
-                        HStack(alignment: .center) {
-                            Text(viewModel.title)
-                                .font(.custom("Usual-Regular", size: 16))
-                                .fontWeight(.medium)
-                                .foregroundColor(.blue900)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                dismissMenu()
-                            }) {
-                                Image(.closeButtonV2)
-                                    .frame(width: 24, height: 24)
-                            }
-                        }
+                Group {
+                    if #available(iOS 26.0, *) {
+                        VStack(spacing: 0) { panelBody }
+                            .frame(height: menuHeight)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.white)
+                            .cornerRadius(32)
+                    } else {
+                        VStack(spacing: 0) { panelBody }
+                            .frame(height: menuHeight)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.white)
+                            .cornerRadius(16, corners: [.topLeft, .topRight])
                     }
-                    .frame(height: 64)
-                    .padding(.horizontal, 24)
-                    
-                    Rectangle()
-                        .fill(Color(red: 0.91, green: 0.91, blue: 0.93))
-                        .frame(height: 1)
-                    
-                    Spacer()
-                    
-                    thumbnailView
-                    
-                    Spacer()
-                    
-                    VStack(spacing: 24) {
-                        HStack {
-                            Text("Are you sure you want to create a publicly viewable copy of ") +
-                            Text(viewModel.fileName).bold() +
-                            Text(" in your Public Workspace?")
-                        }
-                        .font(.custom("Usual-Regular", size: 14))
-                        .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(6)
-                        .frame(maxWidth: .infinity, alignment: .top)
-                        .padding(.horizontal, 12)
-                        
-                        Button(action: {
-                            publishItem()
-                        }) {
-                            Text("Publish")
-                                .font(.custom("Usual-Regular", size: 14))
-                                .fontWeight(.medium)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 56)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(isPublishing ? Color.gray.opacity(0.3) : Color.blue900)
-                                )
-                        }
-                        .disabled(isPublishing)
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
                 }
-                .frame(height: menuHeight)
-                .frame(maxWidth: .infinity)
-                .background(Color.white)
-                .clipped()
-                .cornerRadius(16, corners: [.topLeft, .topRight])
                 .offset(y: viewModel.isAnimating ? (dragOffset + dismissOffset) : menuHeight)
                 .highPriorityGesture(
                     DragGesture()
@@ -157,6 +103,97 @@ struct PublishView: View {
                 }
             }
         }
+    }
+    
+    @ViewBuilder
+    private var panelBody: some View {
+        // Top padding for iOS 26 (glass button breathing room)
+        if #available(iOS 26.0, *) {
+            Spacer().frame(height: 8)
+        }
+        
+        // Header with centered title and close button
+        ZStack(alignment: .center) {
+            Text(viewModel.title)
+                .font(.custom("Usual-Regular", size: 16))
+                .fontWeight(.medium)
+                .foregroundColor(.blue900)
+                .frame(maxWidth: .infinity)
+            
+            HStack {
+                Spacer()
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        dismissMenu()
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.trailing, -12)
+                } else {
+                    Button(action: {
+                        dismissMenu()
+                    }) {
+                        Image(.closeButtonV2)
+                            .frame(width: 24, height: 24)
+                    }
+                }
+            }
+        }
+        .frame(height: 64)
+        .padding(.horizontal, 24)
+        
+        // Separator (hidden on iOS 26+)
+        if #unavailable(iOS 26.0) {
+            Rectangle()
+                .fill(Color(red: 0.91, green: 0.91, blue: 0.93))
+                .frame(height: 1)
+        }
+        
+        Spacer()
+        
+        thumbnailView
+        
+        Spacer()
+        
+        VStack(spacing: 24) {
+            HStack {
+                Text("Are you sure you want to create a publicly viewable copy of ") +
+                Text(viewModel.fileName).bold() +
+                Text(" in your Public Workspace?")
+            }
+            .font(.custom("Usual-Regular", size: 14))
+            .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
+            .multilineTextAlignment(.center)
+            .lineSpacing(6)
+            .frame(maxWidth: .infinity, alignment: .top)
+            .padding(.horizontal, 12)
+            
+            Button(action: {
+                publishItem()
+            }) {
+                Text("Publish")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(isPublishing ? Color.gray.opacity(0.3) : Color.blue900)
+                    )
+            }
+            .disabled(isPublishing)
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 32)
     }
     
     @ViewBuilder

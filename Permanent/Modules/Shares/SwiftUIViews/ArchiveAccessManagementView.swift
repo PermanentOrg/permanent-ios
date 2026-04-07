@@ -15,16 +15,27 @@ struct ArchiveAccessManagementView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            topBar
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .padding(.bottom, 8)
-                .frame(height: 64)
-                .background(Color.white)
-            Rectangle()
-                .foregroundColor(.clear)
-                .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                .background(Color.blue50)
+            if #available(iOS 26.0, *) {
+                topBar
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 12)
+                    .frame(height: 72)
+                    .background(Color.white)
+            } else {
+                topBar
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
+                    .frame(height: 64)
+                    .background(Color.white)
+            }
+            if #unavailable(iOS 26.0) {
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                    .background(Color.blue50)
+            }
             
             ScrollView {
                 VStack(spacing: 24) {
@@ -232,16 +243,35 @@ struct ArchiveAccessManagementView: View {
     private var topBar: some View {
         ZStack {
             HStack {
-                Button(action: { 
-                    viewModel.selectedRoleForArchive = nil
-                    viewModel.navigationDirection = .backward
-                    viewModel.showArchiveAccessManagement = false
-                }) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color.blue900)
-                        .frame(width: 20, height: 20)
-                        .contentShape(Rectangle())
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        viewModel.selectedRoleForArchive = nil
+                        viewModel.navigationDirection = .backward
+                        viewModel.showArchiveAccessManagement = false
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.leading, -12)
+                } else {
+                    Button(action: {
+                        viewModel.selectedRoleForArchive = nil
+                        viewModel.navigationDirection = .backward
+                        viewModel.showArchiveAccessManagement = false
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color.blue900)
+                            .frame(width: 20, height: 20)
+                            .contentShape(Rectangle())
+                    }
                 }
                 Spacer()
             }
@@ -252,16 +282,35 @@ struct ArchiveAccessManagementView: View {
             
             HStack {
                 Spacer()
-                Button(action: { 
-                    viewModel.selectedRoleForArchive = nil
-                    viewModel.navigationDirection = .backward
-                    viewModel.showArchiveAccessManagement = false
-                }) {
-                    Image(.closeButtonV2)
-                        .resizable()
-                        .renderingMode(.original)
-                        .frame(width: 20, height: 20)
-                        .contentShape(Rectangle())
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        viewModel.selectedRoleForArchive = nil
+                        viewModel.navigationDirection = .backward
+                        viewModel.showArchiveAccessManagement = false
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.trailing, -12)
+                } else {
+                    Button(action: {
+                        viewModel.selectedRoleForArchive = nil
+                        viewModel.navigationDirection = .backward
+                        viewModel.showArchiveAccessManagement = false
+                    }) {
+                        Image(.closeButtonV2)
+                            .resizable()
+                            .renderingMode(.original)
+                            .frame(width: 20, height: 20)
+                            .contentShape(Rectangle())
+                    }
                 }
             }
         }

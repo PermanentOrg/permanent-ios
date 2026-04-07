@@ -18,6 +18,7 @@ struct SettingsScreenView: View {
     }
     
     var dismissAction: ((Bool) -> Void)?
+    @State private var showSignOutConfirmation = false
     
     var body: some View {
         Group {
@@ -35,6 +36,12 @@ struct SettingsScreenView: View {
             ZStack {
                 backgroundView
                 contentView
+                RevokeBottomAlertView(
+                    isPresented: $showSignOutConfirmation,
+                    title: "Are you sure you want to sign out?",
+                    buttonText: "Sign out",
+                    onRevoke: { viewModel.signOut() }
+                )
             }
             .ignoresSafeArea(.all)
             .toolbar {
@@ -65,6 +72,12 @@ struct SettingsScreenView: View {
         ZStack {
             backgroundView
             contentView
+            RevokeBottomAlertView(
+                isPresented: $showSignOutConfirmation,
+                title: "Are you sure you want to sign out?",
+                buttonText: "Sign out",
+                onRevoke: { viewModel.signOut() }
+            )
         }
         .ignoresSafeArea(.all)
         .onDisappear(perform: {
@@ -156,7 +169,7 @@ struct SettingsScreenView: View {
                         Divider()
                             .padding(.horizontal, -40)
                         Button {
-                            viewModel.signOut()
+                            showSignOutConfirmation = true
                         } label: {
                             CustomSimpleListItemView(image: Image(.signOutSettings), titleText: "Sign out", color: .error500)
                         }

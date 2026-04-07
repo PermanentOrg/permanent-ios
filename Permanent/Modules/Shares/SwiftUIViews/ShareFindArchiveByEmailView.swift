@@ -35,17 +35,28 @@ struct ShareFindArchiveByEmailView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            topBar
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .padding(.bottom, 8)
-                .frame(height: 64)
-                .background(Color.white)
+            if #available(iOS 26.0, *) {
+                topBar
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 12)
+                    .frame(height: 72)
+                    .background(Color.white)
+            } else {
+                topBar
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
+                    .frame(height: 64)
+                    .background(Color.white)
+            }
 
-            Rectangle()
-                .foregroundColor(.clear)
-                .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                .background(Color.blue50)
+            if #unavailable(iOS 26.0) {
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                    .background(Color.blue50)
+            }
 
             VStack(spacing: 0) {
                 searchSection
@@ -124,21 +135,45 @@ struct ShareFindArchiveByEmailView: View {
     private var topBar: some View {
         ZStack {
             HStack {
-                Button(action: {
-                    if isSearchFocused {
-                        isSearchFocused = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        if isSearchFocused {
+                            isSearchFocused = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                viewModel.closeFindArchiveByEmail()
+                            }
+                        } else {
                             viewModel.closeFindArchiveByEmail()
                         }
-                    } else {
-                        viewModel.closeFindArchiveByEmail()
+                    }) {
+                        Image(systemName: "arrow.left")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
                     }
-                }) {
-                    Image(systemName: "arrow.left")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color.blue900)
-                        .frame(width: 20, height: 20)
-                        .contentShape(Rectangle())
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.leading, -12)
+                } else {
+                    Button(action: {
+                        if isSearchFocused {
+                            isSearchFocused = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                viewModel.closeFindArchiveByEmail()
+                            }
+                        } else {
+                            viewModel.closeFindArchiveByEmail()
+                        }
+                    }) {
+                        Image(systemName: "arrow.left")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color.blue900)
+                            .frame(width: 20, height: 20)
+                            .contentShape(Rectangle())
+                    }
                 }
                 Spacer()
             }
@@ -149,14 +184,27 @@ struct ShareFindArchiveByEmailView: View {
 
             HStack {
                 Spacer()
-                Button(action: {
-                    dismiss()
-                }) {
-                    Image(.closeButtonV2)
-                        .resizable()
-                        .renderingMode(.original)
-                        .frame(width: 20, height: 20)
-                        .contentShape(Rectangle())
+                if #available(iOS 26.0, *) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.trailing, -12)
+                } else {
+                    Button(action: { dismiss() }) {
+                        Image(.closeButtonV2)
+                            .resizable()
+                            .renderingMode(.original)
+                            .frame(width: 20, height: 20)
+                            .contentShape(Rectangle())
+                    }
                 }
             }
         }

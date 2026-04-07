@@ -170,12 +170,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.resetCollectionViewState()
             }
         }
-        
-        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
-            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
-                self?.refreshCollectionView()
-            }
-        }
 
         NotificationCenter.default.addObserver(forName: AppDelegate.navigateToFolderNotifName, object: nil, queue: nil) { [weak self] _ in
             self?.navigationToShareFolderLink()
