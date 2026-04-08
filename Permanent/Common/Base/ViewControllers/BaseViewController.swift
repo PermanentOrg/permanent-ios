@@ -53,6 +53,14 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+        
+        if #available(iOS 26.0, *) {
+            // On iOS 26, the global UINavigationBar.appearance() proxy may have isTranslucent
+            // reset to true (by CustomNavigationView.onDisappear). Setting it at the instance
+            // level here ensures UIKit screens always render as opaque dark blue, regardless
+            // of the proxy state at the moment of a modal transition.
+            navigationController?.navigationBar.isTranslucent = false
+        }
     }
     
     func closeKeyboard() {

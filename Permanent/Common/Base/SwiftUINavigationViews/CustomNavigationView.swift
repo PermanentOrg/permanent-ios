@@ -97,6 +97,23 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
             #endif
         }
         .onDisappear {
+            if #available(iOS 26.0, *) {
+                // On iOS 26, the global UINavigationBar.appearance() proxy set in our init
+                // bleeds into SwiftUI NavigationStack views (e.g. the Settings sheet) because
+                // toolbarBackground no longer overrides the proxy per-instance. Fully clear
+                // the proxy to transparent when this view disappears so any subsequently
+                // opened NavigationStack gets a clean, transparent nav bar.
+                // UIKit screens (Legacy Planning, main file browser) set isTranslucent = false
+                // explicitly in styleNavBar() / NavigationController.viewDidLoad, so they are
+                // not affected by resetting it to true here.
+                let transparent = UINavigationBarAppearance()
+                transparent.configureWithTransparentBackground()
+                UINavigationBar.appearance().standardAppearance = transparent
+                UINavigationBar.appearance().compactAppearance = transparent
+                UINavigationBar.appearance().scrollEdgeAppearance = transparent
+                UINavigationBar.appearance().backgroundColor = nil
+                UINavigationBar.appearance().isTranslucent = true
+            }
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .all
             ScrollViewAppearanceManager.shared.popScrollViewBounce(identifier: "CustomNavigationView")

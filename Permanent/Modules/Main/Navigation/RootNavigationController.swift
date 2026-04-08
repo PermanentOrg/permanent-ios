@@ -16,6 +16,7 @@ class RootNavigationController: UINavigationController {
     public init(viewController: UIViewController) {
         super.init(rootViewController: viewController)
 
+        configureNavigationBarAppearance()
         configureNavigationItems()
     }
     
@@ -23,8 +24,33 @@ class RootNavigationController: UINavigationController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Re-apply instance-level appearance on iOS 26 every time a modal is dismissed
+        // over this navigation controller. styleNavBar() is only called once in viewDidLoad,
+        // so this ensures the nav bar stays dark blue after any proxy resets from
+        // CustomNavigationView.onDisappear during Liquid Glass transition evaluations.
+        configureNavigationBarAppearance()
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func configureNavigationBarAppearance() {
+        if #available(iOS 26.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.darkBlue
+            appearance.titleTextAttributes = [
+                .foregroundColor: UIColor.white,
+                NSAttributedString.Key.font: TextFontStyle.style51.font
+            ]
+            navigationBar.standardAppearance = appearance
+            navigationBar.compactAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.isTranslucent = false
+        }
     }
     
     func configureNavigationItems() {

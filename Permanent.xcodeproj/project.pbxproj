@@ -216,6 +216,10 @@
 		5E3E12452A41F16500682DE5 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
 		5E3E12462A41F3B700682DE5 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C37D4628AD62060062D9EB /* FileCollectionViewCell.swift */; };
 		5E3E124B2A431F9600682DE5 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */; };
+		5E3ECEE62F85823B00A09CD0 /* ShareItemLinkLifecycleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ECEE52F85823B00A09CD0 /* ShareItemLinkLifecycleViewModel.swift */; };
+		5E3ECEE82F85827200A09CD0 /* ShareItemLinkSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ECEE72F85827200A09CD0 /* ShareItemLinkSettingsViewModel.swift */; };
+		5E3ECEEA2F8582BD00A09CD0 /* ShareItemArchivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ECEE92F8582BD00A09CD0 /* ShareItemArchivesViewModel.swift */; };
+		5E3ECEEC2F8582F500A09CD0 /* ShareItemGrantAndInviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ECEEB2F8582F500A09CD0 /* ShareItemGrantAndInviteViewModel.swift */; };
 		5E4455D32A08F0BB00A56235 /* TrustedStewardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */; };
 		5E4455D42A08F1F100A56235 /* TrustedStewardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */; };
 		5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217125C17C5A007642BE /* AccountInfoViewController.swift */; };
@@ -1270,6 +1274,10 @@
 		5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordViewModel.swift; sourceTree = "<group>"; };
 		5E3E12492A42EEA900682DE5 /* ShareExtensionDEV-Release.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Release.entitlements"; sourceTree = "<group>"; };
 		5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
+		5E3ECEE52F85823B00A09CD0 /* ShareItemLinkLifecycleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemLinkLifecycleViewModel.swift; sourceTree = "<group>"; };
+		5E3ECEE72F85827200A09CD0 /* ShareItemLinkSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemLinkSettingsViewModel.swift; sourceTree = "<group>"; };
+		5E3ECEE92F8582BD00A09CD0 /* ShareItemArchivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemArchivesViewModel.swift; sourceTree = "<group>"; };
+		5E3ECEEB2F8582F500A09CD0 /* ShareItemGrantAndInviteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemGrantAndInviteViewModel.swift; sourceTree = "<group>"; };
 		5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustedStewardViewController.swift; sourceTree = "<group>"; };
 		5E46217125C17C5A007642BE /* AccountInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewController.swift; sourceTree = "<group>"; };
 		5E46217425C17CE2007642BE /* InfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewModel.swift; sourceTree = "<group>"; };
@@ -3529,6 +3537,10 @@
 				5E0CFF472F5104C1004151CE /* ShareFindArchiveByEmailViewModel.swift */,
 				5E0CFF492F51A382004151CE /* ShareArchivesFromPastSharesViewModel.swift */,
 				5E173EAE2F62E36500C6D151 /* SharePreviewCreateArchiveCoordinator.swift */,
+				5E3ECEE52F85823B00A09CD0 /* ShareItemLinkLifecycleViewModel.swift */,
+				5E3ECEE72F85827200A09CD0 /* ShareItemLinkSettingsViewModel.swift */,
+				5E3ECEE92F8582BD00A09CD0 /* ShareItemArchivesViewModel.swift */,
+				5E3ECEEB2F8582F500A09CD0 /* ShareItemGrantAndInviteViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -5146,6 +5158,7 @@
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
 				5E92165F2C0DC14C002AACA3 /* OnboardingTitleTextView.swift in Sources */,
 				5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */,
+				5E3ECEE82F85827200A09CD0 /* ShareItemLinkSettingsViewModel.swift in Sources */,
 				5E05D39C2CECDCE700CD9837 /* LoginSecurityView.swift in Sources */,
 				5E6CCEF02B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift in Sources */,
 				BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */,
@@ -5168,6 +5181,7 @@
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				5E633A742B28D7EE004D561C /* StorageViewModel.swift in Sources */,
 				5E1C3C5428F59703007C1A63 /* TagManagementViewController.swift in Sources */,
+				5E3ECEEC2F8582F500A09CD0 /* ShareItemGrantAndInviteViewModel.swift in Sources */,
 				5E09133E2F3E1BEF00425568 /* RecordV2Models.swift in Sources */,
 				5E2F721C2D94A2FC009F02D3 /* ChangePasswordViewModel.swift in Sources */,
 				5E633A722B28D7E1004D561C /* StorageView.swift in Sources */,
@@ -5177,6 +5191,7 @@
 				5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */,
 				5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5E66730D2A7927E3001C49CC /* CustomButtonStyle.swift in Sources */,
+				5E3ECEEA2F8582BD00A09CD0 /* ShareItemArchivesViewModel.swift in Sources */,
 				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				5EB66F042C872888000D4C82 /* AuthenticatorContainerView.swift in Sources */,
@@ -5223,6 +5238,7 @@
 				F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* PETextField.swift in Sources */,
+				5E3ECEE62F85823B00A09CD0 /* ShareItemLinkLifecycleViewModel.swift in Sources */,
 				5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */,
 				5E3A060329E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
 				5E5979D02DCCE64500694BDA /* ChecklistDisableView.swift in Sources */,
