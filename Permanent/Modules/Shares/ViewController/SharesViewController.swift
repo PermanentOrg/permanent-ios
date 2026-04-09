@@ -699,29 +699,25 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     @objc private func cancelAllUploadsAction(_ sender: UIButton) {
-        let title = "Cancel all uploads".localized()
-        let description = "Are you sure you want to cancel all uploads?".localized()
-        
-        self.showActionDialog(
-            styled: .simpleWithDescription,
-            withTitle: title,
-            description: description,
-            positiveButtonTitle: .cancelAll,
-            positiveAction: {
-                self.actionDialog?.dismiss()
-                self.viewModel?.cancelUploadsInFolder()
-                
-                if self.viewModel?.refreshUploadQueue() == true {
-                    self.refreshCollectionView()
+        let confirmationView = CancelUploadsConfirmationView(
+            onConfirm: { [weak self] in
+                self?.viewModel?.cancelUploadsInFolder()
+                if self?.viewModel?.refreshUploadQueue() == true {
+                    self?.refreshCollectionView()
                 }
             },
-            cancelButtonTitle: "No".localized(),
-            positiveButtonColor: .brightRed,
-            cancelButtonColor: .primary,
-            overlayView: self.overlayView
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: false)
+            }
         )
+
+        let hosting = UIHostingController(rootView: confirmationView)
+        hosting.modalPresentationStyle = .overFullScreen
+        hosting.view.backgroundColor = .clear
+        // animated: false lets SwiftUI own the full slide-up/down animation
+        present(hosting, animated: false)
     }
-    
+
     func showSortActionSheetDialog() {
         // Safety measure, in case the user taps to show sheet, but the previously shown one
         // has not finished dimissing and being deallocated.

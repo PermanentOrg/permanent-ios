@@ -553,29 +553,25 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func cancelAllUploadsAction(_ sender: UIButton) {
-        let title = "Cancel all uploads".localized()
-        let description = "Are you sure you want to cancel all uploads?".localized()
-        
-        self.showActionDialog(
-            styled: .simpleWithDescription,
-            withTitle: title,
-            description: description,
-            positiveButtonTitle: .cancelAll,
-            positiveAction: {
-                self.actionDialog?.dismiss()
-                self.viewModel?.cancelUploadsInFolder()
-                
-                if self.viewModel?.refreshUploadQueue() == true {
-                    self.refreshCollectionView()
+        let confirmationView = CancelUploadsConfirmationView(
+            onConfirm: { [weak self] in
+                self?.viewModel?.cancelUploadsInFolder()
+                if self?.viewModel?.refreshUploadQueue() == true {
+                    self?.refreshCollectionView()
                 }
             },
-            cancelButtonTitle: "No".localized(),
-            positiveButtonColor: .brightRed,
-            cancelButtonColor: .primary,
-            overlayView: self.overlayView
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: false)
+            }
         )
+
+        let hosting = UIHostingController(rootView: confirmationView)
+        hosting.modalPresentationStyle = .overFullScreen
+        hosting.view.backgroundColor = .clear
+        // animated: false lets SwiftUI own the full slide-up/down animation
+        present(hosting, animated: false)
     }
-    
+
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
@@ -1298,27 +1294,16 @@ extension MainViewController: FABViewDelegate {
     
     private func handleUploadAction(action: @escaping () -> Void) {
         if viewModel is PublicFilesViewModel {
-            let title = ""
-            let description = "This is a public folder. Are you sure you want to upload here?".localized()
-            showActionDialog(
-                styled: .simpleWithDescription,
-                withTitle: title,
-                description: description,
-                positiveButtonTitle: "Upload".localized(),
-                positiveAction: { [weak self] in
-                    self?.view.dismissPopup(
-                        self?.actionDialog,
-                        overlayView: self?.overlayView,
-                        completion: { _ in
-                            self?.actionDialog?.removeFromSuperview()
-                            self?.actionDialog = nil
-                            action()
-                        }
-                    )
-                },
-                cancelButtonTitle: "Cancel".localized(),
-                overlayView: overlayView
+            let confirmationView = PublicFolderUploadConfirmationView(
+                onConfirm: action,
+                onDismiss: { [weak self] in
+                    self?.dismiss(animated: false)
+                }
             )
+            let hosting = UIHostingController(rootView: confirmationView)
+            hosting.modalPresentationStyle = .overFullScreen
+            hosting.view.backgroundColor = .clear
+            present(hosting, animated: false)
         } else {
             action()
         }
