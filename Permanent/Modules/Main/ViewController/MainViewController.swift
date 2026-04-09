@@ -307,7 +307,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
         let pasteTitle = action == .copy ? "Paste Here".localized() : "Move Here".localized()
-        let rightItems = [
+        var rightItems: [FloatingActionItem] = [
             FloatingActionImageTextItem(text: pasteTitle, image: UIImage(named: "pasteToolbarIcon")!) { [weak self] _, _ in
                 guard let destination = self?.viewModel?.currentFolder else {
                     self?.showErrorAlert(message: .errorMessage)
@@ -343,17 +343,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.relocate(files: selectedFiles, to: destination)
                 }
             },
-            FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
-                self?.dismissFloatingActionIsland()
-                self?.fabView.isHidden = false
-
-                self?.viewModel?.selectedFiles = []
-                self?.viewModel?.fileAction = .none
-                self?.viewModel?.isSelectingDestination = false
-
-                self?.collectionView?.reloadData()
-            },
         ]
+        // On iOS 26 the toolbar is transparent so items sit flush; add a gap before the X.
+        // Pre-iOS 26 the white pill layout looks correct without an extra gap.
+        if #available(iOS 26, *) {
+            rightItems.append(FloatingActionImageItem(image: UIColor.clear.imageWithColor(width: 0, height: 0), action: nil))
+        }
+        rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
+            self?.dismissFloatingActionIsland()
+            self?.fabView.isHidden = false
+
+            self?.viewModel?.selectedFiles = []
+            self?.viewModel?.fileAction = .none
+            self?.viewModel?.isSelectingDestination = false
+
+            self?.collectionView?.reloadData()
+        })
 
         if viewModel?.fileAction != FileAction.none {
             showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
