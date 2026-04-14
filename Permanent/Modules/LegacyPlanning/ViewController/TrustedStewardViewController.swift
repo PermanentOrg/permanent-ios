@@ -127,13 +127,36 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         navigationController?.navigationBar.standardAppearance = navigationBarAppearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
         
-        let doneButton = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(doneButtonTapped))
-        doneButton.tintColor = .white
-        navigationItem.rightBarButtonItem = doneButton
+        if #available(iOS 26.0, *) {
+            let saveBtn = UIButton(type: .custom)
+            saveBtn.setTitle("Save", for: .normal)
+            saveBtn.setTitleColor(.white, for: .normal)
+            saveBtn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+            saveBtn.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
+            saveBtn.frame = CGRect(x: 0, y: 0, width: 60, height: 44)
+            saveBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
+            let doneButtonItem = UIBarButtonItem(customView: saveBtn)
+            doneButtonItem.hidesSharedBackground = true
+            navigationItem.rightBarButtonItem = doneButtonItem
 
-        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelButtonTapped))
-        cancelButton.tintColor = .white
-        navigationItem.leftBarButtonItem = cancelButton
+            let cancelBtn = UIButton(type: .custom)
+            cancelBtn.setTitle("Cancel", for: .normal)
+            cancelBtn.setTitleColor(.white, for: .normal)
+            cancelBtn.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+            cancelBtn.frame = CGRect(x: 0, y: 0, width: 70, height: 44)
+            cancelBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 0)
+            let cancelButtonItem = UIBarButtonItem(customView: cancelBtn)
+            cancelButtonItem.hidesSharedBackground = true
+            navigationItem.leftBarButtonItem = cancelButtonItem
+        } else {
+            let doneButton = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(doneButtonTapped))
+            doneButton.tintColor = .white
+            navigationItem.rightBarButtonItem = doneButton
+
+            let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelButtonTapped))
+            cancelButton.tintColor = .white
+            navigationItem.leftBarButtonItem = cancelButton
+        }
     }
     
     private func customizeDesignateStewardTitleLabel() {

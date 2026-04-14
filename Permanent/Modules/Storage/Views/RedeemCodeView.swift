@@ -95,7 +95,15 @@ struct RedeemCodeView: View {
             }
         }
         .padding()
+        .padding(.top, scrollTopPadding)
         .navigationBarTitle("Redeem Storage", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+    }
+    
+    private var scrollTopPadding: CGFloat {
+        if #available(iOS 26.0, *) { return 8 }
+        return 0
     }
     
     var backButton: some View {
@@ -107,6 +115,7 @@ struct RedeemCodeView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
     }
     
     func dismissView() {

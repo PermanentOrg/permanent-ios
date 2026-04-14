@@ -57,6 +57,9 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
                 }
                 .padding(.horizontal, 0)
                 .navigationBarBackButtonHidden(true)
+                .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .toolbarColorScheme(.dark, for: .navigationBar)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         if (leftButtons is EmptyView) {

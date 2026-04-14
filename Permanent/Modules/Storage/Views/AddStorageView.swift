@@ -38,6 +38,8 @@ struct AddStorageView: View {
                 .ignoresSafeArea()
         }
         .navigationBarTitle("Add Storage", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
     }
     
     var backButton: some View {
@@ -49,6 +51,7 @@ struct AddStorageView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
     }
     
     func dismissView() {

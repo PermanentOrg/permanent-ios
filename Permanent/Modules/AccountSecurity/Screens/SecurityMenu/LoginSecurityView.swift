@@ -160,6 +160,8 @@ struct LoginSecurityView: View {
             }
         }
         .navigationBarTitle("Login & Security", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .onChange(of: viewModel.isSecurityToggleOn) { newValue in
             viewModel.updateBiometricsStatus(isEnabled: newValue)
         }
@@ -174,6 +176,7 @@ struct LoginSecurityView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
     }
     
     func dismissView() {

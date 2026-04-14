@@ -35,6 +35,7 @@ class NavigationController: UINavigationController {
             navigationBar.compactAppearance = appearance
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.isTranslucent = false
+            navigationBar.tintColor = .white
         }
     }
 }

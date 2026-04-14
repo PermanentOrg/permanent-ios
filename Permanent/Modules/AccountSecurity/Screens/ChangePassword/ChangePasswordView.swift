@@ -240,6 +240,8 @@ struct ChangePasswordView: View {
             }
         })
         .navigationBarTitle("Change password", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
     }
     
     var descriptionView: some View {
@@ -276,6 +278,7 @@ struct ChangePasswordView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
     }
     
     func dismissView() {
