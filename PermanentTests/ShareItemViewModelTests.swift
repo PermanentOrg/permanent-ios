@@ -623,7 +623,17 @@ final class ShareItemViewModelTests: XCTestCase {
     // MARK: - Archive Access Tests
     
     func testFetchSharedArchives_LoadsArchivesList() async {
-        let fileModel = FileModel.mockFile()
+        // Use folderLinkId: 0 so fetchSharedArchivesV1 exits via the guard and resets
+        // isLoadingArchives = false, avoiding real network calls in unit tests.
+        let fileModel = FileModel(
+            name: "Test File.pdf",
+            recordId: 100,
+            folderLinkId: 0,
+            archiveNbr: "0001-0000",
+            type: "type.record.document.pdf",
+            permissions: [.read, .edit, .share],
+            thumbnailURL2000: "https://example.com/thumb.jpg"
+        )
         let repo = MockShareManagementRepository(shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -632,9 +642,6 @@ final class ShareItemViewModelTests: XCTestCase {
             try? await Task.sleep(nanoseconds: 50_000_000)
             attempts += 1
         }
-        
-        // Note: fetchSharedArchives() is private and called automatically during init
-        // if there's a share link. Since mock may not provide shares, just verify loading completes
         
         attempts = 0
         while vm.isLoadingArchives && attempts < 100 {
@@ -645,8 +652,6 @@ final class ShareItemViewModelTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 300_000_000)
         
         XCTAssertFalse(vm.isLoadingArchives, "Should finish loading archives")
-        // Note: Archives count depends on whether mock properly implements getSharedArchives API
-        // and whether the API returns archives in the expected format
     }
     
     func testApproveShareRequest_SetsLoadingState() async {

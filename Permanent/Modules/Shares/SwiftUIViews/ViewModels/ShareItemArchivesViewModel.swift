@@ -109,6 +109,7 @@ extension ShareItemViewModel {
         let folderLinkId = correctFolderLinkId ?? fileModel.folderLinkId
 
         guard folderLinkId > 0 else {
+            isLoadingArchives = false
             return
         }
 
