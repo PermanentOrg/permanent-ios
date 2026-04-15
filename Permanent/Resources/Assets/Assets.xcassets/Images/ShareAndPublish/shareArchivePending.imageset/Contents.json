@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "shareArchivePending.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

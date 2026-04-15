@@ -74,6 +74,11 @@ struct Constants {
     struct Keys {
         struct StorageKeys {}
     }
+    
+    struct FeatureFlags {
+        /// Enable SwiftUI SharePreview instead of UIKit version
+        static let useSwiftUISharePreview = true
+    }
 
     // TODO: Move these to String
     static let onboardingTextBold = [

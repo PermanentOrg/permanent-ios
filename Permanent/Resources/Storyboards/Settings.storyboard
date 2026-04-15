@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,10 +18,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="vKa-Za-ffa">
-                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <rect key="frame" x="0.0" y="96" width="414" height="732"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d32-Lh-2lY">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="814"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="732"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S4H-vw-aNZ" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                                 <rect key="frame" x="20" y="20" width="374" height="45"/>
@@ -103,10 +103,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="bcb-TD-ljy">
-                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <rect key="frame" x="0.0" y="96" width="414" height="732"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DZw-tH-luB">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="814"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="732"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fUa-8S-g3h" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                                 <rect key="frame" x="20" y="336" width="374" height="45"/>
@@ -142,7 +142,7 @@
                                                 </constraints>
                                             </stackView>
                                             <textField opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0qB-WJ-y9d">
-                                                <rect key="frame" x="20" y="85" width="1" height="3"/>
+                                                <rect key="frame" x="20" y="85" width="1" height="22"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="1"/>
                                                 <textInputTraits key="textInputTraits" textContentType="username"/>
@@ -209,13 +209,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="aTq-KH-BV0">
-                                <rect key="frame" x="0.0" y="39" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="112" width="414" height="711"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XnC-Yc-DvG">
-                                        <rect key="frame" x="0.0" y="5" width="414" height="813"/>
+                                        <rect key="frame" x="0.0" y="5" width="414" height="768"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="68J-lr-Pzv" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="20" y="507" width="374" height="45"/>
+                                                <rect key="frame" x="20" y="650" width="374" height="45"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="45" id="hfB-wK-8FO"/>
                                                 </constraints>
@@ -225,7 +225,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xJt-MI-I2f" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="20" y="560" width="374" height="45"/>
+                                                <rect key="frame" x="20" y="703" width="374" height="45"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="45" id="Qp1-MT-pHg"/>
                                                 </constraints>
@@ -234,45 +234,61 @@
                                                     <action selector="deleteButtonPressed:" destination="DKX-Ce-nIb" eventType="touchUpInside" id="cN7-5G-AJe"/>
                                                 </connections>
                                             </button>
-                                            <stackView opaque="NO" contentMode="top" axis="vertical" distribution="fillEqually" spacing="22" translatesAutoresizingMaskIntoConstraints="NO" id="c4L-J8-oIw">
-                                                <rect key="frame" x="0.0" y="-1" width="394" height="470"/>
+                                            <stackView opaque="NO" contentMode="top" axis="vertical" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="c4L-J8-oIw">
+                                                <rect key="frame" x="0.0" y="0.0" width="394" height="612"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2P9-DV-xhR" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="394" height="48.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="60" id="dCh-eM-Dht"/>
+                                                        </constraints>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="string" keyPath="value" value="ghjghj"/>
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ogg-ze-DAE" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="70.5" width="394" height="48"/>
+                                                        <rect key="frame" x="0.0" y="92" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="60" id="V5x-Fb-Dtt"/>
+                                                        </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tvS-OK-oYe" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="140.5" width="394" height="48.5"/>
+                                                        <rect key="frame" x="0.0" y="184" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="60" id="42H-Uk-73h"/>
+                                                        </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4cx-DB-j2J" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="211" width="394" height="48"/>
+                                                        <rect key="frame" x="0.0" y="276" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="60" id="nVZ-e8-TFi"/>
+                                                        </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TX9-m2-qMR" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="281" width="394" height="48.5"/>
+                                                        <rect key="frame" x="0.0" y="368" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="60" id="IX9-Ae-1D2"/>
+                                                        </constraints>
                                                     </view>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="eyu-gu-hgn">
-                                                        <rect key="frame" x="0.0" y="351.5" width="394" height="48"/>
+                                                        <rect key="frame" x="0.0" y="460" width="394" height="60"/>
                                                         <subviews>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o1Z-Ao-tzj" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="48"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ekB-PT-q6z" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="197" y="0.0" width="197" height="48"/>
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                         </subviews>
                                                         <constraints>
+                                                            <constraint firstAttribute="height" constant="60" id="7lF-Yc-rvR"/>
                                                             <constraint firstItem="ekB-PT-q6z" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="ZEU-Y0-ojc"/>
                                                             <constraint firstItem="o1Z-Ao-tzj" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="cA6-4G-NCg"/>
                                                             <constraint firstAttribute="bottom" secondItem="o1Z-Ao-tzj" secondAttribute="bottom" id="f4D-bW-aNK"/>
@@ -280,18 +296,19 @@
                                                         </constraints>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZMe-dh-uGc">
-                                                        <rect key="frame" x="0.0" y="421.5" width="394" height="48.5"/>
+                                                        <rect key="frame" x="0.0" y="552" width="394" height="60"/>
                                                         <subviews>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eX1-Fa-Ugn" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="48.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZrA-5h-O9O" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="197" y="0.0" width="197" height="48.5"/>
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                         </subviews>
                                                         <constraints>
+                                                            <constraint firstAttribute="height" constant="60" id="FvU-y5-jBR"/>
                                                             <constraint firstAttribute="bottom" secondItem="ZrA-5h-O9O" secondAttribute="bottom" id="X9z-zG-NoT"/>
                                                             <constraint firstItem="eX1-Fa-Ugn" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="eI3-ry-tie"/>
                                                             <constraint firstItem="ZrA-5h-O9O" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="gdv-af-a3b"/>
@@ -299,18 +316,16 @@
                                                         </constraints>
                                                     </stackView>
                                                 </subviews>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="470" id="RBj-wb-aCB"/>
-                                                </constraints>
                                             </stackView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstItem="c4L-J8-oIw" firstAttribute="leading" secondItem="XnC-Yc-DvG" secondAttribute="leading" id="2WF-j2-vup"/>
-                                            <constraint firstItem="c4L-J8-oIw" firstAttribute="top" secondItem="XnC-Yc-DvG" secondAttribute="topMargin" constant="-13" id="Ben-7u-4TH"/>
+                                            <constraint firstItem="c4L-J8-oIw" firstAttribute="top" secondItem="XnC-Yc-DvG" secondAttribute="topMargin" constant="-8" id="Ben-7u-4TH"/>
                                             <constraint firstAttribute="trailing" secondItem="c4L-J8-oIw" secondAttribute="trailing" constant="20" id="Fhh-Mq-nJu"/>
                                             <constraint firstItem="xJt-MI-I2f" firstAttribute="top" secondItem="68J-lr-Pzv" secondAttribute="bottom" constant="8" id="Ocw-fp-U0r"/>
                                             <constraint firstItem="68J-lr-Pzv" firstAttribute="top" secondItem="c4L-J8-oIw" secondAttribute="bottom" constant="38" id="awa-UV-FFL"/>
+                                            <constraint firstAttribute="bottom" secondItem="xJt-MI-I2f" secondAttribute="bottom" constant="20" id="bZw-9c-3o8"/>
                                             <constraint firstItem="xJt-MI-I2f" firstAttribute="trailing" secondItem="68J-lr-Pzv" secondAttribute="trailing" id="ide-eL-8XS"/>
                                             <constraint firstAttribute="trailing" secondItem="68J-lr-Pzv" secondAttribute="trailing" constant="20" id="lj1-DM-mwb"/>
                                             <constraint firstItem="xJt-MI-I2f" firstAttribute="leading" secondItem="68J-lr-Pzv" secondAttribute="leading" id="m1C-pN-NEc"/>
@@ -322,9 +337,8 @@
                                     <constraint firstItem="XnC-Yc-DvG" firstAttribute="top" secondItem="aTq-KH-BV0" secondAttribute="top" constant="5" id="9Q3-wo-hgp"/>
                                     <constraint firstAttribute="width" secondItem="XnC-Yc-DvG" secondAttribute="width" id="EZP-Oj-TgN"/>
                                     <constraint firstItem="XnC-Yc-DvG" firstAttribute="trailing" secondItem="aTq-KH-BV0" secondAttribute="trailing" id="IyF-hq-xL4"/>
-                                    <constraint firstItem="9AC-nj-mUg" firstAttribute="bottom" secondItem="XnC-Yc-DvG" secondAttribute="bottom" id="OTb-uD-fWj"/>
+                                    <constraint firstItem="XnC-Yc-DvG" firstAttribute="bottom" secondItem="NO6-mn-yz6" secondAttribute="bottom" id="PuR-Wc-tTC"/>
                                     <constraint firstItem="XnC-Yc-DvG" firstAttribute="leading" secondItem="aTq-KH-BV0" secondAttribute="leading" id="Tl7-7B-V8e"/>
-                                    <constraint firstItem="NO6-mn-yz6" firstAttribute="top" secondItem="aTq-KH-BV0" secondAttribute="top" id="hpA-pW-Upp"/>
                                     <constraint firstAttribute="bottom" secondItem="XnC-Yc-DvG" secondAttribute="bottom" id="ikK-FY-Cq6"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="NO6-mn-yz6"/>
@@ -335,7 +349,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="aTq-KH-BV0" firstAttribute="centerX" secondItem="xNr-He-yJG" secondAttribute="centerX" id="J1R-5y-zbT"/>
-                            <constraint firstItem="aTq-KH-BV0" firstAttribute="centerY" secondItem="xNr-He-yJG" secondAttribute="centerY" id="QZt-ve-lFa"/>
+                            <constraint firstItem="aTq-KH-BV0" firstAttribute="top" secondItem="WPg-Ls-kUO" secondAttribute="top" constant="16" id="Yns-OR-CLq"/>
                             <constraint firstItem="aTq-KH-BV0" firstAttribute="leading" secondItem="WPg-Ls-kUO" secondAttribute="leading" id="jnK-xk-ih6"/>
                             <constraint firstItem="WPg-Ls-kUO" firstAttribute="bottom" secondItem="aTq-KH-BV0" secondAttribute="bottom" constant="5" id="m3b-Av-JTV"/>
                         </constraints>
@@ -369,7 +383,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vVo-bt-KqU">
-                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <rect key="frame" x="0.0" y="96" width="414" height="732"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="siZ-Sv-2uj">
                                         <rect key="frame" x="16" y="16" width="382" height="243.5"/>
@@ -460,29 +474,12 @@ The account deletion action will not delete any archives that you own or persona
             <point key="canvasLocation" x="942.02898550724649" y="685.71428571428567"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="68J-lr-Pzv">
-            <size key="intrinsicContentSize" width="46" height="30"/>
-        </designable>
-        <designable name="ICb-Y6-aLK">
-            <size key="intrinsicContentSize" width="46" height="30"/>
-        </designable>
-        <designable name="S4H-vw-aNZ">
-            <size key="intrinsicContentSize" width="30" height="30"/>
-        </designable>
-        <designable name="fUa-8S-g3h">
-            <size key="intrinsicContentSize" width="30" height="30"/>
-        </designable>
-        <designable name="xJt-MI-I2f">
-            <size key="intrinsicContentSize" width="46" height="30"/>
-        </designable>
-    </designables>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemPinkColor">
-            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -292,7 +292,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         permissionLabel.setTextSpacingBy(value: 0.8)
         
         let permissionValueLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
-        permissionValueLabel.text = fileViewModel.accessRole.groupName
+        // For file sharing, display curator when backend returns manager
+        let displayRole = fileViewModel.accessRole == .manager ? AccessRole.curator : fileViewModel.accessRole
+        permissionValueLabel.text = displayRole.groupName
         permissionValueLabel.font = TextFontStyle.style34.font
         permissionValueLabel.textColor = .dustyGray
         
@@ -452,7 +454,10 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let maxArchivesShown = showAllArchives ? fileViewModel.minArchiveVOS.count : min(fileViewModel.minArchiveVOS.count, 2)
         for (idx, archive) in fileViewModel.minArchiveVOS[0 ..< maxArchivesShown].enumerated() {
-            let accessRole = ShareStatus.status(forValue: archive.shareStatus) == .pending  ? "Pending...".localized() : AccessRole.roleForValue(archive.accessRole).groupName
+            let role = AccessRole.roleForValue(archive.accessRole)
+            // For file sharing, display curator when backend returns manager
+            let displayRole = role == .manager ? AccessRole.curator : role
+            let accessRole = ShareStatus.status(forValue: archive.shareStatus) == .pending  ? "Pending...".localized() : displayRole.groupName
             
             let archiveStackView = archiveStackView(withArchiveName: "The \(archive.name) Archive", role: accessRole, imagePath: archive.thumbnail ?? "", tag: idx + 1)
             subviews.append(archiveStackView)

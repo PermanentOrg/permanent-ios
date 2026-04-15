@@ -11,13 +11,17 @@ import UIKit
 struct FileMoreMenuView: View {
     @ObservedObject private var viewModel: FileMenuViewModel
     private let onShareManagementRequested: ((FileModel) -> Void)?
-    private let onGetLinkRequested: ((FileModel) -> Void)?
+    private let onRenameRequested: ((FileModel) -> Void)?
+    private let onDeleteConfirmed: (([FileModel]) -> Void)?
+    private let onLeaveShareConfirmed: ((FileModel) -> Void)?
     
-    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onGetLinkRequested: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil) {
+    init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onRenameRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil, menuItemsGenerator: FileMenuViewModel.MenuItemsGenerator? = nil, fileModelUpdateHandler: FileMenuViewModel.FileModelUpdateHandler? = nil) {
         let newViewModel = FileMenuViewModel(
             fileViewModel: fileViewModel,
             menuItems: menuItems,
             selectedItemCount: selectedItemCount,
+            selectedFiles: selectedFiles,
+            showArchiveInfo: showArchiveInfo,
             onDismiss: onDismiss
         )
         
@@ -25,9 +29,19 @@ struct FileMoreMenuView: View {
             newViewModel.setDownloadHandler(downloadHandler)
         }
         
+        if let menuItemsGenerator = menuItemsGenerator {
+            newViewModel.setMenuItemsGenerator(menuItemsGenerator)
+        }
+        
+        if let fileModelUpdateHandler = fileModelUpdateHandler {
+            newViewModel.setFileModelUpdateHandler(fileModelUpdateHandler)
+        }
+        
         self.viewModel = newViewModel
         self.onShareManagementRequested = onShareManagementRequested
-        self.onGetLinkRequested = onGetLinkRequested
+        self.onRenameRequested = onRenameRequested
+        self.onDeleteConfirmed = onDeleteConfirmed
+        self.onLeaveShareConfirmed = onLeaveShareConfirmed
     }
     
     
@@ -167,11 +181,11 @@ struct FileMoreMenuView: View {
                     
                     Spacer(minLength: 0)
                 }
-                .frame(height: viewModel.preCalculatedHeight)
+                .frame(height: viewModel.dynamicHeight)
                 .frame(maxWidth: .infinity)
                 .background(Color.white)
                 .cornerRadius(16, corners: [.topLeft, .topRight])
-                .offset(y: viewModel.isAnimating ? viewModel.dragOffset : viewModel.preCalculatedHeight)
+                .offset(y: viewModel.isAnimating ? viewModel.dragOffset : viewModel.dynamicHeight)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
@@ -196,6 +210,7 @@ struct FileMoreMenuView: View {
                     }
                     
                     viewModel.prepareThumbnailForLoading()
+                    viewModel.fetchUpdatedAccessRole()
                     viewModel.startPresentationAnimation()
                 }
                 .onChange(of: viewModel.specialMenuItemRequested) { menuItem in
@@ -205,6 +220,44 @@ struct FileMoreMenuView: View {
                     }
                 }
             }
+            
+            ConfirmationBottomAlertView(
+                isPresented: $viewModel.showDeleteConfirmation,
+                fileName: viewModel.fileViewModel.name,
+                actionType: .delete,
+                onConfirm: {
+                    handleDeleteConfirmation()
+                },
+                onCancel: {
+                    viewModel.cancelDeleteAction()
+                },
+                isMultipleItems: (viewModel.selectedItemCount ?? 1) > 1,
+                isFolder: viewModel.fileViewModel.type.isFolder
+            )
+            
+            ConfirmationBottomAlertView(
+                isPresented: $viewModel.showLeaveShareConfirmation,
+                fileName: viewModel.fileViewModel.name,
+                actionType: .leaveShare,
+                onConfirm: {
+                    handleLeaveShareConfirmation()
+                },
+                onCancel: {
+                    viewModel.cancelLeaveShareAction()
+                },
+                isMultipleItems: false,
+                isFolder: viewModel.fileViewModel.type.isFolder
+            )
+            
+            if viewModel.isExecutingAction {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .overlay(
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.5)
+                    )
+            }
         }
         .ignoresSafeArea(.container, edges: .bottom)
     }
@@ -212,54 +265,112 @@ struct FileMoreMenuView: View {
     
     @ViewBuilder
     private var menuContent: some View {
-        LazyVStack(spacing: 16) {
-            ForEach(viewModel.regularMenuItems.indices, id: \.self) { index in
-                FileMoreMenuItemRow(item: viewModel.regularMenuItems[index], viewModel: viewModel) {
-                    viewModel.handleMenuItemTap(viewModel.regularMenuItems[index])
-                }
+        LazyVStack(spacing: 0) {
+            // Archive info section (only shown in Shared With Me)
+            if viewModel.showArchiveInfo, let archiveName = viewModel.archiveName, let accessRole = viewModel.accessRoleName {
+                archiveInfoSection(archiveName: archiveName, accessRole: accessRole)
             }
             
-            if let deleteItem = viewModel.deleteMenuItem {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(height: 1)
-                    .padding(.horizontal, -24)
-                
-                FileMoreMenuItemRow(item: deleteItem, viewModel: viewModel, isDestructive: true) {
-                    viewModel.handleMenuItemTap(deleteItem)
+            if !viewModel.regularMenuItems.isEmpty || viewModel.destructiveMenuItem != nil {
+                VStack(spacing: 16) {
+                    ForEach(viewModel.regularMenuItems.indices, id: \.self) { index in
+                        FileMoreMenuItemRow(item: viewModel.regularMenuItems[index], viewModel: viewModel) {
+                            viewModel.handleMenuItemTap(viewModel.regularMenuItems[index])
+                        }
+                    }
+                    
+                    if let destructiveItem = viewModel.destructiveMenuItem {
+                        if !viewModel.regularMenuItems.isEmpty {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 1)
+                                .padding(.horizontal, -24)
+                        }
+                        
+                        FileMoreMenuItemRow(item: destructiveItem, viewModel: viewModel, isDestructive: true) {
+                            viewModel.handleMenuItemTap(destructiveItem)
+                        }
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+                .padding(.bottom, viewModel.regularMenuItems.isEmpty && viewModel.destructiveMenuItem != nil ? 16 : 24)
             }
         }
+    }
+    
+    // MARK: - Archive Info Section
+    @ViewBuilder
+    private func archiveInfoSection(archiveName: String, accessRole: String) -> some View {
+        HStack(alignment: .center, spacing: 16) {
+            Group {
+                if let thumbnailURLString = viewModel.fileViewModel.sharedByArchive?.thumbnail,
+                   let thumbnailURL = URL(string: thumbnailURLString) {
+                    WebImage(url: thumbnailURL)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 24, height: 24, alignment: .center)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                } else {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.blue100)
+                        .frame(width: 24, height: 24, alignment: .center)
+                        .overlay(
+                            Text(String(archiveName.prefix(1)).uppercased())
+                                .font(.custom("Usual-Regular", size: 16))
+                                .fontWeight(.semibold)
+                                .foregroundColor(Color.blue900)
+                        )
+                }
+            }
+            .padding(.horizontal, 8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("FROM")
+                    .font(.custom("Usual-Regular", size: 10))
+                    .foregroundColor(Color.blue400)
+                    .kerning(1.6)
+                
+                HStack {
+                    Text("The") +
+                    Text(" \(archiveName) ")
+                        .bold() +
+                    Text("Archive")
+                }
+                .font(.custom("Usual-Regular", size: 12))
+                .foregroundColor(Color.blue900)
+                .lineLimit(1)
+            }
+            
+            Spacer()
+            
+            Text(accessRole)
+                .font(.custom("Usual-Regular", size: 8))
+                .kerning(1.28)
+                .foregroundColor(Color.blue900)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.white)
+                .cornerRadius(4)
+        }
         .padding(.horizontal, 24)
-        .padding(.top, 24)
-        .padding(.bottom, 20)
+        .padding(.bottom, 24)
+        .background(Color.blue25)
     }
     
     // MARK: - Special Menu Item Handling
     private func handleSpecialMenuItems(_ menuItem: FileMenuViewModel.MenuItem) {
         switch menuItem.type {
         case .shareToPermanent:
-            // Use the callback instead of presenting directly
+            // Prefer delegating to the host (UIKit controller) to present after dismissing the menu
             if let callback = onShareManagementRequested {
                 callback(viewModel.fileViewModel)
             } else {
-                // Fallback to the old method if callback not provided
-                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                      let window = windowScene.windows.first,
-                      let rootViewController = window.rootViewController else {
-                    return
-                }
-                
-                var topViewController = rootViewController
-                while let presented = topViewController.presentedViewController {
-                    topViewController = presented
-                }
-                
-                presentShareManagement(from: topViewController)
+                // Fallback: present via a safe presenter (the presentingViewController of this menu if available)
+                presentShareManagementSafely()
             }
-        case .getLink:
-            // Use the callback instead of the special menu item flow
-            if let callback = onGetLinkRequested {
+        case .rename:
+            if let callback = onRenameRequested {
                 callback(viewModel.fileViewModel)
             } else {
                 // Fallback to the old method if callback not provided
@@ -292,16 +403,75 @@ struct FileMoreMenuView: View {
         }
     }
     
-    private func presentShareManagement(from viewController: UIViewController) {
-        guard let manageLinkVC = UIViewController.create(withIdentifier: .shareManagement, from: .share) as? ShareManagementViewController else {
-            return
+    // MARK: - Safe UIKit Presentation Fallback
+    private func presentShareManagementSafely() {
+        DispatchQueue.main.async {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first,
+                  let root = window.rootViewController else { return }
+            
+            // Find the top-most controller
+            var top: UIViewController = root
+            while let presented = top.presentedViewController {
+                top = presented
+            }
+            
+            // If the top is our menu's hosting controller (being dismissed), use its presenter
+            let presenter = top.presentingViewController ?? top
+            
+            // Create SwiftUI ShareItemView directly
+            let shareItemView = ShareItemView(fileModel: viewModel.fileViewModel)
+            
+            // Present with UIHostingController
+            let hostingController = UIHostingController(rootView: shareItemView)
+            hostingController.modalPresentationStyle = .fullScreen
+            
+            presenter.present(hostingController, animated: true)
         }
+    }
+
+    // MARK: - Confirmation Actions
+    private func handleDeleteConfirmation() {
+        viewModel.showDeleteConfirmation = false
         
-        let shareViewModel = ShareLinkViewModel(fileViewModel: viewModel.fileViewModel)
-        manageLinkVC.viewModel = shareViewModel
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.viewModel.dismissWithAnimation()
+            
+            // Wait for menu dismiss animation to complete before executing action
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if let onDeleteConfirmed = self.onDeleteConfirmed {
+                    let filesToDelete = self.viewModel.selectedFiles ?? [self.viewModel.fileViewModel]
+                    onDeleteConfirmed(filesToDelete)
+                } else {
+                    self.viewModel.executeDeleteAction()
+                }
+            }
+        }
+    }
+    
+    private func handleLeaveShareConfirmation() {
+        viewModel.showLeaveShareConfirmation = false
         
-        let navController = NavigationController(rootViewController: manageLinkVC)
-        viewController.present(navController, animated: true, completion: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.viewModel.dismissWithAnimation()
+            
+            // Wait for menu dismiss animation to complete before executing action
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if let onLeaveShareConfirmed = self.onLeaveShareConfirmed {
+                    onLeaveShareConfirmed(self.viewModel.fileViewModel)
+                } else {
+                    self.viewModel.executeLeaveShareAction()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    private func formatFileSize(_ size: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useKB, .useMB, .useGB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: size)
     }
     
     private func showInfoAlert(title: String, message: String) {
@@ -339,7 +509,6 @@ struct FileMoreMenuView: View {
     }
 }
 
-// Extension to add corner radius to specific corners
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
@@ -357,5 +526,16 @@ struct RoundedCorner: Shape {
             cornerRadii: CGSize(width: radius, height: radius)
         )
         return Path(path.cgPath)
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func ifAvailableiOS16<Content: View>(_ transform: (Self) -> Content) -> some View {
+        if #available(iOS 16.0, *) {
+            transform(self)
+        } else {
+            self
+        }
     }
 }

@@ -405,7 +405,7 @@ extension PublicArchiveFileViewController {
             )
             
             present(preparingAlert, animated: true) {
-                self.viewModel?.download(file: file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
+                self.viewModel?.download(file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
                     if let url = url {
                         self.dismiss(animated: true) {
                             self.share(url: url)
@@ -413,19 +413,22 @@ extension PublicArchiveFileViewController {
                     } else {
                         self.dismiss(animated: true, completion: nil)
                     }
-                })
+                }, progressHandler: nil)
             }
         }
     }
     
     private func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        present(activityViewController, animated: true)
     }
     
     func downloadAction(file: FileModel) {
@@ -450,4 +453,8 @@ extension PublicArchiveFileViewController: FilePreviewNavigationControllerDelega
     }
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) { }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        // Download not supported in public profile view
+    }
 }

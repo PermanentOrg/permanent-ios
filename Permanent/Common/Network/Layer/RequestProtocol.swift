@@ -62,6 +62,9 @@ protocol RequestProtocol {
     var bodyData: Data? { get }
     
     var customURL: String? { get }
+    var ignoreErrors: Bool { get }
+    var shareToken: String? { get }
+    var skipAuthentication: Bool { get }
 }
 
 extension RequestProtocol {
@@ -141,5 +144,17 @@ extension RequestProtocol {
         } else {
             return nil
         }
+    }
+    
+    var ignoreErrors: Bool {
+        return false
+    }
+    
+    var shareToken: String? {
+        return nil
+    }
+    
+    var skipAuthentication: Bool {
+        return false
     }
 }

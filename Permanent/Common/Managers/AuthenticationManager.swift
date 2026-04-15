@@ -12,6 +12,9 @@ import FirebaseMessaging
 class AuthenticationManager {
     static let shared = AuthenticationManager()
     
+    // Test hook: allows tests to override changeArchive behaviour
+    static var changeArchiveOverride: ((ArchiveVOData, @escaping (Result<Bool, Error>) -> Void) -> Void)?
+    
     var keychainHandler = SessionKeychainHandler()
     let authRepo: AuthRepository
     let accountRepository: AccountRepository
@@ -301,6 +304,12 @@ class AuthenticationManager {
     }
     
     func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping (Result<Bool, Error>) -> Void) {
+        // Allow tests to override changeArchive behaviour
+        if let override = Self.changeArchiveOverride {
+            override(archive, completionBlock)
+            return
+        }
+
         guard let archiveId = archive.archiveID, let archiveNbr = archive.archiveNbr else {
             completionBlock(.failure(APIError.unknown))
             return

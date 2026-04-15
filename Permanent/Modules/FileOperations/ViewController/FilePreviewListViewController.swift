@@ -17,6 +17,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     }
 
     var currentFile: FileModel!
+    var isFromNotification: Bool = false
     
     // Transition Variables
     var nextFile: FileModel?
@@ -37,6 +38,21 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .filePreviewVMDidSaveData, object: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Ensure navigation bar is always visible when view appears
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.navigationBar.isHidden = false
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Double-check navigation bar is visible after view fully appears
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
     func setupPageVC() {
         pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         pageVC.dataSource = self
@@ -47,11 +63,34 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         pageVC.view.frame = view.bounds
         pageVC.didMove(toParent: self)
         
-        if let indexOfFileVC = filteredFiles.firstIndex(of: currentFile) {
+        // If opened from notification with empty viewModel, show single file
+        if isFromNotification && filteredFiles.isEmpty {
+            let fileDetailsVC = createFilePreviewViewController(for: currentFile)
+            pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
+        } else if let indexOfFileVC = filteredFiles.firstIndex(of: currentFile) {
             let fileDetailsVC = dequeueViewController(atIndex: indexOfFileVC)!
             
             pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
         }
+    }
+    
+    private func createFilePreviewViewController(for file: FileModel) -> FilePreviewViewController {
+        let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
+        filePreviewVC.file = file
+        filePreviewVC.viewModel = FilePreviewViewModel(file: file)
+        
+        // If opened from notification, pass close action to child VC
+        if isFromNotification {
+            filePreviewVC.closeAction = { [weak self] in
+                self?.closeButtonAction(self as Any)
+            }
+        }
+        
+        // Load the file content
+        filePreviewVC.view.isHidden = false // preload the view
+        filePreviewVC.loadVM()
+        
+        return filePreviewVC
     }
     
     func setupNavigationBar() {
@@ -168,6 +207,13 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             fileDetailsVC.view.isHidden = false // preload the view
             fileDetailsVC.loadVM()
             
+            // If opened from notification, pass close action to child VC
+            if isFromNotification {
+                fileDetailsVC.closeAction = { [weak self] in
+                    self?.closeButtonAction(self as Any)
+                }
+            }
+            
             if let publicArchiveVM = viewModel as? PublicArchiveViewModel {
                 fileDetailsVC.viewModel?.publicURL = publicArchiveVM.publicURL(forFile: file)
             }
@@ -203,5 +249,10 @@ extension FilePreviewListViewController: FilePreviewNavigationControllerDelegate
         if hasChanges == true {
             self.hasChanges = true
         }
+    }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        // Forward the request through the navigation controller
+        (navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerRequestsDownload(self, file: file)
     }
 }

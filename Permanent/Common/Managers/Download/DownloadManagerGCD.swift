@@ -17,7 +17,7 @@ class DownloadManagerGCD: Downloader {
     }
     
     func fileVO(forRecordVO recordVO: RecordVO, fileType: FileType) -> FileVO? {
-        if fileType == .video,
+        if fileType == .video || fileType == .image,
            let fileVO = recordVO.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
             return fileVO
         } else {
@@ -152,13 +152,29 @@ class DownloadManagerGCD: Downloader {
             return handler(nil, APIError.invalidResponse)
         }
         
-        // If the file was converted, then it most certainly is an mp4
-        // Otherwise, the file was not converted, we use the original filename + extension
         let fileName: String
         if fileType == .video && fileVO.contentType == "video/mp4" {
             fileName = displayName + ".mp4"
         } else {
-            fileName = uploadFileName
+            var fileExtension = (uploadFileName as NSString).pathExtension
+            
+            if fileVO.format == "file.format.converted" {
+                if let contentType = fileVO.contentType {
+                    if contentType.contains("jpeg") {
+                        fileExtension = "JPG"
+                    } else if contentType.contains("png") {
+                        fileExtension = "PNG"
+                    } else if contentType.contains("heic") {
+                        fileExtension = "HEIC"
+                    }
+                }
+            }
+            
+            if !fileExtension.isEmpty {
+                fileName = displayName + "." + fileExtension
+            } else {
+                fileName = displayName
+            }
         }
         
         let apiOperation = APIOperation(FilesEndpoint.download(url: url, filename: fileName, progressHandler: progressHandler))

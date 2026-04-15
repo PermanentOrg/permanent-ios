@@ -93,5 +93,14 @@ env-vars.sh
 .idea/
 *.DS_Store
 
+# VSCode settings
+.vscode/
+
+# Copilot documentation
+.copilot/
+
 # Build configuration files
 buildServer.json
+
+# Local documentation and context
+.docs-local/

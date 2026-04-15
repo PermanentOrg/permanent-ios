@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum AccessRole: Int, CaseIterable, Codable {
  
@@ -66,5 +67,50 @@ enum AccessRole: Int, CaseIterable, Codable {
         case .viewer: return "access.role.viewer"
         default: return nil
         }
+    }
+}
+
+extension AccessRole: SelectableOption {
+    var title: String {
+        switch self {
+        case .owner: return "Owner"
+        case .manager: return "Manager"
+        case .curator: return "Curator"
+        case .editor: return "Editor"
+        case .contributor: return "Contributor"
+        case .viewer: return "Viewer"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .viewer:
+            return "Can view all materials but cannot edit, delete, upload, publish, or share anything."
+        case .contributor:
+            return "Can upload new materials but cannot edit metadata, delete items, publish content, or share."
+        case .editor:
+            return "Can upload and edit metadata but cannot delete materials, publish them, or share anything."
+        case .curator:
+            return "Trusted member with full control: edit, organize, delete, publish, share, and manage archive membership."
+        case .manager:
+            return "Trusted member with full control: edit, organize, delete, publish, share, and manage archive membership."
+        case .owner:
+            return "Has ultimate control: manages roles, settings, and full archive access, including deletion."
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .viewer: return Image(.publishAccessViewer)
+        case .contributor: return Image(.publishAccessContributor)
+        case .editor: return Image(.publishAccessEditor)
+        case .curator: return Image(.publishAccessCurator)
+        case .manager: return Image(.publishAccessCurator)
+        case .owner: return Image(.publishAccessOwner)
+        }
+    }
+    
+    var iconColor: Color {
+        return Color.success500
     }
 }

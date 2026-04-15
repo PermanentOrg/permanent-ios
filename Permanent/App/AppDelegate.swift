@@ -147,7 +147,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
                         
-                    case .error(let error, _):
+                    case .error(_, _):
                         break
                         
                     default:
@@ -279,12 +279,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     fileprivate func configureLogging() {
         #if STAGING_ENVIRONMENT
-            NetworkLogger.configuration.logLevel = .debug
-            NetworkLogger.configuration.environmentRestriction = nil // Log in all environments
-            NetworkLogger.configuration.logBodies = true
             NetworkLogger.enableLogging()
         #else
-             NetworkLogger.disableLogging()
+             NetworkLogger.enableLogging()
         #endif
     }
     
@@ -303,22 +300,79 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     fileprivate func navigateFromUniversalLink(url: URL) -> Bool {
-        guard let sharePreviewVC = UIViewController.create(
-            withIdentifier: .sharePreview,
-            from: .share
-        ) as? SharePreviewViewController else { return false }
+        let viewController: UIViewController
         
-        let viewModel = SharePreviewViewModel()
-        viewModel.urlToken = url.lastPathComponent
-        sharePreviewVC.viewModel = viewModel
-        
-        rootViewController.navigateTo(viewController: sharePreviewVC)
-        
-        sharePreviewVC.navigateTo = { [weak self] params in
-            self?.navigateToFolder(params: params)
+        if Constants.FeatureFlags.useSwiftUISharePreview {
+            // Use new SwiftUI version
+            let hostingController = SharePreviewHostingController(shareToken: url.lastPathComponent)
+            hostingController.navigateTo = { [weak self] params in
+                self?.navigateToFolder(params: params)
+            }
+            hostingController.wireCallbacks()
+            viewController = hostingController
+        } else {
+            // Use legacy UIKit version
+            guard let sharePreviewVC = UIViewController.create(
+                withIdentifier: .sharePreview,
+                from: .share
+            ) as? SharePreviewViewController else { return false }
+            
+            let viewModel = SharePreviewViewModel()
+            viewModel.urlToken = url.lastPathComponent
+            sharePreviewVC.viewModel = viewModel
+            
+            sharePreviewVC.navigateTo = { [weak self] params in
+                self?.navigateToFolder(params: params)
+            }
+            viewController = sharePreviewVC
         }
         
+        // Dismiss any presented SwiftUI views or modal controllers before navigating
+        dismissPresentedViewsAndNavigate(to: viewController)
+        
         return true
+    }
+    
+    private func dismissPresentedViewsAndNavigate(to viewController: UIViewController) {
+        // First, dismiss any presented modal view controllers (like SwiftUI sheets)
+        var topMostPresentedVC: UIViewController = rootViewController
+        while let presentedVC = topMostPresentedVC.presentedViewController {
+            topMostPresentedVC = presentedVC
+        }
+        
+        // If there are presented view controllers, dismiss them first
+        if topMostPresentedVC != rootViewController {
+            rootViewController.dismiss(animated: false) { [weak self] in
+                self?.navigateAfterDismissal(to: viewController)
+            }
+        } else {
+            navigateAfterDismissal(to: viewController)
+        }
+    }
+    
+    private func navigateAfterDismissal(to viewController: UIViewController) {
+        // If the root is a DrawerViewController, update its navigation stack to remove any
+        // existing SharePreviewHostingController instances and other SwiftUI views
+        if let drawer = rootViewController.current as? DrawerViewController {
+            let nav = drawer.rootViewController
+            
+            // Filter out SharePreviewHostingController and other UIHostingControllers (SwiftUI views)
+            let filteredStack = nav.viewControllers.filter { vc in
+                // Keep only non-SwiftUI view controllers (like MainViewController, FilesViewController, etc.)
+                let isSharePreview = vc is SharePreviewHostingController
+                let isHostingController = String(describing: type(of: vc)).contains("UIHostingController")
+                return !isSharePreview && !isHostingController
+            }
+            
+            var newStack = filteredStack
+            newStack.append(viewController)
+            // Replace the stack without animation so any SwiftUI views are removed immediately
+            nav.setViewControllers(newStack, animated: false)
+            return
+        }
+
+        // Otherwise navigate directly
+        rootViewController.navigateTo(viewController: viewController)
     }
     
     fileprivate func navigateToFolder(params: NavigateMinParams) {
@@ -384,7 +438,9 @@ extension AppDelegate {
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         if let fcmToken = fcmToken {
+            #if STAGING_ENVIRONMENT
             print("Saving push token: " + fcmToken)
+            #endif
             PreferencesManager.shared.set(fcmToken, forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
             
             if rootViewController.isDrawerRootActive && AuthenticationManager.shared.session != nil {
@@ -430,19 +486,29 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = notification.request.content.userInfo
         let name: String
         let folderLinkId: Int
+        let recordId: Int
+        let isFolder: Bool
         
-        if let linkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
+        // Check for record (file) first - most specific check
+        if let itemName = userInfo["recordName"] as? String,
+           let linkId: Int = Int(userInfo["recordLinkId"] as? String ?? userInfo["folderLinkId"] as? String ?? "") {
+            folderLinkId = linkId
+            name = itemName
+            isFolder = false
+            // Try to get recordId if available
+            recordId = Int(userInfo["recordId"] as? String ?? "") ?? 0
+        } else if let linkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
         let itemName = userInfo["shareName"] as? String {
             folderLinkId = linkId
             name = itemName
+            isFolder = true
+            recordId = 0
         } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
             let itemName = userInfo["folderName"] as? String {
             folderLinkId = linkId
             name = itemName
-        } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
-            let itemName = userInfo["recordName"] as? String {
-                   folderLinkId = linkId
-                   name = itemName
+            isFolder = true
+            recordId = 0
         } else {
             return
         }
@@ -455,7 +521,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
         
         DispatchQueue.main.async {
-            let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+            let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, isFolder: isFolder, recordId: recordId, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
             try? PreferencesManager.shared.setNonPlistObject(requestAccessNotifPayload, forKey: Constants.Keys.StorageKeys.requestLinkAccess)
             
             if let drawerVC = self.rootViewController.current as? DrawerViewController {
@@ -492,6 +558,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
                 
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                    // For record notifications, ALWAYS navigate to SharesViewController first
+                    // Don't show preview from MainViewController
                     drawerVC.dismiss(animated: false) {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             if let sharesVC = drawerVC.rootViewController.visibleViewController as? SharesViewController {

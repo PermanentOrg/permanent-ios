@@ -84,8 +84,12 @@ extension Color {
     static var blue900 = Color(.blue900)
     static var yellow = Color(.yellow)
     static var success25 = Color(.success25)
+    static var success50 = Color(.success50)
     static var success200 = Color(.success200)
     static var success500 = Color(.success500)
+    static var warning100 = Color(.warning100)
+    static var warning600 = Color(.warning600)
+    static var warning800 = Color(.warning800)
 }
 
 extension Gradient {
@@ -104,6 +108,15 @@ extension Gradient {
             Gradient.Stop(color: Color(red: 1, green: 0.6, blue: 0.2), location: 1.00),
         ],
         startPoint: UnitPoint(x: 0, y: 0),
+        endPoint: UnitPoint(x: 1, y: 1)
+    )
+    
+    static var purpleYellowGradientForText = LinearGradient(
+        stops: [
+            Gradient.Stop(color: Color(red: 0.5, green: 0, blue: 0.5), location: 0.00),
+            Gradient.Stop(color: Color(red: 1, green: 0.6, blue: 0.2), location: 1.00),
+        ],
+        startPoint: UnitPoint(x: 0, y: 1),
         endPoint: UnitPoint(x: 1, y: 1)
     )
     

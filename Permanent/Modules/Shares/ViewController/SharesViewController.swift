@@ -26,6 +26,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private var fileActionSheet: SharedFileActionSheet?
     
     private let overlayView = UIView()
+    let fileHelper = FileHelper()
+    let documentInteractionController = UIDocumentInteractionController()
     
     var selectedIndex: Int = 0
     
@@ -489,6 +491,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = fileVM
         
+        // Add close action for modal presentation
+        filePreviewVC.closeAction = { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
+        }
+        
         let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
         fileDetailsNavigationController.filePreviewNavDelegate = self
         fileDetailsNavigationController.modalPresentationStyle = .fullScreen
@@ -690,7 +697,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
     
-    func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
+    private func generateMenuItems(for file: FileModel, atIndexPath indexPath: IndexPath) -> [FileMenuViewModel.MenuItem] {
         var menuItems: [FileMenuViewModel.MenuItem] = []
         
         if file.permissions.contains(.share) {
@@ -699,13 +706,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }
         }
         
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
-                unshareAction(file: file, atIndexPath: indexPath)
-            }))
-        } else if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
-                deleteAction(file: file, atIndexPath: indexPath)
+        // Share to another app - for files with share permission (not folders)
+        if file.permissions.contains(.share) && file.type.isFolder == false {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
+                shareWithOtherApps(file: file)
             }))
         }
 
@@ -733,27 +737,102 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }))
         }
         
-        // Add getLink for files that have share permissions (can potentially have share URLs)
-        if file.permissions.contains(.share) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .getLink, action: nil))
+        // Add unshare (leave share) or delete as the last item with separator
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
+                unshareAction(file: file, atIndexPath: indexPath)
+            }))
+        } else if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
+                deleteAction(file: file, atIndexPath: indexPath)
+            }))
         }
+        
+        return menuItems
+    }
+    
+    private func updateFileModelInDataSource(_ updatedFile: FileModel) {
+        guard let viewModel = self.viewModel else { return }
+        
+        if viewModel.shareListType == .sharedByMe {
+            if let index = viewModel.sharedByMeViewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                viewModel.sharedByMeViewModels[index] = updatedFile
+                if let activeIndex = viewModel.viewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                    viewModel.viewModels[activeIndex] = updatedFile
+                }
+            }
+        } else {
+            if let index = viewModel.sharedWithMeViewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                viewModel.sharedWithMeViewModels[index] = updatedFile
+                if let activeIndex = viewModel.viewModels.firstIndex(where: { $0.recordId == updatedFile.recordId && $0.folderLinkId == updatedFile.folderLinkId }) {
+                    viewModel.viewModels[activeIndex] = updatedFile
+                }
+            }
+        }
+    }
+    
+    func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
+        let menuItems = generateMenuItems(for: file, atIndexPath: indexPath)
+        
+        // Determine if we should show archive info (only in Shared With Me tab, and at root level)
+        let isSharedWithMe = viewModel?.shareListType == .sharedWithMe
+        let isAtRootLevel = viewModel?.currentFolderIsRoot ?? true
+        let shouldShowArchiveInfo = isSharedWithMe && isAtRootLevel
         
         let swiftUIView = FileMoreMenuView(
             fileViewModel: file,
             menuItems: menuItems,
+            showArchiveInfo: shouldShowArchiveInfo,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
             },
             onShareManagementRequested: { [weak self] file in
-                // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
                 })
             },
-            onGetLinkRequested: { [weak self] file in
-                // Dismiss the menu first, then handle get link
+            onRenameRequested: { [weak self] file in
+                // TODO: Implement rename functionality
                 self?.dismiss(animated: true, completion: {
-                    self?.getShareLinkAction(file: file)
+                    // Rename action will be implemented here
+                })
+            },
+            onDeleteConfirmed: { [weak self] files in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.delete(files, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles(files)
+                                self?.refreshCollectionView()
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
+                })
+            },
+            onLeaveShareConfirmed: { [weak self] file in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.unshare(file, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles([file])
+                                self?.refreshCollectionView()
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
                 })
             },
             downloadHandler: { [weak self] file, completion in
@@ -769,13 +848,20 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     },
                     progressHandler: nil
                 )
+            },
+            menuItemsGenerator: { [weak self] updatedFile in
+                guard let self = self else { return [] }
+                return self.generateMenuItems(for: updatedFile, atIndexPath: indexPath)
+            },
+            fileModelUpdateHandler: { [weak self] (updatedFile: FileModel) in
+                self?.updateFileModelInDataSource(updatedFile)
             }
         )
         
         let hostingController = UIHostingController(rootView: swiftUIView)
-        hostingController.modalPresentationStyle = .overFullScreen
-        hostingController.modalTransitionStyle = .crossDissolve
-        hostingController.view.backgroundColor = .clear
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
         
         present(hostingController, animated: true)
     }
@@ -783,6 +869,21 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     func showFileActionSheetForSelection() {
         guard let file = viewModel?.selectedFiles?.first else { return }
         var menuItems: [FileMenuViewModel.MenuItem] = []
+        
+        let isNotAtRootLevel = !(viewModel?.currentFolderIsRoot ?? true)
+        if file.permissions.contains(.edit) && isNotAtRootLevel {
+            let hasFolder = viewModel?.selectedFiles?.contains(where: { $0.type.isFolder }) ?? false
+            let hasEditorOrHigherRole = file.accessRole.rawValue <= AccessRole.editor.rawValue
+            if !hasFolder && hasEditorOrHigherRole {
+                menuItems.append(FileMenuViewModel.MenuItem(type: .editMetadata, action: { [weak self] in
+                    self?.presentMetadataEditView { hasUpdates in
+                        if hasUpdates {
+                            self?.refreshShares()
+                        }
+                    }
+                }))
+            }
+        }
         
         if file.permissions.contains(.delete) {
             menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [weak self] in
@@ -826,19 +927,60 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             fileViewModel: file,
             menuItems: menuItems,
             selectedItemCount: viewModel?.selectedFiles?.count,
+            selectedFiles: viewModel?.selectedFiles,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
             },
             onShareManagementRequested: { [weak self] file in
-                // Dismiss the menu first, then present ShareManagement
                 self?.dismiss(animated: true, completion: {
                     self?.presentShareManagement(for: file)
                 })
             },
-            onGetLinkRequested: { [weak self] file in
-                // Dismiss the menu first, then handle get link
+            onRenameRequested: { [weak self] file in
+                // TODO: Implement rename functionality
                 self?.dismiss(animated: true, completion: {
-                    self?.getShareLinkAction(file: file)
+                    // Rename action will be implemented here
+                })
+            },
+            onDeleteConfirmed: { [weak self] files in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.delete(files, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles(files)
+                                self?.refreshCollectionView()
+                                self?.dismissFloatingActionIsland()
+                                self?.fabView.isHidden = false
+                                self?.clearButtonWasPressed(UIButton())
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
+                })
+            },
+            onLeaveShareConfirmed: { [weak self] file in
+                self?.dismiss(animated: true, completion: {
+                    self?.showSpinner()
+                    self?.viewModel?.unshare(file, then: { status in
+                        self?.hideSpinner()
+                        
+                        switch status {
+                        case .success:
+                            DispatchQueue.main.async {
+                                self?.viewModel?.removeSyncedFiles([file])
+                                self?.refreshCollectionView()
+                            }
+                            
+                        case .error(let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
                 })
             },
             downloadHandler: { [weak self] file, completion in
@@ -854,41 +996,61 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     },
                     progressHandler: nil
                 )
+            },
+            fileModelUpdateHandler: { [weak self] (updatedFile: FileModel) in
+                // Update the file in the data source when its role/permissions change
+                self?.updateFileModelInDataSource(updatedFile)
             }
         )
         
         let hostingController = UIHostingController(rootView: swiftUIView)
-        hostingController.modalPresentationStyle = .overFullScreen
-        hostingController.modalTransitionStyle = .crossDissolve
-        hostingController.view.backgroundColor = .clear
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
         
         present(hostingController, animated: true)
     }
     
     func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {
-        let title = String(format: "\(String.rename) \"%@\"", file.name)
-        
-        self.showActionDialog(
-            styled: .singleField,
-            withTitle: title,
-            placeholders: ["Name".localized()],
-            prefilledValues: ["\(file.name)"],
-            positiveButtonTitle: .rename,
-            positiveAction: { [weak self] in
-                guard let self = self else { return }
-                guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
-                if inputName.isEmpty {
-                    self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
-                } else {
-                    self.actionDialog?.dismiss()
-                    self.rename(file, inputName, atIndexPath: indexPath)
-                    self.view.endEditing(true)
+        let presentRenameView: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            
+            var hostingController: UIHostingController<RenameView>?
+            
+            let renameView = RenameView(
+                currentName: file.name,
+                isFolder: file.type.isFolder,
+                thumbnailURL: file.thumbnailURL,
+                onRename: { [weak self] newName in
+                    hostingController?.dismiss(animated: false) {
+                        self?.rename(file, newName, atIndexPath: indexPath)
+                    }
+                },
+                onDismiss: {
+                    hostingController?.dismiss(animated: false)
                 }
-            },
-            positiveButtonColor: .primary,
-            cancelButtonColor: .brightRed,
-            overlayView: self.overlayView
-        )
+            )
+            
+            hostingController = UIHostingController(rootView: renameView)
+            hostingController?.modalPresentationStyle = .overFullScreen
+            hostingController?.modalTransitionStyle = .crossDissolve
+            hostingController?.view.backgroundColor = .clear
+            
+            if let controller = hostingController {
+                self.present(controller, animated: false)
+            }
+        }
+        
+        // Dismiss any currently presented view controller first
+        if let presented = presentedViewController {
+            presented.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    presentRenameView()
+                }
+            }
+        } else {
+            presentRenameView()
+        }
     }
     
     func deleteAction(file: FileModel, atIndexPath indexPath: IndexPath) {
@@ -897,6 +1059,41 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func unshareAction(file: FileModel, atIndexPath indexPath: IndexPath) {
         didTapUnshare(forFile: file, atIndexPath: indexPath)
+    }
+    
+    func shareWithOtherApps(file: FileModel) {
+        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
+            share(url: localURL)
+        } else {
+            let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
+            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
+                self.viewModel?.cancelDownload() })
+            )
+            present(preparingAlert, animated: true) {
+                self.viewModel?.download(file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
+                    if let url = url {
+                        self.dismiss(animated: true) {
+                            self.share(url: url)
+                        }
+                    } else {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                }, progressHandler: nil)
+            }
+        }
+    }
+    
+    private func share(url: URL) {
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        present(activityViewController, animated: true)
     }
 
     fileprivate func getShares(shouldShowSpinner: Bool = true, completion: (() -> Void)? = nil) {
@@ -966,18 +1163,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     func rename(_ file: FileModel, _ name: String, atIndexPath indexPath: IndexPath) {
         showSpinner()
         viewModel?.rename(file: file, name: name, then: { status in
-            self.hideSpinner()
-            
             switch status {
             case .success:
-                self.pullToRefreshAction()
-                if file.type.isFolder {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successful".localized())
-                } else {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successful".localized())
-                }
+                self.refreshCurrentFolder(shouldDisplaySpinner: false, then: {
+                    self.hideSpinner()
+                    if file.type.isFolder {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successful".localized())
+                    } else {
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successful".localized())
+                    }
+                })
                 
             case .error( _):
+                self.hideSpinner()
                 self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
             }
         })
@@ -1096,7 +1294,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self.refreshCollectionView()
             } else {
                 collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-                showFileActionSheet(file: file, atIndexPath: indexPath)
+                let currentFile = viewModel?.viewModels[indexPath.row] ?? file
+                showFileActionSheet(file: currentFile, atIndexPath: indexPath)
             }
 
         case .downloading:
@@ -1173,10 +1372,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
             switch status {
             case .success:
-                self.refreshCurrentFolder()
+                DispatchQueue.main.async {
+                    self.refreshCurrentFolder()
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder successfully created".localized())
+                }
 
-            case .error(let message):
-                self.showErrorAlert(message: message)
+            case .error(_):
+                self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
             }
         })
     }
@@ -1218,14 +1420,9 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let file = viewModel?.fileForRowAt(indexPath: indexPath)
-        let listItemHeight: CGFloat
+        let listItemHeight: CGFloat = 70  // Consistent height for all list items
         let gridItemHeight: CGFloat = UIScreen.main.bounds.width / 2 + 50
-        if viewModel?.shareListType == .sharedByMe {
-            listItemHeight = (file?.minArchiveVOS.count ?? 0) > 0 ? 90 : 70
-        } else {
-            listItemHeight = file?.sharedByArchive != nil ? 90 : 70
-        }
+        
         let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: listItemHeight)
         // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
         // Vertical size: 30 is the height of the title label
@@ -1384,15 +1581,48 @@ extension SharesViewController: SharedFileActionSheetDelegate {
     
     // MARK: - Share Management
     private func presentShareManagement(for file: FileModel) {
-        guard let manageLinkVC = UIViewController.create(withIdentifier: .shareManagement, from: .share) as? ShareManagementViewController else {
-            return
+        let shareContainerView = ShareContainerView(fileModel: file)
+        let hostingController = UIHostingController(rootView: shareContainerView)
+        
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+        if #available(iOS 15.0, *) {
+            hostingController.sheetPresentationController?.detents = [UISheetPresentationController.Detent.large()]
+            hostingController.sheetPresentationController?.prefersGrabberVisible = false
         }
         
-        let shareViewModel = ShareLinkViewModel(fileViewModel: file)
-        manageLinkVC.viewModel = shareViewModel
+        present(hostingController, animated: true)
+    }
+    
+    // MARK: - Helper Methods
+    private func formatFileSize(_ size: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useKB, .useMB, .useGB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: size)
+    }
+    
+    // MARK: - Metadata Edit
+    func presentMetadataEditView(completion: @escaping (Bool) -> Void) {
+        guard let selectedFiles = self.viewModel?.selectedFiles else { return }
         
-        let navController = NavigationController(rootViewController: manageLinkVC)
-        present(navController, animated: true, completion: nil)
+        let hostingController = UIHostingController(rootView: MetadataEditView(viewModel: FilesMetadataViewModel(files: selectedFiles)))
+        hostingController.modalPresentationStyle = .fullScreen
+        
+        self.present(hostingController, animated: true, completion: nil)
+        
+        self.dismissFloatingActionIsland()
+        self.fabView.isHidden = false
+        self.clearButtonWasPressed(UIButton())
+        
+        hostingController.rootView.dismissAction = { hasUpdates in
+            hostingController.dismiss(animated: true, completion: {
+                completion(hasUpdates)
+            })
+        }
+    }
+    
+    private func refreshShares() {
+        getShares(shouldShowSpinner: false)
     }
 }
 
@@ -1405,6 +1635,10 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
     }
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+    }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        downloadAction(file: file)
     }
 }
 
@@ -1419,19 +1653,45 @@ extension SharesViewController: SortActionSheetDelegate {
 // MARK: - FABViewDelegate
 extension SharesViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = UIViewController.create(
-            withIdentifier: .fabActionSheet,
-            from: .main
-        ) as? FABActionSheet else {
-            showAlert(title: .error, message: .errorMessage)
-            return
-        }
-        ///To Do: for iPad another presentation mode for this menu should be implemented
-        if Constants.Design.currentPlatform == .phone {
-            actionSheet.delegate = self
-            navigationController?.display(viewController: actionSheet, modally: true)
-        } else {
-            return
+        let fabMenuView = FABMenuView(
+            onCreateFolder: { [weak self] in
+                self?.didTapNewFolder()
+            },
+            onTakePhoto: { [weak self] in
+                self?.openCamera()
+            },
+            onUploadPhotos: { [weak self] in
+                self?.openPhotoLibrary()
+            },
+            onBrowseFiles: { [weak self] in
+                self?.openFileBrowser()
+            },
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: false, completion: {
+                    // Show FAB buttons with animation when menu is dismissed
+                    self?.fabView.isHidden = false
+                    self?.fabView.alpha = 0
+                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                        self?.fabView.alpha = 1
+                    }
+                })
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: fabMenuView)
+        hostingController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        hostingController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        hostingController.view.backgroundColor = UIColor.clear
+        
+        present(hostingController, animated: true)
+        
+        // Hide FAB with fade animation after presenting
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
+                self.fabView.alpha = 0
+            } completion: { _ in
+                self.fabView.isHidden = true
+            }
         }
     }
     
@@ -1455,21 +1715,35 @@ extension SharesViewController: FABViewDelegate {
     }
 }
 
-// MARK: - FABActionSheetDelegate
+// MARK: - FABActionSheetDelegate (kept for backwards compatibility)
 extension SharesViewController: FABActionSheetDelegate {
     func didTapUpload() {
+        // This is kept for backwards compatibility but no longer used
         showActionSheet()
     }
     
     func didTapNewFolder() {
-        showActionDialog(
-            styled: .singleField,
-            withTitle: .createFolder,
-            placeholders: [.folderName],
-            positiveButtonTitle: .create,
-            positiveAction: { self.newFolderAction() },
-            overlayView: overlayView
+        var hostingController: UIHostingController<CreateNewFolderView>?
+        
+        let createFolderView = CreateNewFolderView(
+            onCreateFolder: { [weak self] folderName in
+                hostingController?.dismiss(animated: false) {
+                    self?.createNewFolder(named: folderName)
+                }
+            },
+            onDismiss: {
+                hostingController?.dismiss(animated: false)
+            }
         )
+        
+        hostingController = UIHostingController(rootView: createFolderView)
+        hostingController?.modalPresentationStyle = .overFullScreen
+        hostingController?.modalTransitionStyle = .crossDissolve
+        hostingController?.view.backgroundColor = .clear
+        
+        if let controller = hostingController {
+            present(controller, animated: false)
+        }
     }
     
     func showActionSheet() {
@@ -1596,5 +1870,13 @@ extension SharesViewController: PhotoPickerViewControllerDelegate {
                 processUpload(toFolder: currentFolder, forURLS: urls)
             }
         })
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension SharesViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        // Show FAB buttons when menu is dismissed
+        fabView.isHidden = false
     }
 }

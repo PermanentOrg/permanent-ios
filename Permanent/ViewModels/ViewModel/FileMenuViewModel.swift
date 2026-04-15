@@ -24,7 +24,6 @@ class FileMenuViewModel: ObservableObject {
             case publish = "publish"
             case shareToPermanent = "shareToPermanent"
             case shareToAnotherApp = "shareToAnotherApp"
-            case getLink = "getLink"
             case editMetadata = "editMetadata"
         }
         
@@ -49,16 +48,28 @@ class FileMenuViewModel: ObservableObject {
     @Published var pressedMenuItemId: String?
     @Published var specialMenuItemRequested: MenuItem?
     
+    @Published var showDeleteConfirmation: Bool = false
+    @Published var showLeaveShareConfirmation: Bool = false
+    @Published var pendingDeleteAction: (() -> Void)?
+    @Published var pendingLeaveShareAction: (() -> Void)?
+    @Published var isExecutingAction: Bool = false
+    
+    @Published var dynamicMenuItems: [MenuItem] = []
+    @Published var dynamicHeight: CGFloat = 0
+    
     // MARK: - Input Properties
-    let fileViewModel: FileModel
+    var fileViewModel: FileModel
     let menuItems: [MenuItem]
     let selectedItemCount: Int?
+    let selectedFiles: [FileModel]?
     let onDismiss: () -> Void
+    let showArchiveInfo: Bool
     
     // MARK: - Cached/Computed Properties
     let cachedFormattedFileSize: String?
     let cachedFormattedDate: String
     let preCalculatedHeight: CGFloat
+    let archiveName: String?
     
     // MARK: - Private Properties
     private var dragStartTime: Date = Date()
@@ -70,20 +81,58 @@ class FileMenuViewModel: ObservableObject {
     
     // MARK: - Dependencies
     typealias DownloadHandler = (FileModel, @escaping (URL?, Error?) -> Void) -> Void
+    typealias MenuItemsGenerator = (FileModel) -> [MenuItem]
+    typealias FileModelUpdateHandler = (FileModel) -> Void
     private var downloadHandler: DownloadHandler?
+    private var menuItemsGenerator: MenuItemsGenerator?
+    private var fileModelUpdateHandler: FileModelUpdateHandler?
     var viewControllerProvider: (() -> UIViewController?)?
     private var capturedPresentingViewController: UIViewController?
     
     // MARK: - Initialization
-    init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, onDismiss: @escaping () -> Void) {
+    init(fileViewModel: FileModel, menuItems: [MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void) {
         self.fileViewModel = fileViewModel
         self.menuItems = menuItems
         self.selectedItemCount = selectedItemCount
+        self.selectedFiles = selectedFiles
+        self.showArchiveInfo = showArchiveInfo
         self.onDismiss = onDismiss
         
-        self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)
-        self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
-        self.preCalculatedHeight = Self.calculateSheetHeight(for: menuItems)
+        // Calculate size and date based on selection
+        if let selectedFiles = selectedFiles, selectedFiles.count > 1 {
+            // Multiple files selected
+            let files = selectedFiles.filter { !$0.type.isFolder }
+            let folders = selectedFiles.filter { $0.type.isFolder }
+            
+            // Calculate total file size (only for files, not folders)
+            let totalSize = files.reduce(Int64(0)) { $0 + $1.size }
+            self.cachedFormattedFileSize = totalSize > 0 ? Self.formatFileSize(totalSize) : nil
+            
+            // If there are folders, use the date of the first folder, otherwise use the date of the first file
+            if let firstFolder = folders.first {
+                self.cachedFormattedDate = Self.formatDate(firstFolder.date)
+            } else if let firstFile = files.first {
+                self.cachedFormattedDate = Self.formatDate(firstFile.date)
+            } else {
+                self.cachedFormattedDate = ""
+            }
+        } else {
+            // Single file selected
+            self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)
+            self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
+        }
+        
+        if showArchiveInfo, let sharedByArchive = fileViewModel.sharedByArchive {
+            self.archiveName = sharedByArchive.name
+        } else {
+            self.archiveName = nil
+        }
+        
+        self.preCalculatedHeight = Self.calculateSheetHeight(for: menuItems, showArchiveInfo: showArchiveInfo && fileViewModel.sharedByArchive != nil)
+        
+        // Initialize dynamic properties
+        self.dynamicMenuItems = menuItems
+        self.dynamicHeight = self.preCalculatedHeight
     }
     
     deinit {
@@ -117,31 +166,47 @@ class FileMenuViewModel: ObservableObject {
     }
     
     // MARK: - Layout Calculations
-    static func calculateSheetHeight(for menuItems: [MenuItem]) -> CGFloat {
-        let headerHeight: CGFloat = 120
+    static func calculateSheetHeight(for menuItems: [MenuItem], showArchiveInfo: Bool = false) -> CGFloat {
+        let headerHeight: CGFloat = 88
+        let archiveInfoHeight: CGFloat = showArchiveInfo ? 54 : 0
         let itemHeight: CGFloat = 56
-        let regularItemsCount = menuItems.filter { $0.type != .delete }.count
-        let hasDelete = menuItems.contains { $0.type == .delete }
-        let deleteSection: CGFloat = hasDelete ? (itemHeight + 32) : 0
-        let paddingHeight: CGFloat = 0
+        let regularItemsCount = menuItems.filter { $0.type != .delete && $0.type != .unshare }.count
+        let hasDestructiveItem = menuItems.contains { $0.type == .delete || $0.type == .unshare }
         
-        let totalHeight = headerHeight + CGFloat(regularItemsCount) * itemHeight + deleteSection + paddingHeight
+        let totalItemCount = regularItemsCount + (hasDestructiveItem ? 1 : 0)
+        
+        // If there are no menu items, only show header (and archive info if present)
+        guard totalItemCount > 0 else {
+            return headerHeight + archiveInfoHeight
+        }
+        
+        let topPadding: CGFloat = 24
+        let bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        
+        let menuItemsHeight: CGFloat = CGFloat(totalItemCount) * itemHeight
+        
+        let menuSectionHeight = topPadding + menuItemsHeight + bottomPadding
+        let totalHeight = headerHeight + archiveInfoHeight + menuSectionHeight
         return min(totalHeight, UIScreen.main.bounds.height * 0.85)
     }
     
     // MARK: - Computed Properties
     var contentHeight: CGFloat {
         let itemHeight: CGFloat = 56
-        let regularItemsCount = menuItems.filter { $0.type != .delete }.count
-        let hasDelete = menuItems.contains { $0.type == .delete }
-        let deleteSection: CGFloat = hasDelete ? (itemHeight + 32) : 0
-        let paddingHeight: CGFloat = 0
+        let regularItemsCount = menuItems.filter { $0.type != .delete && $0.type != .unshare }.count
+        let hasDestructiveItem = menuItems.contains { $0.type == .delete || $0.type == .unshare }
         
-        return CGFloat(regularItemsCount) * itemHeight + deleteSection + paddingHeight
+        let topPadding: CGFloat = 24
+        let bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        
+        let totalItemCount = regularItemsCount + (hasDestructiveItem ? 1 : 0)
+        let menuItemsHeight: CGFloat = CGFloat(totalItemCount) * itemHeight
+        
+        return topPadding + menuItemsHeight + bottomPadding
     }
     
     var maxContentHeight: CGFloat {
-        return UIScreen.main.bounds.height * 0.85 - 120
+        return UIScreen.main.bounds.height * 0.85 - 88
     }
     
     var needsScrolling: Bool {
@@ -149,15 +214,15 @@ class FileMenuViewModel: ObservableObject {
     }
     
     var backgroundOpacity: Double {
-        isAnimating ? max(0.0, 0.3 * (1.0 - Double(dragOffset / preCalculatedHeight))) : 0.0
+        isAnimating ? max(0.0, 0.3 * (1.0 - Double(dragOffset / dynamicHeight))) : 0.0
     }
     
     var regularMenuItems: [MenuItem] {
-        return menuItems.filter { $0.type != .delete }
+        return dynamicMenuItems.filter { $0.type != .delete && $0.type != .unshare }
     }
     
-    var deleteMenuItem: MenuItem? {
-        return menuItems.first { $0.type == .delete }
+    var destructiveMenuItem: MenuItem? {
+        return dynamicMenuItems.first { $0.type == .delete || $0.type == .unshare }
     }
     
     var displayTitle: String {
@@ -165,6 +230,127 @@ class FileMenuViewModel: ObservableObject {
             return "\(selectedItemCount) Items selected"
         } else {
             return fileViewModel.name
+        }
+    }
+    
+    var accessRoleName: String? {
+        guard showArchiveInfo, fileViewModel.sharedByArchive != nil else {
+            return nil
+        }
+        // For file sharing, display curator when backend returns manager
+        let displayRole = fileViewModel.accessRole == .manager ? AccessRole.curator : fileViewModel.accessRole
+        return displayRole.title.uppercased()
+    }
+    
+    // MARK: - Access Role Update
+    func fetchUpdatedAccessRole() {
+        guard showArchiveInfo, fileViewModel.sharedByArchive != nil else {
+            return
+        }
+        
+        let itemInfo = (folderLinkId: fileViewModel.folderLinkId, parentFolderLinkId: fileViewModel.parentFolderLinkId)
+        
+        let endpoint: FilesEndpoint
+        if fileViewModel.type.isFolder {
+            endpoint = FilesEndpoint.getFolder(itemInfo: itemInfo)
+        } else {
+            endpoint = FilesEndpoint.getRecord(itemInfo: itemInfo)
+        }
+        
+        let apiOperation = APIOperation(endpoint)
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case .json(let response, _):
+                    if self.fileViewModel.type.isFolder {
+                        guard let model: APIResults<FolderVO> = JSONHelper.decoding(
+                            from: response,
+                            with: APIResults<FolderVO>.decoder
+                        ),
+                        model.isSuccessful,
+                        let folderData = model.results.first?.data?.first?.folderVO else {
+                            return
+                        }
+                        
+                        var accessRoleString: String?
+                        if let accessVO = folderData.accessVO?.value as? [String: Any],
+                           let role = accessVO["accessRole"] as? String {
+                            accessRoleString = role
+                        } else if let role = folderData.accessRole {
+                            accessRoleString = role
+                        }
+                        
+                        guard let accessRoleString = accessRoleString else {
+                            return
+                        }
+                        
+                        let newAccessRole = AccessRole.roleForValue(accessRoleString)
+                        if self.fileViewModel.accessRole != newAccessRole {
+                            self.fileViewModel.accessRole = newAccessRole
+                            self.updatePermissions(forAccessRole: accessRoleString)
+                            self.regenerateMenuItemsAndAnimateHeight()
+                        }
+                    } else {
+                        guard let model: APIResults<RecordVO> = JSONHelper.decoding(
+                            from: response,
+                            with: APIResults<RecordVO>.decoder
+                        ),
+                        model.isSuccessful,
+                        let recordData = model.results.first?.data?.first?.recordVO else {
+                            return
+                        }
+                        
+                        var accessRoleString: String?
+                        if let accessVO = recordData.accessVO?.value as? [String: Any],
+                           let role = accessVO["accessRole"] as? String {
+                            accessRoleString = role
+                        } else if let role = recordData.accessRole {
+                            accessRoleString = role
+                        }
+                        
+                        guard let accessRoleString = accessRoleString else {
+                            return
+                        }
+                        
+                        let newAccessRole = AccessRole.roleForValue(accessRoleString)
+                        if self.fileViewModel.accessRole != newAccessRole {
+                            self.fileViewModel.accessRole = newAccessRole
+                            self.updatePermissions(forAccessRole: accessRoleString)
+                            self.regenerateMenuItemsAndAnimateHeight()
+                        }
+                    }
+                    
+                case .error:
+                    break
+                    
+                default:
+                    break
+                }
+            }
+        }
+    }
+    
+    private func updatePermissions(forAccessRole accessRoleString: String) {
+        let newPermissions = ArchiveVOData.permissions(forAccessRole: accessRoleString)
+        self.fileViewModel.permissions = newPermissions
+    }
+    
+    private func regenerateMenuItemsAndAnimateHeight() {
+        fileModelUpdateHandler?(fileViewModel)
+        
+        guard let generator = menuItemsGenerator else {
+            return
+        }
+        
+        let newMenuItems = generator(fileViewModel)
+        let newHeight = Self.calculateSheetHeight(for: newMenuItems, showArchiveInfo: showArchiveInfo && fileViewModel.sharedByArchive != nil)
+        
+        withAnimation(.easeInOut(duration: 0.3)) {
+            self.dynamicMenuItems = newMenuItems
+            self.dynamicHeight = newHeight
         }
     }
     
@@ -238,10 +424,18 @@ class FileMenuViewModel: ObservableObject {
         downloadHandler = handler
     }
     
+    func setMenuItemsGenerator(_ generator: @escaping MenuItemsGenerator) {
+        menuItemsGenerator = generator
+    }
+    
+    func setFileModelUpdateHandler(_ handler: @escaping FileModelUpdateHandler) {
+        fileModelUpdateHandler = handler
+    }
+    
     func dismissWithAnimation() {
         withAnimation(.easeIn(duration: 0.25)) {
             isAnimating = false
-            dragOffset = preCalculatedHeight
+            dragOffset = dynamicHeight
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
@@ -268,7 +462,7 @@ class FileMenuViewModel: ObservableObject {
     
     func handleDragEnded(_ value: DragGesture.Value) {
         isDragging = false
-        let threshold = preCalculatedHeight * 0.3
+        let threshold = dynamicHeight * 0.3
         
         if value.translation.height > threshold || value.predictedEndTranslation.height > threshold {
             dismissWithAnimation()
@@ -281,6 +475,16 @@ class FileMenuViewModel: ObservableObject {
     
     // MARK: - Action Handling Logic
     func handleMenuItemTap(_ menuItem: MenuItem) {
+        if menuItem.type == .delete {
+            pendingDeleteAction = menuItem.action
+            showDeleteConfirmation = true
+            return
+        } else if menuItem.type == .unshare {
+            pendingLeaveShareAction = menuItem.action
+            showLeaveShareConfirmation = true
+            return
+        }
+        
         if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
             handleMenuItemAction(menuItem)
         } else if menuItem.type == .editMetadata {
@@ -334,8 +538,8 @@ class FileMenuViewModel: ObservableObject {
             shareWithOtherApps(from: viewController)
         case .shareToPermanent:
             shareWithPermanent(from: viewController)
-        case .getLink:
-            getLink(from: viewController)
+        case .rename:
+            rename(from: viewController)
         default:
             presentNotImplementedAlert(from: viewController)
         }
@@ -391,12 +595,10 @@ class FileMenuViewModel: ObservableObject {
         }
     }
     
-    private func getLink(from viewController: UIViewController) {
-        // Dismiss the menu first, then trigger the special menu item
+    private func rename(from viewController: UIViewController) {
         dismissWithAnimation()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // This triggers the view layer to handle the get link functionality
-            self.specialMenuItemRequested = MenuItem(type: .getLink, action: nil)
+            self.specialMenuItemRequested = MenuItem(type: .rename, action: nil)
         }
     }
     
@@ -518,9 +720,17 @@ class FileMenuViewModel: ObservableObject {
     }
     
     private func presentActivityViewController(from viewController: UIViewController) {
-        let shareText = "File: \(fileViewModel.name)"
+        // Try to get the local file URL if available
+        let activityItems: [Any]
+        if let localURL = getLocalFileURL(), FileManager.default.fileExists(atPath: localURL.path) {
+            activityItems = [localURL]
+        } else {
+            // Fallback to sharing file name as text
+            activityItems = ["File: \(fileViewModel.name)"]
+        }
+        
         let activityViewController = UIActivityViewController(
-            activityItems: [shareText], 
+            activityItems: activityItems, 
             applicationActivities: nil
         )
         
@@ -558,30 +768,34 @@ class FileMenuViewModel: ObservableObject {
     }
     
     private func getLocalFileURL() -> URL? {
-        let uploadFileName = fileViewModel.uploadFileName
-        guard !uploadFileName.isEmpty else {
-            return nil
+        let fileExtension = (fileViewModel.uploadFileName as NSString).pathExtension
+        let fileName = !fileExtension.isEmpty ? "\(fileViewModel.name).\(fileExtension)" : fileViewModel.name
+        
+        if let url = fileHelper.url(forFileNamed: fileName) {
+            return url
         }
         
-        return fileHelper.url(forFileNamed: uploadFileName)
+        if fileExtension.uppercased() == "HEIC" {
+            let convertedFileName = "\(fileViewModel.name).JPG"
+            if let url = fileHelper.url(forFileNamed: convertedFileName) {
+                return url
+            }
+        }
+        
+        return nil
     }
     
     private func presentShareSheet(url: URL, from viewController: UIViewController) {
-        documentInteractionController.dismissMenu(animated: true)
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            presentActivityViewController(from: viewController)
-            return
+        // For iPad support
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = viewController.view
+            popover.sourceRect = CGRect(x: viewController.view.bounds.midX, y: viewController.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
         }
         
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        
-        let presented = documentInteractionController.presentOptionsMenu(from: .zero, in: viewController.view, animated: true)
-        if !presented {
-            presentActivityViewController(from: viewController)
-        }
+        viewController.present(activityViewController, animated: true)
     }
     
     // MARK: - Special Menu Item Handling
@@ -593,6 +807,33 @@ class FileMenuViewModel: ObservableObject {
     
     func clearSpecialMenuItemRequest() {
         specialMenuItemRequested = nil
+    }
+    
+    // MARK: - Confirmation Actions
+    func executeDeleteAction() {
+        dismissWithAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.pendingDeleteAction?()
+            self.pendingDeleteAction = nil
+        }
+    }
+    
+    func executeLeaveShareAction() {
+        dismissWithAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.pendingLeaveShareAction?()
+            self.pendingLeaveShareAction = nil
+        }
+    }
+    
+    func cancelDeleteAction() {
+        showDeleteConfirmation = false
+        pendingDeleteAction = nil
+    }
+    
+    func cancelLeaveShareAction() {
+        showLeaveShareConfirmation = false
+        pendingLeaveShareAction = nil
     }
     
     // MARK: - Menu Item Row Helpers
@@ -607,7 +848,7 @@ class FileMenuViewModel: ObservableObject {
         case .delete:
             return Image(.deleteV1)
         case .unshare:
-            return Image(.saveOrShareV1)
+            return Image(.publishRevokeLink)
         case .rename:
             return Image(.renameV1)
         case .publish:
@@ -616,8 +857,6 @@ class FileMenuViewModel: ObservableObject {
             return Image(.shareAndManageV1)
         case .shareToAnotherApp:
             return Image(.saveOrShareV1)
-        case .getLink:
-            return Image(.sharePublishGetLink)
         case .editMetadata:
             return Image(.fileInfoV1)
         }
@@ -626,7 +865,7 @@ class FileMenuViewModel: ObservableObject {
     func getTitle(for itemType: MenuItem.ItemType) -> String {
         switch itemType {
         case .download:
-            return "Download"
+            return "Save"
         case .copy:
             return "Copy to another folder"
         case .move:
@@ -634,7 +873,7 @@ class FileMenuViewModel: ObservableObject {
         case .delete:
             return "Delete"
         case .unshare:
-            return "Unshare"
+            return "Leave share"
         case .rename:
             return "Rename"
         case .publish:
@@ -643,8 +882,6 @@ class FileMenuViewModel: ObservableObject {
             return "Share and manage access"
         case .shareToAnotherApp:
             return "Save or send a copy"
-        case .getLink:
-            return "Get Link"
         case .editMetadata:
             return "Edit Metadata"
         }

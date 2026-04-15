@@ -360,4 +360,8 @@ extension SearchViewController: FilePreviewNavigationControllerDelegate {
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
         
     }
+    
+    func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
+        // Download not supported in search view
+    }
 }
