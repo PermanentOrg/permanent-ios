@@ -28,11 +28,11 @@ enum APIEnvironment: String, EnvironmentProtocol {
     var baseURL: String {
         switch self {
         case .staging:
-            return "https://staging.permanent.org/api"
+            return "https://app.staging.permanent.org/api"
         case .development:
             return "https://dev.permanent.org/api"
         case .production:
-            return "https://www.permanent.org/api"
+            return "https://app.permanent.org/api"
         }
     }
     
@@ -76,11 +76,11 @@ enum APIEnvironment: String, EnvironmentProtocol {
     var publicURL: String {
         switch self {
         case .staging:
-            return "https://staging.permanent.org/p"
+            return "https://app.staging.permanent.org/p"
         case .development:
             return "https://dev.permanent.org/p"
         case .production:
-            return "https://www.permanent.org/p"
+            return "https://app.permanent.org/p"
         }
     }
     
