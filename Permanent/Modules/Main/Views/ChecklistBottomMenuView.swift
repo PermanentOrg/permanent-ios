@@ -54,11 +54,28 @@ struct ChecklistBottomMenuView: View {
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            Button(action: {
-                                presentationMode.wrappedValue.dismiss()
-                            }) {
-                                Image(.memberchecklistMinus)
-                                    .frame(width: 24, height: 24, alignment: .center)
+                            if #available(iOS 26.0, *) {
+                                Button(action: {
+                                    presentationMode.wrappedValue.dismiss()
+                                }) {
+                                    Image(systemName: "minus")
+                                        .font(.custom("Usual-Regular", size: 24))
+                                        .frame(width: 24, height: 24)
+                                        .contentTransition(.symbolEffect(.replace))
+                                }
+                                .labelStyle(.iconOnly)
+                                .buttonStyle(.glass)
+                                .buttonBorderShape(.circle)
+                                .contentShape(.circle)
+                                .controlSize(.regular)
+                                .padding(.trailing, -12)
+                            } else {
+                                Button(action: {
+                                    presentationMode.wrappedValue.dismiss()
+                                }) {
+                                    Image(.memberchecklistMinus)
+                                        .frame(width: 24, height: 24, alignment: .center)
+                                }
                             }
                         }
                         .padding(24)

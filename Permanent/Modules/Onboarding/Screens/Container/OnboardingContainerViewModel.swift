@@ -98,4 +98,3 @@ class OnboardingContainerViewModel: ObservableObject {
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }
-

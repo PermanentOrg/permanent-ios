@@ -53,7 +53,6 @@ enum ViewControllerId: String {
     case accountInfo
     case accountDelete
     case accountSettings
-    case sharePreview
     case invitations
     case filePreview
     case fileDetailsOnTap
@@ -125,9 +124,6 @@ enum ViewControllerId: String {
             
         case .accountSettings:
             return "AccountSettings"
-            
-        case .sharePreview:
-            return "SharePreview"
             
         case .filePreview:
             return "WebViewer"

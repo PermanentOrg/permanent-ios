@@ -299,7 +299,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     @objc func onFailedUpdateData(_ notification: Notification) {
         if let notifVM = notification.object as? FilePreviewViewModel, notifVM.file == viewModel?.file {
-            view.showNotificationBanner(title: "Failed to save changes".localized(), backgroundColor: .deepRed)
+            view.showNotificationBanner(title: "Failed to save changes".localized(), backgroundColor: .deepRed, textColor: .white)
         }
     }
     

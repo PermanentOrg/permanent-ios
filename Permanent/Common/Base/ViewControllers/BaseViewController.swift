@@ -53,6 +53,14 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+        
+        if #available(iOS 26.0, *) {
+            // On iOS 26, the global UINavigationBar.appearance() proxy may have isTranslucent
+            // reset to true (by CustomNavigationView.onDisappear). Setting it at the instance
+            // level here ensures UIKit screens always render as opaque dark blue, regardless
+            // of the proxy state at the moment of a modal transition.
+            navigationController?.navigationBar.isTranslucent = false
+        }
     }
     
     func closeKeyboard() {
@@ -119,10 +127,20 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         addChild(floatingActionIsland!)
         view.addSubview(floatingActionIsland!.view)
 
+        let bottomAnchor: NSLayoutConstraint
+        if #available(iOS 26, *) {
+            // Anchor above the safe area so the pill clears the home indicator
+            bottomAnchor = floatingActionIsland!.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -6)
+        } else {
+            bottomAnchor = floatingActionIsland!.view.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32)
+        }
         NSLayoutConstraint.activate([
             floatingActionIsland!.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            floatingActionIsland!.view.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32),
-            floatingActionIsland!.view.widthAnchor.constraint(equalToConstant: view.frame.width - 64)
+            bottomAnchor,
+            floatingActionIsland!.view.widthAnchor.constraint(equalToConstant: view.frame.width - 64),
+            // Explicit height so the view has a proper touch target (required on iOS 26 where
+            // toolbar uses centerY rather than top+bottom anchors to define view height)
+            floatingActionIsland!.view.heightAnchor.constraint(equalToConstant: 64),
         ])
 
         floatingActionIsland?.didMove(toParent: self)

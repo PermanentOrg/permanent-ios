@@ -8,6 +8,7 @@ import SwiftUI
 
 struct SettingsScreenView: View {
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: SettingsScreenViewModel
     var settingsRouter: SettingsRouter
     
@@ -17,11 +18,66 @@ struct SettingsScreenView: View {
     }
     
     var dismissAction: ((Bool) -> Void)?
+    @State private var showSignOutConfirmation = false
     
     var body: some View {
+        Group {
+            if #available(iOS 26.0, *) {
+                modernBody
+            } else {
+                legacyBody
+            }
+        }
+    }
+
+    @available(iOS 26.0, *)
+    private var modernBody: some View {
+        NavigationStack {
+            ZStack {
+                backgroundView
+                contentView
+                RevokeBottomAlertView(
+                    isPresented: $showSignOutConfirmation,
+                    title: "Are you sure you want to sign out?",
+                    buttonText: "Sign out",
+                    onRevoke: { viewModel.signOut() }
+                )
+            }
+            .ignoresSafeArea(.all)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(role: .close) {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationCornerRadius(20)
+        .onDisappear(perform: {
+            dismissAction?(false)
+        })
+        .onChange(of: viewModel.loggedOut) { loggedOut in
+            if loggedOut {
+                settingsRouter.navigate(to: .signUp, router: settingsRouter)
+            }
+        }
+        .alert(isPresented: $viewModel.showError) {
+            Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                viewModel.showError = false
+            })
+        }
+    }
+
+    private var legacyBody: some View {
         ZStack {
             backgroundView
             contentView
+            RevokeBottomAlertView(
+                isPresented: $showSignOutConfirmation,
+                title: "Are you sure you want to sign out?",
+                buttonText: "Sign out",
+                onRevoke: { viewModel.signOut() }
+            )
         }
         .ignoresSafeArea(.all)
         .onDisappear(perform: {
@@ -49,8 +105,14 @@ struct SettingsScreenView: View {
             ZStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
                     VStack {
-                        CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount) {
-                            settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
+                        if #available(iOS 26.0, *) {
+                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount, showCloseButton: false) {
+                                settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
+                            }
+                        } else {
+                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount) {
+                                settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
+                            }
                         }
                     }
 
@@ -107,7 +169,7 @@ struct SettingsScreenView: View {
                         Divider()
                             .padding(.horizontal, -40)
                         Button {
-                            viewModel.signOut()
+                            showSignOutConfirmation = true
                         } label: {
                             CustomSimpleListItemView(image: Image(.signOutSettings), titleText: "Sign out", color: .error500)
                         }
@@ -133,3 +195,5 @@ struct SettingsScreenView: View {
         presentationMode.wrappedValue.dismiss()
     }
 }
+
+

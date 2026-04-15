@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Photos.PHAsset
 import CoreImage
 
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
@@ -445,35 +444,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
-        let dispatchGroup = DispatchGroup()
-        var urls: [URL] = []
-        
-        assets.forEach { photo in
-            dispatchGroup.enter()
-            
-            photo.getURL { descriptor in
-                guard let fileDescriptor = descriptor else {
-                    dispatchGroup.leave()
-                    return
-                }
-                
-                do {
-                    let localURL = try FileHelper().copyFile(withURL: fileDescriptor.url, name: fileDescriptor.name)
-                    urls.append(localURL)
-                } catch {
-                    print(error)
-                }
-                
-                dispatchGroup.leave()
-            }
-        }
-        
-        dispatchGroup.notify(queue: .main, execute: {
-            completion(urls)
-        })
-    }
-    
     // this method takes care of multiple upload process
     // sets up a queue and calls uploadFileMeta and uploadFileData
     func uploadFiles(_ files: [FileInfo]) {

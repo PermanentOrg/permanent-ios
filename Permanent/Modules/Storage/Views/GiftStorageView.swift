@@ -17,6 +17,11 @@ struct GiftStorageView: View {
     }
     
     var dismissAction: ((Bool) -> Void)?
+
+    private var scrollTopPadding: CGFloat {
+        if #available(iOS 26.0, *) { return 4 }
+        return -10
+    }
     
     var body: some View {
         ZStack {
@@ -57,9 +62,10 @@ struct GiftStorageView: View {
         }) {
             HStack {
                 Image(.settingsNavigationBarBackIcon)
-                    .foregroundColor(.white)
             }
         }
+        .foregroundColor(.blue900)
+        .tint(.blue900)
     }
     
     var backgroundView: some View {
@@ -89,7 +95,9 @@ struct GiftStorageView: View {
             }
             .padding(32)
             .navigationBarTitle("Gift Storage", displayMode: .inline)
-            .padding(.top, -10)
+            .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .padding(.top, scrollTopPadding)
             .frame(maxHeight: .infinity)
             .onChange(of: isKeyboardPresented) { newValue in
                 if newValue {

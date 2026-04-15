@@ -91,6 +91,8 @@ struct StorageView: View {
             }
         }
         .navigationBarTitle("Storage", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .padding(.top, 10)
     }
     
@@ -103,6 +105,7 @@ struct StorageView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
     }
     
     func dismissView() {

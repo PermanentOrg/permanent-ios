@@ -170,12 +170,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.resetCollectionViewState()
             }
         }
-        
-        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
-            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
-                self?.refreshCollectionView()
-            }
-        }
 
         NotificationCenter.default.addObserver(forName: AppDelegate.navigateToFolderNotifName, object: nil, queue: nil) { [weak self] _ in
             self?.navigationToShareFolderLink()
@@ -210,7 +204,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         navigationItem.backBarButtonItem?.tintColor = .white
 
         if let rightBarItem = navigationItem.rightBarButtonItem, viewModel!.isPickingImage == false {
-            let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonPressed(_:)))
+            var searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(searchButtonPressed(_:)))
+            if #available(iOS 26.0, *) {
+                searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .prominent, target: self, action: #selector(searchButtonPressed(_:)))
+                searchButton.tintColor = .darkBlue
+            }
             navigationItem.rightBarButtonItems = [rightBarItem, searchButton]
         }
         
@@ -309,7 +307,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
         let pasteTitle = action == .copy ? "Paste Here".localized() : "Move Here".localized()
-        let rightItems = [
+        var rightItems: [FloatingActionItem] = [
             FloatingActionImageTextItem(text: pasteTitle, image: UIImage(named: "pasteToolbarIcon")!) { [weak self] _, _ in
                 guard let destination = self?.viewModel?.currentFolder else {
                     self?.showErrorAlert(message: .errorMessage)
@@ -345,17 +343,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.relocate(files: selectedFiles, to: destination)
                 }
             },
-            FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
-                self?.dismissFloatingActionIsland()
-                self?.fabView.isHidden = false
-
-                self?.viewModel?.selectedFiles = []
-                self?.viewModel?.fileAction = .none
-                self?.viewModel?.isSelectingDestination = false
-
-                self?.collectionView?.reloadData()
-            },
         ]
+        // On iOS 26 the toolbar is transparent so items sit flush; add a gap before the X.
+        // Pre-iOS 26 the white pill layout looks correct without an extra gap.
+        if #available(iOS 26, *) {
+            rightItems.append(FloatingActionImageItem(image: UIColor.clear.imageWithColor(width: 0, height: 0), action: nil))
+        }
+        rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
+            self?.dismissFloatingActionIsland()
+            self?.fabView.isHidden = false
+
+            self?.viewModel?.selectedFiles = []
+            self?.viewModel?.fileAction = .none
+            self?.viewModel?.isSelectingDestination = false
+
+            self?.collectionView?.reloadData()
+        })
 
         if viewModel?.fileAction != FileAction.none {
             showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
@@ -550,29 +553,25 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func cancelAllUploadsAction(_ sender: UIButton) {
-        let title = "Cancel all uploads".localized()
-        let description = "Are you sure you want to cancel all uploads?".localized()
-        
-        self.showActionDialog(
-            styled: .simpleWithDescription,
-            withTitle: title,
-            description: description,
-            positiveButtonTitle: .cancelAll,
-            positiveAction: {
-                self.actionDialog?.dismiss()
-                self.viewModel?.cancelUploadsInFolder()
-                
-                if self.viewModel?.refreshUploadQueue() == true {
-                    self.refreshCollectionView()
+        let confirmationView = CancelUploadsConfirmationView(
+            onConfirm: { [weak self] in
+                self?.viewModel?.cancelUploadsInFolder()
+                if self?.viewModel?.refreshUploadQueue() == true {
+                    self?.refreshCollectionView()
                 }
             },
-            cancelButtonTitle: "No".localized(),
-            positiveButtonColor: .brightRed,
-            cancelButtonColor: .primary,
-            overlayView: self.overlayView
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: false)
+            }
         )
+
+        let hosting = UIHostingController(rootView: confirmationView)
+        hosting.modalPresentationStyle = .overFullScreen
+        hosting.view.backgroundColor = .clear
+        // animated: false lets SwiftUI own the full slide-up/down animation
+        present(hosting, animated: false)
     }
-    
+
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
@@ -755,29 +754,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         
         let viewController: UIViewController
-        
-        if Constants.FeatureFlags.useSwiftUISharePreview {
-            // Use new SwiftUI version
-            let hostingController = SharePreviewHostingController(shareToken: token)
-            hostingController.navigateTo = { [weak self] params in
-                self?.navigateToFolder(withParams: params, backNavigation: false)
-            }
-            hostingController.wireCallbacks()
-            viewController = hostingController
-        } else {
-            // Use legacy UIKit version
-            guard let sharePreviewVC = UIViewController.create(
-                withIdentifier: .sharePreview,
-                from: .share
-            ) as? SharePreviewViewController else {
-                return
-            }
-            
-            let viewModel = SharePreviewViewModel()
-            viewModel.urlToken = token
-            sharePreviewVC.viewModel = viewModel
-            viewController = sharePreviewVC
+        let hostingController = SharePreviewHostingController(shareToken: token)
+        hostingController.navigateTo = { [weak self] params in
+            self?.navigateToFolder(withParams: params, backNavigation: false)
         }
+        hostingController.wireCallbacks()
+        viewController = hostingController
         
         if let displayController {
             displayController(viewController)
@@ -1312,27 +1294,16 @@ extension MainViewController: FABViewDelegate {
     
     private func handleUploadAction(action: @escaping () -> Void) {
         if viewModel is PublicFilesViewModel {
-            let title = ""
-            let description = "This is a public folder. Are you sure you want to upload here?".localized()
-            showActionDialog(
-                styled: .simpleWithDescription,
-                withTitle: title,
-                description: description,
-                positiveButtonTitle: "Upload".localized(),
-                positiveAction: { [weak self] in
-                    self?.view.dismissPopup(
-                        self?.actionDialog,
-                        overlayView: self?.overlayView,
-                        completion: { _ in
-                            self?.actionDialog?.removeFromSuperview()
-                            self?.actionDialog = nil
-                            action()
-                        }
-                    )
-                },
-                cancelButtonTitle: "Cancel".localized(),
-                overlayView: overlayView
+            let confirmationView = PublicFolderUploadConfirmationView(
+                onConfirm: action,
+                onDismiss: { [weak self] in
+                    self?.dismiss(animated: false)
+                }
             )
+            let hosting = UIHostingController(rootView: confirmationView)
+            hosting.modalPresentationStyle = .overFullScreen
+            hosting.view.backgroundColor = .clear
+            present(hosting, animated: false)
         } else {
             action()
         }
@@ -1683,39 +1654,39 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openPhotoLibrary() {
-        PHPhotoLibrary.requestAuthorization { (authStatus) in
-            switch authStatus {
-            case .authorized, .limited:
-                DispatchQueue.main.async {
-                    let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
-                    let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
-                    imagePicker.pickerDelegate = self
-                    
-                    self.present(imagePicker, animated: true, completion: nil)
-                }
-                
-            case .denied:
-                let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
-                
-                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
-                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+        var hostingController: UIHostingController<PhotoLibraryPickerView>?
+
+        let pickerView = PhotoLibraryPickerView(
+            onCompletion: { [weak self] selectedFiles in
+                hostingController?.dismiss(animated: true) {
+                    guard let self else {
                         return
                     }
-                    if UIApplication.shared.canOpenURL(settingsUrl) {
-                        UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+
+                    guard let currentFolder = self.viewModel?.currentFolder else {
+                        self.showErrorAlert(message: .cannotUpload)
+                        return
                     }
+
+                    guard selectedFiles.isEmpty == false else {
+                        self.showErrorAlert(message: .cannotUpload)
+                        return
+                    }
+
+                    self.processUpload(toFolder: currentFolder, selectedFiles: selectedFiles)
                 }
-                let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
-                
-                alertController.addAction(cancelAction)
-                alertController.addAction(settingsAction)
-                
-                DispatchQueue.main.async {
-                    self.present(alertController, animated: true, completion: nil)
-                }
-                
-            default: break
+            },
+            onCancel: {
+                hostingController?.dismiss(animated: true)
             }
+        )
+
+        hostingController = UIHostingController(rootView: pickerView)
+        hostingController?.modalPresentationStyle = .overFullScreen
+        hostingController?.view.backgroundColor = .clear
+
+        if let hostingController {
+            present(hostingController, animated: true)
         }
     }
     
@@ -1737,6 +1708,14 @@ extension MainViewController: FABActionSheetDelegate {
         let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
+        upload(files: files)
+        viewModel?.trackEvent(action: RecordEventAction.submit)
+    }
+
+    private func processUpload(toFolder folder: FileModel, selectedFiles: [SelectedUploadFile], loadInMemory: Bool = false) {
+        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
+
+        let files = FileInfo.createFiles(from: selectedFiles, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
         viewModel?.trackEvent(action: RecordEventAction.submit)
     }
@@ -1970,23 +1949,6 @@ extension MainViewController: FilePreviewNavigationControllerDelegate {
     
     func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
         downloadAction(file: file)
-    }
-}
-
-// MARK: - PhotoPickerViewControllerDelegate
-extension MainViewController: PhotoPickerViewControllerDelegate {
-    func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
-        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
-        present(alert, animated: true)
-        viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-            dismiss(animated: true) { [self] in
-                guard let currentFolder = viewModel?.currentFolder else {
-                    return showErrorAlert(message: .cannotUpload)
-                }
-                
-                processUpload(toFolder: currentFolder, forURLS: urls)
-            }
-        })
     }
 }
 

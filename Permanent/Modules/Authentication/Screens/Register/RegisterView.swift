@@ -69,13 +69,30 @@ struct RegisterView: View {
                                     .layoutPriority(1)
                                 Spacer()
                                     .layoutPriority(0.5)
-                                Toggle(isOn: $viewModel.agreeUpdates, label: {
-                                })
-                                .fixedSize()
-                                .scaleEffect(0.8)
-                                .offset(x: 5)
-                                .layoutPriority(1)
-                                .padding(.trailing, 2)
+                                if #available (iOS 26, *) {
+                                    ZStack {
+                                        Color.white
+                                            .frame(width: 48, height: 22)
+                                            .clipShape(.rect(cornerRadius: 12))
+                                            .padding(.leading, 10)
+                                        Toggle(isOn: $viewModel.agreeUpdates, label: {
+                                        })
+                                        .labelsHidden()
+                                        .fixedSize()
+                                        .scaleEffect(0.8)
+                                        .offset(x: 5)
+                                        .layoutPriority(1)
+                                        .padding(4)
+                                    }
+                                } else {
+                                    Toggle(isOn: $viewModel.agreeUpdates, label: {
+                                    })
+                                    .fixedSize()
+                                    .scaleEffect(0.8)
+                                    .offset(x: 5)
+                                    .layoutPriority(1)
+                                    .padding(.trailing, 2)
+                                }
                             }
                             
                             HStack(spacing: 0) {
@@ -92,13 +109,30 @@ struct RegisterView: View {
                                 .layoutPriority(1)
                                 Spacer()
                                     .layoutPriority(0.5)
-                                Toggle(isOn: $viewModel.agreeTermsAndConditions, label: {
-                                })
-                                .fixedSize()
-                                .scaleEffect(0.8)
-                                .offset(x: 5)
-                                .layoutPriority(1)
-                                .padding(.trailing, 2)
+                                if #available(iOS 26, *) {
+                                    ZStack {
+                                        Color.white
+                                            .frame(width: 48, height: 22)
+                                            .clipShape(.rect(cornerRadius: 12))
+                                            .padding(.leading, 10)
+                                        Toggle(isOn: $viewModel.agreeTermsAndConditions, label: {
+                                        })
+                                        .labelsHidden()
+                                        .fixedSize()
+                                        .scaleEffect(0.8)
+                                        .offset(x: 5)
+                                        .layoutPriority(1)
+                                        .padding(4)
+                                    }
+                                } else {
+                                    Toggle(isOn: $viewModel.agreeTermsAndConditions, label: {
+                                    })
+                                    .fixedSize()
+                                    .scaleEffect(0.8)
+                                    .offset(x: 5)
+                                    .layoutPriority(1)
+                                    .padding(.trailing, 2)
+                                }
                             }
                             RoundButtonRightImageView(text: "Sign Up", rightImage: Image(.rightArrowShort), action: {
                                 viewModel.attemptRegister()

@@ -408,7 +408,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                     if status == .success {
                         self?.parent?.view.showNotificationBanner(title: "Successfully updated profile visibility".localized())
                     } else {
-                        self?.parent?.view.showNotificationBanner(title: "Failed to update profile visibility".localized(), backgroundColor: .deepRed)
+                        self?.parent?.view.showNotificationBanner(title: "Failed to update profile visibility".localized(), backgroundColor: .deepRed, textColor: .white)
                     }
                 })
             }

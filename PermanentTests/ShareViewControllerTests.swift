@@ -223,6 +223,7 @@ final class ShareViewControllerTests: XCTestCase {
     
     private func prepareController(_ vc: ShareViewController, with viewModel: ShareLinkViewModel) {
         vc.viewModel = viewModel
+        vc.sharedFile = viewModel.fileViewModel
         vc.filenameLabel = UILabel()
         vc.createLinkButton = RoundedButton(frame: .zero)
         vc.linkOptionsView = LinkOptionsView(frame: .zero)

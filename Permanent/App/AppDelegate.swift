@@ -300,32 +300,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     fileprivate func navigateFromUniversalLink(url: URL) -> Bool {
-        let viewController: UIViewController
-        
-        if Constants.FeatureFlags.useSwiftUISharePreview {
-            // Use new SwiftUI version
-            let hostingController = SharePreviewHostingController(shareToken: url.lastPathComponent)
-            hostingController.navigateTo = { [weak self] params in
-                self?.navigateToFolder(params: params)
-            }
-            hostingController.wireCallbacks()
-            viewController = hostingController
-        } else {
-            // Use legacy UIKit version
-            guard let sharePreviewVC = UIViewController.create(
-                withIdentifier: .sharePreview,
-                from: .share
-            ) as? SharePreviewViewController else { return false }
-            
-            let viewModel = SharePreviewViewModel()
-            viewModel.urlToken = url.lastPathComponent
-            sharePreviewVC.viewModel = viewModel
-            
-            sharePreviewVC.navigateTo = { [weak self] params in
-                self?.navigateToFolder(params: params)
-            }
-            viewController = sharePreviewVC
+        let hostingController = SharePreviewHostingController(shareToken: url.lastPathComponent)
+        hostingController.navigateTo = { [weak self] params in
+            self?.navigateToFolder(params: params)
         }
+        hostingController.wireCallbacks()
+        let viewController: UIViewController = hostingController
         
         // Dismiss any presented SwiftUI views or modal controllers before navigating
         dismissPresentedViewsAndNavigate(to: viewController)
