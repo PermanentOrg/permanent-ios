@@ -29,6 +29,7 @@ struct RecordV2Data: Model {
     let displayTimeInEDTF: String?
     let fileCreatedAt: String?
     let imageRatio: Double?
+    let thumbnail256: String?
     let thumbUrl200: String?
     let thumbUrl500: String?
     let thumbUrl1000: String?
@@ -50,6 +51,16 @@ struct RecordV2Data: Model {
     let archiveArchiveNumber: String?
     let shares: [RecordShareV2]?
     let archive: RecordArchiveV2?
+}
+
+extension RecordV2Data {
+    var resolvedThumbnail256: String? {
+        thumbnail256 ?? thumbnailUrls?.url256
+    }
+
+    var preferredThumbnailURL: String? {
+        resolvedThumbnail256 ?? thumbUrl500 ?? thumbUrl200 ?? thumbUrl1000 ?? thumbUrl2000
+    }
 }
 
 struct LocationV2: Model {
@@ -88,6 +99,7 @@ struct RecordShareV2: Model {
 
 struct RecordShareArchiveV2: Model {
     let archiveId: String?
+    let thumbnail256: String?
     let thumbUrl200: String?
     let thumbUrl500: String?
     let thumbUrl1000: String?
@@ -97,12 +109,23 @@ struct RecordShareArchiveV2: Model {
     
     enum CodingKeys: String, CodingKey {
         case archiveId = "id"  // Map "id" from JSON to archiveId
+        case thumbnail256
         case thumbUrl200
         case thumbUrl500
         case thumbUrl1000
         case thumbUrl2000
         case thumbnailUrls
         case name
+    }
+}
+
+extension RecordShareArchiveV2 {
+    var resolvedThumbnail256: String? {
+        thumbnail256 ?? thumbnailUrls?.url256
+    }
+
+    var preferredThumbnailURL: String? {
+        resolvedThumbnail256 ?? thumbUrl500 ?? thumbUrl200 ?? thumbUrl1000 ?? thumbUrl2000
     }
 }
 

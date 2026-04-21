@@ -310,6 +310,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             type: currentArchive.type,
             thumbStatus: currentArchive.thumbStatus,
             imageRatio: currentArchive.imageRatio,
+            thumbnail256: currentArchive.thumbnail256,
             thumbURL200: currentArchive.thumbURL200,
             thumbURL500: currentArchive.thumbURL500,
             thumbURL1000: currentArchive.thumbURL1000,

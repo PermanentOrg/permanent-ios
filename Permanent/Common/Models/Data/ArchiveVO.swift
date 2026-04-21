@@ -46,6 +46,7 @@ struct ArchiveVOData: Model {
     let type: String?
     let thumbStatus: Status?
     let imageRatio: JSONAny?
+    let thumbnail256: String?
     let thumbURL200: String?
     let thumbURL500: String?
     let thumbURL1000: String?
@@ -64,7 +65,13 @@ struct ArchiveVOData: Model {
         case archiveID = "archiveId"
         case publicDT, archiveNbr
         case archiveVOPublic = "public"
-        case view, viewProperty, vaultKey, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, createdDT, updatedDT
+        case view, viewProperty, vaultKey, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbnail256, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, createdDT, updatedDT
+    }
+}
+
+extension ArchiveVOData {
+    var preferredThumbnailURL: String? {
+        thumbnail256 ?? thumbURL500 ?? thumbURL200 ?? thumbURL1000 ?? thumbURL2000
     }
 }
 
@@ -99,6 +106,7 @@ extension ArchiveVOData {
             type: "archive",
             thumbStatus: .ok,
             imageRatio: nil,
+            thumbnail256: nil,
             thumbURL200: "https://example.com/thumb200.jpg",
             thumbURL500: "https://example.com/thumb500.jpg",
             thumbURL1000: "https://example.com/thumb1000.jpg",

@@ -71,7 +71,7 @@ class OnboardingContainerViewModel: ObservableObject {
                            let status = archive.archiveVO?.status,
                            let archiveID = archive.archiveVO?.archiveID,
                             status == ArchiveVOData.Status.pending || status == ArchiveVOData.Status.ok {
-                            allArchives.append(OnboardingArchive(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID, thumbnailURL: archive.archiveVO?.thumbURL200 ?? "", isThumbnailGenerated: archive.archiveVO?.thumbStatus != .genAvatar ? true : false))
+                            allArchives.append(OnboardingArchive(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID, thumbnailURL: archive.archiveVO?.preferredThumbnailURL ?? "", isThumbnailGenerated: archive.archiveVO?.thumbStatus != .genAvatar ? true : false))
                         }
                     }
                 } else {
@@ -98,4 +98,3 @@ class OnboardingContainerViewModel: ObservableObject {
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }
-

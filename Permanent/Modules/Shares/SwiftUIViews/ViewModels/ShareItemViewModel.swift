@@ -194,7 +194,7 @@ class ShareItemViewModel: ObservableObject {
            let recordThumb = recordV2ThumbnailURL {
             return recordThumb
         }
-        return fileModel.thumbnailURL500
+        return fileModel.preferredThumbnailURL
     }
     
     var isFolder: Bool {
@@ -1120,7 +1120,7 @@ class ShareItemViewModel: ObservableObject {
                         }
                         
                         // Store V2 thumbnail for display
-                        self.recordV2ThumbnailURL = recordData.thumbUrl500 ?? recordData.thumbnailUrls?.url500
+                        self.recordV2ThumbnailURL = recordData.preferredThumbnailURL
                         
                         // Update folderLinkId from V2 response if available
                         if let folderLinkIdString = recordData.folderLinkId,

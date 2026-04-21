@@ -31,6 +31,7 @@ struct FolderVOData: Model {
     let viewProperty, thumbArchiveNbr: String?
     let type, thumbStatus: String?
     let imageRatio: JSONAny?
+    let thumbnail256: String?
     let thumbURL200: String?
     let thumbURL500: String?
     let thumbURL1000: String?
@@ -74,7 +75,7 @@ struct FolderVOData: Model {
         case special, sort
         case locnID = "locnId"
         case timeZoneID = "timeZoneId"
-        case view, viewProperty, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, publicDT
+        case view, viewProperty, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbnail256, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, publicDT
         case parentFolderID = "parentFolderId"
         case folderLinkType = "folder_linkType"
         case folderLinkVOS = "FolderLinkVOs"
@@ -100,5 +101,11 @@ struct FolderVOData: Model {
         case accessVO = "AccessVO"
         case accessVOS = "AccessVOs"
         case archiveArchiveNbr, returnDataSize, posStart, posLimit, searchScore, createdDT, updatedDT
+    }
+}
+
+extension FolderVOData {
+    var preferredThumbnailURL: String? {
+        thumbnail256 ?? thumbURL500 ?? thumbURL200 ?? thumbURL1000 ?? thumbURL2000
     }
 }

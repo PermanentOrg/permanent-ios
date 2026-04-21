@@ -75,7 +75,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         if isViewLoaded {
             activityIndicator.startAnimating()
-            if let url = URL(string: file.thumbnailURL) {
+            if let url = URL(string: file.preferredThumbnailURL) {
                 thumbnailImageView.sd_setImage(with: url)
             }
         }
@@ -83,7 +83,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
             
-            if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
+            if file.type == .image, let url = URL(string: file.preferredThumbnailURL) {
                 loadImage(withURL: url)
             }
             
@@ -98,7 +98,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self?.retryButton.isHidden = false
                 }
             })
-        } else if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
+        } else if file.type == .image, let url = URL(string: file.preferredThumbnailURL) {
             loadImage(withURL: url)
         } else {
             loadRecord()
