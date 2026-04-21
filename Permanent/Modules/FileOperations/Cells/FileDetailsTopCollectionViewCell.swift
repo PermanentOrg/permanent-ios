@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
@@ -24,11 +25,40 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
         activityIndicator.startAnimating()
         
         imageView.image = nil
-        let urlString = viewModel.file.preferredThumbnailURL ?? viewModel.fileThumbnailURL() ?? ""
-        guard let url = URL(string: urlString) else { return }
         
-        imageView.sd_setImage(with: url) { image, error, cacheType, url in
-            self.activityIndicator.stopAnimating()
+        // Stage 1: Load the 256px thumbnail quickly
+        let thumbnailURLString = viewModel.file.preferredThumbnailURL ?? viewModel.fileThumbnailURL() ?? ""
+        guard let thumbnailURL = URL(string: thumbnailURLString) else { return }
+        
+        // Determine the full-res download URL if available
+        let fullResURLString = viewModel.fileVO()?.downloadURL
+        let fullResURL = fullResURLString.flatMap { URL(string: $0) }
+        
+        imageView.sd_setImage(with: thumbnailURL) { [weak self] _, error, _, _ in
+            guard let self = self else { return }
+            
+            if let fullResURL = fullResURL, fullResURL != thumbnailURL {
+                // Stage 2: Upgrade to full-res from download URL
+                self.imageView.sd_setImage(
+                    with: fullResURL,
+                    placeholderImage: self.imageView.image,
+                    options: [.avoidAutoSetImage, .retryFailed],
+                    progress: nil
+                ) { [weak self] image, _, cacheType, _ in
+                    guard let self = self, let image = image else { return }
+                    self.activityIndicator.stopAnimating()
+                    
+                    if cacheType == .memory {
+                        self.imageView.image = image
+                    } else {
+                        UIView.transition(with: self.imageView, duration: 0.3, options: .transitionCrossDissolve) {
+                            self.imageView.image = image
+                        }
+                    }
+                }
+            } else {
+                self.activityIndicator.stopAnimating()
+            }
         }
     }
     

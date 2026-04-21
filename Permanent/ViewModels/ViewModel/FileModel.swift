@@ -305,6 +305,8 @@ struct FileModel: Equatable, Codable {
     }
 
     var preferredThumbnailURL: String? {
-        thumbnailURL256 ?? thumbnailURL500 ?? thumbnailURL ?? thumbnailURL1000 ?? thumbnailURL2000
+        [thumbnailURL256, thumbnailURL500, thumbnailURL, thumbnailURL1000, thumbnailURL2000]
+            .compactMap { $0 }
+            .first { !$0.isEmpty }
     }
 }

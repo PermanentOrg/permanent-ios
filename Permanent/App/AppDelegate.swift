@@ -13,6 +13,7 @@ import GoogleMaps
 import StripeApplePay
 import SwiftUI
 import KeychainSwift
+import SDWebImage
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -29,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         initFirebase()
         initNotifications()
         configureLogging()
+        configureImageCache()
         
         StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
         
@@ -283,6 +285,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #else
              NetworkLogger.enableLogging()
         #endif
+    }
+    
+    fileprivate func configureImageCache() {
+        let cache = SDImageCache.shared
+        cache.config.maxDiskSize = 300 * 1024 * 1024 // 300 MB disk cap
+        cache.config.maxMemoryCost = 50 * 1024 * 1024 // 50 MB memory cap
     }
     
     fileprivate func initNotifications() {

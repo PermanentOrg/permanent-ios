@@ -54,12 +54,17 @@ struct RecordV2Data: Model {
 }
 
 extension RecordV2Data {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
     var resolvedThumbnail256: String? {
-        thumbnail256 ?? thumbnailUrls?.url256
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbnailUrls?.url256)
     }
 
     var preferredThumbnailURL: String? {
-        resolvedThumbnail256 ?? thumbUrl500 ?? thumbUrl200 ?? thumbUrl1000 ?? thumbUrl2000
+        resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000)
     }
 }
 
@@ -120,12 +125,17 @@ struct RecordShareArchiveV2: Model {
 }
 
 extension RecordShareArchiveV2 {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
     var resolvedThumbnail256: String? {
-        thumbnail256 ?? thumbnailUrls?.url256
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbnailUrls?.url256)
     }
 
     var preferredThumbnailURL: String? {
-        resolvedThumbnail256 ?? thumbUrl500 ?? thumbUrl200 ?? thumbUrl1000 ?? thumbUrl2000
+        resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000)
     }
 }
 

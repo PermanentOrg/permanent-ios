@@ -10,6 +10,7 @@ import WebKit
 import AVKit
 import PDFKit
 import SwiftUI
+import SDWebImage
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -70,6 +71,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         styleNavBar()
     }
     
+    var imagePreviewVC: ImagePreviewViewController?
+    
     func loadVM() {
         guard recordLoaded == false else { return }
         
@@ -83,8 +86,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
             
-            if file.type == .image, let url = URL(string: file.preferredThumbnailURL) {
-                loadImage(withURL: url)
+            if file.type == .image, let thumbnailURLString = file.preferredThumbnailURL {
+                loadThumbnailPreview(urlString: thumbnailURLString)
             }
             
             viewModel?.getRecord(file: file, then: { [weak self] record in
@@ -98,8 +101,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self?.retryButton.isHidden = false
                 }
             })
-        } else if file.type == .image, let url = URL(string: file.preferredThumbnailURL) {
-            loadImage(withURL: url)
+        } else if file.type == .image, let thumbnailURLString = file.preferredThumbnailURL {
+            loadThumbnailPreview(urlString: thumbnailURLString)
         } else {
             loadRecord()
         }
@@ -168,7 +171,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
-                if let url = URL(string: self.viewModel?.fileThumbnailURL()) {
+                // Use download URL for full-res; fall back to thumbnail URL
+                let fullResURL = fileVO.downloadURL ?? self.viewModel?.fileThumbnailURL()
+                if let urlString = fullResURL, let url = URL(string: urlString) {
                     self.loadImage(withURL: url)
                 }
         
@@ -189,9 +194,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
-                if let url = URL(string: self.viewModel?.fileThumbnailURL()) {
-                    self.loadImage(withURL: url)
-                }
+                // Use download URL for full-resolution image
+                self.loadImage(withURL: downloadURL)
                 
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
@@ -215,28 +219,102 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    func loadImage(withURL url: URL) {
-        let imagePreviewVC = ImagePreviewViewController()
-        imagePreviewVC.delegate = self
-        addChild(imagePreviewVC)
-        imagePreviewVC.view.frame = view.bounds
-        imagePreviewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        // Insert view under the spinner
-        view.insertSubview(imagePreviewVC.view, at: 0)
-        imagePreviewVC.didMove(toParent: self)
-        imagePreviewVC.imageView.sd_setImage(with: url) { _, error, _, _ in
+    /// Loads the 256px thumbnail into the zoomable image preview as a quick placeholder.
+    private func loadThumbnailPreview(urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        
+        let previewVC = ImagePreviewViewController()
+        previewVC.delegate = self
+        self.imagePreviewVC = previewVC
+        
+        addChild(previewVC)
+        previewVC.view.frame = view.bounds
+        previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(previewVC.view, at: 0)
+        previewVC.didMove(toParent: self)
+        
+        previewVC.imageView.sd_setImage(with: url) { [weak self] _, error, _, _ in
+            guard let self = self else { return }
             self.activityIndicator.stopAnimating()
             self.thumbnailImageView.isHidden = true
             
             if error != nil {
                 self.errorLabel.isHidden = false
                 self.retryButton.isHidden = false
-
-                imagePreviewVC.view.removeFromSuperview()
-                imagePreviewVC.removeFromParent()
-                imagePreviewVC.didMove(toParent: nil)
+                self.removeImagePreviewVC()
             } else {
-                imagePreviewVC.newImageLoaded()
+                previewVC.newImageLoaded()
+            }
+        }
+    }
+    
+    /// Upgrades the existing image preview from thumbnail to full-resolution using the download URL.
+    /// SDWebImage caches the full-res image, so subsequent opens load instantly from disk.
+    private func upgradeToFullResolution(urlString: String) {
+        guard let url = URL(string: urlString),
+              let previewVC = self.imagePreviewVC else { return }
+        
+        // Check if SDWebImage already has this URL cached (from a previous open)
+        let cachedFromMemory = SDImageCache.shared.imageFromMemoryCache(forKey: urlString) != nil
+        
+        previewVC.imageView.sd_setImage(
+            with: url,
+            placeholderImage: previewVC.imageView.image,
+            options: [.avoidAutoSetImage, .retryFailed],
+            progress: nil
+        ) { [weak previewVC] image, _, cacheType, _ in
+            guard let previewVC = previewVC, let image = image else { return }
+            
+            if cachedFromMemory || cacheType == .memory {
+                // Cached in memory — swap immediately, no animation needed
+                previewVC.imageView.image = image
+                previewVC.newImageLoaded()
+            } else {
+                // Downloaded or loaded from disk — crossfade for smooth transition
+                UIView.transition(with: previewVC.imageView, duration: 0.3, options: .transitionCrossDissolve) {
+                    previewVC.imageView.image = image
+                } completion: { _ in
+                    previewVC.newImageLoaded()
+                }
+            }
+        }
+    }
+    
+    private func removeImagePreviewVC() {
+        imagePreviewVC?.view.removeFromSuperview()
+        imagePreviewVC?.removeFromParent()
+        imagePreviewVC?.didMove(toParent: nil)
+        imagePreviewVC = nil
+    }
+    
+    func loadImage(withURL url: URL) {
+        if imagePreviewVC != nil {
+            // Image preview already showing thumbnail — upgrade to full-res
+            upgradeToFullResolution(urlString: url.absoluteString)
+        } else {
+            // No preview yet (e.g. record already loaded) — load directly
+            let previewVC = ImagePreviewViewController()
+            previewVC.delegate = self
+            self.imagePreviewVC = previewVC
+            
+            addChild(previewVC)
+            previewVC.view.frame = view.bounds
+            previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            view.insertSubview(previewVC.view, at: 0)
+            previewVC.didMove(toParent: self)
+            
+            previewVC.imageView.sd_setImage(with: url) { [weak self] _, error, _, _ in
+                guard let self = self else { return }
+                self.activityIndicator.stopAnimating()
+                self.thumbnailImageView.isHidden = true
+                
+                if error != nil {
+                    self.errorLabel.isHidden = false
+                    self.retryButton.isHidden = false
+                    self.removeImagePreviewVC()
+                } else {
+                    previewVC.newImageLoaded()
+                }
             }
         }
     }

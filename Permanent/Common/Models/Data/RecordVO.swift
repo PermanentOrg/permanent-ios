@@ -102,7 +102,12 @@ struct RecordVOData: Model {
 }
 
 extension RecordVOData {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
     var preferredThumbnailURL: String? {
-        thumbnail256 ?? thumbURL500 ?? thumbURL200 ?? thumbURL1000 ?? thumbURL2000
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
     }
 }
