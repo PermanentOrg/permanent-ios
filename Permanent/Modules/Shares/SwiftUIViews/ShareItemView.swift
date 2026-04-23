@@ -351,13 +351,25 @@ struct ShareItemView: View {
                 }
                 .overlay(alignment: .bottom) {
                     if viewModel.pendingShares.count >= 2 && !viewModel.isApprovingAll {
-                        approveAllButton
-                            .padding(.horizontal, 24)
-                            .padding(.bottom, 8)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                        VStack(spacing: 0) {
+                            Spacer()
+                            LinearGradient(
+                                colors: [Color.white.opacity(0), Color.white],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 32)
+                            
+                            approveAllButton
+                                .padding(.horizontal, 24)
+                                .padding(.bottom, 8)
+                                .background(Color.white)
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: viewModel.isApprovingAll)
+                .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.pendingShares.count >= 2)
             } else {
                 Spacer(minLength: 0)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
