@@ -21,12 +21,20 @@ struct PhotoLibraryPickerView: View {
     var body: some View {
         ZStack {
             if isImporting {
-                ProgressView("Preparing Files...")
-                    .progressViewStyle(.circular)
+                Color(red: 0.5, green: 0.5, blue: 0.5).opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.darkBlue)
+                        .scaleEffect(1.5)
+                    Text("Preparing Files...")
+                        .font(.subheadline)
+                        .foregroundColor(.darkBlue)
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.clear)
         .task {
             guard hasPresentedPicker == false else {
                 return

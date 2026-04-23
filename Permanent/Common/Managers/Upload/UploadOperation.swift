@@ -6,7 +6,17 @@
 //
 
 import Foundation
+import UIKit
 import os.log
+
+// Extension-safe wrapper for UIApplication.shared access.
+// UIApplication.shared is unavailable in app extensions, so we access it
+// indirectly to avoid compile-time errors when this file is compiled for extensions.
+private func extensionSafeApplication() -> UIApplication? {
+    let selector = NSSelectorFromString("sharedApplication")
+    guard UIApplication.responds(to: selector) else { return nil }
+    return UIApplication.perform(selector)?.takeUnretainedValue() as? UIApplication
+}
 
 enum UploadError: Error {
     case presignedURL
@@ -33,9 +43,9 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     var progress: Double = 0
     var error: UploadError?
     
-    var urlSession: URLSession!
-    
     var uploadTask: URLSessionUploadTask?
+    
+    var urlSession: URLSession!
     
     var didSentFinishNotification: Bool = false
     
@@ -61,6 +71,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     var getPresignedURLOperation: APIOperation?
     var registerRecordOperation: APIOperation?
     
+    var backgroundTaskId: UIBackgroundTaskIdentifier = .invalid
+    
     init(file:FileInfo, handler: @escaping ((Error?) -> Void)) {
         self.file = file
         self.handler = handler
@@ -72,7 +84,20 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
             return
         }
         
-        urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        // Request background execution time so uploads can continue briefly when app is backgrounded
+        if let app = extensionSafeApplication() {
+            backgroundTaskId = app.beginBackgroundTask(withName: "UploadFile-\(file.id)") { [weak self] in
+                guard let self = self else { return }
+                self.logger.warning("Background task expired for file: \(self.file.name, privacy: .public)")
+                // Cancel the in-flight upload since we're about to lose execution time
+                self.uploadTask?.cancel()
+                self.error = UploadError.s3
+                extensionSafeApplication()?.endBackgroundTask(self.backgroundTaskId)
+                self.backgroundTaskId = .invalid
+            }
+        }
+        
+        urlSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
         
         getPresignedUrl { [self] in
             uploadFileDataToS3 { [self] in
@@ -98,6 +123,12 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                 
                 NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
             }
+        }
+        
+        // End the background task when the upload finishes
+        if backgroundTaskId != .invalid {
+            extensionSafeApplication()?.endBackgroundTask(backgroundTaskId)
+            backgroundTaskId = .invalid
         }
     }
     
@@ -208,13 +239,12 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         let fileStream = InputStream(url: file.url)!
         let postfixStream = InputStream(data: "\r\n--\(boundary)--".data(using: .utf8)!)
         
-        // Create a temporary file to hold the complete request body
         let tempFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let outputStream = OutputStream(url: tempFileURL, append: false)!
         outputStream.open()
         
-        // Write prefix data
-        var buffer = [UInt8](repeating: 0, count: 1024)
+        // Write prefix data (multipart form fields + file header)
+        var buffer = [UInt8](repeating: 0, count: 1024 * 64) // 64KB buffer for faster writes
         prefixStream.open()
         while prefixStream.hasBytesAvailable {
             let bytesRead = prefixStream.read(&buffer, maxLength: buffer.count)
@@ -238,7 +268,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         }
         fileStream.close()
         
-        // Write postfix data
+        // Write postfix data (closing boundary)
         postfixStream.open()
         while postfixStream.hasBytesAvailable {
             let bytesRead = postfixStream.read(&buffer, maxLength: buffer.count)
@@ -251,34 +281,30 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         postfixStream.close()
         
         outputStream.close()
-        
-        // Now use the correct upload method with the temporary file
-        uploadTask = urlSession.uploadTask(with: uploadRequest, fromFile: tempFileURL) { [self] data, response, error in
-            // Clean up the temporary file
-            try? FileManager.default.removeItem(at: tempFileURL)
-            
+
+        uploadTask = urlSession.uploadTask(with: uploadRequest, fromFile: tempFileURL, completionHandler: { [self] data, response, error in
             guard isCancelled == false else { return }
+            
+            // Clean up temp file
+            try? FileManager.default.removeItem(at: tempFileURL)
             
             if let error = error {
                 logger.error("S3 upload error: \(error.localizedDescription, privacy: .public) for file: \(self.file.name, privacy: .public)")
                 self.error = UploadError.s3
                 handler(UploadError.s3)
                 finish()
-                return
-            }
-            
-            if let response = response as? HTTPURLResponse, response.statusCode >= 200 && response.statusCode < 300 {
-                logger.info("Successfully uploaded file to S3: \(self.file.name, privacy: .public), status: \(response.statusCode, privacy: .public)")
+            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode >= 200, httpResponse.statusCode < 300 {
+                logger.info("Successfully uploaded file to S3: \(self.file.name, privacy: .public)")
                 success()
             } else {
-                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-                logger.error("S3 upload failed with status code: \(statusCode, privacy: .public) for file: \(self.file.name, privacy: .public)")
+                logger.error("S3 upload returned unexpected status for file: \(self.file.name, privacy: .public)")
                 self.error = UploadError.s3
                 handler(UploadError.s3)
                 finish()
             }
-        }
+        })
         uploadTask?.resume()
+
         logger.debug("Started S3 upload task for file: \(self.file.name, privacy: .public)")
     }
     
@@ -365,17 +391,26 @@ extension UploadOperation {
     }
 }
 
+// MARK: - URLSessionTaskDelegate
 extension UploadOperation: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
         
-        DispatchQueue.main.async { [self] in
-            let userInfo: [String : Any] = ["fileInfoId": file.id, "progress": progress]
+        DispatchQueue.main.async {
+            let userInfo: [String: Any] = ["fileInfoId": self.file.id, "progress": self.progress]
             NotificationCenter.default.post(name: Self.uploadProgressNotification, object: self, userInfo: userInfo)
-        }
-        
-        if isCancelled {
-            urlSession.invalidateAndCancel()
+            
+            let queueIndex = UploadManager.shared.uploadQueue.operations
+                .compactMap { $0 as? UploadOperation }
+                .firstIndex(where: { $0.file.id == self.file.id })
+            let fileIndex = (queueIndex ?? 0) + 1
+            
+            UploadLiveActivityManager.shared.updateProgress(
+                fileInfoId: self.file.id,
+                fileName: self.file.name,
+                fileIndex: fileIndex,
+                fileProgress: self.progress
+            )
         }
     }
 }

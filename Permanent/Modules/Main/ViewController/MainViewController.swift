@@ -179,6 +179,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.didTapChecklist()
         }
         
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
+            // Skip refresh while uploads are in progress to avoid resetting upload progress UI
+            guard UploadManager.shared.uploadQueue.operationCount == 0 else { return }
+            self?.refreshCurrentFolder(shouldDisplaySpinner: false)
+        }
+        
         showBanner()
     }
 
@@ -522,7 +528,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         )
         
         // Back navigation set to `true` so it's not considered a in-depth navigation.
-        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
+        // resetScroll false to preserve scroll position when refreshing the same folder.
+        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, resetScroll: false, then: handler)
     }
     
     @objc
@@ -709,7 +716,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
     }
     
-    func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, resetScroll: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
 
         let runRequest: (NavigateMinParams, Bool, @escaping ServerResponse) -> Void = navigateMinRequest ?? { [weak self] requestParams, requestBackNavigation, completion in
@@ -717,13 +724,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         runRequest(params, backNavigation, { status in
-            self.onFilesFetchCompletion(status)
+            self.onFilesFetchCompletion(status, resetScroll: resetScroll)
             handler?()
         })
         viewModel?.timer?.invalidate()
     }
     
-    private func onFilesFetchCompletion(_ status: RequestStatus) {
+    private func onFilesFetchCompletion(_ status: RequestStatus, resetScroll: Bool = false) {
         DispatchQueue.main.async {
             self.hideSpinner()
             
@@ -738,6 +745,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         switch status {
         case .success:
             refreshCollectionView()
+            if resetScroll {
+                let inset = collectionView.adjustedContentInset
+                collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
+            }
             toggleFileAction(viewModel?.fileAction)
             navigationToShareFolderLink()
             

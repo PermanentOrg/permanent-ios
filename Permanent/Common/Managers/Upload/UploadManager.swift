@@ -144,6 +144,15 @@ class UploadManager {
 
                 if model.results[0].data?[0].accountVO?.spaceLeft ?? 0 > filesSize {
                     DispatchQueue.main.async {
+                        let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+                        let folderLinkId = files.first?.folder.folderLinkId ?? 0
+                        UploadLiveActivityManager.shared.startActivity(
+                            totalFiles: files.count,
+                            firstFileName: files.first?.name ?? "",
+                            archiveNo: archiveNo,
+                            folderLinkId: folderLinkId
+                        )
+                        
                         for file in files {
                             self.upload(file: file)
                         }
@@ -235,6 +244,7 @@ class UploadManager {
                             FileHelper().deleteFile(at: file.url)
                             
                             try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                            UploadLiveActivityManager.shared.fileCompleted(success: true)
                         } else {
                             self.logger.error("Failed to upload file: \(file.name, privacy: .public), error: \(error?.localizedDescription ?? "unknown", privacy: .public)")
                             file.didFailUpload = true
@@ -245,6 +255,7 @@ class UploadManager {
                             } else {
                                 try? PreferencesManager.shared.setCustomObject([file], forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                             }
+                            UploadLiveActivityManager.shared.fileCompleted(success: false)
                         }
                         
                         NotificationCenter.default.post(name: Self.didUploadFileNotification, object: nil, userInfo: ["file": file])
@@ -260,6 +271,26 @@ class UploadManager {
             
             if didRefresh {
                 logger.info("Refreshed upload queue with new files")
+                
+                // Start a new Live Activity only when re-queuing after app relaunch
+                // (i.e. no activity exists yet). If one already exists (from upload(files:)),
+                // don't double-count by calling startActivity again.
+                if !UploadLiveActivityManager.shared.isActive {
+                    let reQueuedOps = uploadQueue.operations
+                        .compactMap { $0 as? UploadOperation }
+                        .filter { !$0.isFinished && !$0.isCancelled }
+                    if !reQueuedOps.isEmpty {
+                        let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+                        let folderLinkId = reQueuedOps.first?.file.folder.folderLinkId ?? 0
+                        UploadLiveActivityManager.shared.startActivity(
+                            totalFiles: reQueuedOps.count,
+                            firstFileName: reQueuedOps.first?.file.name ?? "",
+                            archiveNo: archiveNo,
+                            folderLinkId: folderLinkId
+                        )
+                    }
+                }
+                
                 NotificationCenter.default.post(name: Self.didRefreshQueueNotification, object: nil, userInfo: nil)
             }
         }
@@ -280,6 +311,8 @@ class UploadManager {
         if let fileURL = fileURL {
             FileHelper().deleteFile(at: fileURL)
         }
+        
+        UploadLiveActivityManager.shared.fileCancelled()
     }
     
     func cancelAll() {
@@ -293,6 +326,8 @@ class UploadManager {
         files.forEach { file in
             FileHelper().deleteFile(at: file.url)
         }
+        
+        UploadLiveActivityManager.shared.cancelActivity()
     }
     
     func inProgressUpload() -> FileInfo? {
