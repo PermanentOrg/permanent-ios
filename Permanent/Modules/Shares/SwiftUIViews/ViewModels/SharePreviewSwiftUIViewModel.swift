@@ -361,7 +361,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
            let archiveNbr = self.currentArchive?.archiveNbr {
             let fileType = recordData.type ?? FileType.miscellaneous.rawValue
             let fileName = recordData.displayName ?? "File"
-            let thumbnailURL = recordData.thumbURL2000 ?? recordData.thumbURL500 ?? ""
+            let thumbnailURL = recordData.preferredThumbnailURL ?? ""
             let params = FilePreviewParams(
                 name: fileName,
                 recordId: recordId,
@@ -682,7 +682,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             let item = SharePreviewItem(
                 id: "\(recordData.recordID ?? 0)",
                 name: recordData.displayName ?? "",
-                thumbnailURL: recordData.thumbURL2000,
+                thumbnailURL: recordData.preferredThumbnailURL,
                 isFolder: false,
                 type: .image
             )
@@ -855,7 +855,7 @@ struct SharePreviewMockRepository: SharePreviewRepositoryProtocol {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 1850,
             publicDT: nil, archiveNbr: "0001-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: .ok
         )
@@ -888,4 +888,3 @@ struct SharePreviewMockRepository: SharePreviewRepositoryProtocol {
         )
     }
 }
-

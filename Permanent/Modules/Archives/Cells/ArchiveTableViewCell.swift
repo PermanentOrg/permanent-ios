@@ -44,7 +44,7 @@ class ArchiveTableViewCell: UITableViewCell {
     }
     
     func updateCell(model: ShareVOData) {
-        archiveImageView.load(urlString: model.archiveVO?.thumbURL200 ?? "")
+        archiveImageView.load(urlString: model.archiveVO?.preferredThumbnailURL ?? "")
         archiveNameLabel.text = .init(format: .archiveName, model.archiveVO?.fullName ?? "")
         
         if ShareStatus.status(forValue: model.status ?? "") != .pending {

@@ -29,6 +29,7 @@ struct RecordVOData: Model {
     let encryption, metaToken: String?
     let refArchiveNbr: JSONAny?
     let type, thumbStatus: String?
+    let thumbnail256: String?
     let thumbURL200, thumbURL500, thumbURL1000, thumbURL2000: String?
     let thumbDT, fileStatus: String?
     let status: String?
@@ -69,7 +70,7 @@ struct RecordVOData: Model {
         case displayDT, displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT
         case locnID = "locnId"
         case timeZoneID = "timeZoneId"
-        case view, viewProperty, imageRatio, encryption, metaToken, refArchiveNbr, type, thumbStatus, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, fileStatus, status, processedDT
+        case view, viewProperty, imageRatio, encryption, metaToken, refArchiveNbr, type, thumbStatus, thumbnail256, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, fileStatus, status, processedDT
         case folderLinkVOS = "FolderLinkVOs"
         case folderLinkID = "folder_linkId"
         case parentFolderID = "parentFolderId"
@@ -97,5 +98,16 @@ struct RecordVOData: Model {
         case shareVOS = "ShareVOs"
         case accessVO = "AccessVO"
         case searchScore, archiveArchiveNbr, createdDT, updatedDT
+    }
+}
+
+extension RecordVOData {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
+    var preferredThumbnailURL: String? {
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
     }
 }

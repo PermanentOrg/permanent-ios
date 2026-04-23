@@ -376,7 +376,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
 
-                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "", archive: archiveVO)
+                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.preferredThumbnailURL ?? "", archive: archiveVO)
                 
                 cell = tableViewCell
             }

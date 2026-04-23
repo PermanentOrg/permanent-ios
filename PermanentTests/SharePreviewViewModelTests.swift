@@ -290,6 +290,7 @@ final class SharePreviewViewModelTests: XCTestCase {
             archiveID: 123, publicDT: nil, archiveNbr: "00te-0000",
             view: nil, viewProperty: nil, archiveVOPublic: nil, vaultKey: nil,
             thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil,
+            thumbnail256: nil,
             thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil,
             thumbDT: nil, createdDT: nil, updatedDT: nil, status: nil
         )
@@ -344,6 +345,7 @@ final class SharePreviewViewModelTests: XCTestCase {
             archiveID: id, publicDT: nil, archiveNbr: "0001-0000",
             view: nil, viewProperty: nil, archiveVOPublic: nil, vaultKey: nil,
             thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil,
+            thumbnail256: nil,
             thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil,
             thumbDT: nil, createdDT: nil, updatedDT: nil, status: .ok
         )

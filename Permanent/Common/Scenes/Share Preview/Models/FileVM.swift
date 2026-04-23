@@ -21,7 +21,7 @@ struct FileVM: File {
     init(record: RecordVOData) {
         name = record.displayName ?? ""
         date = record.displayDT ?? ""
-        thumbStringURL = record.thumbURL500 ?? ""
+        thumbStringURL = record.preferredThumbnailURL ?? ""
     }
     
 }

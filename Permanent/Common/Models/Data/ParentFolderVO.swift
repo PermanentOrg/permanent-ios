@@ -23,6 +23,7 @@ struct ParentFolderVO: Model {
     let viewProperty, thumbArchiveNbr: JSONAny?
     let type, thumbStatus: String?
     let imageRatio: JSONAny?
+    let thumbnail256: String?
     let thumbURL200: String?
     let thumbURL500: String?
     let thumbURL1000: String?
@@ -63,7 +64,7 @@ struct ParentFolderVO: Model {
         case special, sort
         case locnID = "locnId"
         case timeZoneID = "timeZoneId"
-        case view, viewProperty, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, publicDT
+        case view, viewProperty, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbnail256, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, publicDT
         case parentFolderID = "parentFolderId"
         case folderLinkType = "folder_linkType"
         case folderLinkVOS = "FolderLinkVOs"
@@ -89,5 +90,16 @@ struct ParentFolderVO: Model {
         case accessVO = "AccessVO"
         case accessVOS = "AccessVOs"
         case archiveArchiveNbr, returnDataSize, posStart, posLimit, searchScore, createdDT, updatedDT
+    }
+}
+
+extension ParentFolderVO {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
+    var preferredThumbnailURL: String? {
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
     }
 }

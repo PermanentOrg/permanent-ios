@@ -21,6 +21,7 @@ struct ItemVO: Model {
     let view: String?
     let viewProperty, thumbArchiveNbr: JSONAny?
     let imageRatio, type, thumbStatus: String?
+    let thumbnail256: String?
     let thumbURL200: String?
     let thumbURL500: String?
     let thumbURL1000: String?
@@ -70,7 +71,7 @@ struct ItemVO: Model {
         case special, sort
         case locnID = "locnId"
         case timeZoneID = "timeZoneId"
-        case view, viewProperty, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, publicDT
+        case view, viewProperty, thumbArchiveNbr, imageRatio, type, thumbStatus, thumbnail256, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, status, publicDT
         case parentFolderID = "parentFolderId"
         case folderLinkType = "folder_linkType"
         case folderLinkVOS = "FolderLinkVOs"
@@ -108,5 +109,16 @@ struct ItemVO: Model {
         case fileDurationInSecs, batchNbr
         case recordExifVO = "RecordExifVO"
         case createdDT, updatedDT
+    }
+}
+
+extension ItemVO {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
+    var preferredThumbnailURL: String? {
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
     }
 }

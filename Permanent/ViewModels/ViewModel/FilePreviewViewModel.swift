@@ -90,7 +90,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func fileThumbnailURL() -> String? {
-        let stringURL: String? = recordVO?.recordVO?.thumbURL2000
+        let stringURL: String? = recordVO?.recordVO?.preferredThumbnailURL
         return stringURL
     }
     

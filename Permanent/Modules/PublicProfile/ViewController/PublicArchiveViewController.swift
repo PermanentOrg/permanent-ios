@@ -421,7 +421,7 @@ extension PublicArchiveViewController: MyFilesViewModelPickerDelegate {
                 if self.isPickingProfilePicture {
                     self.viewModel?.updateProfilePicture(file: file, then: { status in
                         self.dismiss(animated: true, completion: {
-                            if status == .success, let thumbURL = URL(string: file.thumbnailURL2000) {
+                            if status == .success, let thumbURL = URL(string: file.preferredThumbnailURL) {
                                 self.profilePhotoImageView.sd_setImage(with: thumbURL)
                                 AuthenticationManager.shared.syncSession { [weak self] status in
                                     switch status {
@@ -439,7 +439,7 @@ extension PublicArchiveViewController: MyFilesViewModelPickerDelegate {
                 } else {
                     self.viewModel?.updateBanner(thumbArchiveNbr: file.archiveNo, then: { status in
                         self.dismiss(animated: true, completion: {
-                            if status == .success, let thumbURL = URL(string: file.thumbnailURL2000) {
+                            if status == .success, let thumbURL = URL(string: file.preferredThumbnailURL) {
                                 self.profileBannerImageView.sd_setImage(with: thumbURL)
                             } else {
                                 self.showErrorAlert(message: .errorMessage)

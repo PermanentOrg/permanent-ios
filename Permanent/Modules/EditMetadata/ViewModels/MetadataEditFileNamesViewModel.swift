@@ -33,7 +33,7 @@ class MetadataEditFileNamesViewModel: ObservableObject {
         self.selectedFiles = selectedFiles
         self.hasUpdates = hasUpdates
         
-        imagePreviewURL = selectedFiles.first?.thumbnailURL500
+        imagePreviewURL = selectedFiles.first?.preferredThumbnailURL
         fileNamePreview = selectedFiles.first?.name
         if let size = selectedFiles.first?.size {
             fileSizePreview = size.bytesToReadableForm(useDecimal: true)

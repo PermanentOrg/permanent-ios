@@ -14,7 +14,7 @@ struct SectionHeaderView: View {
         VStack {
             HStack {
                 let files = selectedFiles
-                    if !files.isEmpty, let url = URL(string: files.first?.thumbnailURL500) {
+                    if !files.isEmpty, let url = URL(string: files.first?.preferredThumbnailURL) {
                         WebImage(url: url)
                             .resizable()
                             .placeholder(content: {
