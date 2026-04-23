@@ -133,6 +133,7 @@ class ShareItemViewModel: ObservableObject {
     @Published var shouldShowArchivesSection = false
     @Published var approvingShareIDs: Set<Int> = []
     @Published var denyingShareIDs: Set<Int> = []
+    @Published var isApprovingAll = false
     @Published var showArchiveAccessManagement = false
     @Published var selectedArchiveForEdit: ShareVOData?
     @Published var selectedRoleForArchive: AccessRole?
@@ -162,6 +163,9 @@ class ShareItemViewModel: ObservableObject {
     @Published var archiveAccessNotificationMessage = "Archive access has been updated."
     @Published var showLinkSettingsNotification = false
     @Published var showRevokeLinkNotification = false
+    @Published var showApproveAllNotification = false
+    @Published var approveAllNotificationMessage = ""
+    @Published var approveAllNotificationIsError = false
 
     // MARK: - Navigation
 

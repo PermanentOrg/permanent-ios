@@ -46,13 +46,21 @@ struct SharePreviewView: View {
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        handleBackAction()
-                    }) {
-                        Image("shareLinkBackArrow")
-                            .resizable()
-                            .frame(width: 48, height: 48)
-                            .padding(.leading, -10)
+                    if #available(iOS 26.0, *) {
+                        Button(action: {
+                            handleBackAction()
+                        }) {
+                            Image(systemName: "chevron.left")
+                        }
+                    } else {
+                        Button(action: {
+                            handleBackAction()
+                        }) {
+                            Image("shareLinkBackArrow")
+                                .resizable()
+                                .frame(width: 48, height: 48)
+                                .padding(.leading, -10)
+                        }
                     }
                 }
             }

@@ -81,7 +81,7 @@ struct ShareItemView: View {
             }
             .background(Color.blue25)
             .overlay {
-                if (viewModel.isLoading && !viewModel.genLinkLoading) || viewModel.isLoadingArchives {
+                if (viewModel.isLoading && !viewModel.genLinkLoading) || viewModel.isLoadingArchives || viewModel.isApprovingAll {
                     loadingOverlay
                 }
             }
@@ -349,6 +349,15 @@ struct ShareItemView: View {
                         .background(Color.white)
                     }
                 }
+                .overlay(alignment: .bottom) {
+                    if viewModel.pendingShares.count >= 2 && !viewModel.isApprovingAll {
+                        approveAllButton
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 8)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.isApprovingAll)
             } else {
                 Spacer(minLength: 0)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -445,7 +454,7 @@ struct ShareItemView: View {
             }
         }
         .padding(.horizontal, 24)
-        .padding(.bottom, 40)
+        .padding(.bottom, viewModel.pendingShares.count >= 2 ? 76 : 40)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
@@ -602,6 +611,24 @@ struct ShareItemView: View {
         .padding(.vertical, 8)
     }
     
+    // MARK: - Approve All Button
+    private var approveAllButton: some View {
+        Button(action: {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred()
+            viewModel.approveAllPendingRequests()
+        }) {
+            Text("Approve all")
+                .font(.custom("Usual-Medium", size: 16))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .background(Color.success500)
+                .cornerRadius(12)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
     // MARK: - Helper Views
     private func userAvatarView(shareVO: ShareVOData) -> some View {
         return ZStack {
@@ -696,6 +723,10 @@ struct ShareItemView: View {
                     
                     if viewModel.isCreatingLink {
                         Text("Creating share link...")
+                            .foregroundColor(.white)
+                            .font(.body)
+                    } else if viewModel.isApprovingAll {
+                        Text("Accepting requests...")
                             .foregroundColor(.white)
                             .font(.body)
                     }
