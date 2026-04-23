@@ -50,6 +50,7 @@ struct UploadActivityLiveActivity: Widget {
                 Image(systemName: compactIcon(for: context.state.status))
                     .foregroundColor(compactIconColor(for: context.state.status))
             }
+            .widgetURL(folderURL(for: context))
         }
     }
 

@@ -230,7 +230,31 @@ class UploadManager {
         DispatchQueue.main.async { [self] in
             var didRefresh = false
             
-            let savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+            var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+            
+            // Remove files that were already successfully uploaded (duplicate prevention).
+            // This handles the case where registerRecord succeeded but the app was force-quit
+            // before the main-queue cleanup could remove the file from the persisted queue.
+            let completedIds = UserDefaults.standard.stringArray(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey) ?? []
+            if !completedIds.isEmpty, let files = savedFiles {
+                let duplicateIds = files.filter { completedIds.contains($0.id) }.map(\.id)
+                if !duplicateIds.isEmpty {
+                    logger.info("Removing \(duplicateIds.count, privacy: .public) already-completed files from persisted queue")
+                    for id in duplicateIds {
+                        if let url = files.first(where: { $0.id == id })?.url {
+                            FileHelper().deleteFile(at: url)
+                        }
+                        Self.removeCompletedFileId(id)
+                    }
+                    savedFiles?.removeAll(where: { duplicateIds.contains($0.id) })
+                    try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                }
+            }
+            
+            // Clear the completed set when no files remain in the queue
+            if savedFiles?.isEmpty != false {
+                Self.clearCompletedFileIds()
+            }
             
             let uploadNames = uploadQueue.operations.compactMap(\.name)
             for file in savedFiles ?? [] where uploadNames.contains(file.id) == false {
@@ -319,6 +343,7 @@ class UploadManager {
         logger.info("Cancelling all uploads")
         
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+        Self.clearCompletedFileIds()
         
         let files = uploadQueue.operations.map({ $0 as! UploadOperation }).map(\.file)
         uploadQueue.cancelAllOperations()
@@ -341,5 +366,32 @@ class UploadManager {
     
     func operation(forFileId id: String) -> UploadOperation? {
         return uploadQueue.operations.first(where: { $0.name == id }) as? UploadOperation
+    }
+    
+    // MARK: - Duplicate Upload Prevention
+    
+    /// Marks a file as completed immediately when registerRecord succeeds.
+    /// Uses UserDefaults.synchronize() so the write survives a force-quit.
+    static func markFileAsCompleted(fileId: String) {
+        let defaults = UserDefaults.standard
+        var completedIds = defaults.stringArray(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey) ?? []
+        guard !completedIds.contains(fileId) else { return }
+        completedIds.append(fileId)
+        defaults.set(completedIds, forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey)
+        defaults.synchronize()
+    }
+    
+    /// Removes a file ID from the completed set (called during cleanup).
+    private static func removeCompletedFileId(_ fileId: String) {
+        let defaults = UserDefaults.standard
+        var completedIds = defaults.stringArray(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey) ?? []
+        completedIds.removeAll(where: { $0 == fileId })
+        defaults.set(completedIds, forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey)
+        defaults.synchronize()
+    }
+    
+    /// Clears the entire completed set (called when the persisted queue is empty).
+    private static func clearCompletedFileIds() {
+        UserDefaults.standard.removeObject(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey)
     }
 }

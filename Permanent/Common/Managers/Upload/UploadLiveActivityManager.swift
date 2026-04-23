@@ -31,6 +31,12 @@ class UploadLiveActivityManager {
     /// Whether a Live Activity is currently active.
     var isActive: Bool { currentActivity != nil }
 
+    /// Whether any upload Live Activity is visible on the Lock Screen (active or recently ended).
+    /// Ended activities remain visible for up to 30 seconds before iOS removes them.
+    var hasVisibleActivity: Bool {
+        return !Activity<UploadActivityAttributes>.activities.isEmpty
+    }
+
     /// How long after the last update before iOS marks the activity as stale.
     /// If the app is force-quit, after this interval the widget shows "Upload interrupted".
     private let staleInterval: TimeInterval = 60

@@ -182,6 +182,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             // Skip refresh while uploads are in progress to avoid resetting upload progress UI
             guard UploadManager.shared.uploadQueue.operationCount == 0 else { return }
+            
+            // Skip refresh if a Live Activity is visible (active or recently ended).
+            // A tap on the Live Activity delivers a deep link that handles its own navigation.
+            // Refreshing here would race with it and could overwrite the deep link navigation.
+            if UploadLiveActivityManager.shared.hasVisibleActivity {
+                return
+            }
+            
             self?.refreshCurrentFolder(shouldDisplaySpinner: false)
         }
         
@@ -750,6 +758,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
             }
             toggleFileAction(viewModel?.fileAction)
+            updateFABViewVisibility()
             navigationToShareFolderLink()
             
         case .error(let message):
@@ -880,6 +889,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 }
                 
             case .error(let message):
+                DispatchQueue.main.async {
+                    self.updateFABViewVisibility()
+                }
                 self.showErrorAlert(message: message)
             }
         })
@@ -932,7 +944,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     }
                     
                 case .error(let message):
-                    self.dismissFloatingActionIsland()
+                    self.dismissFloatingActionIsland({ [weak self] in
+                        self?.updateFABViewVisibility()
+                        self?.viewModel?.isSelectingDestination = false
+                        self?.viewModel?.selectedFiles = []
+                        self?.viewModel?.fileAction = .none
+                    })
                     self.showErrorAlert(message: message)
                 }
             })
@@ -1475,6 +1492,9 @@ extension MainViewController: FABActionSheetDelegate {
                             }
                             
                         case .error(let message):
+                            DispatchQueue.main.async {
+                                self?.updateFABViewVisibility()
+                            }
                             self?.showErrorAlert(message: message)
                         }
                     })
@@ -1610,6 +1630,11 @@ extension MainViewController: FABActionSheetDelegate {
                             }
                             
                         case .error(let message):
+                            DispatchQueue.main.async {
+                                self?.dismissFloatingActionIsland()
+                                self?.updateFABViewVisibility()
+                                self?.clearButtonWasPressed(UIButton())
+                            }
                             self?.showErrorAlert(message: message)
                         }
                     })

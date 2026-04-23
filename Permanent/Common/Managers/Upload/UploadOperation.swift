@@ -343,6 +343,11 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                 if model.isSuccessful == true {
                     logger.info("Successfully registered file: \(self.file.name, privacy: .public)")
                     uploadedFile = model.results?.first?.data?.first?.recordVO
+                    
+                    // Mark as completed IMMEDIATELY (before the main-queue hop in the handler)
+                    // so a force-quit between here and queue cleanup won't cause a duplicate.
+                    UploadManager.markFileAsCompleted(fileId: self.file.id)
+                    
                     handler(nil)
                     finish()
                 } else {
