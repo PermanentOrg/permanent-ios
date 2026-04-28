@@ -66,3 +66,20 @@ struct LoadingOverlay: View {
         }
     }
 }
+
+struct LoadingOverlayWithMessage: View {
+    let message: String
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.32)
+                .edgesIgnoringSafeArea(.all)
+            VStack(spacing: 16) {
+                GradientSemiCirclesLoaderView()
+                Text(message)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.white)
+            }
+        }
+    }
+}

@@ -81,25 +81,44 @@ struct SharePreviewView: View {
                 Color.clear
                     .frame(height: 0)
                     .frame(maxWidth: .infinity)
-                
+
+                if viewModel.isInvalidLink {
+                    invalidLinkView
+                } else {
                 SharePreviewHeaderView(
                     shareName: viewModel.shareName,
                     sharedByName: viewModel.sharedByName,
                     archiveName: viewModel.archiveName,
                     thumbnailURL: viewModel.thumbnailURL
                 )
-                
+
                 ZStack(alignment: .bottom) {
-                    ScrollView {
-                        SharePreviewGridView(
-                            items: viewModel.items,
-                            isBlurred: viewModel.displayMode == .blurredPlaceholders
-                        )
-                            .padding(.top, 16)
-                            .padding(.bottom, 200)
+                    if viewModel.items.isEmpty && !viewModel.isLoading && viewModel.displayMode != .blurredPlaceholders {
+                        VStack(spacing: 10) {
+                            Image(.emptyFolder)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: 200)
+                            Text(String.emptyFolderMessage)
+                                .font(.custom("Usual-Regular", size: 14))
+                                .foregroundColor(Color.blue400)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.horizontal, 30)
+                        .padding(.bottom, 200)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        ScrollView {
+                            SharePreviewGridView(
+                                items: viewModel.items,
+                                isBlurred: viewModel.displayMode == .blurredPlaceholders
+                            )
+                                .padding(.top, 16)
+                                .padding(.bottom, 200)
+                        }
+                        .scrollDisabled(true)
+                        .disabled(viewModel.displayMode == .blurredPlaceholders)
                     }
-                    .scrollDisabled(true)
-                    .disabled(viewModel.displayMode == .blurredPlaceholders)
                     
                     SharePreviewArchiveSelectorView(
                         currentArchive: viewModel.displayedArchive,
@@ -158,6 +177,7 @@ struct SharePreviewView: View {
                         delayedAccessRoleText = viewModel.accessRoleText
                     }
                 }
+                } // else (not invalidLink)
             }
             
             pickerOverlay
@@ -171,7 +191,7 @@ struct SharePreviewView: View {
             }
         }
         .accessibilityIdentifier("sharePreview.root")
-        .alert(isPresented: Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.errorMessage = nil } })) {
+        .alert(isPresented: Binding(get: { viewModel.errorMessage != nil && !viewModel.isInvalidLink }, set: { if !$0 { viewModel.errorMessage = nil } })) {
             Alert(
                 title: Text("Error"),
                 message: Text(viewModel.errorMessage ?? ""),
@@ -208,10 +228,45 @@ struct SharePreviewView: View {
     private func handleBackAction() {
         guard !isDismissing else { return }
         isDismissing = true
-        
+
         viewModel.restoreInitialArchive {
             self.presentationMode.wrappedValue.dismiss()
         }
+    }
+
+    private var invalidLinkView: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Image(systemName: "link.badge.plus")
+                .font(.system(size: 48, weight: .light))
+                .foregroundColor(Color.blue200)
+
+            Text("Share link unavailable")
+                .font(.custom("Usual-Medium", size: 20))
+                .foregroundColor(Color.blue900)
+
+            Text("This share link is no longer available. It may have been revoked or expired.")
+                .font(.custom("Usual-Regular", size: 14))
+                .foregroundColor(Color.blue400)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+
+            Button(action: {
+                handleBackAction()
+            }) {
+                Text("Go back")
+                    .font(.custom("Usual-Medium", size: 14))
+                    .foregroundColor(.white)
+                    .frame(width: 160, height: 48)
+                    .background(Color.blue900)
+                    .cornerRadius(12)
+            }
+            .padding(.top, 8)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func scheduleAccessRoleUpdate(_ newValue: String?, delay: TimeInterval) {

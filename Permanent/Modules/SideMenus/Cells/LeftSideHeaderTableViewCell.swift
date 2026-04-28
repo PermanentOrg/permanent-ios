@@ -18,8 +18,10 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+
         selectionStyle = .none
+        backgroundColor = .primary
+        contentView.backgroundColor = .primary
         
         archiveNameLabel.font = TextFontStyle.style35.font
         archiveNameLabel.adjustsFontSizeToFitWidth = true

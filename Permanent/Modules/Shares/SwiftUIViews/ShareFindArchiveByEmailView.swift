@@ -482,6 +482,8 @@ private struct SubmitControlledTextField: UIViewRepresentable {
         textField.textColor = UIColor(Color.blue900)
         textField.tintColor = UIColor(Color.blue900)
         textField.font = UIFont(name: "Usual-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
         textField.addTarget(context.coordinator, action: #selector(Coordinator.textDidChange(_:)), for: .editingChanged)
         return textField
     }

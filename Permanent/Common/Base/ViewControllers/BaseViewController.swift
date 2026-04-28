@@ -31,18 +31,27 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: .ok, style: .default, handler: nil))
+            self.present(alert, animated: true)
+        }
+    }
 
+    func showErrorAlert(message: String?) {
+        self.showAlert(title: .error, message: message)
+    }
+
+    func showErrorAlert(message: String?, completion: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: .ok, style: .default) { _ in
+                completion()
+            })
             self.present(alert, animated: true)
         }
     }
     
-    func showErrorAlert(message: String?) {
-        self.showAlert(title: .error, message: message)
-    }
-    
     func styleNavBar() {
         navigationController?.navigationBar.tintColor = .white
-        
+
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .darkBlue
@@ -50,15 +59,11 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             .foregroundColor: UIColor.white,
             .font: TextFontStyle.style14.font
         ]
-        
+
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
-        
+
         if #available(iOS 26.0, *) {
-            // On iOS 26, the global UINavigationBar.appearance() proxy may have isTranslucent
-            // reset to true (by CustomNavigationView.onDisappear). Setting it at the instance
-            // level here ensures UIKit screens always render as opaque dark blue, regardless
-            // of the proxy state at the moment of a modal transition.
             navigationController?.navigationBar.isTranslucent = false
         }
     }
