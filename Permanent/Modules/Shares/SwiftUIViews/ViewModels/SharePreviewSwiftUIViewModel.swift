@@ -34,7 +34,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
     @Published var newArchiveName: String = ""
     @Published var selectedArchiveType: ArchiveType = .person
     @Published var isCreatingArchive: Bool = false
-    
+    @Published var isInvalidLink: Bool = false
+
     private var initialArchive: ArchiveVOData?
     private var archiveBeforePreview: ArchiveVOData?
     private var pendingArchive: ArchiveVOData?  // Archive being switched to during loading
@@ -691,6 +692,10 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 self.errorMessage = nil
             }
         } catch {
+            let nsError = error as NSError
+            if nsError.domain == "SharePreview" && nsError.code == 404 {
+                isInvalidLink = true
+            }
             errorMessage = error.localizedDescription
             isLoading = false
         }
@@ -941,9 +946,22 @@ struct SharePreviewAPIService: SharePreviewRepositoryProtocol {
                         guard let model: APIResults<SharebyURLVO> = JSONHelper.decoding(
                             from: response,
                             with: APIResults<SharebyURLVO>.decoder
-                        ),
-                              model.isSuccessful,
-                              let shareByURL = model.results.first?.data?.first?.shareByURLVO else {
+                        ) else {
+                            continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to load share"]))
+                            return
+                        }
+
+                        if !model.isSuccessful {
+                            let messages = model.results.first?.message ?? []
+                            if messages.contains(where: { $0.contains("no_link") }) {
+                                continuation.resume(throwing: NSError(domain: "SharePreview", code: 404, userInfo: [NSLocalizedDescriptionKey: "This share link is no longer available. It may have been revoked or expired."]))
+                            } else {
+                                continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to load share"]))
+                            }
+                            return
+                        }
+
+                        guard let shareByURL = model.results.first?.data?.first?.shareByURLVO else {
                             continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to load share"]))
                             return
                         }

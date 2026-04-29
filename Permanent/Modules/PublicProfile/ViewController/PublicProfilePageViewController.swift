@@ -57,19 +57,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // CRITICAL: Sync with session's selectedArchive if it exists and is different
-        // This handles the case where app was closed/reopened and session was restored from keychain
-        // but the passed archiveData is stale/wrong
-        if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive {
-            if let currentArchiveID = archiveData?.archiveID,
-               let sessionArchiveID = sessionArchive.archiveID,
-               currentArchiveID != sessionArchiveID {
-                
-                // Update to use the restored session archive
-                self.archiveData = sessionArchive
-            } else if archiveData == nil || archiveData?.archiveID == nil || archiveData?.archiveID == -1 {
-                
-                // Restore from session archive
+        if archiveData == nil || archiveData?.archiveID == nil || archiveData?.archiveID == -1 {
+            if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive {
                 self.archiveData = sessionArchive
             }
         }

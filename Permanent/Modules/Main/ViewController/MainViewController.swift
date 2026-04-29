@@ -487,7 +487,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @IBAction
     func backButtonAction(_ sender: UIButton) {
-        // Fall back to regular navigation hierarchy
         guard
             let viewModel = viewModel,
             let _ = viewModel.removeCurrentFolderFromHierarchy(),
@@ -603,7 +602,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             backButton.isUserInteractionEnabled = true
             backButton.layer.opacity = 1
         }
-        
+
         viewModel?.selectedFiles = []
         viewModel?.isSelecting = false
         collectionView.reloadData()
@@ -860,16 +859,21 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         showSpinner()
         viewModel?.delete(files, then: { status in
             self.hideSpinner()
-            
+
             switch status {
             case .success:
                 DispatchQueue.main.async {
                     self.viewModel?.removeSyncedFiles(files)
                     self.refreshCollectionView()
                 }
-                
-            case .error(let message):
-                self.showErrorAlert(message: message)
+
+            case .error(_):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: .deleteError) {
+                        self.refreshCurrentFolder()
+                        self.fabView.isHidden = false
+                    }
+                }
             }
         })
     }
@@ -920,14 +924,18 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                         })
                     }
                     
-                case .error(let message):
+                case .error(_):
                     self.dismissFloatingActionIsland()
-                    self.showErrorAlert(message: message)
+                    self.showErrorAlert(message: .relocateError) {
+                        self.refreshCurrentFolder()
+                        self.fabView?.isHidden = false
+                        self.viewModel?.isSelectingDestination = false
+                    }
                 }
             })
         }
     }
-    
+
     func publish(file: FileModel) {
         showSpinner()
         viewModel?.publish(files: [file], then: { status in
@@ -1455,16 +1463,21 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.showSpinner()
                     self?.viewModel?.delete(files, then: { status in
                         self?.hideSpinner()
-                        
+
                         switch status {
                         case .success:
                             DispatchQueue.main.async {
                                 self?.viewModel?.removeSyncedFiles(files)
                                 self?.refreshCollectionView()
                             }
-                            
-                        case .error(let message):
-                            self?.showErrorAlert(message: message)
+
+                        case .error(_):
+                            DispatchQueue.main.async {
+                                self?.showErrorAlert(message: .deleteError) {
+                                    self?.refreshCurrentFolder()
+                                    self?.fabView.isHidden = false
+                                }
+                            }
                         }
                     })
                 })
@@ -1587,7 +1600,7 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.showSpinner()
                     self?.viewModel?.delete(files, then: { status in
                         self?.hideSpinner()
-                        
+
                         switch status {
                         case .success:
                             DispatchQueue.main.async {
@@ -1597,9 +1610,16 @@ extension MainViewController: FABActionSheetDelegate {
                                 self?.fabView.isHidden = false
                                 self?.clearButtonWasPressed(UIButton())
                             }
-                            
-                        case .error(let message):
-                            self?.showErrorAlert(message: message)
+
+                        case .error(_):
+                            DispatchQueue.main.async {
+                                self?.showErrorAlert(message: .deleteError) {
+                                    self?.refreshCurrentFolder()
+                                    self?.dismissFloatingActionIsland()
+                                    self?.fabView.isHidden = false
+                                    self?.clearButtonWasPressed(UIButton())
+                                }
+                            }
                         }
                     })
                 })

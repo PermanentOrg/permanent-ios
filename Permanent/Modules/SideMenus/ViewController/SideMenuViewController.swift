@@ -55,8 +55,10 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     fileprivate func initUI() {
         view.backgroundColor = .primary
         tableView.backgroundColor = .primary
-        
+
+        tableView.separatorStyle = .none
         tableView.separatorColor = .clear
+        tableView.sectionHeaderTopPadding = 0
         
         versionLabel.textColor = .white.withAlphaComponent(0.33)
         versionLabel.font = TextFontStyle.style12.font
@@ -93,23 +95,26 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func updateLeftSideMenu() {
-        var menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)]
-        var menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers]
-        if let hasLegacyPermissions = viewModel?.hasLegacyPermissions(), hasLegacyPermissions {
-            menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2), IndexPath(item: 3, section: 2)]
-            menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers, DrawerOption.legacyPlanning]
-        }
-        tableView.beginUpdates()
-        if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+
+            var menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)]
+            var menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers]
+            if let hasLegacyPermissions = self.viewModel?.hasLegacyPermissions(), hasLegacyPermissions {
+                menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2), IndexPath(item: 3, section: 2)]
+                menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers, DrawerOption.legacyPlanning]
+            }
+
+            guard let archiveSetingsWasPressed = self.viewModel?.archiveSetingsWasPressed else { return }
+
             if archiveSetingsWasPressed {
-                tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: menuTitles)
-                tableView.insertRows(at: menuIndexPaths, with: .automatic)
+                self.tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: menuTitles)
+                self.tableView.insertRows(at: menuIndexPaths, with: .fade)
             } else {
-                tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags || $0 == DrawerOption.legacyPlanning })
-                tableView.deleteRows(at: menuIndexPaths, with: .automatic)
+                self.tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags || $0 == DrawerOption.legacyPlanning })
+                self.tableView.deleteRows(at: menuIndexPaths, with: .fade)
             }
         }
-        tableView.endUpdates()
     }
 }
 

@@ -592,6 +592,94 @@ extension ShareItemViewModel {
         }
     }
 
+    // MARK: - Pending Shares
+
+    var pendingShares: [ShareVOData] {
+        sharedArchives.filter { $0.status?.contains("pending") == true }
+    }
+
+    // MARK: - Approve All Pending Requests
+
+    func approveAllPendingRequests() {
+        let pending = pendingShares
+        guard !pending.isEmpty else { return }
+
+        isApprovingAll = true
+
+        // Approve one by one sequentially using a recursive helper
+        approveNextPending(remaining: pending, hadError: false)
+    }
+
+    private func approveNextPending(remaining: [ShareVOData], hadError: Bool) {
+        guard let next = remaining.first else {
+            // All done
+            isApprovingAll = false
+            showApproveAllNotification(hadError: hadError)
+            return
+        }
+
+        guard let shareID = next.shareID else {
+            // Skip invalid entry, move to next
+            approveNextPending(remaining: Array(remaining.dropFirst()), hadError: hadError)
+            return
+        }
+
+        approvingShareIDs.insert(shareID)
+        objectWillChange.send()
+
+        shareManagementRepository.approveButtonAction(shareVO: next, accessRole: .viewer) { [weak self] result, updatedShareVO in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+
+                    var errorOccurred = hadError
+
+                    switch result {
+                    case .success:
+                        if let index = self.sharedArchives.firstIndex(where: { $0.shareID == next.shareID }) {
+                            if let updatedShare = updatedShareVO {
+                                self.fetchCompleteShareDetails(for: updatedShare, at: index, clearLoadingState: true, loadingShareID: shareID)
+                            } else {
+                                self.approvingShareIDs.remove(shareID)
+                                self.objectWillChange.send()
+                            }
+                        } else {
+                            self.approvingShareIDs.remove(shareID)
+                            self.objectWillChange.send()
+                        }
+
+                    case .error:
+                        self.approvingShareIDs.remove(shareID)
+                        self.objectWillChange.send()
+                        errorOccurred = true
+                    }
+
+                    // Continue with next pending request
+                    self.approveNextPending(remaining: Array(remaining.dropFirst()), hadError: errorOccurred)
+                }
+            }
+        }
+    }
+
+    private func showApproveAllNotification(hadError: Bool) {
+        approveAllNotificationIsError = hadError
+        approveAllNotificationMessage = hadError
+            ? "Some of the requests were not accepted."
+            : "All requests have been accepted."
+
+        Task {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            await MainActor.run {
+                showApproveAllNotification = true
+            }
+
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await MainActor.run {
+                showApproveAllNotification = false
+            }
+        }
+    }
+
     // MARK: - Notify Share Updates
 
     /// Posts a notification with the updated file model so UIKit consumers can refresh.
