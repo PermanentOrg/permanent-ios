@@ -99,6 +99,7 @@ class ShareItemViewModel: ObservableObject {
         let name: String
         let initials: String
         let archiveID: Int?
+        let thumbnailURL: String?
         let source: ArchiveGrantSource
     }
 

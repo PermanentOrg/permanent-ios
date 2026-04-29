@@ -51,6 +51,16 @@ struct ShareInviteAndGrantAccessView: View {
         }
         .background(Color.white)
         .ignoresSafeArea(edges: .bottom)
+        .overlay {
+            if viewModel.isLoading {
+                loadingOverlay
+            }
+        }
+        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("OK") { viewModel.errorMessage = nil }
+        } message: {
+            if let errorMessage = viewModel.errorMessage { Text(errorMessage) }
+        }
         .contentShape(Rectangle())
         .onTapGesture {
             dismissKeyboardIfNeeded()
@@ -202,7 +212,7 @@ struct ShareInviteAndGrantAccessView: View {
                 .buttonStyle(PlainButtonStyle())
             }
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 24)
         .padding(.top, 24)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -236,7 +246,7 @@ struct ShareInviteAndGrantAccessView: View {
             }
             .buttonStyle(PlainButtonStyle())
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 24)
         .padding(.top, 20)
         .padding(.bottom, 32)
     }
@@ -247,6 +257,25 @@ struct ShareInviteAndGrantAccessView: View {
             .foregroundColor(Color.blue900)
             .tracking(1.6)
             .textCase(.uppercase)
+    }
+
+    private var loadingOverlay: some View {
+        Color.black.opacity(0.3)
+            .overlay(
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+
+                    Text("Sending invitation...")
+                        .foregroundColor(.white)
+                        .font(.body)
+                }
+                .padding(24)
+                .background(Color.black.opacity(0.8))
+                .cornerRadius(12)
+            )
+            .ignoresSafeArea()
     }
 
     private func dismissKeyboardIfNeeded() {
