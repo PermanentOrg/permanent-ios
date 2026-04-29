@@ -19,6 +19,10 @@ struct ShareGrantArchiveAccessView: View {
         viewModel.pendingArchiveGrant?.initials ?? "A"
     }
 
+    private var archiveThumbnailURL: String? {
+        viewModel.pendingArchiveGrant?.thumbnailURL
+    }
+
     private var selectedRole: AccessRole {
         viewModel.selectedRoleForGrantAccess
     }
@@ -57,6 +61,16 @@ struct ShareGrantArchiveAccessView: View {
         }
         .background(Color.white)
         .ignoresSafeArea(edges: .bottom)
+        .overlay {
+            if viewModel.isLoading {
+                loadingOverlay
+            }
+        }
+        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("OK") { viewModel.errorMessage = nil }
+        } message: {
+            if let errorMessage = viewModel.errorMessage { Text(errorMessage) }
+        }
     }
 
     private var topBar: some View {
@@ -179,7 +193,7 @@ struct ShareGrantArchiveAccessView: View {
                 .buttonStyle(PlainButtonStyle())
             }
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 24)
         .padding(.top, 24)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -212,12 +226,34 @@ struct ShareGrantArchiveAccessView: View {
             }
             .buttonStyle(PlainButtonStyle())
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 24)
         .padding(.top, 20)
         .padding(.bottom, 32)
     }
 
     private var avatar: some View {
+        Group {
+            if let thumbnailURL = archiveThumbnailURL,
+               let url = URL(string: thumbnailURL) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    default:
+                        initialsAvatar
+                    }
+                }
+            } else {
+                initialsAvatar
+            }
+        }
+        .frame(width: 32, height: 32)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var initialsAvatar: some View {
         ZStack {
             LinearGradient(
                 colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
@@ -235,8 +271,25 @@ struct ShareGrantArchiveAccessView: View {
                     .foregroundColor(.white)
             }
         }
-        .frame(width: 32, height: 32)
-        .cornerRadius(8)
+    }
+
+    private var loadingOverlay: some View {
+        Color.black.opacity(0.3)
+            .overlay(
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+
+                    Text("Granting access...")
+                        .foregroundColor(.white)
+                        .font(.body)
+                }
+                .padding(24)
+                .background(Color.black.opacity(0.8))
+                .cornerRadius(12)
+            )
+            .ignoresSafeArea()
     }
 
     private func sectionTitle(_ text: String) -> some View {

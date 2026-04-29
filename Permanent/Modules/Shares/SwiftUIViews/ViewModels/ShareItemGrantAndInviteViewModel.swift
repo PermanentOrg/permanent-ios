@@ -47,9 +47,9 @@ extension ShareItemViewModel {
 
     // MARK: - Grant Archive Access Flow
 
-    func openGrantArchiveAccess(archiveName: String, archiveInitials: String, archiveID: Int? = nil, source: ArchiveGrantSource) {
+    func openGrantArchiveAccess(archiveName: String, archiveInitials: String, archiveID: Int? = nil, thumbnailURL: String? = nil, source: ArchiveGrantSource) {
         navigationDirection = .forward
-        pendingArchiveGrant = PendingArchiveGrant(name: archiveName, initials: archiveInitials, archiveID: archiveID, source: source)
+        pendingArchiveGrant = PendingArchiveGrant(name: archiveName, initials: archiveInitials, archiveID: archiveID, thumbnailURL: thumbnailURL, source: source)
         selectedRoleForGrantAccess = .viewer
         showInviteAndGrantAccess = false
         showFindArchiveByEmail = false
@@ -80,6 +80,8 @@ extension ShareItemViewModel {
         let folderLinkId = correctFolderLinkId ?? fileModel.folderLinkId
 
         if let archiveID = pendingArchiveGrant.archiveID, folderLinkId > 0 {
+            isLoading = true
+
             let shareRequest = ShareVOData(
                 shareID: nil,
                 folderLinkID: folderLinkId,
@@ -101,16 +103,27 @@ extension ShareItemViewModel {
             operation.execute(in: APIRequestDispatcher()) { [weak self] result in
                 guard let self = self else { return }
 
+                self.isLoading = false
+
                 switch result {
                 case .json(let response, _):
                     guard
                         let model: APIResults<ShareVO> = JSONHelper.decoding(
                             from: response,
                             with: APIResults<ShareVO>.decoder
-                        ),
-                        model.isSuccessful
+                        )
                     else {
                         self.errorMessage = "Unable to grant archive access right now. Please try again."
+                        return
+                    }
+
+                    if !model.isSuccessful {
+                        let apiMessages = model.results.flatMap { $0.message }
+                        if apiMessages.contains("error.share.already_exists") {
+                            self.errorMessage = "This archive already has access to this share."
+                        } else {
+                            self.errorMessage = "Unable to grant archive access right now. Please try again."
+                        }
                         return
                     }
 
@@ -270,6 +283,8 @@ extension ShareItemViewModel {
             return
         }
 
+        isLoading = true
+
         let operation = APIOperation(
             ShareAccessEndpoint.inviteShare(
                 email: trimmedEmail,
@@ -277,13 +292,15 @@ extension ShareItemViewModel {
                 fullName: trimmedName,
                 accessRole: selectedRoleForInviteAccess.apiValue,
                 folderLinkId: folderLinkId,
-                relationship: "relation.family.uncle",
+                relationship: "relation.friend",
                 folderId: folderId
             )
         )
 
         operation.execute(in: APIRequestDispatcher()) { [weak self] result in
             guard let self = self else { return }
+
+            self.isLoading = false
 
             switch result {
             case .json(let response, _):

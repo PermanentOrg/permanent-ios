@@ -27,6 +27,7 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
     @Published var searchText = ""
     @Published private(set) var submittedSearchEmail: String?
     @Published private(set) var searchOutcome: SearchOutcome = .idle
+    @Published private(set) var isSearching = false
 
     private var searchOperation: APIOperation?
 
@@ -75,6 +76,7 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
         }
 
         submittedSearchEmail = emailToSearch
+        isSearching = true
         withAnimation(.easeInOut(duration: 0.2)) {
             searchOutcome = .idle
         }
@@ -84,7 +86,10 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
         searchOperation?.execute(in: APIRequestDispatcher()) { [weak self] result in
             Task { @MainActor in
                 guard let self else { return }
-                defer { self.searchOperation = nil }
+                defer {
+                    self.searchOperation = nil
+                    self.isSearching = false
+                }
 
                 switch result {
                 case .json(let response, _):
@@ -125,6 +130,7 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
         searchOperation?.cancel()
         searchOperation = nil
         searchText = ""
+        isSearching = false
         withAnimation(.easeInOut(duration: 0.2)) {
             submittedSearchEmail = nil
             searchOutcome = .idle
@@ -145,6 +151,7 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
         searchText = ""
         submittedSearchEmail = nil
         searchOutcome = .idle
+        isSearching = false
     }
 
     private func setNoAccount(for email: String) {

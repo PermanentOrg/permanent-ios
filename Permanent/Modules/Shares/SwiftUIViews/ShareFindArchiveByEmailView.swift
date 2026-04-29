@@ -65,18 +65,31 @@ struct ShareFindArchiveByEmailView: View {
                     .padding(.bottom, 24)
 
                 Group {
-                    switch findArchiveViewModel.visibleSearchOutcome {
-                    case .found(let archives):
-                        mockResultsSection(archives)
-                            .padding(.horizontal, 24)
-                            .transition(.opacity)
-                    case .noAccount(let email):
-                        noAccountSection(email)
-                            .padding(.horizontal, 24)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                    case .idle:
-                        EmptyView()
-                            .transition(.opacity)
+                    if findArchiveViewModel.isSearching {
+                        VStack(spacing: 12) {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: Color.blue900))
+                            Text("Searching...")
+                                .font(.custom("Usual-Regular", size: 13))
+                                .foregroundColor(Color.blue400)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 24)
+                        .transition(.opacity)
+                    } else {
+                        switch findArchiveViewModel.visibleSearchOutcome {
+                        case .found(let archives):
+                            archiveResultsSection(archives)
+                                .padding(.horizontal, 24)
+                                .transition(.opacity)
+                        case .noAccount(let email):
+                            noAccountSection(email)
+                                .padding(.horizontal, 24)
+                                .transition(.opacity)
+                        case .idle:
+                            EmptyView()
+                                .transition(.opacity)
+                        }
                     }
                 }
 
@@ -112,8 +125,10 @@ struct ShareFindArchiveByEmailView: View {
             }
         )
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                isSearchFocused = true
+            if findArchiveViewModel.visibleOutcomeState == 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    isSearchFocused = true
+                }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
@@ -268,10 +283,10 @@ struct ShareFindArchiveByEmailView: View {
         .frame(maxWidth: .infinity, minHeight: 64, maxHeight: 64, alignment: .leading)
     }
 
-    private func mockResultsSection(_ archives: [ShareFindArchiveByEmailViewModel.ArchiveResult]) -> some View {
+    private func archiveResultsSection(_ archives: [ShareFindArchiveByEmailViewModel.ArchiveResult]) -> some View {
         VStack(spacing: 24) {
             ForEach(archives) { archive in
-                mockArchiveRow(archive)
+                archiveRow(archive)
             }
         }
     }
@@ -329,7 +344,7 @@ struct ShareFindArchiveByEmailView: View {
         .buttonStyle(PlainButtonStyle())
     }
 
-    private func mockArchiveRow(_ archive: ShareFindArchiveByEmailViewModel.ArchiveResult) -> some View {
+    private func archiveRow(_ archive: ShareFindArchiveByEmailViewModel.ArchiveResult) -> some View {
         Button(action: {
             if isSearchFocused || isKeyboardVisible {
                 isSearchFocused = false
@@ -338,6 +353,7 @@ struct ShareFindArchiveByEmailView: View {
                         archiveName: archive.name,
                         archiveInitials: archive.initials,
                         archiveID: archive.archiveID,
+                        thumbnailURL: archive.thumbnailURL,
                         source: .findByEmail
                     )
                 }
@@ -345,6 +361,8 @@ struct ShareFindArchiveByEmailView: View {
                 viewModel.openGrantArchiveAccess(
                     archiveName: archive.name,
                     archiveInitials: archive.initials,
+                    archiveID: archive.archiveID,
+                    thumbnailURL: archive.thumbnailURL,
                     source: .findByEmail
                 )
             }
@@ -527,6 +545,11 @@ private struct SubmitControlledTextField: UIViewRepresentable {
 
         func textFieldDidEndEditing(_ textField: UITextField) {
             parent.isFirstResponder = false
+            DispatchQueue.main.async {
+                let currentText = textField.text
+                textField.text = nil
+                textField.text = currentText
+            }
         }
 
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
