@@ -168,7 +168,7 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollect
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let listItemSize = CGSize(width: collectionView.bounds.width - 12, height: 70)
+        let listItemSize = CGSize(width: collectionView.bounds.width - 12, height: 74)
         // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
         // Vertical size: 30 is the height of the title label
         let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
