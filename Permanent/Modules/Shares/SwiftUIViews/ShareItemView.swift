@@ -564,7 +564,9 @@ struct ShareItemView: View {
 
                 Spacer()
 
-                Button(action: {}) {
+                Button(action: {
+                    viewModel.openEditInvitation(shareVO: shareVO)
+                }) {
                     Image(.shareArchiveEditShare)
                         .frame(width: 24, height: 24)
                 }
