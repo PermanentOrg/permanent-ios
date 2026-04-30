@@ -69,6 +69,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         
         fileNameLabel.font = TextFontStyle.style35.font
         fileNameLabel.textColor = .black
+        let fontLineHeight = TextFontStyle.style35.font.lineHeight
+        let heightConstraint = fileNameLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: ceil(fontLineHeight))
+        heightConstraint.priority = .defaultHigh
+        heightConstraint.isActive = true
         fileDateLabel.font = TextFontStyle.style12.font
         fileDateLabel.textColor = .lightGray
         fileImageView.clipsToBounds = true
