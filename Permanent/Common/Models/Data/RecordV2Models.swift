@@ -49,6 +49,7 @@ struct RecordV2Data: Model {
     let tags: [TagV2]?
     let archiveArchiveNumber: String?
     let shares: [RecordShareV2]?
+    let pendingShares: [PendingShareV2]?
     let archive: RecordArchiveV2?
 }
 
@@ -110,4 +111,10 @@ struct RecordArchiveV2: Model {
     let id: String?
     let archiveNumber: String?
     let name: String?
+}
+
+struct PendingShareV2: Model {
+    let id: String?
+    let email: String?
+    let accessRole: String?
 }

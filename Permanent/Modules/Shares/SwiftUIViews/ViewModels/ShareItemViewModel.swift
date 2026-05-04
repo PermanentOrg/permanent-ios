@@ -209,8 +209,9 @@ class ShareItemViewModel: ObservableObject {
     var originalAutoApprove: Bool = false
     var originalAccessRole: AccessRole = .viewer
 
-    // Child ViewModel
+    // Child ViewModels
     let findArchiveByEmailViewModel = ShareFindArchiveByEmailViewModel()
+    let pastSharesViewModel = ShareArchivesFromPastSharesViewModel()
 
     // MARK: - Computed Properties
 

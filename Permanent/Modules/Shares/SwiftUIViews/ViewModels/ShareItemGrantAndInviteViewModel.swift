@@ -36,6 +36,7 @@ extension ShareItemViewModel {
     // MARK: - Select Archive from Past Shares Flow
 
     func openSelectArchiveFromPastShares() {
+        pastSharesViewModel.fetchArchives()
         navigationDirection = .forward
         showFindArchiveByEmail = false
         showSelectArchiveFromPastShares = true
@@ -271,16 +272,9 @@ extension ShareItemViewModel {
             return
         }
 
-        let folderId: Int = {
-            if isFolder {
-                return fileModel.folderId
-            }
-            if fileModel.parentFolderId > 0 {
-                return fileModel.parentFolderId
-            }
-            return fileModel.folderId
-        }()
-        guard folderId > 0 else {
+        let itemFolderId: Int? = isFolder ? fileModel.folderId : nil
+        let itemRecordId: Int? = isFolder ? nil : fileModel.recordId
+        guard (itemFolderId ?? 0) > 0 || (itemRecordId ?? 0) > 0 else {
             errorMessage = "Unable to send invitation right now. Please try again."
             return
         }
@@ -295,7 +289,8 @@ extension ShareItemViewModel {
                 accessRole: selectedRoleForInviteAccess.apiValue,
                 folderLinkId: folderLinkId,
                 relationship: "relation.friend",
-                folderId: folderId
+                folderId: itemFolderId,
+                recordId: itemRecordId
             )
         )
 
@@ -494,16 +489,9 @@ extension ShareItemViewModel {
             return
         }
 
-        let folderId: Int = {
-            if isFolder {
-                return fileModel.folderId
-            }
-            if fileModel.parentFolderId > 0 {
-                return fileModel.parentFolderId
-            }
-            return fileModel.folderId
-        }()
-        guard folderId > 0 else {
+        let itemFolderId: Int? = isFolder ? fileModel.folderId : nil
+        let itemRecordId: Int? = isFolder ? nil : fileModel.recordId
+        guard (itemFolderId ?? 0) > 0 || (itemRecordId ?? 0) > 0 else {
             errorMessage = "Unable to update invitation right now. Please try again."
             return
         }
@@ -520,7 +508,8 @@ extension ShareItemViewModel {
                 accessRole: selectedRoleForEditInvitation.apiValue,
                 folderLinkId: folderLinkId,
                 relationship: "relation.friend",
-                folderId: folderId
+                folderId: itemFolderId,
+                recordId: itemRecordId
             )
         )
 

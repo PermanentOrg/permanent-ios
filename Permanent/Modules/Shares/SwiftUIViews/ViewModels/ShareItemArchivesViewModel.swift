@@ -26,11 +26,15 @@ extension ShareItemViewModel {
         // Check V2 data first - it's more reliable than initial fileModel type
         if let v2Data = shareLinkV2Data,
            let itemId = v2Data.itemId,
-           let itemType = v2Data.itemType,
-           itemType == "record" {
-            // V2 data says it's a record - use V2 API to fetch by recordId
+           let itemType = v2Data.itemType {
             let shareToken = v2Data.token
-            fetchRecordV2(recordId: itemId, shareToken: shareToken)
+            if itemType == "record" {
+                fetchRecordV2(recordId: itemId, shareToken: shareToken)
+            } else if itemType == "folder" {
+                fetchFolderV2(folderId: itemId, shareToken: shareToken)
+            } else {
+                fetchSharedArchivesV1()
+            }
         } else if !isFolder,
                   let recordData = shareVO?.recordData,
                   let folderLinkIdInt = recordData.folderLinkID {
@@ -81,9 +85,9 @@ extension ShareItemViewModel {
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2
                                 }
-                                self.finalizeSharedArchives(sortedShares)
+                                self.finalizeSharedArchives(sortedShares, pendingSharesV2: recordData.pendingShares)
                             } else {
-                                self.finalizeSharedArchives([])
+                                self.finalizeSharedArchives([], pendingSharesV2: recordData.pendingShares)
                             }
                         } else {
                             // No folder_linkId in V2 response, fall back to V1
@@ -97,6 +101,113 @@ extension ShareItemViewModel {
                     default:
                         self.fetchSharedArchivesV1()
                     }
+                }
+            }
+        }
+    }
+
+    // MARK: - Fetch via V2 Folder API
+
+    private func fetchFolderV2(folderId: String, shareToken: String?) {
+        isLoadingArchives = true
+
+        let operation = APIOperation(FolderV2Endpoint.getFolderById(folderId: folderId, shareToken: shareToken ?? ""))
+
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+
+                    self.isLoadingArchives = false
+
+                    switch result {
+                    case .json(let response, _):
+                        guard let model: FolderV2Response = JSONHelper.decoding(
+                            from: response,
+                            with: FolderV2Response.decoder
+                        ), let folderData = model.items?.first else {
+                            self.fetchSharedArchivesV1()
+                            return
+                        }
+
+                        if folderData.folderId != nil,
+                           let folderLinkIdString = folderData.folderLinkId,
+                           let folderLinkIdInt = Int(folderLinkIdString) {
+                            self.correctFolderLinkId = folderLinkIdInt
+
+                            if let sharesV2 = folderData.shares, !sharesV2.isEmpty {
+                                let convertedShares = self.convertV2SharesToV1(sharesV2)
+                                let sortedShares = convertedShares.sorted { share1, share2 in
+                                    let isPending1 = share1.status?.contains("pending") ?? false
+                                    let isPending2 = share2.status?.contains("pending") ?? false
+                                    return isPending1 && !isPending2
+                                }
+                                self.finalizeSharedArchives(sortedShares, pendingSharesV2: folderData.pendingShares)
+                            } else {
+                                self.finalizeSharedArchives([], pendingSharesV2: folderData.pendingShares)
+                            }
+                        } else {
+                            self.fetchSharedArchivesV1()
+                        }
+
+                    case .error:
+                        self.fetchSharedArchivesV1()
+
+                    default:
+                        self.fetchSharedArchivesV1()
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Fetch Pending Shares via V2
+
+    private func fetchPendingSharesFromV2(completion: @escaping ([PendingShareV2]?) -> Void) {
+        let shareToken = shareLinkV2Data?.token
+
+        if isFolder {
+            let folderId = shareLinkV2Data?.itemId ?? String(fileModel.folderId)
+            guard !folderId.isEmpty, folderId != "0" else {
+                completion(nil)
+                return
+            }
+            let operation = APIOperation(FolderV2Endpoint.getFolderById(folderId: folderId, shareToken: shareToken ?? ""))
+            operation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    guard let model: FolderV2Response = JSONHelper.decoding(
+                        from: response,
+                        with: FolderV2Response.decoder
+                    ), let folderData = model.items?.first else {
+                        completion(nil)
+                        return
+                    }
+                    completion(folderData.pendingShares)
+                default:
+                    completion(nil)
+                }
+            }
+        } else {
+            let recordId = shareLinkV2Data?.itemId ?? String(fileModel.recordId)
+            guard !recordId.isEmpty, recordId != "0" else {
+                completion(nil)
+                return
+            }
+            let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: recordId, shareToken: shareToken))
+            operation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    guard let model: RecordV2Response = JSONHelper.decoding(
+                        from: response,
+                        with: RecordV2Response.decoder
+                    ), let recordData = model.data else {
+                        completion(nil)
+                        return
+                    }
+                    completion(recordData.pendingShares)
+                default:
+                    completion(nil)
                 }
             }
         }
@@ -130,7 +241,7 @@ extension ShareItemViewModel {
 
                         self.isLoadingArchives = false
 
-                        if let error = error {
+                        if error != nil {
                             // If folder API fails, it might actually be a record - try V2 record API
                             if let v2Data = self.shareLinkV2Data,
                                let itemId = v2Data.itemId,
@@ -142,8 +253,8 @@ extension ShareItemViewModel {
 
                         if let folderVO = folderVO,
                            let folderData = folderVO.folderVO {
+                            let shares: [ShareVOData]
                             if let shareVOs = folderData.shareVOS, !shareVOs.isEmpty {
-                                // Filter out owner archives (same as V2 API)
                                 let userOwnArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
                                 let filteredShares = shareVOs.filter { share in
                                     if let userOwnId = userOwnArchiveId,
@@ -157,16 +268,19 @@ extension ShareItemViewModel {
                                     }
                                     return true
                                 }
-
-                                // Sort pending shares first, then approved shares
-                                let sortedShares = filteredShares.sorted { share1, share2 in
+                                shares = filteredShares.sorted { share1, share2 in
                                     let isPending1 = share1.status?.contains("pending") ?? false
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2
                                 }
-                                self.finalizeSharedArchives(sortedShares)
                             } else {
-                                self.finalizeSharedArchives([])
+                                shares = []
+                            }
+
+                            self.fetchPendingSharesFromV2 { pendingShares in
+                                Task { @MainActor in
+                                    self.finalizeSharedArchives(shares, pendingSharesV2: pendingShares)
+                                }
                             }
                         }
                     }
@@ -180,7 +294,7 @@ extension ShareItemViewModel {
 
                         self.isLoadingArchives = false
 
-                        if let error = error {
+                        if error != nil {
                             // If V1 record API fails, try V2 record API
                             if let v2Data = self.shareLinkV2Data,
                                let itemId = v2Data.itemId,
@@ -192,8 +306,8 @@ extension ShareItemViewModel {
 
                         if let recordVO = recordVO,
                            let recordData = recordVO.recordVO {
+                            let shares: [ShareVOData]
                             if let shareVOs = recordData.shareVOS, !shareVOs.isEmpty {
-                                // Filter out owner archives (same as V2 API)
                                 let userOwnArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
                                 let filteredShares = shareVOs.filter { share in
                                     if let userOwnId = userOwnArchiveId,
@@ -207,16 +321,19 @@ extension ShareItemViewModel {
                                     }
                                     return true
                                 }
-
-                                // Sort pending shares first, then approved shares
-                                let sortedShares = filteredShares.sorted { share1, share2 in
+                                shares = filteredShares.sorted { share1, share2 in
                                     let isPending1 = share1.status?.contains("pending") ?? false
                                     let isPending2 = share2.status?.contains("pending") ?? false
                                     return isPending1 && !isPending2
                                 }
-                                self.finalizeSharedArchives(sortedShares)
                             } else {
-                                self.finalizeSharedArchives([])
+                                shares = []
+                            }
+
+                            self.fetchPendingSharesFromV2 { pendingShares in
+                                Task { @MainActor in
+                                    self.finalizeSharedArchives(shares, pendingSharesV2: pendingShares)
+                                }
                             }
                         }
                     }
@@ -304,115 +421,78 @@ extension ShareItemViewModel {
 
     // MARK: - Pending Invite Merge
 
-    private func fetchPendingShareInvites(completion: @escaping ([ShareVOData]) -> Void) {
-        let operation = APIOperation(InviteEndpoint.getMyInvites)
-        operation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<InviteVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<InviteVO>.decoder
-                    ),
-                    model.isSuccessful
-                else {
-                    completion([])
-                    return
-                }
+    private func convertPendingSharesToV1(_ pendingShares: [PendingShareV2]) -> [ShareVOData] {
+        pendingShares.compactMap { pending in
+            let email = pending.email?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            guard !email.isEmpty else { return nil }
 
-                let currentArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
-                let invitedShares: [ShareVOData] = model.results
-                    .flatMap { $0.data ?? [] }
-                    .compactMap { $0.invite }
-                    .filter { invite in
-                        guard invite.type == "type.invite.share" else { return false }
-                        guard invite.status == Constants.API.InviteStatus.pending else { return false }
-                        if let currentArchiveId, let byArchiveId = invite.byArchiveID {
-                            return byArchiveId == currentArchiveId
-                        }
-                        return true
-                    }
-                    .compactMap { invite in
-                        let email = invite.email?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                        guard !email.isEmpty else { return nil }
+            let displayName = email.split(separator: "@").first.map(String.init) ?? "Invited user"
+            let inviteId = Int(pending.id ?? "") ?? 0
 
-                        let fullName = invite.fullName?.trimmingCharacters(in: .whitespacesAndNewlines)
-                        let displayName = (fullName?.isEmpty == false) ? fullName! : email.split(separator: "@").first.map(String.init) ?? "Invited user"
+            let account = AccountVOData(
+                accountID: nil,
+                primaryEmail: email,
+                fullName: displayName,
+                address: nil,
+                address2: nil,
+                country: nil,
+                city: nil,
+                state: nil,
+                zip: nil,
+                primaryPhone: nil,
+                defaultArchiveID: nil,
+                level: nil,
+                apiToken: nil,
+                betaParticipant: nil,
+                facebookAccountID: nil,
+                googleAccountID: nil,
+                status: nil,
+                type: nil,
+                emailStatus: nil,
+                phoneStatus: nil,
+                notificationPreferences: nil,
+                agreed: nil,
+                optIn: nil,
+                emailArray: nil,
+                inviteCode: nil,
+                rememberMe: nil,
+                keepLoggedIn: nil,
+                accessRole: nil,
+                spaceTotal: nil,
+                spaceLeft: nil,
+                fileTotal: nil,
+                fileLeft: nil,
+                changePrimaryEmail: nil,
+                changePrimaryPhone: nil,
+                createdDT: nil,
+                updatedDT: nil,
+                hideChecklist: nil
+            )
 
-                        let account = AccountVOData(
-                            accountID: nil,
-                            primaryEmail: email,
-                            fullName: displayName,
-                            address: nil,
-                            address2: nil,
-                            country: nil,
-                            city: nil,
-                            state: nil,
-                            zip: nil,
-                            primaryPhone: nil,
-                            defaultArchiveID: nil,
-                            level: nil,
-                            apiToken: nil,
-                            betaParticipant: nil,
-                            facebookAccountID: nil,
-                            googleAccountID: nil,
-                            status: nil,
-                            type: nil,
-                            emailStatus: nil,
-                            phoneStatus: nil,
-                            notificationPreferences: nil,
-                            agreed: nil,
-                            optIn: nil,
-                            emailArray: nil,
-                            inviteCode: nil,
-                            rememberMe: nil,
-                            keepLoggedIn: nil,
-                            accessRole: nil,
-                            spaceTotal: nil,
-                            spaceLeft: nil,
-                            fileTotal: nil,
-                            fileLeft: nil,
-                            changePrimaryEmail: nil,
-                            changePrimaryPhone: nil,
-                            createdDT: invite.createdDT,
-                            updatedDT: invite.updatedDT,
-                            hideChecklist: nil
-                        )
-
-                        return ShareVOData(
-                            shareID: (invite.inviteID ?? -1) * -1,
-                            folderLinkID: nil,
-                            archiveID: nil,
-                            accessRole: invite.accessRole,
-                            type: invite.type,
-                            status: "status.generic.invited",
-                            requestToken: invite.token,
-                            previewToggle: nil,
-                            folderVO: nil,
-                            recordVO: nil,
-                            archiveVO: nil,
-                            accountVO: account,
-                            createdDT: invite.createdDT,
-                            updatedDT: invite.updatedDT
-                        )
-                    }
-
-                completion(invitedShares)
-
-            case .error:
-                completion([])
-
-            default:
-                completion([])
-            }
+            return ShareVOData(
+                shareID: inviteId > 0 ? -inviteId : -1,
+                folderLinkID: nil,
+                archiveID: nil,
+                accessRole: pending.accessRole,
+                type: "type.invite.share",
+                status: "status.generic.invited",
+                requestToken: nil,
+                previewToggle: nil,
+                folderVO: nil,
+                recordVO: nil,
+                archiveVO: nil,
+                accountVO: account,
+                createdDT: nil,
+                updatedDT: nil
+            )
         }
     }
 
-    private func finalizeSharedArchives(_ baseShares: [ShareVOData]) {
-        fetchPendingShareInvites { [weak self] invitedShares in
-            guard let self = self else { return }
+    func finalizeSharedArchives(_ baseShares: [ShareVOData], pendingSharesV2: [PendingShareV2]? = nil) {
+        var mergedShares = baseShares
 
-            var mergedShares = baseShares
+        if let pendingSharesV2, !pendingSharesV2.isEmpty {
+            let invitedShares = convertPendingSharesToV1(pendingSharesV2)
             for invitedShare in invitedShares {
                 let invitedEmail = invitedShare.accountVO?.primaryEmail?.lowercased()
                 let alreadyExists = mergedShares.contains { existing in
@@ -423,11 +503,11 @@ extension ShareItemViewModel {
                     mergedShares.append(invitedShare)
                 }
             }
-
-            self.sharedArchives = mergedShares
-            self.hasLoadedArchivesOnce = true
-            self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
         }
+
+        self.sharedArchives = mergedShares
+        self.hasLoadedArchivesOnce = true
+        self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
     }
 
     // MARK: - Approve / Deny Share Requests

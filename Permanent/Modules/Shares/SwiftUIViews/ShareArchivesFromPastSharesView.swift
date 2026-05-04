@@ -9,8 +9,13 @@ import SwiftUI
 
 struct ShareArchivesFromPastSharesView: View {
     @ObservedObject var viewModel: ShareItemViewModel
-    @StateObject private var archivesViewModel = ShareArchivesFromPastSharesViewModel()
+    @ObservedObject private var archivesViewModel: ShareArchivesFromPastSharesViewModel
     @Environment(\.dismiss) private var dismiss
+
+    init(viewModel: ShareItemViewModel) {
+        self.viewModel = viewModel
+        self.archivesViewModel = viewModel.pastSharesViewModel
+    }
     @FocusState private var isSearchFocused: Bool
     @State private var isKeyboardVisible: Bool = false
 
@@ -78,9 +83,6 @@ struct ShareArchivesFromPastSharesView: View {
             }
         }
         .background(Color.white)
-        .onAppear {
-            archivesViewModel.fetchArchives()
-        }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             isKeyboardVisible = true
         }
@@ -204,9 +206,9 @@ struct ShareArchivesFromPastSharesView: View {
         VStack(alignment: .leading, spacing: 0) {
             if !archives.isEmpty {
                 Text(title)
-                    .font(.custom("Usual-Medium", size: 14))
-                    .foregroundColor(Color.blue300)
-                    .tracking(2)
+                    .font(.custom("Usual-Regular", size: 10))
+                    .foregroundColor(Color.blue900)
+                    .tracking(1.6)
                     .padding(.bottom, 8)
             }
 

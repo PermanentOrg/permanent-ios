@@ -15,7 +15,8 @@ enum ShareAccessEndpoint {
         accessRole: String,
         folderLinkId: Int,
         relationship: String,
-        folderId: Int
+        folderId: Int? = nil,
+        recordId: Int? = nil
     )
 }
 
@@ -42,17 +43,23 @@ extension ShareAccessEndpoint: RequestProtocol {
             accessRole: let accessRole,
             folderLinkId: let folderLinkId,
             relationship: let relationship,
-            folderId: let folderId
+            folderId: let folderId,
+            recordId: let recordId
         ):
-            return [
+            var params: [String: Any] = [
                 "email": email,
                 "byArchiveId": byArchiveId,
                 "fullName": fullName,
                 "accessRole": accessRole,
                 "folderLinkId": folderLinkId,
-                "relationship": relationship,
-                "folderId": folderId
+                "relationship": relationship
             ]
+            if let recordId {
+                params["recordId"] = recordId
+            } else if let folderId {
+                params["folderId"] = folderId
+            }
+            return params
         }
     }
 
