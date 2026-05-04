@@ -437,40 +437,40 @@ final class MainViewControllerTests: XCTestCase {
         vc.collectionView = collectionView
         
         let size = vc.collectionView(collectionView, layout: collectionView.collectionViewLayout, sizeForItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
-        
-        XCTAssertEqual(size.height, 70)
+
+        XCTAssertEqual(size.height, 74)
     }
-    
+
     func testSizeForItemAtSyncedGridIsLargerThanListAfterToggle() {
         let vc = MainViewController()
         vc.viewModel = MyFilesViewModel()
-        
+
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         let switchButton = UIButton(type: .system)
         vc.collectionView = collectionView
         vc.switchViewButton = switchButton
-        
+
         vc.switchViewButtonPressed(self)
-        
+
         let size = vc.collectionView(collectionView, layout: collectionView.collectionViewLayout, sizeForItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
-        
-        XCTAssertGreaterThan(size.height, 70)
+
+        XCTAssertGreaterThan(size.height, 74)
     }
-    
+
     func testSizeForItemAtNonSyncedSectionAlwaysUsesListHeight() {
         let vc = MainViewController()
         vc.viewModel = MyFilesViewModel()
-        
+
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         let switchButton = UIButton(type: .system)
         vc.collectionView = collectionView
         vc.switchViewButton = switchButton
-        
+
         vc.switchViewButtonPressed(self)
-        
+
         let size = vc.collectionView(collectionView, layout: collectionView.collectionViewLayout, sizeForItemAt: IndexPath(row: 0, section: FileListType.downloading.rawValue))
-        
-        XCTAssertEqual(size.height, 70)
+
+        XCTAssertEqual(size.height, 74)
     }
     
     func testDidSelectItemAtUnsyncedFileDoesNothing() {
