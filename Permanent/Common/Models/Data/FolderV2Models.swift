@@ -31,7 +31,9 @@ struct FolderV2Data: Model {
     let parentFolder: ParentFolderV2?
     let paths: FolderPathsV2?
     let thumbnailUrls: ThumbnailUrlsV2?
-    
+    let shares: [RecordShareV2]?
+    let pendingShares: [PendingShareV2]?
+
     init(folderId: String? = nil,
          displayName: String? = nil,
          size: Int? = nil,
@@ -48,7 +50,9 @@ struct FolderV2Data: Model {
          archive: FolderArchiveV2? = nil,
          parentFolder: ParentFolderV2? = nil,
          paths: FolderPathsV2? = nil,
-         thumbnailUrls: ThumbnailUrlsV2? = nil) {
+         thumbnailUrls: ThumbnailUrlsV2? = nil,
+         shares: [RecordShareV2]? = nil,
+         pendingShares: [PendingShareV2]? = nil) {
         self.folderId = folderId
         self.displayName = displayName
         self.size = size
@@ -66,6 +70,8 @@ struct FolderV2Data: Model {
         self.parentFolder = parentFolder
         self.paths = paths
         self.thumbnailUrls = thumbnailUrls
+        self.shares = shares
+        self.pendingShares = pendingShares
     }
 }
 

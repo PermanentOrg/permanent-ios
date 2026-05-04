@@ -414,9 +414,9 @@ class FilesEndpointPayloads {
         if let location = params.location,
             let locationJson = try? JSONEncoder().encode(location),
             let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) {
-            recordVO["locnVO"] = locationDict
+            recordVO["LocnVO"] = locationDict
         }
-        
+
         return [
             "RequestVO":
                 [
@@ -428,7 +428,7 @@ class FilesEndpointPayloads {
                 ]
         ]
     }
-    
+
     static func updateMultipleRecordsRequest(params: UpdateMultipleRecordsParams) -> RequestParameters {
         let data = params.files.map {
             var recordVO: [String: Any] = [
@@ -436,11 +436,11 @@ class FilesEndpointPayloads {
                 "archiveNbr": $0.archiveNo,
                 "folder_linkId": $0.folderLinkId
             ]
-            
+
             if let location = params.location,
                 let locationJson = try? JSONEncoder().encode(location),
                 let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) {
-                recordVO["locnVO"] = locationDict
+                recordVO["LocnVO"] = locationDict
             }
             
             if let description = params.description {

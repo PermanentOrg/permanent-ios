@@ -157,6 +157,13 @@ class ShareItemViewModel: ObservableObject {
     @Published var showEmailAddressField = false
     @Published var emailAddress = ""
 
+    // MARK: - Edit Invitation State
+
+    @Published var showEditInvitation = false
+    @Published var editingInvitation: ShareVOData?
+    @Published var selectedRoleForEditInvitation: AccessRole = .viewer
+    @Published var showRevokeInvitationAlert = false
+
     // MARK: - Notification State
 
     @Published var showCopyNotification = false
@@ -202,8 +209,9 @@ class ShareItemViewModel: ObservableObject {
     var originalAutoApprove: Bool = false
     var originalAccessRole: AccessRole = .viewer
 
-    // Child ViewModel
+    // Child ViewModels
     let findArchiveByEmailViewModel = ShareFindArchiveByEmailViewModel()
+    let pastSharesViewModel = ShareArchivesFromPastSharesViewModel()
 
     // MARK: - Computed Properties
 

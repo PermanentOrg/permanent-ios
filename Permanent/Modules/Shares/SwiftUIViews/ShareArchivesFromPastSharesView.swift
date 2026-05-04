@@ -9,8 +9,13 @@ import SwiftUI
 
 struct ShareArchivesFromPastSharesView: View {
     @ObservedObject var viewModel: ShareItemViewModel
-    @StateObject private var archivesViewModel = ShareArchivesFromPastSharesViewModel()
+    @ObservedObject private var archivesViewModel: ShareArchivesFromPastSharesViewModel
     @Environment(\.dismiss) private var dismiss
+
+    init(viewModel: ShareItemViewModel) {
+        self.viewModel = viewModel
+        self.archivesViewModel = viewModel.pastSharesViewModel
+    }
     @FocusState private var isSearchFocused: Bool
     @State private var isKeyboardVisible: Bool = false
 
@@ -44,25 +49,37 @@ struct ShareArchivesFromPastSharesView: View {
                 .padding(.vertical, 16)
                 .background(Color.blue25)
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    archiveSection(
-                        title: "MY ARCHIVES",
-                        archives: archivesViewModel.myArchives
-                    )
-                    .padding(.top, 24)
-
-                    archiveSection(
-                        title: "OTHER ARCHIVES",
-                        archives: archivesViewModel.otherArchives
-                    )
-                    .padding(.top, archivesViewModel.myArchives.isEmpty ? 24 : 20)
+            if archivesViewModel.isLoading {
+                Spacer()
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .scaleEffect(1.1)
+                    Text("Loading archives...")
+                        .font(.custom("Usual-Regular", size: 14))
+                        .foregroundColor(Color.blue300)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
-            }
-            .onTapGesture {
-                dismissKeyboard()
+                Spacer()
+            } else {
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        archiveSection(
+                            title: "MY ARCHIVES",
+                            archives: archivesViewModel.myArchives
+                        )
+                        .padding(.top, 24)
+
+                        archiveSection(
+                            title: "OTHER ARCHIVES",
+                            archives: archivesViewModel.otherArchives
+                        )
+                        .padding(.top, archivesViewModel.myArchives.isEmpty ? 24 : 20)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 24)
+                }
+                .onTapGesture {
+                    dismissKeyboard()
+                }
             }
         }
         .background(Color.white)
@@ -167,7 +184,7 @@ struct ShareArchivesFromPastSharesView: View {
                 .background(Color.blue25)
                 .cornerRadius(4)
 
-            TextField("Fiter archives...", text: $archivesViewModel.searchText)
+            TextField("Filter archives...", text: $archivesViewModel.searchText)
                 .font(.custom("Usual-Regular", size: 14))
                 .foregroundColor(Color.blue900)
                 .textInputAutocapitalization(.never)
@@ -189,9 +206,9 @@ struct ShareArchivesFromPastSharesView: View {
         VStack(alignment: .leading, spacing: 0) {
             if !archives.isEmpty {
                 Text(title)
-                    .font(.custom("Usual-Medium", size: 14))
-                    .foregroundColor(Color.blue300)
-                    .tracking(2)
+                    .font(.custom("Usual-Regular", size: 10))
+                    .foregroundColor(Color.blue900)
+                    .tracking(1.6)
                     .padding(.bottom, 8)
             }
 
@@ -205,10 +222,18 @@ struct ShareArchivesFromPastSharesView: View {
     private func archiveRow(_ archive: ShareArchivesFromPastSharesViewModel.PastSharedArchive) -> some View {
         Button(action: {
             dismissKeyboard()
+            viewModel.openGrantArchiveAccess(
+                archiveName: archive.title,
+                archiveInitials: archive.initials,
+                archiveID: archive.archiveID,
+                thumbnailURL: archive.thumbnailURL,
+                source: .pastShares
+            )
         }) {
             HStack(spacing: 16) {
-                thumbnail(archive.thumbnail)
+                archiveThumbnail(thumbnailURL: archive.thumbnailURL, initials: archive.initials)
                     .frame(width: 40, height: 40)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 Text(archive.title)
                     .font(.custom("Usual-Regular", size: 14))
@@ -227,39 +252,39 @@ struct ShareArchivesFromPastSharesView: View {
     }
 
     @ViewBuilder
-    private func thumbnail(_ thumbnail: ShareArchivesFromPastSharesViewModel.PastSharedArchive.Thumbnail) -> some View {
-        switch thumbnail {
-        case .photo:
-            ZStack {
-                LinearGradient(
-                    colors: [Color(red: 0.74, green: 0.56, blue: 0.46), Color(red: 0.40, green: 0.33, blue: 0.29)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                Image(systemName: "person.crop.square")
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.white.opacity(0.9))
-            }
-            .cornerRadius(6)
-
-        case .gradient(let initials):
-            ZStack {
-                LinearGradient(
-                    colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .cornerRadius(8)
-
-                VStack(spacing: 3) {
-                    Rectangle()
-                        .fill(Color.white.opacity(0.9))
-                        .frame(width: 14, height: 2)
-
-                    Text(initials)
-                        .font(.custom("Usual-Medium", size: 12))
-                        .foregroundColor(.white)
+    private func archiveThumbnail(thumbnailURL: String?, initials: String) -> some View {
+        if let thumbnailURL, let url = URL(string: thumbnailURL) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                default:
+                    initialsAvatar(initials)
                 }
+            }
+        } else {
+            initialsAvatar(initials)
+        }
+    }
+
+    private func initialsAvatar(_ initials: String) -> some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 3) {
+                Rectangle()
+                    .fill(Color.white.opacity(0.9))
+                    .frame(width: 14, height: 2)
+
+                Text(initials)
+                    .font(.custom("Usual-Medium", size: 12))
+                    .foregroundColor(.white)
             }
         }
     }

@@ -82,6 +82,9 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
             setLocation(latitude, longitude)
+        } else {
+            let coordinate = Constants.API.Locations.initialLocation
+            setLocation(coordinate.latitude, coordinate.longitude)
         }
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
@@ -107,22 +110,26 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         })
     }
     
-    func setLocation(_ latitude: Double, _ longitude: Double) {
+    func setLocation(_ latitude: Double, _ longitude: Double, preserveZoom: Bool = false) {
         let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
-        
-        mapView.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 6))
-        
+
+        if preserveZoom {
+            mapView.animate(toLocation: coordinate)
+        } else {
+            mapView.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 6))
+        }
+
         if marker == nil {
             marker = GMSMarker()
         }
         marker.position = coordinate
         marker.map = mapView
     }
-    
+
     func saveLocation(_ location: CLLocationCoordinate2D) {
         viewModel?.validateLocation(lat: location.latitude, long: location.longitude, completion: { status in
             if let locnVO = status {
-                self.setLocation(location.latitude, location.longitude)
+                self.setLocation(location.latitude, location.longitude, preserveZoom: true)
                 self.pickedLocation = locnVO
             } else {
                 self.view.showNotificationBanner(title: "There was a problem saving the location.".localized(), backgroundColor: .deepRed, textColor: .white)

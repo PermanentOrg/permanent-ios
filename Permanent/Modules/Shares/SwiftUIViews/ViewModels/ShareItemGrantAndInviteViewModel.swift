@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-// Decodable response used only by submitInviteAndGrantAccess
+// Decodable response used by submitInviteAndGrantAccess and resendInvitation
 private struct ShareInviteResponse: Decodable {
     let inviteId: Int?
 }
+
+private typealias ResendInviteResponse = ShareInviteResponse
 
 extension ShareItemViewModel {
 
@@ -34,6 +36,7 @@ extension ShareItemViewModel {
     // MARK: - Select Archive from Past Shares Flow
 
     func openSelectArchiveFromPastShares() {
+        pastSharesViewModel.fetchArchives()
         navigationDirection = .forward
         showFindArchiveByEmail = false
         showSelectArchiveFromPastShares = true
@@ -269,16 +272,9 @@ extension ShareItemViewModel {
             return
         }
 
-        let folderId: Int = {
-            if isFolder {
-                return fileModel.folderId
-            }
-            if fileModel.parentFolderId > 0 {
-                return fileModel.parentFolderId
-            }
-            return fileModel.folderId
-        }()
-        guard folderId > 0 else {
+        let itemFolderId: Int? = isFolder ? fileModel.folderId : nil
+        let itemRecordId: Int? = isFolder ? nil : fileModel.recordId
+        guard (itemFolderId ?? 0) > 0 || (itemRecordId ?? 0) > 0 else {
             errorMessage = "Unable to send invitation right now. Please try again."
             return
         }
@@ -293,7 +289,8 @@ extension ShareItemViewModel {
                 accessRole: selectedRoleForInviteAccess.apiValue,
                 folderLinkId: folderLinkId,
                 relationship: "relation.friend",
-                folderId: folderId
+                folderId: itemFolderId,
+                recordId: itemRecordId
             )
         )
 
@@ -409,6 +406,186 @@ extension ShareItemViewModel {
 
         sharedArchives.append(localShare)
         shouldShowArchivesSection = !sharedArchives.isEmpty
+    }
+
+    // MARK: - Edit Invitation Flow
+
+    func openEditInvitation(shareVO: ShareVOData) {
+        navigationDirection = .forward
+        editingInvitation = shareVO
+        selectedRoleForEditInvitation = AccessRole.roleForValue(shareVO.accessRole)
+        showEditInvitation = true
+    }
+
+    func closeEditInvitation() {
+        navigationDirection = .backward
+        showEditInvitation = false
+        editingInvitation = nil
+    }
+
+    private func inviteId(from shareVO: ShareVOData) -> Int? {
+        guard let shareID = shareVO.shareID, shareID < 0 else { return nil }
+        return abs(shareID)
+    }
+
+    func resendInvitation() {
+        guard let invitation = editingInvitation,
+              let id = inviteId(from: invitation) else { return }
+
+        isLoading = true
+
+        let operation = APIOperation(InviteEndpoint.resendInvite(id: id))
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+
+            self.isLoading = false
+
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<InviteVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<InviteVO>.decoder
+                    ),
+                    model.isSuccessful
+                else {
+                    self.errorMessage = "Unable to resend invitation right now. Please try again."
+                    return
+                }
+
+                self.navigationDirection = .backward
+                self.showEditInvitation = false
+                self.editingInvitation = nil
+                self.showArchiveAccessUpdatedNotification(message: "Invitation sent again.")
+
+            case .error(let error, _):
+                self.errorMessage = (error as? APIError)?.message ?? "Unable to resend invitation right now. Please try again."
+
+            default:
+                self.errorMessage = "Unable to resend invitation right now. Please try again."
+            }
+        }
+    }
+
+    func updateInvitation() {
+        let originalRole = AccessRole.roleForValue(editingInvitation?.accessRole)
+        guard selectedRoleForEditInvitation != originalRole else {
+            closeEditInvitation()
+            return
+        }
+
+        guard let invitation = editingInvitation,
+              let email = invitation.accountVO?.primaryEmail,
+              !email.isEmpty else { return }
+
+        guard let byArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else {
+            errorMessage = "Unable to update invitation right now. Please try again."
+            return
+        }
+
+        let folderLinkId = correctFolderLinkId ?? fileModel.folderLinkId
+        guard folderLinkId > 0 else {
+            errorMessage = "Unable to update invitation right now. Please try again."
+            return
+        }
+
+        let itemFolderId: Int? = isFolder ? fileModel.folderId : nil
+        let itemRecordId: Int? = isFolder ? nil : fileModel.recordId
+        guard (itemFolderId ?? 0) > 0 || (itemRecordId ?? 0) > 0 else {
+            errorMessage = "Unable to update invitation right now. Please try again."
+            return
+        }
+
+        let fullName = invitation.accountVO?.fullName ?? ""
+
+        isLoading = true
+
+        let operation = APIOperation(
+            ShareAccessEndpoint.inviteShare(
+                email: email,
+                byArchiveId: byArchiveId,
+                fullName: fullName,
+                accessRole: selectedRoleForEditInvitation.apiValue,
+                folderLinkId: folderLinkId,
+                relationship: "relation.friend",
+                folderId: itemFolderId,
+                recordId: itemRecordId
+            )
+        )
+
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+
+            self.isLoading = false
+
+            switch result {
+            case .json(let response, _):
+                guard
+                    let inviteResponse: ResendInviteResponse = JSONHelper.convertToModel(from: response),
+                    inviteResponse.inviteId != nil
+                else {
+                    self.errorMessage = "Unable to update invitation right now. Please try again."
+                    return
+                }
+
+                if let index = self.sharedArchives.firstIndex(where: { $0.shareID == invitation.shareID }) {
+                    self.sharedArchives[index].accessRole = self.selectedRoleForEditInvitation.apiValue
+                }
+
+                self.navigationDirection = .backward
+                self.showEditInvitation = false
+                self.editingInvitation = nil
+                self.showArchiveAccessUpdatedNotification(message: "Invitation updated.")
+
+            case .error(let error, _):
+                self.errorMessage = (error as? APIError)?.message ?? "Unable to update invitation right now. Please try again."
+
+            default:
+                self.errorMessage = "Unable to update invitation right now. Please try again."
+            }
+        }
+    }
+
+    func revokeInvitation() {
+        guard let invitation = editingInvitation,
+              let id = inviteId(from: invitation) else { return }
+
+        isLoading = true
+
+        let operation = APIOperation(InviteEndpoint.revokeInvite(id: id))
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { return }
+
+            self.isLoading = false
+
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<InviteVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<InviteVO>.decoder
+                    ),
+                    model.isSuccessful
+                else {
+                    self.errorMessage = "Unable to revoke invitation right now. Please try again."
+                    return
+                }
+
+                self.sharedArchives.removeAll { $0.shareID == invitation.shareID }
+                self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
+
+                self.navigationDirection = .backward
+                self.showEditInvitation = false
+                self.editingInvitation = nil
+                self.showArchiveAccessUpdatedNotification(message: "Invitation revoked.")
+
+            case .error(let error, _):
+                self.errorMessage = (error as? APIError)?.message ?? "Unable to revoke invitation right now. Please try again."
+
+            default:
+                self.errorMessage = "Unable to revoke invitation right now. Please try again."
+            }
+        }
     }
 
     // MARK: - Legacy Email Invitation (inline field on ShareItemView)
