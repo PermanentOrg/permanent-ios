@@ -82,7 +82,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
                 if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
-                    self?.viewModel?.viewModels.insert(FileModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.archiveAccessRole ?? .viewer), at: 0)
+                    let newModel = FileModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.archiveAccessRole ?? .viewer)
+                    let alreadyExists = self?.viewModel?.viewModels.contains(where: {
+                        $0.folderLinkId == newModel.folderLinkId && $0.name == newModel.name
+                    }) ?? false
+                    if !alreadyExists {
+                        self?.viewModel?.viewModels.insert(newModel, at: 0)
+                    }
                     self?.refreshCollectionView()
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
@@ -190,9 +196,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 return
             }
             
-            self?.refreshCurrentFolder(shouldDisplaySpinner: false)
+            self?.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
         }
-        
+
         showBanner()
     }
 
@@ -522,28 +528,29 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
         guard
             let viewModel = viewModel,
             let currentFolder = viewModel.currentFolder else { return }
-        
+
         viewModel.refreshUploadQueue()
-        
+
         let params: NavigateMinParams = (
             currentFolder.archiveNo,
             currentFolder.folderLinkId,
             nil
         )
-        
+
         // Back navigation set to `true` so it's not considered a in-depth navigation.
         // resetScroll false to preserve scroll position when refreshing the same folder.
-        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, resetScroll: false, then: handler)
+        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, resetScroll: false, silenceErrors: silenceErrors, then: handler)
     }
     
     @objc
     private func pullToRefreshAction() {
         refreshCurrentFolder(
             shouldDisplaySpinner: false,
+            silenceErrors: true,
             then: {
                 self.refreshControl.endRefreshing()
             }
@@ -724,7 +731,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
     }
     
-    func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, resetScroll: Bool = true, then handler: VoidAction? = nil) {
+    func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, resetScroll: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
 
         let runRequest: (NavigateMinParams, Bool, @escaping ServerResponse) -> Void = navigateMinRequest ?? { [weak self] requestParams, requestBackNavigation, completion in
@@ -732,22 +739,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         runRequest(params, backNavigation, { status in
-            self.onFilesFetchCompletion(status, resetScroll: resetScroll)
+            self.onFilesFetchCompletion(status, resetScroll: resetScroll, silenceErrors: silenceErrors)
             handler?()
         })
         viewModel?.timer?.invalidate()
     }
-    
-    private func onFilesFetchCompletion(_ status: RequestStatus, resetScroll: Bool = false) {
+
+    private func onFilesFetchCompletion(_ status: RequestStatus, resetScroll: Bool = false, silenceErrors: Bool = false) {
         DispatchQueue.main.async {
             self.hideSpinner()
-            
+
             // Ensure refresh control is properly ended
             if self.refreshControl.isRefreshing {
                 self.refreshControl.endRefreshing()
             }
         }
-        
+
         viewModel?.refreshUploadQueue()
 
         switch status {
@@ -760,9 +767,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             toggleFileAction(viewModel?.fileAction)
             updateFABViewVisibility()
             navigationToShareFolderLink()
-            
+
         case .error(let message):
-            showErrorAlert(message: message)
+            if !silenceErrors {
+                showErrorAlert(message: message)
+            }
         }
     }
     

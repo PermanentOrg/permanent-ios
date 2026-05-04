@@ -73,29 +73,20 @@ enum BackgroundUploadCompletionHandler {
     }
 
     private static func cleanup(metadata: BackgroundUploadMetadata, success: Bool) {
-        // Remove persisted metadata
         BackgroundUploadMetadata.remove(taskIdentifier: metadata.taskIdentifier)
-
-        // Clean up temp file
         BackgroundUploadSessionManager.shared.cleanupTempFile(at: metadata.tempFilePath)
 
-        // Remove from saved upload queue
         DispatchQueue.main.async {
             var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+
+            let fileURL = savedFiles?.first(where: { $0.id == metadata.fileInfoId })?.url
             savedFiles?.removeAll { $0.id == metadata.fileInfoId }
             try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
 
-            // Also delete the original file
-            if success {
-                let fileHelper = FileHelper()
-                // The original file URL was saved separately in the upload queue
-                // and will be cleaned up by removing it from savedFiles above.
+            if success, let fileURL = fileURL {
+                FileHelper().deleteFile(at: fileURL)
             }
 
-            // Update Live Activity
-            UploadLiveActivityManager.shared.fileCompleted(success: success)
-
-            // Notify UI to refresh
             NotificationCenter.default.post(name: UploadManager.didUploadFileNotification, object: nil, userInfo: nil)
         }
     }

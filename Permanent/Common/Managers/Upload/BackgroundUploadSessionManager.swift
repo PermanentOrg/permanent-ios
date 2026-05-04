@@ -17,6 +17,11 @@ class BackgroundUploadSessionManager: NSObject {
     static let uploadDidCompleteNotification = Notification.Name("BackgroundUploadSessionManager.uploadDidComplete")
 
     private let logger = Logger(subsystem: "com.permanent.ios", category: "BackgroundUpload")
+    private let flowLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
+
+    /// Tracks the last session keepalive to avoid pinging too often.
+    private var lastKeepaliveTime: Date?
+    private let keepaliveInterval: TimeInterval = 180
 
     /// Stored by AppDelegate when iOS wakes the app for background session events.
     var backgroundSessionCompletionHandler: (() -> Void)?
@@ -56,13 +61,29 @@ class BackgroundUploadSessionManager: NSObject {
     }
 
     /// Call on app launch to reconnect to any in-flight background tasks.
+    /// Cleans up stale metadata for tasks that no longer exist (e.g. after
+    /// force-quit) and triggers a queue refresh so those files get re-queued.
     func reconnectToExistingSession() {
-        // Accessing `session` triggers the lazy initializer, which reconnects
-        // to any tasks from a previous app session.
         session.getTasksWithCompletionHandler { [weak self] _, uploadTasks, _ in
             guard let self = self else { return }
             if !uploadTasks.isEmpty {
                 self.logger.info("Reconnected to \(uploadTasks.count, privacy: .public) in-flight background upload tasks")
+            }
+
+            let activeTaskIds = Set(uploadTasks.map(\.taskIdentifier))
+            let allMetadata = BackgroundUploadMetadata.loadAll()
+            let staleMetadata = allMetadata.filter { !activeTaskIds.contains($0.taskIdentifier) }
+
+            if !staleMetadata.isEmpty {
+                self.logger.info("Cleaning up \(staleMetadata.count, privacy: .public) stale background upload metadata entries")
+                for metadata in staleMetadata {
+                    self.cleanupTempFile(at: metadata.tempFilePath)
+                    BackgroundUploadMetadata.remove(taskIdentifier: metadata.taskIdentifier)
+                }
+            }
+
+            DispatchQueue.main.async {
+                UploadManager.shared.refreshQueue()
             }
         }
     }
@@ -80,10 +101,7 @@ class BackgroundUploadSessionManager: NSObject {
         let task = session.uploadTask(with: request, fromFile: fileURL)
         let taskId = task.taskIdentifier
 
-        // Persist metadata with the real task identifier
-        var updatedMetadata = metadata
-        // Since taskIdentifier in the passed metadata is a placeholder (0),
-        // we need to create a new one with the real task identifier.
+        // Persist metadata with the real task identifier.
         let finalMetadata = BackgroundUploadMetadata(
             fileInfoId: metadata.fileInfoId,
             fileName: metadata.fileName,
@@ -114,11 +132,37 @@ class BackgroundUploadSessionManager: NSObject {
         lock.unlock()
     }
 
+    /// Cancel a background upload task. The in-memory completion handler is preserved
+    /// so the UploadOperation receives the cancellation error and can retry.
+    func cancelTask(identifier taskId: Int) {
+        session.getAllTasks { [weak self] tasks in
+            if let task = tasks.first(where: { $0.taskIdentifier == taskId }) {
+                self?.logger.info("Cancelling background upload task \(taskId, privacy: .public) for foreground promotion")
+                task.cancel()
+            }
+        }
+    }
+
     /// Clean up a temp file after upload completes.
     func cleanupTempFile(at path: String) {
         let url = URL(fileURLWithPath: path)
         try? FileManager.default.removeItem(at: url)
         logger.debug("Cleaned up temp file: \(path, privacy: .public)")
+    }
+
+    /// Ping the Permanent server to keep the session alive during long uploads.
+    /// Debounced to at most once per `keepaliveInterval` unless `force` is true.
+    func keepSessionAliveIfNeeded(force: Bool = false) {
+        let now = Date()
+        if !force, let last = lastKeepaliveTime, now.timeIntervalSince(last) < keepaliveInterval {
+            return
+        }
+        lastKeepaliveTime = now
+
+        let operation = APIOperation(AccountEndpoint.getSessionAccount)
+        operation.execute(in: APIRequestDispatcher()) { [weak self] _ in
+            self?.logger.info("Session keepalive ping sent (force=\(force, privacy: .public))")
+        }
     }
 }
 
@@ -163,10 +207,19 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
         let uploadError: Error?
         if let error = error {
             uploadError = error
+            flowLogger.error("[S3 RESPONSE] task=\(taskId, privacy: .public) networkError=\(error.localizedDescription, privacy: .public)")
         } else if let response = task.response as? HTTPURLResponse, response.statusCode >= 200, response.statusCode < 300 {
             uploadError = nil
+            flowLogger.info("[S3 RESPONSE] task=\(taskId, privacy: .public) status=\(response.statusCode, privacy: .public) SUCCESS")
         } else {
+            let statusCode = (task.response as? HTTPURLResponse)?.statusCode ?? -1
             uploadError = UploadError.s3
+            flowLogger.error("[S3 RESPONSE] task=\(taskId, privacy: .public) status=\(statusCode, privacy: .public) FAILED (non-2xx)")
+        }
+
+        // Keep the server session alive while background uploads are running.
+        if uploadError == nil {
+            keepSessionAliveIfNeeded()
         }
 
         // Try in-memory completion handler first (UploadOperation is still alive)
@@ -174,7 +227,15 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
         let handler = completionHandlers.removeValue(forKey: taskId)
         lock.unlock()
 
+        flowLogger.info("[S3 RESPONSE] task=\(taskId, privacy: .public) hasInMemoryHandler=\(handler != nil, privacy: .public)")
+
         if let handler = handler {
+            // UploadOperation is still alive — clean up persisted metadata and temp file,
+            // then let the operation continue to Phase 3 (registerRecord).
+            if let metadata = BackgroundUploadMetadata.find(taskIdentifier: taskId) {
+                cleanupTempFile(at: metadata.tempFilePath)
+                BackgroundUploadMetadata.remove(taskIdentifier: taskId)
+            }
             handler(uploadError)
         } else {
             // App was relaunched — no in-memory handler. Use BackgroundUploadCompletionHandler.
@@ -186,9 +247,6 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
                 if let metadata = BackgroundUploadMetadata.find(taskIdentifier: taskId) {
                     cleanupTempFile(at: metadata.tempFilePath)
                     BackgroundUploadMetadata.remove(taskIdentifier: taskId)
-                    DispatchQueue.main.async {
-                        UploadLiveActivityManager.shared.fileCompleted(success: false)
-                    }
                 }
             }
         }

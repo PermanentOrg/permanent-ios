@@ -29,6 +29,7 @@ struct UploadActivityAttributes: ActivityAttributes {
     enum UploadStatus: String, Codable, Hashable {
         case uploading
         case paused
+        case processing
         case completed
         case failed
     }

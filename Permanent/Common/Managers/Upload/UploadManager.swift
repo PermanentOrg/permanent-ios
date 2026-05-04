@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+import Network
 import os.log
 
 class UploadManager {
@@ -28,27 +30,93 @@ class UploadManager {
     private let optimalRegisterTimeThreshold: TimeInterval = 10 // 10 seconds is considered optimal for registerRecord
     private let maxRegisterTimesToTrack = 5 // Track the last 5 register times
     
-    // Logger for upload concurrency management
     private let logger = Logger(subsystem: "com.permanent.ios", category: "UploadManager")
-    
+    private let flowLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
+
+    /// Whether the app is currently in the foreground.
+    /// UploadOperation checks this at the start of S3 upload to choose
+    /// the fast foreground session or the background-resilient session.
+    private(set) var isInForeground: Bool = true
+
+    /// File IDs whose background tasks were cancelled for foreground promotion.
+    /// When the cancellation error flows through, the handler re-queues these
+    /// files without incrementing retryCount or reporting failure.
+    private var promotedFileIds: Set<String> = []
+
+    /// Monitors network path changes to send an immediate session keepalive
+    /// when the device transitions between WiFi and cellular.
+    private let networkMonitor = NWPathMonitor()
+    private var lastNetworkPathIsWifi: Bool?
+
     init() {
         uploadQueue.maxConcurrentOperationCount = defaultConcurrentUploads
-        
+
         timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(refreshQueue), userInfo: nil, repeats: true)
-        
+
         // Listen for upload completion notifications
-        NotificationCenter.default.addObserver(self, 
-                                              selector: #selector(handleUploadFinished(_:)), 
-                                              name: UploadOperation.uploadFinishedNotification, 
+        NotificationCenter.default.addObserver(self,
+                                              selector: #selector(handleUploadFinished(_:)),
+                                              name: UploadOperation.uploadFinishedNotification,
                                               object: nil)
-        
+
         // Listen for registerRecord timing notifications
         NotificationCenter.default.addObserver(self,
                                               selector: #selector(handleRegisterRecordTiming(_:)),
                                               name: NSNotification.Name("UploadOperation.registerRecordTimingNotification"),
                                               object: nil)
-        
+
+        // Immediately re-queue any pending uploads when the app returns to foreground
+        NotificationCenter.default.addObserver(self,
+                                              selector: #selector(appWillEnterForeground),
+                                              name: UIApplication.willEnterForegroundNotification,
+                                              object: nil)
+
+        NotificationCenter.default.addObserver(self,
+                                              selector: #selector(appDidEnterBackground),
+                                              name: UIApplication.didEnterBackgroundNotification,
+                                              object: nil)
+
         logger.info("UploadManager initialized with \(self.uploadQueue.maxConcurrentOperationCount, privacy: .public) concurrent uploads")
+
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+            guard let self = self else { return }
+            let isWifi = path.usesInterfaceType(.wifi)
+            let hasActiveUploads = !self.uploadQueue.operations.filter({ !$0.isFinished && !$0.isCancelled }).isEmpty
+
+            if let previousWifi = self.lastNetworkPathIsWifi, previousWifi != isWifi, hasActiveUploads {
+                let from = previousWifi ? "WiFi" : "Cellular"
+                let to = isWifi ? "WiFi" : "Cellular"
+                self.logger.info("Network changed from \(from, privacy: .public) to \(to, privacy: .public) during upload — sending keepalive")
+                BackgroundUploadSessionManager.shared.keepSessionAliveIfNeeded(force: true)
+            }
+            self.lastNetworkPathIsWifi = isWifi
+        }
+        networkMonitor.start(queue: DispatchQueue(label: "UploadManager.networkMonitor"))
+    }
+
+    @objc private func appDidEnterBackground() {
+        isInForeground = false
+        uploadQueue.maxConcurrentOperationCount = 1
+        logger.info("App entered background — limiting to 1 concurrent upload")
+    }
+
+    @objc private func appWillEnterForeground() {
+        isInForeground = true
+        uploadQueue.maxConcurrentOperationCount = defaultConcurrentUploads
+        logger.info("App entering foreground — restored concurrent uploads to \(self.defaultConcurrentUploads, privacy: .public)")
+
+        let bgOps = uploadQueue.operations
+            .compactMap { $0 as? UploadOperation }
+            .filter { $0.backgroundTaskIdentifier != nil && !$0.isFinished && !$0.isCancelled }
+        for op in bgOps {
+            if let taskId = op.backgroundTaskIdentifier {
+                promotedFileIds.insert(op.file.id)
+                BackgroundUploadSessionManager.shared.cancelTask(identifier: taskId)
+                logger.info("Promoting background task \(taskId, privacy: .public) to foreground for: \(op.file.name, privacy: .public)")
+            }
+        }
+
+        refreshQueue()
     }
     
     deinit {
@@ -183,6 +251,20 @@ class UploadManager {
         if let fileContents = file.fileContents {
             file.url = fileHelper.saveFile(fileContents, named: file.id, withExtension: "jpeg", isDownload: false) ?? URL(fileURLWithPath: "")
             file.fileContents = nil
+        } else if file.url.path.contains("/tmp/"), let uploadDir = fileHelper.uploadDirectoryURL {
+            // Move files out of the tmp directory to a durable location.
+            // iOS purges tmp/ when the app is backgrounded, which destroys
+            // queued files that haven't started uploading yet.
+            let durableURL = uploadDir.appendingPathComponent(file.id).appendingPathExtension(file.url.pathExtension)
+            do {
+                if FileManager.default.fileExists(atPath: durableURL.path) {
+                    try FileManager.default.removeItem(at: durableURL)
+                }
+                try FileManager.default.moveItem(at: file.url, to: durableURL)
+                file.url = durableURL
+            } catch {
+                logger.error("Failed to move file from tmp to durable location: \(error.localizedDescription, privacy: .public)")
+            }
         }
         
         logger.debug("Preparing to upload file: \(file.name, privacy: .public), id: \(file.id, privacy: .public)")
@@ -206,6 +288,16 @@ class UploadManager {
     
     @objc
     func refreshQueue() {
+        if uploadQueue.isSuspended, PermSession.currentSession != nil {
+            logger.info("Session restored — resuming upload queue")
+            uploadQueue.isSuspended = false
+        }
+
+        let hasActiveUploads = !uploadQueue.operations.filter({ !$0.isFinished && !$0.isCancelled }).isEmpty
+        if hasActiveUploads {
+            BackgroundUploadSessionManager.shared.keepSessionAliveIfNeeded()
+        }
+
         do {
             let selectedArchive = PermSession.currentSession?.selectedArchive
             let extensionUploads = try ExtensionUploadManager.shared.savedFiles()
@@ -231,7 +323,36 @@ class UploadManager {
             var didRefresh = false
             
             var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
-            
+
+            // Fix file URLs invalidated by iOS sandbox container UUID change after app restart.
+            if let files = savedFiles {
+                let fileHelper = FileHelper()
+                var urlsUpdated = false
+                var removedIds: [String] = []
+                for file in files {
+                    guard !FileManager.default.fileExists(atPath: file.url.path) else { continue }
+                    let fileName = file.url.lastPathComponent
+                    if let uploadDir = fileHelper.uploadDirectoryURL {
+                        let reconstructed = uploadDir.appendingPathComponent(fileName)
+                        if FileManager.default.fileExists(atPath: reconstructed.path) {
+                            file.url = reconstructed
+                            urlsUpdated = true
+                            self.logger.info("Reconstructed URL for: \(file.name, privacy: .public)")
+                        } else {
+                            self.logger.warning("File missing after restart, removing from queue: \(file.name, privacy: .public)")
+                            removedIds.append(file.id)
+                        }
+                    }
+                }
+                if !removedIds.isEmpty {
+                    savedFiles?.removeAll { removedIds.contains($0.id) }
+                    urlsUpdated = true
+                }
+                if urlsUpdated {
+                    try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                }
+            }
+
             // Remove files that were already successfully uploaded (duplicate prevention).
             // This handles the case where registerRecord succeeded but the app was force-quit
             // before the main-queue cleanup could remove the file from the persisted queue.
@@ -257,31 +378,57 @@ class UploadManager {
             }
             
             let uploadNames = uploadQueue.operations.compactMap(\.name)
-            for file in savedFiles ?? [] where uploadNames.contains(file.id) == false {
+            let backgroundFileIds = Set(BackgroundUploadMetadata.loadAll().map(\.fileInfoId))
+            for file in savedFiles ?? [] where uploadNames.contains(file.id) == false && !backgroundFileIds.contains(file.id) {
                 let uploadOperation = UploadOperation(file: file) { error in
                     DispatchQueue.main.async {
                         var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                         savedFiles?.removeAll(where: { $0.id == file.id })
-                        
+
                         if error == nil {
-                            self.logger.info("Successfully uploaded file: \(file.name, privacy: .public)")
+                            self.flowLogger.info("[HANDLER] SUCCESS file=\(file.name, privacy: .public) id=\(file.id, privacy: .public) — removing from queue")
                             FileHelper().deleteFile(at: file.url)
-                            
+
                             try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                             UploadLiveActivityManager.shared.fileCompleted(success: true)
-                        } else {
-                            self.logger.error("Failed to upload file: \(file.name, privacy: .public), error: \(error?.localizedDescription ?? "unknown", privacy: .public)")
-                            file.didFailUpload = true
-                            
+                        } else if self.promotedFileIds.remove(file.id) != nil {
+                            self.flowLogger.info("[HANDLER] PROMOTED file=\(file.name, privacy: .public) id=\(file.id, privacy: .public) — re-queuing on foreground session")
                             if var savedFiles = savedFiles {
                                 savedFiles.append(file)
                                 try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                             } else {
                                 try? PreferencesManager.shared.setCustomObject([file], forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                             }
+                        } else if (error as? UploadError) == .authenticationRequired {
+                            self.flowLogger.error("[HANDLER] AUTH FAILED file=\(file.name, privacy: .public) id=\(file.id, privacy: .public) — suspending queue, re-queuing without retry")
+                            if var savedFiles = savedFiles {
+                                savedFiles.append(file)
+                                try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                            } else {
+                                try? PreferencesManager.shared.setCustomObject([file], forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                            }
+                            self.uploadQueue.isSuspended = true
+                        } else {
+                            file.retryCount += 1
+                            file.didFailUpload = true
+                            let maxRetries = 3
+
+                            if file.retryCount <= maxRetries {
+                                self.flowLogger.error("[HANDLER] FAILED file=\(file.name, privacy: .public) id=\(file.id, privacy: .public) error=\(error?.localizedDescription ?? "unknown", privacy: .public) — re-queuing (attempt \(file.retryCount)/\(maxRetries))")
+                                if var savedFiles = savedFiles {
+                                    savedFiles.append(file)
+                                    try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                                } else {
+                                    try? PreferencesManager.shared.setCustomObject([file], forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                                }
+                            } else {
+                                self.flowLogger.error("[HANDLER] FAILED file=\(file.name, privacy: .public) id=\(file.id, privacy: .public) — max retries reached, dropping from queue")
+                                try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                                FileHelper().deleteFile(at: file.url)
+                            }
                             UploadLiveActivityManager.shared.fileCompleted(success: false)
                         }
-                        
+
                         NotificationCenter.default.post(name: Self.didUploadFileNotification, object: nil, userInfo: ["file": file])
                     }
                 }

@@ -33,9 +33,9 @@ struct UploadActivityLiveActivity: Widget {
                         .monospacedDigit()
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    if context.state.status == .uploading || context.state.status == .paused {
+                    if context.state.status == .uploading || context.state.status == .paused || context.state.status == .processing {
                         ProgressView(value: context.state.overallProgress)
-                            .tint(context.state.status == .paused ? .gray : .blue)
+                            .tint(.blue)
                     }
                 }
             } compactLeading: {
@@ -61,12 +61,14 @@ struct UploadActivityLiveActivity: Widget {
         switch context.state.status {
         case .uploading:
             if context.isStale {
-                interruptedLockScreenView(context: context)
+                backgroundUploadingLockScreenView(context: context)
             } else {
                 uploadingLockScreenView(context: context)
             }
         case .paused:
-            interruptedLockScreenView(context: context)
+            backgroundUploadingLockScreenView(context: context)
+        case .processing:
+            processingLockScreenView(context: context)
         case .completed:
             completedLockScreenView(context: context)
         case .failed:
@@ -75,19 +77,25 @@ struct UploadActivityLiveActivity: Widget {
     }
 
     @ViewBuilder
-    private func interruptedLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "pause.circle.fill")
-                .foregroundColor(.gray)
-                .font(.title2)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Upload Interrupted")
-                    .font(.headline)
-                Text("Open the app to resume uploading")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+    private func backgroundUploadingLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                Image(systemName: "icloud.and.arrow.up.fill")
+                    .foregroundColor(.blue)
+                    .font(.title2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Uploading in Background")
+                        .font(.headline)
+                    Text("\(context.state.completedCount) of \(context.state.totalFiles) files uploaded")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .monospacedDigit()
+                }
+                Spacer()
             }
-            Spacer()
+
+            ProgressView(value: context.state.overallProgress)
+                .tint(.blue)
         }
         .padding()
     }
@@ -119,6 +127,32 @@ struct UploadActivityLiveActivity: Widget {
                     .fontWeight(.medium)
                     .monospacedDigit()
             }
+
+            ProgressView(value: context.state.overallProgress)
+                .tint(.blue)
+        }
+        .padding()
+    }
+
+    @ViewBuilder
+    private func processingLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "gearshape.circle.fill")
+                    .foregroundColor(.blue)
+                    .font(.headline)
+                Text("Processing Uploaded Files")
+                    .font(.headline)
+                Spacer()
+                Text("\(Int(context.state.overallProgress * 100))%")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .monospacedDigit()
+            }
+
+            Text("Processing \(context.state.completedCount) uploaded file\(context.state.completedCount == 1 ? "" : "s")…")
+                .font(.caption)
+                .foregroundColor(.secondary)
 
             ProgressView(value: context.state.overallProgress)
                 .tint(.blue)
@@ -185,10 +219,19 @@ struct UploadActivityLiveActivity: Widget {
             }
         case .paused:
             VStack(alignment: .leading, spacing: 4) {
-                Text("Upload Paused")
+                Text("Uploading in Background")
                     .font(.caption)
                     .fontWeight(.medium)
-                Text("Open app to resume")
+                Text("\(context.state.completedCount)/\(context.state.totalFiles) files")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        case .processing:
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Processing uploaded files…")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                Text("\(context.state.completedCount) file\(context.state.completedCount == 1 ? "" : "s")")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -215,9 +258,15 @@ struct UploadActivityLiveActivity: Widget {
                 .fontWeight(.medium)
                 .monospacedDigit()
         case .paused:
-            Text("Paused")
+            Text("\(Int(context.state.overallProgress * 100))%")
                 .font(.caption2)
-                .foregroundColor(.gray)
+                .fontWeight(.medium)
+                .monospacedDigit()
+        case .processing:
+            Text("\(Int(context.state.overallProgress * 100))%")
+                .font(.caption2)
+                .fontWeight(.medium)
+                .monospacedDigit()
         case .completed:
             Image(systemName: "checkmark")
                 .foregroundColor(.green)
@@ -234,7 +283,8 @@ struct UploadActivityLiveActivity: Widget {
     private func expandedIcon(for status: UploadActivityAttributes.UploadStatus) -> String {
         switch status {
         case .uploading: return "arrow.up.circle.fill"
-        case .paused: return "pause.circle.fill"
+        case .paused: return "icloud.and.arrow.up.fill"
+        case .processing: return "gearshape.circle.fill"
         case .completed: return "checkmark.circle.fill"
         case .failed: return "exclamationmark.triangle.fill"
         }
@@ -243,7 +293,8 @@ struct UploadActivityLiveActivity: Widget {
     private func expandedIconColor(for status: UploadActivityAttributes.UploadStatus) -> Color {
         switch status {
         case .uploading: return .blue
-        case .paused: return .gray
+        case .paused: return .blue
+        case .processing: return .blue
         case .completed: return .green
         case .failed: return .orange
         }
@@ -252,7 +303,8 @@ struct UploadActivityLiveActivity: Widget {
     private func compactIcon(for status: UploadActivityAttributes.UploadStatus) -> String {
         switch status {
         case .uploading: return "arrow.up.circle.fill"
-        case .paused: return "pause.circle.fill"
+        case .paused: return "icloud.and.arrow.up.fill"
+        case .processing: return "gearshape.circle.fill"
         case .completed: return "checkmark.circle.fill"
         case .failed: return "exclamationmark.triangle.fill"
         }
@@ -261,7 +313,8 @@ struct UploadActivityLiveActivity: Widget {
     private func compactIconColor(for status: UploadActivityAttributes.UploadStatus) -> Color {
         switch status {
         case .uploading: return .blue
-        case .paused: return .gray
+        case .paused: return .blue
+        case .processing: return .blue
         case .completed: return .green
         case .failed: return .orange
         }

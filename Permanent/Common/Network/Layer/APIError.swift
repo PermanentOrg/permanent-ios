@@ -8,7 +8,7 @@
 import Foundation
 
 /// Enum of API Errors
-enum APIError: Error {
+enum APIError: LocalizedError {
     /// No data received from the server.
     case noData
     /// The server response was invalid (unexpected format).
@@ -46,5 +46,9 @@ enum APIError: Error {
         case .unknown: return .errorUnknown
         default: return .errorServer
         }
+    }
+
+    var errorDescription: String? {
+        return message
     }
 }
