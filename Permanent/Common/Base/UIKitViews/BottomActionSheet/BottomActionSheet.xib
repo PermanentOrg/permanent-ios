@@ -40,8 +40,8 @@
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="Vix-J6-JUe" secondAttribute="bottom" constant="15" id="QV3-xf-vMF"/>
-                <constraint firstItem="Vix-J6-JUe" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="15" id="U8L-T3-hMl"/>
+                <constraint firstAttribute="bottom" secondItem="Vix-J6-JUe" secondAttribute="bottom" constant="15" priority="999" id="QV3-xf-vMF"/>
+                <constraint firstItem="Vix-J6-JUe" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="15" priority="999" id="U8L-T3-hMl"/>
                 <constraint firstAttribute="trailing" secondItem="Vix-J6-JUe" secondAttribute="trailing" constant="30" id="esS-UF-WiX"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
