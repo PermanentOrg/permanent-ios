@@ -205,8 +205,14 @@ struct ArchiveAccessManagementView: View {
             }
             
             if let selectedArchive = viewModel.selectedArchiveForEdit {
-                archiveName = selectedArchive.archiveVO?.fullName ?? "Unknown Archive"
-                archiveThumbnailURL = selectedArchive.archiveVO?.thumbURL500
+                let archiveVO = selectedArchive.archiveVO ?? {
+                    if let archiveID = selectedArchive.archiveID {
+                        return viewModel.sharedArchives.first { $0.archiveID == archiveID }?.archiveVO
+                    }
+                    return nil
+                }()
+                archiveName = archiveVO?.fullName ?? "Unknown Archive"
+                archiveThumbnailURL = archiveVO?.thumbURL200 ?? archiveVO?.thumbURL500 ?? archiveVO?.thumbURL1000 ?? archiveVO?.thumbURL2000
             }
         }
         .overlay {
@@ -442,29 +448,4 @@ struct ArchiveAccessManagementView: View {
             .ignoresSafeArea()
     }
     
-    private func archiveThumbnailView(shareVO: ShareVOData) -> some View {
-        let archiveVO = shareVO.archiveVO ?? {
-            if let archiveID = shareVO.archiveID {
-                return viewModel.sharedArchives.first { $0.archiveID == archiveID }?.archiveVO
-            }
-            return nil
-        }()
-        
-        return Group {
-            if let thumbURL = archiveVO?.thumbURL500,
-               let url = URL(string: thumbURL) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Image(.shareArchivePending)
-                }
-            } else {
-                Image(.shareArchivePending)
-            }
-        }
-        .frame(width: 40, height: 40)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
 }
