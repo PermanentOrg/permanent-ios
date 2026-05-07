@@ -116,5 +116,6 @@ struct RecordArchiveV2: Model {
 struct PendingShareV2: Model {
     let id: String?
     let email: String?
+    let name: String?
     let accessRole: String?
 }

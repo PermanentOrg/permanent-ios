@@ -59,20 +59,41 @@ struct ShareArchivesFromPastSharesView: View {
                         .foregroundColor(Color.blue300)
                 }
                 Spacer()
+            } else if archivesViewModel.myArchives.isEmpty && archivesViewModel.otherArchives.isEmpty {
+                Spacer()
+                VStack(spacing: 8) {
+                    Text(archivesViewModel.searchText.isEmpty
+                         ? "No archives from past shares"
+                         : "No archives match your search")
+                        .font(.custom("Usual-Medium", size: 16))
+                        .foregroundColor(Color.blue900)
+                    Text(archivesViewModel.searchText.isEmpty
+                         ? "Archives you've previously shared with will appear here."
+                         : "Try a different search term.")
+                        .font(.custom("Usual-Regular", size: 14))
+                        .foregroundColor(Color.blue300)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 32)
+                Spacer()
             } else {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
-                        archiveSection(
-                            title: "MY ARCHIVES",
-                            archives: archivesViewModel.myArchives
-                        )
-                        .padding(.top, 24)
+                        if !archivesViewModel.myArchives.isEmpty {
+                            archiveSection(
+                                title: "MY ARCHIVES",
+                                archives: archivesViewModel.myArchives
+                            )
+                            .padding(.top, 24)
+                        }
 
-                        archiveSection(
-                            title: "OTHER ARCHIVES",
-                            archives: archivesViewModel.otherArchives
-                        )
-                        .padding(.top, archivesViewModel.myArchives.isEmpty ? 24 : 20)
+                        if !archivesViewModel.otherArchives.isEmpty {
+                            archiveSection(
+                                title: "OTHER ARCHIVES",
+                                archives: archivesViewModel.otherArchives
+                            )
+                            .padding(.top, archivesViewModel.myArchives.isEmpty ? 24 : 20)
+                        }
                     }
                     .padding(.horizontal, 16)
                     .padding(.bottom, 24)
@@ -231,7 +252,7 @@ struct ShareArchivesFromPastSharesView: View {
             )
         }) {
             HStack(spacing: 16) {
-                archiveThumbnail(thumbnailURL: archive.thumbnailURL, initials: archive.initials)
+                archiveThumbnail(thumbnailURL: archive.thumbnailURL)
                     .frame(width: 40, height: 40)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
@@ -252,40 +273,19 @@ struct ShareArchivesFromPastSharesView: View {
     }
 
     @ViewBuilder
-    private func archiveThumbnail(thumbnailURL: String?, initials: String) -> some View {
+    private func archiveThumbnail(thumbnailURL: String?) -> some View {
         if let thumbnailURL, let url = URL(string: thumbnailURL) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                default:
-                    initialsAvatar(initials)
-                }
+            AsyncImage(url: url) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                Image(.shareArchivePending)
+                    .cornerRadius(8)
             }
         } else {
-            initialsAvatar(initials)
-        }
-    }
-
-    private func initialsAvatar(_ initials: String) -> some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            VStack(spacing: 3) {
-                Rectangle()
-                    .fill(Color.white.opacity(0.9))
-                    .frame(width: 14, height: 2)
-
-                Text(initials)
-                    .font(.custom("Usual-Medium", size: 12))
-                    .foregroundColor(.white)
-            }
+            Image(.shareArchivePending)
+                .cornerRadius(8)
         }
     }
 

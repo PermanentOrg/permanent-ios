@@ -371,18 +371,17 @@ struct ShareFindArchiveByEmailView: View {
                 Group {
                     if let thumbnailURL = archive.thumbnailURL,
                        let url = URL(string: thumbnailURL) {
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            default:
-                                archiveInitialsThumbnail(archive.initials)
-                            }
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } placeholder: {
+                            Image(.shareArchivePending)
+                                .cornerRadius(8)
                         }
                     } else {
-                        archiveInitialsThumbnail(archive.initials)
+                        Image(.shareArchivePending)
+                            .cornerRadius(8)
                     }
                 }
                 .frame(width: 40, height: 40)
@@ -402,26 +401,6 @@ struct ShareFindArchiveByEmailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(PlainButtonStyle())
-    }
-
-    private func archiveInitialsThumbnail(_ initials: String) -> some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            VStack(spacing: 4) {
-                Rectangle()
-                    .fill(Color.white.opacity(0.9))
-                    .frame(width: 14, height: 2)
-
-                Text(initials)
-                    .font(.custom("Usual-Medium", size: 10))
-                    .foregroundColor(.white)
-            }
-        }
     }
 
     private var bottomActionSection: some View {

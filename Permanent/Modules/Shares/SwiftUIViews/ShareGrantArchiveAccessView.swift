@@ -15,10 +15,6 @@ struct ShareGrantArchiveAccessView: View {
         viewModel.pendingArchiveGrant?.name ?? "Archive"
     }
 
-    private var archiveInitials: String {
-        viewModel.pendingArchiveGrant?.initials ?? "A"
-    }
-
     private var archiveThumbnailURL: String? {
         viewModel.pendingArchiveGrant?.thumbnailURL
     }
@@ -145,19 +141,11 @@ struct ShareGrantArchiveAccessView: View {
                 HStack(spacing: 16) {
                     avatar
 
-                    (
-                        Text("The ")
-                            .font(.custom("Usual-Regular", size: 14))
-                            .foregroundColor(Color.blue900)
-                        + Text(archiveName)
-                            .font(.custom("Usual-Medium", size: 14))
-                            .foregroundColor(Color.blue900)
-                        + Text(" Archive")
-                            .font(.custom("Usual-Regular", size: 14))
-                            .foregroundColor(Color.blue900)
-                    )
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+                    Text(archiveName)
+                        .font(.custom("Usual-Medium", size: 14))
+                        .foregroundColor(Color.blue900)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
 
                     Spacer()
                 }
@@ -235,42 +223,21 @@ struct ShareGrantArchiveAccessView: View {
         Group {
             if let thumbnailURL = archiveThumbnailURL,
                let url = URL(string: thumbnailURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    default:
-                        initialsAvatar
-                    }
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } placeholder: {
+                    Image(.shareArchivePending)
+                        .cornerRadius(8)
                 }
             } else {
-                initialsAvatar
+                Image(.shareArchivePending)
+                    .cornerRadius(8)
             }
         }
         .frame(width: 32, height: 32)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private var initialsAvatar: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(red: 0.62, green: 0.15, blue: 0.57), Color(red: 0.95, green: 0.55, blue: 0.25)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            VStack(spacing: 3) {
-                Rectangle()
-                    .fill(Color.white.opacity(0.9))
-                    .frame(width: 14, height: 2)
-
-                Text(archiveInitials)
-                    .font(.custom("Usual-Medium", size: 10))
-                    .foregroundColor(.white)
-            }
-        }
     }
 
     private var loadingOverlay: some View {

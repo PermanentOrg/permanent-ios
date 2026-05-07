@@ -18,13 +18,15 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
         let id = UUID()
         let group: Group
         let archiveID: Int?
+        let rawName: String
         let title: String
         let initials: String
         let thumbnailURL: String?
     }
 
     @Published var searchText = ""
-    @Published private(set) var archives: [PastSharedArchive] = []
+    @Published private(set) var myArchivesList: [PastSharedArchive] = []
+    @Published private(set) var otherArchivesList: [PastSharedArchive] = []
     @Published private(set) var isLoading = false
 
     var title: String {
@@ -43,82 +45,121 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
             .replacingOccurrences(of: "&", with: "")
     }
 
-    private var filteredArchives: [PastSharedArchive] {
-        guard !normalizedFilter.isEmpty else { return archives }
-        return archives.filter {
-            normalize($0.title).contains(normalizedFilter)
+    private func filtered(_ list: [PastSharedArchive]) -> [PastSharedArchive] {
+        guard !normalizedFilter.isEmpty else { return list }
+        return list.filter {
+            normalize($0.rawName).contains(normalizedFilter)
             || normalize($0.initials).contains(normalizedFilter)
         }
     }
 
     var myArchives: [PastSharedArchive] {
-        filteredArchives.filter { $0.group == .mine }
+        filtered(myArchivesList)
     }
 
     var otherArchives: [PastSharedArchive] {
-        filteredArchives.filter { $0.group == .other }
+        filtered(otherArchivesList)
     }
 
     func fetchArchives() {
-        guard let accountId = PermSession.currentSession?.account.accountID else { return }
+        guard let accountId = PermSession.currentSession?.account.accountID,
+              let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return }
 
         isLoading = true
 
-        let operation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: accountId))
-        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
-            Task { @MainActor in
-                guard let self else { return }
-                self.isLoading = false
+        let group = DispatchGroup()
+        var fetchedMyArchives: [PastSharedArchive] = []
+        var fetchedOtherArchives: [PastSharedArchive] = []
 
-                switch result {
-                case .json(let response, _):
-                    guard
-                        let model: APIResults<ArchiveVO> = JSONHelper.decoding(
-                            from: response,
-                            with: APIResults<NoDataModel>.decoder
-                        ),
-                        model.isSuccessful
-                    else { return }
+        group.enter()
+        let accountOp = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: accountId))
+        accountOp.execute(in: APIRequestDispatcher()) { [weak self] result in
+            defer { group.leave() }
+            guard let self else { return }
 
-                    let accountArchives = model.results.first?.data ?? []
-                    var archiveMap: [Int: ArchiveVOData] = [:]
+            if case .json(let response, _) = result,
+               let model: APIResults<ArchiveVO> = JSONHelper.decoding(
+                   from: response,
+                   with: APIResults<NoDataModel>.decoder
+               ),
+               model.isSuccessful {
 
-                    for archive in accountArchives {
-                        guard let archiveVOData = archive.archiveVO,
-                              archiveVOData.status != .pending && archiveVOData.status != .unknown,
-                              let archiveID = archiveVOData.archiveID else { continue }
+                let accountArchives = model.results.first?.data ?? []
+                var archiveMap: [Int: ArchiveVOData] = [:]
 
-                        if let existing = archiveMap[archiveID] {
-                            if existing.fullName == nil && archiveVOData.fullName != nil {
-                                archiveMap[archiveID] = archiveVOData
-                            }
-                        } else {
-                            archiveMap[archiveID] = archiveVOData
-                        }
+                for archive in accountArchives {
+                    guard let data = archive.archiveVO,
+                          data.accessRole == "access.role.owner",
+                          data.status != .pending && data.status != .unknown,
+                          let id = data.archiveID,
+                          id != archiveId else { continue }
+
+                    if archiveMap[id] == nil || (archiveMap[id]?.fullName == nil && data.fullName != nil) {
+                        archiveMap[id] = data
                     }
-
-                    let currentArchiveID = AuthenticationManager.shared.session?.selectedArchive?.archiveID
-
-                    self.archives = archiveMap.values
-                        .sorted { ($0.fullName ?? "") < ($1.fullName ?? "") }
-                        .map { archive in
-                            let fullName = archive.fullName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "Unknown"
-                            let isMine = archive.accessRole == "access.role.owner"
-
-                            return PastSharedArchive(
-                                group: isMine ? .mine : .other,
-                                archiveID: archive.archiveID,
-                                title: self.formattedArchiveName(from: fullName),
-                                initials: self.initials(for: fullName),
-                                thumbnailURL: archive.thumbURL200 ?? archive.thumbURL500
-                            )
-                        }
-
-                default:
-                    break
                 }
+
+                fetchedMyArchives = archiveMap.values
+                    .sorted { ($0.fullName ?? "") < ($1.fullName ?? "") }
+                    .map { self.makePastSharedArchive(from: $0, group: .mine) }
             }
         }
+
+        group.enter()
+        let relationOp = APIOperation(RelationEndpoint.getAll(archiveId: archiveId))
+        relationOp.execute(in: APIRequestDispatcher()) { [weak self] result in
+            defer { group.leave() }
+            guard let self else { return }
+
+            if case .json(let response, _) = result,
+               let model: APIResults<RelationVO> = JSONHelper.decoding(
+                   from: response,
+                   with: APIResults<NoDataModel>.decoder
+               ),
+               model.isSuccessful {
+
+                let relations = model.results.first?.data ?? []
+                var archiveMap: [Int: ArchiveVOData] = [:]
+
+                for relation in relations {
+                    guard let data = relation.relationVO?.relationArchiveVO,
+                          data.status != .pending && data.status != .unknown,
+                          let id = data.archiveID,
+                          id != archiveId else { continue }
+
+                    if archiveMap[id] == nil || (archiveMap[id]?.fullName == nil && data.fullName != nil) {
+                        archiveMap[id] = data
+                    }
+                }
+
+                fetchedOtherArchives = archiveMap.values
+                    .sorted { ($0.fullName ?? "") < ($1.fullName ?? "") }
+                    .map { self.makePastSharedArchive(from: $0, group: .other) }
+            }
+        }
+
+        group.notify(queue: .main) { [weak self] in
+            guard let self else { return }
+            let myArchiveIDs = Set(fetchedMyArchives.compactMap { $0.archiveID })
+            let dedupedOther = fetchedOtherArchives.filter { !myArchiveIDs.contains($0.archiveID ?? -1) }
+
+            self.myArchivesList = fetchedMyArchives
+            self.otherArchivesList = dedupedOther
+            self.isLoading = false
+        }
+    }
+
+    private func makePastSharedArchive(from archive: ArchiveVOData, group: PastSharedArchive.Group) -> PastSharedArchive {
+        let fullName = archive.fullName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "Unknown"
+
+        return PastSharedArchive(
+            group: group,
+            archiveID: archive.archiveID,
+            rawName: fullName,
+            title: formattedArchiveName(from: fullName),
+            initials: initials(for: fullName),
+            thumbnailURL: archive.thumbURL200 ?? archive.thumbURL500
+        )
     }
 
     private func formattedArchiveName(from fullName: String) -> String {

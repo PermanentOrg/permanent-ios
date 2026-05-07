@@ -426,7 +426,8 @@ extension ShareItemViewModel {
             let email = pending.email?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             guard !email.isEmpty else { return nil }
 
-            let displayName = email.split(separator: "@").first.map(String.init) ?? "Invited user"
+            let trimmedName = pending.name?.trimmingCharacters(in: .whitespacesAndNewlines)
+            let displayName = (trimmedName?.isEmpty == false) ? trimmedName! : email
             let inviteId = Int(pending.id ?? "") ?? 0
 
             let account = AccountVOData(

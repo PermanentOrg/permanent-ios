@@ -14,21 +14,15 @@ extension UIImageView {
         }
 
         DispatchQueue.global().async { [weak self] in
-            if let data = try? Data(contentsOf: url) {
-                if let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.image = image
-                        
-                        if let completion = completion {
-                            completion(true)
-                        }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        if let completion = completion {
-                            completion(false)
-                        }
-                    }
+            if let data = try? Data(contentsOf: url),
+               let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self?.image = image
+                    completion?(true)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    completion?(false)
                 }
             }
         }

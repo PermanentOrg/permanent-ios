@@ -285,6 +285,10 @@
 		5E5979D72DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979D62DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift */; };
 		5E59B9B82C9AED930089A824 /* AuthVerifyIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59B9B72C9AED930089A824 /* AuthVerifyIdentityView.swift */; };
 		5E59B9BA2C9AEDC30089A824 /* AuthVerifyIdentityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59B9B92C9AEDBA0089A824 /* AuthVerifyIdentityViewModel.swift */; };
+		5E5AA3B32FAA26C1002D84E8 /* RelationVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B22FAA26C1002D84E8 /* RelationVO.swift */; };
+		5E5AA3B42FAA26C1002D84E8 /* RelationVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B22FAA26C1002D84E8 /* RelationVO.swift */; };
+		5E5AA3B62FAA26C8002D84E8 /* RelationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B52FAA26C8002D84E8 /* RelationEndpoint.swift */; };
+		5E5AA3B72FAA26C8002D84E8 /* RelationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B52FAA26C8002D84E8 /* RelationEndpoint.swift */; };
 		5E5AB60A2A5C414E0030BF61 /* AddNewTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */; };
 		5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB60E2A6494170030BF61 /* AddTagsView.swift */; };
 		5E5AB6112A6585110030BF61 /* AddNewTagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */; };
@@ -1309,6 +1313,8 @@
 		5E5979D62DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistBottomMenuViewModel.swift; sourceTree = "<group>"; };
 		5E59B9B72C9AED930089A824 /* AuthVerifyIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVerifyIdentityView.swift; sourceTree = "<group>"; };
 		5E59B9B92C9AEDBA0089A824 /* AuthVerifyIdentityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVerifyIdentityViewModel.swift; sourceTree = "<group>"; };
+		5E5AA3B22FAA26C1002D84E8 /* RelationVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelationVO.swift; sourceTree = "<group>"; };
+		5E5AA3B52FAA26C8002D84E8 /* RelationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelationEndpoint.swift; sourceTree = "<group>"; };
 		5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagView.swift; sourceTree = "<group>"; };
 		5E5AB60E2A6494170030BF61 /* AddTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagsView.swift; sourceTree = "<group>"; };
 		5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagViewModel.swift; sourceTree = "<group>"; };
@@ -3993,6 +3999,7 @@
 				92C95C4E2CCFB154002CE018 /* EventsEndpoint.swift */,
 				BC6D3B582514F61400390927 /* Layer */,
 				5E4642302F55A1E4002DB512 /* ShareAccessEndpoint.swift */,
+				5E5AA3B52FAA26C8002D84E8 /* RelationEndpoint.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -4122,6 +4129,7 @@
 				5EB721122B35C9DC0036B28F /* RedeemVO.swift */,
 				5EB2D2352C245EEA0029D0DE /* OnboardingArchive.swift */,
 				92C95C502CCFB445002CE018 /* EventsPayload.swift */,
+				5E5AA3B22FAA26C1002D84E8 /* RelationVO.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -5255,6 +5263,7 @@
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
+				5E5AA3B32FAA26C1002D84E8 /* RelationVO.swift in Sources */,
 				5E181B822AF10100002DE69A /* GiftStorageViewModel.swift in Sources */,
 				5E0AA7F12C937714003FBCF2 /* AuthBannerView.swift in Sources */,
 				5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */,
@@ -5459,6 +5468,7 @@
 				5EE77BD92C3EADD4006D854C /* AccessRoleChipView.swift in Sources */,
 				F559F87528F990F20015A522 /* FolderContentViewModel.swift in Sources */,
 				F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */,
+				5E5AA3B72FAA26C8002D84E8 /* RelationEndpoint.swift in Sources */,
 				927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */,
@@ -5815,6 +5825,7 @@
 				5E4739F72A4187B000A20D85 /* BasicProfileItem.swift in Sources */,
 				F561F84C299D713E00B3BD09 /* SharebyURLVOTokenPayload.swift in Sources */,
 				5E4739F92A4187B800A20D85 /* GenderProfileItem.swift in Sources */,
+				5E5AA3B62FAA26C8002D84E8 /* RelationEndpoint.swift in Sources */,
 				F51B3323288B0B9300EA15DA /* FileState.swift in Sources */,
 				5E4739F22A41876B00A20D85 /* Payloads.swift in Sources */,
 				5E4739DB2A41859D00A20D85 /* TagLinkVO.swift in Sources */,
@@ -5846,6 +5857,7 @@
 				F559F8B128FF03340015A522 /* UploadFileMetaResponse.swift in Sources */,
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
 				5E4642312F55A1E4002DB512 /* ShareAccessEndpoint.swift in Sources */,
+				5E5AA3B42FAA26C1002D84E8 /* RelationVO.swift in Sources */,
 				5E317C692E7C273800DE5A77 /* CreatorAccountForShare.swift in Sources */,
 				F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */,
 				5ED3B3BD29FAB2C5000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,

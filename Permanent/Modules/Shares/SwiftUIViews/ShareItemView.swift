@@ -646,7 +646,7 @@ struct ShareItemView: View {
         
         return Group {
             // Try all available thumbnail URLs in order of preference
-            if let thumbURL = archiveVO?.thumbURL2000 ?? archiveVO?.thumbURL1000 ?? archiveVO?.thumbURL500 ?? archiveVO?.thumbURL200,
+            if let thumbURL = archiveVO?.thumbURL200 ?? archiveVO?.thumbURL500 ?? archiveVO?.thumbURL1000 ?? archiveVO?.thumbURL2000,
                let url = URL(string: thumbURL) {
                 AsyncImage(url: url) { image in
                     image

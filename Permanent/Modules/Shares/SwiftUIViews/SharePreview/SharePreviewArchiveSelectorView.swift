@@ -34,18 +34,9 @@ struct SharePreviewArchiveSelectorView: View {
     }
 
     @ViewBuilder
-    private func gradientPlaceholder(for _: ArchiveVOData) -> some View {
-        Image("SharePreviewArchiveNotselected")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 40, height: 40)
-    }
-
-    @ViewBuilder
-    private func headerPlaceholderThumbnail() -> some View {
-        Image("SharePreviewArchiveNotselected")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
+    private func archivePlaceholderThumbnail() -> some View {
+        Image(.shareArchivePending)
+            .cornerRadius(8)
             .frame(width: 40, height: 40)
     }
 
@@ -58,28 +49,20 @@ struct SharePreviewArchiveSelectorView: View {
                     if let archive = currentArchive {
                         if let thumbnailURL = archive.thumbURL200,
                            let url = URL(string: thumbnailURL) {
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                case .empty, .failure(_):
-                                    headerPlaceholderThumbnail()
-                                @unknown default:
-                                    headerPlaceholderThumbnail()
-                                }
+                            AsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                archivePlaceholderThumbnail()
                             }
                             .frame(width: 40, height: 40)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         } else {
-                            headerPlaceholderThumbnail()
+                            archivePlaceholderThumbnail()
                         }
                     } else {
-                        Image("SharePreviewArchiveNotselected")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 40, height: 40)
+                        archivePlaceholderThumbnail()
                     }
                     
                     VStack(alignment: .leading, spacing: 4) {
@@ -290,22 +273,17 @@ struct ArchivePickerView: View {
                             HStack(spacing: 16) {
                                 // Archive thumbnail or fallback placeholder
                                 if let thumbURL = archive.thumbURL200, let url = URL(string: thumbURL) {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fill)
-                                                .frame(width: 40, height: 40)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        case .failure(_), .empty:
-                                            gradientPlaceholder(for: archive)
-                                        @unknown default:
-                                            gradientPlaceholder(for: archive)
-                                        }
+                                    AsyncImage(url: url) { image in
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                    } placeholder: {
+                                        archivePlaceholderThumbnail()
                                     }
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
                                 } else {
-                                    gradientPlaceholder(for: archive)
+                                    archivePlaceholderThumbnail()
                                 }
                                 
                                 HStack(alignment: .center) {
@@ -340,10 +318,9 @@ struct ArchivePickerView: View {
     }
     
     @ViewBuilder
-    private func gradientPlaceholder(for _: ArchiveVOData) -> some View {
-        Image("SharePreviewArchiveNotselected")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
+    private func archivePlaceholderThumbnail() -> some View {
+        Image(.shareArchivePending)
+            .cornerRadius(8)
             .frame(width: 40, height: 40)
     }
 }

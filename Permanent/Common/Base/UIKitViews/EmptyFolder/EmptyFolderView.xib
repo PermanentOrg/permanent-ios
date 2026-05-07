@@ -43,8 +43,8 @@
                         <constraint firstItem="PKt-za-Ccd" firstAttribute="top" secondItem="Z59-CF-0G4" secondAttribute="top" constant="10" id="OC2-5t-DHj"/>
                         <constraint firstAttribute="bottom" secondItem="f4I-nQ-dzD" secondAttribute="bottom" id="RuE-G1-A9A"/>
                         <constraint firstItem="f4I-nQ-dzD" firstAttribute="leading" secondItem="Z59-CF-0G4" secondAttribute="leading" id="Uql-34-ig2"/>
-                        <constraint firstItem="PKt-za-Ccd" firstAttribute="leading" secondItem="Z59-CF-0G4" secondAttribute="leading" constant="60" id="dqL-VU-hOt"/>
-                        <constraint firstAttribute="trailing" secondItem="PKt-za-Ccd" secondAttribute="trailing" constant="60" id="l0O-ww-TiG"/>
+                        <constraint firstItem="PKt-za-Ccd" firstAttribute="leading" secondItem="Z59-CF-0G4" secondAttribute="leading" constant="60" priority="999" id="dqL-VU-hOt"/>
+                        <constraint firstAttribute="trailing" secondItem="PKt-za-Ccd" secondAttribute="trailing" constant="60" priority="999" id="l0O-ww-TiG"/>
                         <constraint firstAttribute="trailing" secondItem="f4I-nQ-dzD" secondAttribute="trailing" id="ygr-n4-Shw"/>
                     </constraints>
                 </view>
@@ -52,8 +52,8 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="Z59-CF-0G4" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="Xby-Fq-4R4"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Z59-CF-0G4" secondAttribute="trailing" constant="30" id="ehq-ed-zTW"/>
+                <constraint firstItem="Z59-CF-0G4" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" priority="999" id="Xby-Fq-4R4"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Z59-CF-0G4" secondAttribute="trailing" constant="30" priority="999" id="ehq-ed-zTW"/>
                 <constraint firstItem="Z59-CF-0G4" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="eyj-0G-5Tm"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
