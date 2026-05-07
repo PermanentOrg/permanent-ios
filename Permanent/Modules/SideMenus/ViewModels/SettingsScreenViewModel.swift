@@ -165,8 +165,30 @@ class SettingsScreenViewModel: ObservableObject {
     }
     
     func getCurrentArchiveThumbnail() {
-        guard let archiveThumbString = AuthenticationManager.shared.session?.selectedArchive?.thumbURL500 else { return }
-        selectedArchiveThumbnailURL = URL(string: archiveThumbString)
+        guard let defaultArchiveID = accountData?.defaultArchiveID,
+              let accountId = AuthenticationManager.shared.session?.account.accountID else {
+            if let fallback = AuthenticationManager.shared.session?.selectedArchive?.thumbURL200 ?? AuthenticationManager.shared.session?.selectedArchive?.thumbURL500 {
+                selectedArchiveThumbnailURL = URL(string: fallback)
+            }
+            return
+        }
+
+        let operation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: accountId))
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self else { return }
+            if case .json(let response, _) = result,
+               let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+               model.isSuccessful,
+               let archives = model.results.first?.data {
+                let defaultArchive = archives.first(where: { $0.archiveVO?.archiveID == defaultArchiveID })?.archiveVO
+                let thumbString = defaultArchive?.thumbURL200 ?? defaultArchive?.thumbURL500 ?? defaultArchive?.thumbURL1000 ?? defaultArchive?.thumbURL2000
+                if let thumbString, let url = URL(string: thumbString) {
+                    DispatchQueue.main.async {
+                        self.selectedArchiveThumbnailURL = url
+                    }
+                }
+            }
+        }
     }
     
     func deletePushToken(then handler: @escaping ServerResponse) {
