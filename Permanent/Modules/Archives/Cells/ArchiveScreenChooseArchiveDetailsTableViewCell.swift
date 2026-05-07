@@ -25,9 +25,12 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
         
         archiveNameLabel.font = TextFontStyle.style16.font
         archiveNameLabel.textColor = .darkBlue
-        
+
         archiveAccessLabel.font = TextFontStyle.style8.font
         archiveAccessLabel.textColor = .darkBlue
+
+        archiveThumbnailImage.layer.cornerRadius = 8
+        archiveThumbnailImage.clipsToBounds = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -39,11 +42,16 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
     }
     
     func updateCell(withArchiveVO archiveVO: ArchiveVOData, isDefault: Bool, isManaging: Bool) {
-        guard let thumbURL = URL(string: archiveVO.thumbURL500),
-            let archiveName = archiveVO.fullName,
+        guard let archiveName = archiveVO.fullName,
             let accessLevel = archiveVO.accessRole else { return }
         archiveThumbnailImage.image = nil
-        archiveThumbnailImage.sd_setImage(with: thumbURL)
+        let thumbURLString = archiveVO.thumbURL200 ?? archiveVO.thumbURL500 ?? archiveVO.thumbURL1000 ?? archiveVO.thumbURL2000
+        if let thumbURLString, let thumbURL = URL(string: thumbURLString) {
+            let placeholder = UIImage(named: "shareArchivePending")
+            archiveThumbnailImage.sd_setImage(with: thumbURL, placeholderImage: placeholder)
+        } else {
+            archiveThumbnailImage.image = UIImage(named: "shareArchivePending")
+        }
         
         archiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         archiveAccessLabel.text = "Access: <ACCESS_LEVEL>".localized().replacingOccurrences(of: "<ACCESS_LEVEL>", with: AccessRole.roleForValue(accessLevel).groupName)

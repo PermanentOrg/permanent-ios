@@ -51,8 +51,18 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
         archiveImage.image = nil
         archiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         archiveNameLabel.setTextSpacingBy(value: -0.3)
-        
-        guard let url = URL(string: thumbnailURL) else { return }
-        archiveImage.sd_setImage(with: url)
+
+        let placeholder = UIImage(named: "shareArchivePending")
+        guard let url = URL(string: thumbnailURL) else {
+            archiveImage.image = placeholder
+            return
+        }
+        archiveImage.sd_setImage(with: url, placeholderImage: placeholder) { [weak self] image, error, _, _ in
+            if error != nil || image == nil {
+                self?.archiveImage.alpha = 0.8
+            } else {
+                self?.archiveImage.alpha = 1.0
+            }
+        }
     }
 }

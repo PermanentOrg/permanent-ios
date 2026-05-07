@@ -472,9 +472,8 @@ struct SharePreviewView: View {
                                     .fill(Color.blue25)
 
                                 HStack(spacing: 16) {
-                                    Image("SharePreviewArchiveNotselected")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
+                                    Image(.shareArchivePending)
+                                        .cornerRadius(8)
                                         .frame(width: 32, height: 32)
 
                                     HStack(spacing: 8) {
