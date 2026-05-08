@@ -682,6 +682,7 @@ extension ShareItemViewModel {
                     switch result {
                     case .success:
                         self.sharedArchives.removeAll { $0.shareID == shareVO.shareID }
+                        self.shouldShowArchivesSection = !self.sharedArchives.isEmpty
 
                         self.selectedArchiveForEdit = nil
                         self.selectedRoleForArchive = nil

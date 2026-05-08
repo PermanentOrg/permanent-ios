@@ -130,6 +130,7 @@ extension ShareItemViewModel {
                                             self.genLinkLoading = false
                                             self.navigationDirection = .forward
                                             self.showLinkSettings = true
+                                            self.fetchSharedArchives()
                                         } else {
                                             self.genLinkLoading = false
                                             self.errorMessage = "Failed to retrieve share link URL"
@@ -218,6 +219,7 @@ extension ShareItemViewModel {
                                 self.navigationDirection = .backward
                                 self.showLinkSettings = false
                                 self.showRevokeLinkSuccessNotification()
+                                self.fetchSharedArchives()
                             case .error(let message):
                                 self.errorMessage = message
                             }
@@ -241,6 +243,7 @@ extension ShareItemViewModel {
                                 self.navigationDirection = .backward
                                 self.showLinkSettings = false
                                 self.showRevokeLinkSuccessNotification()
+                                self.fetchSharedArchives()
                             case .error:
                                 // If V2 API fails, fallback to V1 API
                                 self.revokeLinkV1(shareVO: shareVO)
@@ -271,6 +274,7 @@ extension ShareItemViewModel {
                         self.navigationDirection = .backward
                         self.showLinkSettings = false
                         self.showRevokeLinkSuccessNotification()
+                        self.fetchSharedArchives()
                     case .error(let message):
                         self.errorMessage = message
                     }

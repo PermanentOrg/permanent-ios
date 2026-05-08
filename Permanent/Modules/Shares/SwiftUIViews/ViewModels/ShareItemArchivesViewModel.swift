@@ -27,11 +27,22 @@ extension ShareItemViewModel {
         if let v2Data = shareLinkV2Data,
            let itemId = v2Data.itemId,
            let itemType = v2Data.itemType {
+            cachedV2ItemId = itemId
+            cachedV2ItemType = itemType
             let shareToken = v2Data.token
             if itemType == "record" {
                 fetchRecordV2(recordId: itemId, shareToken: shareToken)
             } else if itemType == "folder" {
                 fetchFolderV2(folderId: itemId, shareToken: shareToken)
+            } else {
+                fetchSharedArchivesV1()
+            }
+        } else if let cachedItemId = cachedV2ItemId,
+                  let cachedItemType = cachedV2ItemType {
+            if cachedItemType == "record" {
+                fetchRecordV2(recordId: cachedItemId, shareToken: nil)
+            } else if cachedItemType == "folder" {
+                fetchFolderV2(folderId: cachedItemId, shareToken: nil)
             } else {
                 fetchSharedArchivesV1()
             }
@@ -503,6 +514,21 @@ extension ShareItemViewModel {
                 if !alreadyExists {
                     mergedShares.append(invitedShare)
                 }
+            }
+        }
+
+        let previouslyInvited = sharedArchives.filter { $0.status?.contains("invited") == true }
+        for invited in previouslyInvited {
+            let email = invited.accountVO?.primaryEmail?.lowercased()
+            let alreadyExists = mergedShares.contains { existing in
+                guard let email else { return false }
+                if let existingEmail = existing.accountVO?.primaryEmail?.lowercased() {
+                    return existingEmail == email
+                }
+                return false
+            }
+            if !alreadyExists {
+                mergedShares.append(invited)
             }
         }
 

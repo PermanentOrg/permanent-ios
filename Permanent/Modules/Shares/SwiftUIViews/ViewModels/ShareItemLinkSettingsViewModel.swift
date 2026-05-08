@@ -275,6 +275,8 @@ extension ShareItemViewModel {
                                 self.originalAccessRole = self.selectedAccessRole
                                 self.hasUnsavedChanges = false
 
+                                self.fetchSharedArchives()
+
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     self.navigationDirection = .backward
                                     self.showLinkSettings = false
@@ -327,8 +329,23 @@ extension ShareItemViewModel {
                         if let error = error {
                             self.errorMessage = self.userFriendlyErrorMessage(from: error)
                         } else if let updatedData = result {
-                            self.shareLinkV2Data = updatedData
-                            self.setAccessLevelFromV2Data(updatedData)
+                            let previousData = self.shareLinkV2Data
+                            let mergedData = ShareLinkV2Data(
+                                id: updatedData.id ?? previousData?.id,
+                                itemId: updatedData.itemId ?? previousData?.itemId,
+                                itemType: updatedData.itemType ?? previousData?.itemType,
+                                token: updatedData.token ?? previousData?.token,
+                                permissionsLevel: updatedData.permissionsLevel ?? previousData?.permissionsLevel,
+                                accessRestrictions: updatedData.accessRestrictions ?? previousData?.accessRestrictions,
+                                maxUses: updatedData.maxUses ?? previousData?.maxUses,
+                                usesExpended: updatedData.usesExpended ?? previousData?.usesExpended,
+                                expirationTimestamp: updatedData.expirationTimestamp,
+                                creatorAccount: updatedData.creatorAccount ?? previousData?.creatorAccount,
+                                createdAt: updatedData.createdAt ?? previousData?.createdAt,
+                                updatedAt: updatedData.updatedAt ?? previousData?.updatedAt
+                            )
+                            self.shareLinkV2Data = mergedData
+                            self.setAccessLevelFromV2Data(mergedData)
 
                             if self.hasUnsavedChanges {
                                 // Update the shareVO expiration date if it changed
@@ -342,6 +359,8 @@ extension ShareItemViewModel {
                                 self.originalAutoApprove = self.autoApproveEnabled
                                 self.originalAccessRole = self.selectedAccessRole
                                 self.hasUnsavedChanges = false
+
+                                self.fetchSharedArchives()
 
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     self.navigationDirection = .backward

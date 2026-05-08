@@ -201,6 +201,8 @@ class ShareItemViewModel: ObservableObject {
     var correctFolderLinkId: Int?
     var recordV2ThumbnailURL: String?
     var hasLoadedArchivesOnce = false
+    var cachedV2ItemId: String?
+    var cachedV2ItemType: String?
 
     // Tracks original values to detect unsaved changes
     var originalExpiration: ShareExpirationOption = .none
