@@ -289,6 +289,7 @@
 		5E5AA3B42FAA26C1002D84E8 /* RelationVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B22FAA26C1002D84E8 /* RelationVO.swift */; };
 		5E5AA3B62FAA26C8002D84E8 /* RelationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B52FAA26C8002D84E8 /* RelationEndpoint.swift */; };
 		5E5AA3B72FAA26C8002D84E8 /* RelationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B52FAA26C8002D84E8 /* RelationEndpoint.swift */; };
+		5E5AA3B92FAE0130002D84E8 /* ShareItemViewModelExtendedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AA3B82FAE0130002D84E8 /* ShareItemViewModelExtendedTests.swift */; };
 		5E5AB60A2A5C414E0030BF61 /* AddNewTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */; };
 		5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB60E2A6494170030BF61 /* AddTagsView.swift */; };
 		5E5AB6112A6585110030BF61 /* AddNewTagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */; };
@@ -361,6 +362,11 @@
 		5E7AE8B0291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E7AE8AE291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib */; };
 		5E7AE8B3291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */; };
 		5E7AE8B4291E97DB00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */; };
+		5E7B9B592FAE2E8E00C1D3D0 /* ShareFindArchiveByEmailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B582FAE2E8E00C1D3D0 /* ShareFindArchiveByEmailViewModelTests.swift */; };
+		5E7B9B5B2FAE3A0900C1D3D0 /* ShareFindArchiveByEmailViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B5A2FAE3A0900C1D3D0 /* ShareFindArchiveByEmailViewTests.swift */; };
+		5E7B9B5F2FAE470300C1D3D0 /* ShareItemGrantAndInviteViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B5D2FAE470300C1D3D0 /* ShareItemGrantAndInviteViewModelTests.swift */; };
+		5E7B9B602FAE470300C1D3D0 /* ShareArchivesFromPastSharesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B5C2FAE470300C1D3D0 /* ShareArchivesFromPastSharesViewModelTests.swift */; };
+		5E7B9B612FAE470300C1D3D0 /* ShareManagementViewRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B5E2FAE470300C1D3D0 /* ShareManagementViewRenderingTests.swift */; };
 		5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */; };
 		5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */; };
 		5E814A432C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */; };
@@ -1315,6 +1321,7 @@
 		5E59B9B92C9AEDBA0089A824 /* AuthVerifyIdentityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVerifyIdentityViewModel.swift; sourceTree = "<group>"; };
 		5E5AA3B22FAA26C1002D84E8 /* RelationVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelationVO.swift; sourceTree = "<group>"; };
 		5E5AA3B52FAA26C8002D84E8 /* RelationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelationEndpoint.swift; sourceTree = "<group>"; };
+		5E5AA3B82FAE0130002D84E8 /* ShareItemViewModelExtendedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemViewModelExtendedTests.swift; sourceTree = "<group>"; };
 		5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagView.swift; sourceTree = "<group>"; };
 		5E5AB60E2A6494170030BF61 /* AddTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagsView.swift; sourceTree = "<group>"; };
 		5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagViewModel.swift; sourceTree = "<group>"; };
@@ -1387,6 +1394,11 @@
 		5E7AE8AE291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementLinkNotGeneratedCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementLinkAndShowSettingsCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementLinkAndShowSettingsCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E7B9B582FAE2E8E00C1D3D0 /* ShareFindArchiveByEmailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFindArchiveByEmailViewModelTests.swift; sourceTree = "<group>"; };
+		5E7B9B5A2FAE3A0900C1D3D0 /* ShareFindArchiveByEmailViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFindArchiveByEmailViewTests.swift; sourceTree = "<group>"; };
+		5E7B9B5C2FAE470300C1D3D0 /* ShareArchivesFromPastSharesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesFromPastSharesViewModelTests.swift; sourceTree = "<group>"; };
+		5E7B9B5D2FAE470300C1D3D0 /* ShareItemGrantAndInviteViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemGrantAndInviteViewModelTests.swift; sourceTree = "<group>"; };
+		5E7B9B5E2FAE470300C1D3D0 /* ShareManagementViewRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementViewRenderingTests.swift; sourceTree = "<group>"; };
 		5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABTagsManagementActionSheet.swift; sourceTree = "<group>"; };
 		5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNotificationWithOverlayView.swift; sourceTree = "<group>"; };
 		5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatorContainerViewModel.swift; sourceTree = "<group>"; };
@@ -3340,6 +3352,12 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5E7B9B5C2FAE470300C1D3D0 /* ShareArchivesFromPastSharesViewModelTests.swift */,
+				5E7B9B5D2FAE470300C1D3D0 /* ShareItemGrantAndInviteViewModelTests.swift */,
+				5E7B9B5E2FAE470300C1D3D0 /* ShareManagementViewRenderingTests.swift */,
+				5E7B9B5A2FAE3A0900C1D3D0 /* ShareFindArchiveByEmailViewTests.swift */,
+				5E7B9B582FAE2E8E00C1D3D0 /* ShareFindArchiveByEmailViewModelTests.swift */,
+				5E5AA3B82FAE0130002D84E8 /* ShareItemViewModelExtendedTests.swift */,
 				5EC230912F2CD30A00143911 /* ShareItemViewModelTests.swift */,
 				5EA4EC072F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift */,
 				5EF3A0932F150F6300F85282 /* SharePreviewViewModelTests.swift */,
@@ -5737,8 +5755,13 @@
 			files = (
 				F559F87F28F9C0640015A522 /* FolderSortViewModelTests.swift in Sources */,
 				5E1E61AB2F6B000700998DCE /* RegisterViewTests.swift in Sources */,
+				5E7B9B5B2FAE3A0900C1D3D0 /* ShareFindArchiveByEmailViewTests.swift in Sources */,
+				5E5AA3B92FAE0130002D84E8 /* ShareItemViewModelExtendedTests.swift in Sources */,
 				5E0FC8972F6AF4EE00B02CE0 /* FileMenuViewModelTests.swift in Sources */,
 				5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */,
+				5E7B9B5F2FAE470300C1D3D0 /* ShareItemGrantAndInviteViewModelTests.swift in Sources */,
+				5E7B9B602FAE470300C1D3D0 /* ShareArchivesFromPastSharesViewModelTests.swift in Sources */,
+				5E7B9B612FAE470300C1D3D0 /* ShareManagementViewRenderingTests.swift in Sources */,
 				5E173EBB2F64032C00C6D151 /* ChangePasswordViewTests.swift in Sources */,
 				5EA4EC062F15176E00D05FF2 /* SharePreviewViewModelTests.swift in Sources */,
 				5E173EB52F63FF5A00C6D151 /* ShareItemViewTests.swift in Sources */,
@@ -5756,6 +5779,7 @@
 				5E173EB32F6373D300C6D151 /* SharePreviewViewTests.swift in Sources */,
 				F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */,
 				F54861FA28912F4300500F6F /* SessionTests.swift in Sources */,
+				5E7B9B592FAE2E8E00C1D3D0 /* ShareFindArchiveByEmailViewModelTests.swift in Sources */,
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,

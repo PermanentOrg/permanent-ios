@@ -746,7 +746,7 @@ final class ShareItemViewModelTests: XCTestCase {
     }
     
     func testRefreshData_PreventsDuplicateInitialLoad() async {
-        let fileModel = FileModel.mockFile()
+        let fileModel = FileModel.mockFileForFullLoad()
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -787,7 +787,7 @@ final class ShareItemViewModelTests: XCTestCase {
     }
     
     func testRefreshData_AllowsSubsequentRefresh() async {
-        let fileModel = FileModel.mockFile()
+        let fileModel = FileModel.mockFileForFullLoad()
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -835,7 +835,7 @@ final class ShareItemViewModelTests: XCTestCase {
     }
     
     func testShouldShowArchivesSection_BecomesTrue_WhenArchivesExist() async {
-        let fileModel = FileModel.mockFile()
+        let fileModel = FileModel.mockFileForFullLoad()
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -1296,6 +1296,17 @@ private class MockShareManagementRepository: ShareManagementRepository {
             }
         }
     }
+
+    override func getShareLinkV2(shareLinkId: String, then completion: @escaping ShareLinkV2Handler) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            if self.shouldReturnLink {
+                let v2Data = self.createMockV2Data()
+                completion(v2Data, nil)
+            } else {
+                completion(nil, "No link found")
+            }
+        }
+    }
     
     override func createShareLinkV2(file: FileModel, then completion: @escaping ShareLinkV2Handler) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -1421,6 +1432,18 @@ extension FileModel {
         )
     }
     
+    static func mockFileForFullLoad() -> FileModel {
+        return FileModel(
+            name: "Test File.pdf",
+            recordId: 100,
+            folderLinkId: 0,
+            archiveNbr: "0001-0000",
+            type: "type.record.document.pdf",
+            permissions: [.read, .edit, .share],
+            thumbnailURL2000: "https://example.com/thumb.jpg"
+        )
+    }
+
     static func mockFolder() -> FileModel {
         return FileModel(
             name: "Test Folder",

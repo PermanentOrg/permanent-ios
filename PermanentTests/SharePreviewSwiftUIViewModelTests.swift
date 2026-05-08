@@ -48,7 +48,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
 
     func testSelectArchive_ChangeArchiveUpdatesStateAndReloads() async {
         let repo = SharePreviewMockRepository()
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: repo)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: repo, shareManagementRepository: MockShareMgmtRepoForPreview())
 
         let archive = ArchiveVOData.mock()
 
@@ -1533,6 +1533,16 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         // This test verifies that findShareVOForCurrentArchive returns nil when archive is not in shareVOS
         XCTAssertEqual(vm.buttonState, .open, "Unrestricted share shows Open even for archives not in shareVOS")
         XCTAssertEqual(vm.buttonTitle, "Open")
+    }
+}
+
+// MARK: - Mock ShareManagementRepository
+
+private class MockShareMgmtRepoForPreview: ShareManagementRepository {
+    override func getShareLinkV2ByToken(token: String, then completion: @escaping ShareLinkV2Handler) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            completion(nil, nil)
+        }
     }
 }
 

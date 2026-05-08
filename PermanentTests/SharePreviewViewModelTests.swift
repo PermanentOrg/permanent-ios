@@ -30,7 +30,7 @@ final class SharePreviewViewModelTests: XCTestCase {
     // MARK: - Data Loading Tests
     
     func testStartLoadsData() async {
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewMockRepository())
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewMockRepository(), shareManagementRepository: MockShareMgmtRepo())
         let finishedLoading = expectation(description: "Finished loading")
         var cancellables = Set<AnyCancellable>()
         
@@ -77,7 +77,7 @@ final class SharePreviewViewModelTests: XCTestCase {
     
     func testLoadingSetsCorrectState() async {
         let delayedRepo = DelayedRepository()
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: delayedRepo)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: delayedRepo, shareManagementRepository: MockShareMgmtRepo())
         let startedLoading = expectation(description: "Started loading")
         let finishedLoading = expectation(description: "Finished loading")
         var cancellables = Set<AnyCancellable>()
@@ -165,7 +165,7 @@ final class SharePreviewViewModelTests: XCTestCase {
     // MARK: - Data Parsing Tests
     
     func testItemsParsedCorrectly() async {
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewMockRepository())
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewMockRepository(), shareManagementRepository: MockShareMgmtRepo())
         let finishedLoading = expectation(description: "Finished loading")
         var cancellables = Set<AnyCancellable>()
         
@@ -185,7 +185,7 @@ final class SharePreviewViewModelTests: XCTestCase {
     
     func testEmptyDataHandledCorrectly() async {
         let emptyRepo = EmptyRepository()
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: emptyRepo)
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: emptyRepo, shareManagementRepository: MockShareMgmtRepo())
         await waitForLoad(vm)
         
         // With empty data, the view model should handle gracefully
@@ -201,7 +201,7 @@ final class SharePreviewViewModelTests: XCTestCase {
         // Use an archive ID different from share creator archive to force non-creator path.
         let shareVO = makeShareVO(status: Constants.API.AccountStatus.ok, accessRole: AccessRole.viewer.apiValue, archiveID: 1851)
         let data = makeShareData(shareVO: shareVO, defaultAccessRole: AccessRole.viewer.apiValue)
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data), shareManagementRepository: MockShareMgmtRepo())
 
         await waitForLoad(vm)
 
@@ -213,7 +213,7 @@ final class SharePreviewViewModelTests: XCTestCase {
     func testAccessRoleHiddenForPending() async {
         let shareVO = makeShareVO(status: Constants.API.AccountStatus.pending, accessRole: AccessRole.viewer.apiValue, archiveID: 1850)
         let data = makeShareData(shareVO: shareVO, defaultAccessRole: AccessRole.viewer.apiValue)
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data), shareManagementRepository: MockShareMgmtRepo())
 
         await waitForLoad(vm)
 
@@ -225,7 +225,7 @@ final class SharePreviewViewModelTests: XCTestCase {
     func testAccessRoleHiddenForOwner() async {
         let shareVO = makeShareVO(status: Constants.API.AccountStatus.ok, accessRole: AccessRole.owner.apiValue, archiveID: 1850)
         let data = makeShareData(shareVO: shareVO, defaultAccessRole: AccessRole.owner.apiValue)
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data), shareManagementRepository: MockShareMgmtRepo())
 
         await waitForLoad(vm)
 
@@ -236,7 +236,7 @@ final class SharePreviewViewModelTests: XCTestCase {
 
     func testAccessRoleShownForUnrestrictedWithoutShareVO() async {
         let data = makeShareData(shareVO: nil, defaultAccessRole: AccessRole.viewer.apiValue)
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data), shareManagementRepository: MockShareMgmtRepo())
 
         await waitForLoad(vm)
 
@@ -248,7 +248,7 @@ final class SharePreviewViewModelTests: XCTestCase {
 
     func testAccessRoleHiddenWhenNeedsAccessRestricted() async {
         let data = makeShareData(shareVO: nil, defaultAccessRole: AccessRole.viewer.apiValue)
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data))
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewAccessRoleRepository(shareData: data), shareManagementRepository: MockShareMgmtRepo())
 
         await waitForLoad(vm)
 
@@ -362,6 +362,16 @@ final class SharePreviewViewModelTests: XCTestCase {
             createdDT: nil, updatedDT: nil, accountVO: nil, folderData: nil,
             recordData: nil, archiveVO: nil, shareVO: shareVO
         )
+    }
+}
+
+// MARK: - Mock ShareManagementRepository
+
+private class MockShareMgmtRepo: ShareManagementRepository {
+    override func getShareLinkV2ByToken(token: String, then completion: @escaping ShareLinkV2Handler) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            completion(nil, nil)
+        }
     }
 }
 
