@@ -50,6 +50,6 @@ class ExtensionUploadManagerTests: XCTestCase {
         
         let retrievedFiles = try sut.savedFiles()
         
-        XCTAssert(retrievedFiles.isEmpty)
+        XCTAssertTrue(retrievedFiles.isEmpty)
     }
 }

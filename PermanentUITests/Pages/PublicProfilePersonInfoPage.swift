@@ -21,25 +21,31 @@ class PublicProfilePersonInfoPage {
     
     func fillFullName() -> String {
         let fullNameUUID = UUID().uuidString
+        fullNameTextField.tap()
         fullNameTextField.selectAndDeleteText(inApp: app)
+        fullNameTextField.tap()
         fullNameTextField.typeText(fullNameUUID)
-        
+
         return fullNameUUID
     }
-    
+
     func fillNickname() -> String {
         let nicknameUUID = UUID().uuidString
+        nicknameTextField.tap()
         nicknameTextField.selectAndDeleteText(inApp: app)
+        nicknameTextField.tap()
         nicknameTextField.typeText(nicknameUUID)
-        
+
         return nicknameUUID
     }
-    
+
     func fillGender() -> String {
         let genderUUID = UUID().uuidString
+        genderTextField.tap()
         genderTextField.selectAndDeleteText(inApp: app)
+        genderTextField.tap()
         genderTextField.typeText(genderUUID)
-        
+
         return genderUUID
     }
 }

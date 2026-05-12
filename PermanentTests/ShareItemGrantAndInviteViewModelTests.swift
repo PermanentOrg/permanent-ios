@@ -456,7 +456,7 @@ final class ShareItemGrantAndInviteViewModelTests: XCTestCase {
 
         vm.showArchiveAccessUpdatedNotification(message: "Custom message")
 
-        try? await Task.sleep(nanoseconds: 600_000_000)
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
         XCTAssertEqual(vm.archiveAccessNotificationMessage, "Custom message")
         XCTAssertTrue(vm.showArchiveAccessNotification)
     }

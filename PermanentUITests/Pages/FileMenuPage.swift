@@ -11,19 +11,17 @@ import XCTest
 class FileMenuPage {
     let app: XCUIApplication
     
-    var doneButton: XCUIElement { app.buttons["Done"] }
-    
-    var downloadButton: XCUIElement { app.otherElements["Download to device"] }
-    var copyButton: XCUIElement { app.otherElements["Copy"] }
-    var moveButton: XCUIElement { app.otherElements["Move to another location"] }
-    var deleteButton: XCUIElement { app.otherElements["Delete"] }
-    var unshareButton: XCUIElement { app.otherElements["Leave share"] }
-    var renameButton: XCUIElement { app.otherElements["Rename"] }
-    var publishButton: XCUIElement { app.otherElements["Publish"] }
-    var getLinkButton: XCUIElement { app.otherElements["Get Link"] }
-    var shareLinkButton: XCUIElement { app.otherElements["Share link via Permanent"] }
-    var manageLinkButton: XCUIElement { app.otherElements["Share management"] }
-    var shareToOtherButton: XCUIElement { app.otherElements["Share to Another App"] }
+    var closeButton: XCUIElement { app.buttons["fileMenuCloseButton"] }
+    var downloadButton: XCUIElement { app.staticTexts["Save"] }
+    var copyButton: XCUIElement { app.staticTexts["Copy to another folder"] }
+    var moveButton: XCUIElement { app.staticTexts["Move to another folder"] }
+    var deleteButton: XCUIElement { app.staticTexts["Delete"] }
+    var unshareButton: XCUIElement { app.staticTexts["Leave share"] }
+    var renameButton: XCUIElement { app.staticTexts["Rename"] }
+    var publishButton: XCUIElement { app.staticTexts["Publish on the web"] }
+    var shareLinkButton: XCUIElement { app.staticTexts["Share and manage access"] }
+    var shareToOtherButton: XCUIElement { app.staticTexts["Save or send a copy"] }
+    var editMetadataButton: XCUIElement { app.staticTexts["Edit Metadata"] }
     
     init(app: XCUIApplication) {
         self.app = app

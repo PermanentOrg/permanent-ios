@@ -80,9 +80,9 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertEqual(size.height, 40)
     }
 
-    func testDidSelectItemAtSelectingModeAppendsSelection() {
+    func testDidSelectItemAtSelectingModeAppendsSelection() throws {
         let vc = makeController()
-        let vm = vc.viewModel!
+        let vm = try XCTUnwrap(vc.viewModel)
         let file = makeFolder(name: "Folder A", folderLinkId: 10)
         vm.viewModels = [file]
         vm.selectedFiles = []
@@ -95,9 +95,9 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertEqual(vm.selectedFiles?.count, 1)
     }
 
-    func testDidSelectItemAtSelectingModeRemovesExistingSelection() {
+    func testDidSelectItemAtSelectingModeRemovesExistingSelection() throws {
         let vc = makeController()
-        let vm = vc.viewModel!
+        let vm = try XCTUnwrap(vc.viewModel)
         let file = makeFolder(name: "Folder A", folderLinkId: 11)
         vm.viewModels = [file]
         vm.selectedFiles = [file]
@@ -167,9 +167,9 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertFalse(vc.didNavigateToFolder)
     }
 
-    func testSegmentedControlValueChangedResetsStateAndSelection() {
+    func testSegmentedControlValueChangedResetsStateAndSelection() throws {
         let vc = makeController()
-        let vm = vc.viewModel!
+        let vm = try XCTUnwrap(vc.viewModel)
         let directoryLabel = UILabel()
         let backButton = UIButton(type: .system)
         let fabView = FABView(frame: .zero)
@@ -200,9 +200,9 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertTrue(vm.selectedFiles?.isEmpty ?? true)
     }
 
-    func testBackButtonActionWithoutHierarchyAndNoActionReturns() {
+    func testBackButtonActionWithoutHierarchyAndNoActionReturns() throws {
         let vc = makeController()
-        let vm = vc.viewModel as! MockSharedFilesViewModel
+        let vm = try XCTUnwrap(vc.viewModel as? MockSharedFilesViewModel)
         vm.fileAction = .none
         vm.navigationStack = []
 
@@ -220,9 +220,9 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertTrue(didCallGetShares)
     }
 
-    func testBackButtonActionWithMoveAtRootShowsCancelMoveDialog() {
+    func testBackButtonActionWithMoveAtRootShowsCancelMoveDialog() throws {
         let vc = makeController()
-        let vm = vc.viewModel!
+        let vm = try XCTUnwrap(vc.viewModel)
         vm.navigationStack = [makeFolder(name: "Root", folderLinkId: 905)]
         vm.fileAction = .move
         vm.selectedFiles = [makeFile(name: "Doc", folderLinkId: 906)]
@@ -319,9 +319,9 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertTrue(vm.didInvalidateTimer)
     }
 
-    func testNavigateToFolderUsesInjectedNavigateMinRequest() {
+    func testNavigateToFolderUsesInjectedNavigateMinRequest() throws {
         let vc = makeController()
-        let vm = vc.viewModel as! MockSharedFilesViewModel
+        let vm = try XCTUnwrap(vc.viewModel as? MockSharedFilesViewModel)
         vm.navigationStack = [makeFolder(name: "Current", folderLinkId: 907)]
 
         var called = false
@@ -341,9 +341,9 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertTrue(capturedBack)
     }
 
-    func testRefreshCurrentFolderWithoutCurrentFolderUsesInjectedGetSharesRequest() {
+    func testRefreshCurrentFolderWithoutCurrentFolderUsesInjectedGetSharesRequest() throws {
         let vc = makeController()
-        let vm = vc.viewModel as! MockSharedFilesViewModel
+        let vm = try XCTUnwrap(vc.viewModel as? MockSharedFilesViewModel)
         vm.navigationStack = []
 
         var called = false

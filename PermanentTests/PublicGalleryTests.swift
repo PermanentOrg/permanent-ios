@@ -30,17 +30,50 @@ class PublicGalleryCodeTests: XCTestCase {
         try super.tearDownWithError()
     }
 
+    // MARK: - publicProfileURL
+
     func testPublicProfileURLgeneratorNegative() {
         let archiveNbr = ""
-        let generatedURL: URL? = nil
 
-        let promise = expectation(description: "Test for URL generation")
-
-        XCTAssertEqual(sut.publicProfileURL(archiveNbr: archiveNbr), generatedURL, "Failed! Checked valid MFA verification code.")
-        promise.fulfill()
-
-        wait(for: [promise], timeout: 6)
+        XCTAssertNil(sut.publicProfileURL(archiveNbr: archiveNbr), "Empty archive number should produce nil URL")
     }
+
+    func testPublicProfileURL_NilArchiveNbr_ReturnsNil() {
+        XCTAssertNil(sut.publicProfileURL(archiveNbr: nil))
+    }
+
+    func testPublicProfileURL_ValidArchiveNbr_ReturnsURL() {
+        let url = sut.publicProfileURL(archiveNbr: "0001-0000")
+        XCTAssertNotNil(url)
+    }
+
+    func testPublicProfileURL_ContainsArchiveNbr() {
+        let archiveNbr = "0001-0000"
+        let url = sut.publicProfileURL(archiveNbr: archiveNbr)
+        XCTAssertTrue(url?.absoluteString.contains(archiveNbr) == true)
+    }
+
+    func testPublicProfileURL_EndsWithProfile() {
+        let url = sut.publicProfileURL(archiveNbr: "0001-0000")
+        XCTAssertTrue(url?.absoluteString.hasSuffix("/profile") == true)
+    }
+
+    func testPublicProfileURL_ContainsArchivePath() {
+        let url = sut.publicProfileURL(archiveNbr: "0001-0000")
+        XCTAssertTrue(url?.absoluteString.contains("/archive/") == true)
+    }
+
+    // MARK: - Initial State
+
+    func testInitialState_SearchPublicArchivesEmpty() {
+        XCTAssertTrue(sut.searchPublicArchives.isEmpty)
+    }
+
+    func testInitialState_SearchQueryIsEmpty() {
+        XCTAssertTrue(sut.searchQuery.isEmpty)
+    }
+
+    // MARK: - Search Archives
 
     func testSearchArchivesNegative() {
         let config = URLSessionConfiguration.ephemeral

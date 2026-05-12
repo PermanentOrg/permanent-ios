@@ -23,7 +23,7 @@ class ResponseURLProtocol<T>: URLProtocol where T: TestURLs {
             let testURLs = T()
             if let data = testURLs.urls[url] {
                 // …load it immediately.
-                let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+                guard let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil) else { return }
                 self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
                 self.client?.urlProtocol(self, didLoad: data)
             }

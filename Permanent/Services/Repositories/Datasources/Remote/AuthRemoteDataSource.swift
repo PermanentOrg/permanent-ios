@@ -86,27 +86,20 @@ class MockAuthRemoteDataSource: AuthRemoteDataSourceInterface {
     var twoFactorResponse: Result<VerifyResponse, Error>?
     var forgotPasswordResponse: Result<ForgotPasswordResponse, Error>?
 
+    private let callbackQueue = DispatchQueue(label: "MockAuthRemoteDataSource", qos: .userInitiated)
+
     func login(with credentials: LoginCredentials, then handler: @escaping (Result<LoginResponse, Error>) -> Void) {
-        if let response = loginResponse {
-            handler(response)
-        } else {
-            handler(.failure(NSError(domain: "MockAuthRemoteDataSource", code: -1, userInfo: nil)))
-        }
+        let response = loginResponse ?? .failure(NSError(domain: "MockAuthRemoteDataSource", code: -1, userInfo: nil))
+        callbackQueue.async { handler(response) }
     }
 
     func loginWithTwoFactor(withEmail email: String, code: String, type: CodeVerificationType, then handler: @escaping (Result<VerifyResponse, Error>) -> Void) {
-        if let response = twoFactorResponse {
-            handler(response)
-        } else {
-            handler(.failure(NSError(domain: "MockAuthRemoteDataSource", code: -1, userInfo: nil)))
-        }
+        let response = twoFactorResponse ?? .failure(NSError(domain: "MockAuthRemoteDataSource", code: -1, userInfo: nil))
+        callbackQueue.async { handler(response) }
     }
 
     func forgotPassword(withEmail email: String, then handler: @escaping (Result<ForgotPasswordResponse, Error>) -> Void) {
-        if let response = forgotPasswordResponse {
-            handler(response)
-        } else {
-            handler(.failure(NSError(domain: "MockAuthRemoteDataSource", code: -1, userInfo: nil)))
-        }
+        let response = forgotPasswordResponse ?? .failure(NSError(domain: "MockAuthRemoteDataSource", code: -1, userInfo: nil))
+        callbackQueue.async { handler(response) }
     }
 }

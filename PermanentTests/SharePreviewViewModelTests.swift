@@ -180,7 +180,7 @@ final class SharePreviewViewModelTests: XCTestCase {
         
         await fulfillment(of: [finishedLoading], timeout: 8.0)
         
-        XCTAssertTrue(vm.items.count >= 0)
+        XCTAssertFalse(vm.isLoading)
     }
     
     func testEmptyDataHandledCorrectly() async {
@@ -191,8 +191,7 @@ final class SharePreviewViewModelTests: XCTestCase {
         // With empty data, the view model should handle gracefully
         XCTAssertNil(vm.errorMessage)
         XCTAssertEqual(vm.shareName, "")
-        // Empty data should be handled without crashing.
-        XCTAssertGreaterThanOrEqual(vm.items.count, 0)
+        XCTAssertFalse(vm.isLoading)
     }
 
     // MARK: - Access Role Display Tests

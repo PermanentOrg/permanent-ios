@@ -131,7 +131,7 @@ class SharedFilesPage {
         
         sleep(1)
         
-        fileMenu.doneButton.tap()
+        fileMenu.closeButton.tap()
     }
     
     func testMoreFileOptionsMenuOwnerAccess() {
@@ -145,7 +145,7 @@ class SharedFilesPage {
         
         sleep(1)
         
-        fileMenu.doneButton.tap()
+        fileMenu.closeButton.tap()
     }
     
     func testMoreFileOptionsMenuViewerAccess() {
@@ -159,7 +159,7 @@ class SharedFilesPage {
         
         sleep(1)
         
-        fileMenu.doneButton.tap()
+        fileMenu.closeButton.tap()
     }
     
     func createNewFolder(name: String) {

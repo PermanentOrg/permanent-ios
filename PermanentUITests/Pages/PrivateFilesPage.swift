@@ -18,16 +18,13 @@ class PrivateFilesPage {
         navigationBar.buttons["settings"]
     }
     var addButton: XCUIElement {
-        app.otherElements["plusButton"]
+        app.images["fabPlusButton"]
     }
     var addNewFolder: XCUIElement {
-        app.buttons["New Folder"]
+        app.buttons["Create New Folder"]
     }
-    var uploadButton: XCUIElement {
-        app.buttons["Upload"]
-    }
-    var photoLibraryButton: XCUIElement {
-        app.buttons["Photo Library"]
+    var uploadPhotosButton: XCUIElement {
+        app.buttons["Upload Photos from Library"]
     }
     var photoLibraryElementLoading: XCUIElement {
         app.collectionViews.activityIndicators["In progress"]
@@ -89,13 +86,9 @@ class PrivateFilesPage {
         sleep(2)
         addButton.tap()
         sleep(2)
-        
-        XCTAssertTrue(uploadButton.waitForExistence(timeout: 60))
-        uploadButton.tap()
-        sleep(2)
-        
-        XCTAssertTrue(photoLibraryButton.waitForExistence(timeout: 10))
-        photoLibraryButton.tap()
+
+        XCTAssertTrue(uploadPhotosButton.waitForExistence(timeout: 10))
+        uploadPhotosButton.tap()
     }
     
     func processUpload() {
@@ -126,6 +119,7 @@ class PrivateFilesPage {
         
         XCTAssertTrue(deleteAlert.deleteButton.waitForExistence(timeout: 10))
         deleteAlert.deleteButton.tap()
+        sleep(3)
     }
     
     func goBack() {

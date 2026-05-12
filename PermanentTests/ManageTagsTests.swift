@@ -28,30 +28,34 @@ class ManageTagsTests: XCTestCase {
 
     func testRefreshTags() {
         expectation(forNotification: ManageTagsViewModel.didUpdateTagsNotification, object: sut) { notification in
-            XCTAssert(self.sut.tags.count > 0)
             return true
         }
         sut.refreshTags()
-        
+
         waitForExpectations(timeout: 5)
+        XCTAssertGreaterThan(sut.tags.count, 0, "Tags should be populated after refresh")
     }
 
     func testDeleteTag() {
         var temporarySut: ManageTagsViewModel!
-        
+
         let tagsRemoteMockDataSource = TagsRemoteMockDataSource()
         let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
         temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
-        
+
         let tag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
         let tagVO = TagVO(tagVO: tag)
         temporarySut.tags.append(tagVO)
         temporarySut.sortedTags.append(tagVO)
+
+        let deleteExpectation = expectation(description: "Delete tag callback")
         temporarySut.deleteTag(index: 0) { error in
             XCTAssertNil(tagsRemoteMockDataSource.deleteTagError)
-            XCTAssert(temporarySut.tags.count == 0)
-            XCTAssert(temporarySut.sortedTags.count == 0)
+            XCTAssertEqual(temporarySut.tags.count, 0)
+            XCTAssertEqual(temporarySut.sortedTags.count, 0)
+            deleteExpectation.fulfill()
         }
+        waitForExpectations(timeout: 5)
     }
 
     func testSearchTags() {
@@ -63,21 +67,23 @@ class ManageTagsTests: XCTestCase {
         sut.tags.append(secondTagVO)
         sut.sortedTags = sut.tags
         sut.searchTags(withText: "test")
-        XCTAssert(self.sut.sortedTags.count == 1)
+        XCTAssertEqual(sut.sortedTags.count, 1)
         sut.searchTags(withText: "")
-        XCTAssert(self.sut.sortedTags.count == 2)
+        XCTAssertEqual(sut.sortedTags.count, 2)
     }
 
     func testIsLoading() {
+        var wasLoading = false
         expectation(forNotification: ManageTagsViewModel.isLoadingNotification, object: sut) { notification in
             if self.sut.isLoading {
-                XCTAssert(true)
+                wasLoading = true
             }
             return true
         }
         sut.refreshTags()
-        
+
         waitForExpectations(timeout: 5)
+        XCTAssertTrue(wasLoading, "isLoading should have been true at some point during refresh")
     }
 
     func testIsTagNameValid() {
@@ -88,8 +94,8 @@ class ManageTagsTests: XCTestCase {
         XCTAssertFalse(sut.isNewTagNameValid(withText: "test"))
         XCTAssertFalse(sut.isNewTagNameValid(withText: ""))
         XCTAssertFalse(sut.isNewTagNameValid(withText: nil))
-        XCTAssert(sut.isNewTagNameValid(withText: "test 1"))
-        XCTAssert(sut.isNewTagNameValid(withText: "test 2"))
+        XCTAssertTrue(sut.isNewTagNameValid(withText: "test 1"))
+        XCTAssertTrue(sut.isNewTagNameValid(withText: "test 2"))
     }
     
     func testAddTag() {
@@ -103,10 +109,12 @@ class ManageTagsTests: XCTestCase {
             return true
         }
 
+        let addExpectation = expectation(description: "Add tag callback")
         temporarySut.addTagToArchive(withName: "test") { error in
             XCTAssertNil(error)
-            XCTAssert(temporarySut.tags.count == 1)
-            XCTAssert(temporarySut.sortedTags.count == 1)
+            XCTAssertEqual(temporarySut.tags.count, 1)
+            XCTAssertEqual(temporarySut.sortedTags.count, 1)
+            addExpectation.fulfill()
         }
 
         waitForExpectations(timeout: 5)
@@ -119,9 +127,12 @@ class ManageTagsTests: XCTestCase {
         let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
         temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
 
+        let nilExpectation = expectation(description: "Add nil tag callback")
         temporarySut.addTagToArchive(withName: nil) { error in
             XCTAssertNotNil(error)
+            nilExpectation.fulfill()
         }
+        waitForExpectations(timeout: 5)
     }
 
     func testUpdateTag() {
@@ -140,8 +151,10 @@ class ManageTagsTests: XCTestCase {
             return true
         }
 
+        let updateExpectation = expectation(description: "Update tag callback")
         temporarySut.updateTagName(newTagName: "test 1", index: 0) { error in
             XCTAssertNil(error)
+            updateExpectation.fulfill()
         }
 
         waitForExpectations(timeout: 5)
@@ -159,9 +172,12 @@ class ManageTagsTests: XCTestCase {
         temporarySut.tags.append(tagVO)
         temporarySut.sortedTags.append(tagVO)
 
+        let nilUpdateExpectation = expectation(description: "Update nil tag callback")
         temporarySut.updateTagName(newTagName: nil, index: 0) { error in
             XCTAssertNotNil(error)
+            nilUpdateExpectation.fulfill()
         }
+        waitForExpectations(timeout: 5)
     }
 
     func testGetTagName() {

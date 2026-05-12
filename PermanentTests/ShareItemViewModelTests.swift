@@ -658,41 +658,42 @@ final class ShareItemViewModelTests: XCTestCase {
         let fileModel = FileModel.mockFile()
         let repo = MockShareManagementRepository(shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
-        
+
         var attempts = 0
         while vm.isLoading && attempts < 100 {
             try? await Task.sleep(nanoseconds: 50_000_000)
             attempts += 1
         }
-        
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        
-        if let firstShare = vm.sharedArchives.first {
-            vm.approveShareRequest(firstShare)
-            
-            XCTAssertTrue(vm.isApprovingShare(shareID: firstShare.shareID ?? 0), "Should be approving")
-        }
+
+        let testShare = makeShareVO(shareID: 501, archiveID: 5001, status: ArchiveVOData.Status.pending.rawValue, accessRole: "viewer")
+        vm.sharedArchives = [testShare]
+
+        vm.approveShareRequest(testShare)
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertTrue(vm.isApprovingShare(shareID: 501), "Should be approving")
     }
-    
-    func testDenyShareRequest_ShowsConfirmationAlert() async {
+
+    func testDenyShareRequest_SetsDenyingState() async {
         let fileModel = FileModel.mockFile()
         let repo = MockShareManagementRepository(shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
-        
+
         var attempts = 0
         while vm.isLoading && attempts < 100 {
             try? await Task.sleep(nanoseconds: 50_000_000)
             attempts += 1
         }
-        
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        
-        if let firstShare = vm.sharedArchives.first {
-            vm.denyShareRequest(firstShare)
-            
-            XCTAssertTrue(vm.showDenyArchiveAccessAlert, "Should show deny confirmation")
-            XCTAssertEqual(vm.selectedArchiveForDeny?.shareID, firstShare.shareID, "Should set selected archive")
-        }
+
+        let testShare = makeShareVO(shareID: 601, archiveID: 6001, status: ArchiveVOData.Status.pending.rawValue, accessRole: "viewer")
+        vm.sharedArchives = [testShare]
+
+        vm.denyShareRequest(testShare)
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertTrue(vm.isDenyingShare(shareID: 601), "Should be denying")
     }
     
     func testIsApprovingShare_ReturnsCorrectState() {

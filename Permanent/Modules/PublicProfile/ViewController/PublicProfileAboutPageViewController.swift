@@ -24,9 +24,13 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         setupNavigationBar()
         initUI()
         
+        archiveNameTextField.accessibilityIdentifier = "archiveNameTextField"
+        shortAboutDescriptionTextField.accessibilityIdentifier = "shortDescriptionTextField"
+        longAboutDescriptionTextView.accessibilityIdentifier = "longDescriptionTextView"
+
         shortAboutDescriptionTextField.delegate = self
         longAboutDescriptionTextView.delegate = self
-        
+
         addDismissKeyboardGesture()
     }
     

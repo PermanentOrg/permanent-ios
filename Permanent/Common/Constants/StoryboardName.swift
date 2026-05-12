@@ -46,10 +46,8 @@ enum ViewControllerId: String {
     case fabActionSheet
     case sideMenu
     case rightSideMenu
-    case share
     case shares
     case members
-    case manageLink
     case accountInfo
     case accountDelete
     case accountSettings
@@ -81,8 +79,6 @@ enum ViewControllerId: String {
     case accountOnboardingPg2Pending
     case publicGallery
     case tagManagement
-    case shareManagement
-    case shareManagementAccessRoles
     case tagsOptions
     case legacyPlanningIntro
     case legacyPlanningLoading
@@ -112,9 +108,6 @@ enum ViewControllerId: String {
             
         case .rightSideMenu:
             return "RightSideMenu"
-            
-        case .manageLink:
-            return "ManageLink"
             
         case .accountInfo:
             return "AccountInfo"
@@ -205,12 +198,6 @@ enum ViewControllerId: String {
 
         case .tagManagement:
             return "TagManagement"
-            
-        case .shareManagement:
-            return "ShareManagement"
-            
-        case .shareManagementAccessRoles:
-            return "ShareManagementAccessRoles"
             
         case .tagsOptions:
             return "TagsOptions"

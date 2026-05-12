@@ -40,8 +40,9 @@ class SessionTests: XCTestCase {
         
         let savedSession = try sut.savedSession()
         
-        XCTAssert(session.account.accountID == savedSession?.account.accountID)
-        XCTAssert(session.selectedArchive?.archiveID == savedSession?.selectedArchive?.archiveID)
+        let unwrappedSession = try XCTUnwrap(savedSession)
+        XCTAssertEqual(session.account.accountID, unwrappedSession.account.accountID)
+        XCTAssertEqual(session.selectedArchive?.archiveID, unwrappedSession.selectedArchive?.archiveID)
         
         sut.clearSession()
     }

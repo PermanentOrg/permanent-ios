@@ -13,9 +13,16 @@ import Combine
 final class ShareFindArchiveByEmailViewModelTests: XCTestCase {
     private var sut: ShareFindArchiveByEmailViewModel!
 
+    private var mockOutcome: ShareFindArchiveByEmailViewModel.SearchOutcome = .noAccount("mock@test.com")
+
     override func setUp() {
         super.setUp()
-        sut = ShareFindArchiveByEmailViewModel()
+        sut = ShareFindArchiveByEmailViewModel { [weak self] email, completion in
+            guard let self else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                completion(self.mockOutcome)
+            }
+        }
     }
 
     override func tearDown() {
@@ -353,10 +360,11 @@ final class ShareFindArchiveByEmailViewModelTests: XCTestCase {
         XCTAssertEqual(sut.submittedSearchEmail, "test@test.com")
     }
 
-    // MARK: - API Result Integration (Async)
+    // MARK: - API Result Integration (Async, Mocked)
 
-    func testPerformSearch_ValidEmail_EventuallyCompletesSearch() {
-        sut.searchText = "nonexistent-test-user-xyz@permanent.org"
+    func testPerformSearch_ValidEmail_EventuallyCompletesWithNoAccount() {
+        mockOutcome = .noAccount("user@permanent.org")
+        sut.searchText = "user@permanent.org"
         sut.performSearch()
         XCTAssertTrue(sut.isSearching)
 
@@ -364,21 +372,44 @@ final class ShareFindArchiveByEmailViewModelTests: XCTestCase {
         let cancellable = sut.$isSearching
             .dropFirst()
             .filter { !$0 }
-            .sink { _ in
-                expectation.fulfill()
-            }
+            .sink { _ in expectation.fulfill() }
 
-        wait(for: [expectation], timeout: 10)
+        wait(for: [expectation], timeout: 1)
         cancellable.cancel()
 
         XCTAssertFalse(sut.isSearching)
-        switch sut.searchOutcome {
-        case .noAccount(let email):
-            XCTAssertEqual(email, "nonexistent-test-user-xyz@permanent.org")
-        case .found:
-            break
-        case .idle:
-            XCTFail("Expected a result after search completes, got .idle")
+        if case .noAccount(let email) = sut.searchOutcome {
+            XCTAssertEqual(email, "user@permanent.org")
+        } else {
+            XCTFail("Expected .noAccount outcome")
+        }
+    }
+
+    func testPerformSearch_ValidEmail_EventuallyCompletesWithFound() {
+        let mockArchives = [
+            ShareFindArchiveByEmailViewModel.ArchiveResult(
+                archiveID: 42, initials: "JD", name: "The John Doe Archive", thumbnailURL: nil
+            )
+        ]
+        mockOutcome = .found(mockArchives)
+        sut.searchText = "john@example.com"
+        sut.performSearch()
+
+        let expectation = XCTestExpectation(description: "Search completes")
+        let cancellable = sut.$isSearching
+            .dropFirst()
+            .filter { !$0 }
+            .sink { _ in expectation.fulfill() }
+
+        wait(for: [expectation], timeout: 1)
+        cancellable.cancel()
+
+        XCTAssertFalse(sut.isSearching)
+        if case .found(let results) = sut.searchOutcome {
+            XCTAssertEqual(results.count, 1)
+            XCTAssertEqual(results[0].name, "The John Doe Archive")
+        } else {
+            XCTFail("Expected .found outcome")
         }
     }
 

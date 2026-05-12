@@ -70,16 +70,14 @@ final class FileMenuViewModelTests: XCTestCase {
 
     // MARK: - Format File Size Tests
 
-    func testFormatFileSize_PositiveSize_ReturnsFormattedString() {
-        let result = FileMenuViewModel.formatFileSize(1024)
-        XCTAssertNotNil(result)
-        XCTAssertFalse(result!.isEmpty)
+    func testFormatFileSize_PositiveSize_ReturnsFormattedString() throws {
+        let result = try XCTUnwrap(FileMenuViewModel.formatFileSize(1024))
+        XCTAssertFalse(result.isEmpty)
     }
 
-    func testFormatFileSize_LargeSize_ReturnsFormattedString() {
-        let result = FileMenuViewModel.formatFileSize(1_073_741_824)
-        XCTAssertNotNil(result)
-        XCTAssertTrue(result!.contains("GB") || result!.contains("MB"))
+    func testFormatFileSize_LargeSize_ReturnsFormattedString() throws {
+        let result = try XCTUnwrap(FileMenuViewModel.formatFileSize(1_073_741_824))
+        XCTAssertTrue(result.contains("GB"), "Expected GB unit, got: \(result)")
     }
 
     func testFormatFileSize_Zero_ReturnsNil() {
@@ -758,6 +756,147 @@ final class FileMenuViewModelTests: XCTestCase {
         let sut = FileMenuViewModel(fileViewModel: makeFileModel(), menuItems: items, onDismiss: {})
 
         XCTAssertFalse(sut.needsScrolling)
+    }
+
+    // MARK: - getIconImage
+
+    func testGetIconImage_AllItemTypes_ReturnNonNilImage() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        for itemType in FileMenuViewModel.MenuItem.ItemType.allCases {
+            let image = sut.getIconImage(for: itemType)
+            XCTAssertNotNil(image, "\(itemType) should return a non-nil Image")
+        }
+    }
+
+    // MARK: - getTitle
+
+    func testGetTitle_Download_ReturnsSave() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .download), "Save")
+    }
+
+    func testGetTitle_Copy_ReturnsExpected() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .copy), "Copy to another folder")
+    }
+
+    func testGetTitle_Move_ReturnsExpected() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .move), "Move to another folder")
+    }
+
+    func testGetTitle_Delete_ReturnsDelete() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .delete), "Delete")
+    }
+
+    func testGetTitle_Unshare_ReturnsLeaveShare() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .unshare), "Leave share")
+    }
+
+    func testGetTitle_Rename_ReturnsRename() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .rename), "Rename")
+    }
+
+    func testGetTitle_Publish_ReturnsPublishOnTheWeb() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .publish), "Publish on the web")
+    }
+
+    func testGetTitle_ShareToPermanent_ReturnsExpected() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .shareToPermanent), "Share and manage access")
+    }
+
+    func testGetTitle_ShareToAnotherApp_ReturnsExpected() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.getTitle(for: .shareToAnotherApp), "Save or send a copy")
+    }
+
+    func testGetTitle_AllItemTypes_ReturnNonEmpty() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        for itemType in FileMenuViewModel.MenuItem.ItemType.allCases {
+            let title = sut.getTitle(for: itemType)
+            XCTAssertFalse(title.isEmpty, "\(itemType) should have a non-empty title")
+        }
+    }
+
+    // MARK: - shouldShowPendingInvitationBadge
+
+    func testShouldShowPendingInvitationBadge_NonShareItem_ReturnsFalse() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertFalse(sut.shouldShowPendingInvitationBadge(for: .download))
+        XCTAssertFalse(sut.shouldShowPendingInvitationBadge(for: .delete))
+        XCTAssertFalse(sut.shouldShowPendingInvitationBadge(for: .rename))
+    }
+
+    func testShouldShowPendingInvitationBadge_ShareToPermanent_NoPending_ReturnsFalse() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertFalse(sut.shouldShowPendingInvitationBadge(for: .shareToPermanent))
+    }
+
+    // MARK: - pendingInvitationBadgeCount
+
+    func testPendingInvitationBadgeCount_NonShareItem_ReturnsZero() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.pendingInvitationBadgeCount(for: .download), 0)
+        XCTAssertEqual(sut.pendingInvitationBadgeCount(for: .copy), 0)
+        XCTAssertEqual(sut.pendingInvitationBadgeCount(for: .move), 0)
+    }
+
+    func testPendingInvitationBadgeCount_ShareToPermanent_NoPending_ReturnsZero() {
+        let fm = makeFileModel()
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], onDismiss: {})
+        XCTAssertEqual(sut.pendingInvitationBadgeCount(for: .shareToPermanent), 0)
+    }
+
+    // MARK: - MenuItem.ItemType
+
+    func testMenuItemType_AllCases_Has10Cases() {
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.allCases.count, 10)
+    }
+
+    func testMenuItemType_RawValues() {
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.download.rawValue, "download")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.copy.rawValue, "copy")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.move.rawValue, "move")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.delete.rawValue, "delete")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.unshare.rawValue, "unshare")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.rename.rawValue, "rename")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.publish.rawValue, "publish")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.shareToPermanent.rawValue, "shareToPermanent")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.shareToAnotherApp.rawValue, "shareToAnotherApp")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.editMetadata.rawValue, "editMetadata")
+    }
+
+    // MARK: - MenuItem Equatable
+
+    func testMenuItem_Equatable_SameType_AreEqual() {
+        let a = FileMenuViewModel.MenuItem(type: .download, action: nil)
+        let b = FileMenuViewModel.MenuItem(type: .download, action: { })
+        XCTAssertEqual(a, b)
+    }
+
+    func testMenuItem_Equatable_DifferentType_AreNotEqual() {
+        let a = FileMenuViewModel.MenuItem(type: .download, action: nil)
+        let b = FileMenuViewModel.MenuItem(type: .delete, action: nil)
+        XCTAssertNotEqual(a, b)
     }
 
     // MARK: - Helpers
