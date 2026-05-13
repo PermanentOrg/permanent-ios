@@ -51,6 +51,7 @@ struct ViewRepresentableContainer: View {
                     .foregroundColor(.white)
             }
         }
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
 
     func dismissView() {

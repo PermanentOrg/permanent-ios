@@ -75,18 +75,21 @@ struct StorageView: View {
                 } label: {
                     CustomListItemView(image: Image(.storagePlus), titleText: "Add storage", descText: "Increase your space easily by adding more storage.", showRectangle: false)
                 }
+                .accessibilityIdentifier("storageAddOption")
                 Divider()
                 Button {
                     viewModel.giftStorageIsPresented = true
                 } label: {
                     CustomListItemView(image: Image(.storageGift), titleText: "Gift storage", descText: "Share storage with others by gifting it to friends or collaborators.", showRectangle: false)
                 }
+                .accessibilityIdentifier("storageGiftOption")
                 Divider()
                 Button {
                     viewModel.redeemStorageIspresented = true
                 } label: {
                     CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.", showBadge: true, showRectangle: false)
                 }
+                .accessibilityIdentifier("storageRedeemOption")
                 Spacer()
             }
         }
@@ -106,6 +109,7 @@ struct StorageView: View {
             }
         }
         .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

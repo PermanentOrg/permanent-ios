@@ -209,6 +209,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .prominent, target: self, action: #selector(searchButtonPressed(_:)))
                 searchButton.tintColor = .darkBlue
             }
+            searchButton.accessibilityIdentifier = "searchButton"
             navigationItem.rightBarButtonItems = [rightBarItem, searchButton]
         }
         
@@ -240,6 +241,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     fileprivate func setupCollectionView() {
         isGridView = viewModel?.isGridView ?? false
+        switchViewButton.accessibilityIdentifier = "switchViewButton"
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")

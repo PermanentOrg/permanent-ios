@@ -224,6 +224,7 @@ struct RenameView: View {
                         .foregroundColor(.blue900)
                         .frame(width: 20, height: 20)
                 }
+                .accessibilityIdentifier("renameClearButton")
                 .fixedSize()
                 .transition(.opacity.combined(with: .scale))
             }

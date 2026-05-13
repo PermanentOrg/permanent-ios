@@ -247,6 +247,7 @@ struct TwoStepVerificationView: View {
             }
         }
         .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

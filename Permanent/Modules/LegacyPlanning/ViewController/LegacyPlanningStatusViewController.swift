@@ -159,8 +159,10 @@ class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatu
             closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
             closeButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
             closeButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -20)
+            closeButton.accessibilityIdentifier = "settingsContainerBackButton"
             let closeButtonItem = UIBarButtonItem(customView: closeButton)
             closeButtonItem.hidesSharedBackground = true
+            closeButtonItem.accessibilityIdentifier = "settingsContainerBackButton"
             navigationItem.rightBarButtonItem = closeButtonItem
         } else {
             let closeButton = UIButton(type: .system)
@@ -168,7 +170,9 @@ class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatu
             closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
             closeButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
             closeButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -20)
+            closeButton.accessibilityIdentifier = "settingsContainerBackButton"
             let closeButtonItem = UIBarButtonItem(customView: closeButton)
+            closeButtonItem.accessibilityIdentifier = "settingsContainerBackButton"
             navigationItem.rightBarButtonItem = closeButtonItem
         }
     }

@@ -198,6 +198,8 @@ class FloatingActionImageTextItem: FloatingActionTextItem {
         button.addTarget(self, action: #selector(barButtonItemPressed(_:)), for: .touchUpInside)
         button.frame = CGRect(x: 0, y: 0, width: 28 + label.frame.width, height: 32)
         button.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        button.accessibilityLabel = text
+        button.accessibilityIdentifier = text
 
         view.frame = CGRect(x: 0, y: 0, width: 28 + label.frame.width, height: 32)
 
@@ -206,6 +208,8 @@ class FloatingActionImageTextItem: FloatingActionTextItem {
         view.addSubview(button)
 
         let barButton = UIBarButtonItem(customView: view)
+        barButton.accessibilityLabel = text
+        barButton.accessibilityIdentifier = text
         return barButton
     }
 }
