@@ -51,6 +51,7 @@ class LoginUITests: BaseUITestCase {
         let invalidAccountEmail = "invalidUsername@server.com"
 
         let loginPage = LoginPage(app: app, testCase: self)
+        loginPage.waitForExistence()
         loginPage.navigateToForgotPasswordPage()
 
         let forgotPasswordPage = ForgotPasswordPage(app: app, testCase: self)

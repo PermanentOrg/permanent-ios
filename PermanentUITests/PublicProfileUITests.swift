@@ -34,6 +34,13 @@ class PublicProfileUITests: BaseUITestCase {
         
         let longDescriptionCell = app.collectionViews.cells.containing(.staticText, identifier: longUUID).firstMatch
         XCTAssertTrue(longDescriptionCell.waitForExistence(timeout: 5))
+
+        profilePage.aboutEditButton.tap()
+        aboutPage.shortDescriptionElement.tap()
+        aboutPage.shortDescriptionElement.selectAndDeleteText(inApp: app)
+        aboutPage.longDescriptionElement.tap()
+        aboutPage.longDescriptionElement.clearTextView()
+        aboutPage.doneButton.tap()
     }
     
     func testPersonInformation() {
@@ -58,6 +65,15 @@ class PublicProfileUITests: BaseUITestCase {
         
         let genderCell = app.collectionViews.cells.containing(.staticText, identifier: genderUUID).firstMatch
         XCTAssertTrue(genderCell.waitForExistence(timeout: 5))
+
+        profilePage.personInformationEditButton.tap()
+        personInfoPage.fullNameTextField.tap()
+        personInfoPage.fullNameTextField.selectAndDeleteText(inApp: app)
+        personInfoPage.nicknameTextField.tap()
+        personInfoPage.nicknameTextField.selectAndDeleteText(inApp: app)
+        personInfoPage.genderTextField.tap()
+        personInfoPage.genderTextField.selectAndDeleteText(inApp: app)
+        doneButton.tap()
     }
     
     func testOnlinePresence() {

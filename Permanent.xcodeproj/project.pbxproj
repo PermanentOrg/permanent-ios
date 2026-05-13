@@ -438,6 +438,8 @@
 		5E7B9C212FB3169200C1D3D0 /* AccountOnboardingViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9C1E2FB3169200C1D3D0 /* AccountOnboardingViewModelTests.swift */; };
 		5E7B9C222FB3169200C1D3D0 /* PublicArchiveViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9C1F2FB3169200C1D3D0 /* PublicArchiveViewModelTests.swift */; };
 		5E7B9C232FB3169200C1D3D0 /* SharedFilesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9C202FB3169200C1D3D0 /* SharedFilesViewModelTests.swift */; };
+		5E7B9C252FB3D89F00C1D3D0 /* ShareManagementPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9C242FB3D89F00C1D3D0 /* ShareManagementPage.swift */; };
+		5E7B9C272FB3D8AE00C1D3D0 /* ShareManagementUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9C262FB3D8AE00C1D3D0 /* ShareManagementUITests.swift */; };
 		5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */; };
 		5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */; };
 		5E814A432C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */; };
@@ -1530,6 +1532,8 @@
 		5E7B9C1E2FB3169200C1D3D0 /* AccountOnboardingViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingViewModelTests.swift; sourceTree = "<group>"; };
 		5E7B9C1F2FB3169200C1D3D0 /* PublicArchiveViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicArchiveViewModelTests.swift; sourceTree = "<group>"; };
 		5E7B9C202FB3169200C1D3D0 /* SharedFilesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModelTests.swift; sourceTree = "<group>"; };
+		5E7B9C242FB3D89F00C1D3D0 /* ShareManagementPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementPage.swift; sourceTree = "<group>"; };
+		5E7B9C262FB3D8AE00C1D3D0 /* ShareManagementUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementUITests.swift; sourceTree = "<group>"; };
 		5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABTagsManagementActionSheet.swift; sourceTree = "<group>"; };
 		5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNotificationWithOverlayView.swift; sourceTree = "<group>"; };
 		5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatorContainerViewModel.swift; sourceTree = "<group>"; };
@@ -2230,6 +2234,7 @@
 		5E07D44A28915C78008C0A6B /* Pages */ = {
 			isa = PBXGroup;
 			children = (
+				5E7B9C242FB3D89F00C1D3D0 /* ShareManagementPage.swift */,
 				5E07D44B28915C8E008C0A6B /* LoginPage.swift */,
 				5E07D44D28915CE0008C0A6B /* SignUpPage.swift */,
 				5ED090E72975D24F003D797B /* ForgotPasswordPage.swift */,
@@ -3423,6 +3428,7 @@
 				5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */,
 				5E63B3E428A3EC3300067FAF /* SharedFilesUITests.swift */,
 				F5216AE329228E7E0042914D /* PublicProfileUITests.swift */,
+				5E7B9C262FB3D8AE00C1D3D0 /* ShareManagementUITests.swift */,
 			);
 			path = PermanentUITests;
 			sourceTree = "<group>";
@@ -5861,6 +5867,7 @@
 				5E63B3E728A43EC400067FAF /* LeftSideMenu.swift in Sources */,
 				5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */,
 				F5216AE429228E7E0042914D /* PublicProfileUITests.swift in Sources */,
+				5E7B9C252FB3D89F00C1D3D0 /* ShareManagementPage.swift in Sources */,
 				5E63B3E528A3EC3300067FAF /* SharedFilesUITests.swift in Sources */,
 				5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */,
 				F569062228CB66CC00E610B6 /* DeleteAlertPage.swift in Sources */,
@@ -5868,6 +5875,7 @@
 				F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */,
 				F569061E28CB60E900E610B6 /* RenameAlertPage.swift in Sources */,
 				5E991EE82A4AFB88006229C0 /* EnvVars.generated.swift in Sources */,
+				5E7B9C272FB3D8AE00C1D3D0 /* ShareManagementUITests.swift in Sources */,
 				F5216AED2923E03B0042914D /* XCUIApplication+Extensions.swift in Sources */,
 				F569062028CB618500E610B6 /* FileMenuPage.swift in Sources */,
 				5E969F7A28A452A3007431BC /* SharedFilesPage.swift in Sources */,

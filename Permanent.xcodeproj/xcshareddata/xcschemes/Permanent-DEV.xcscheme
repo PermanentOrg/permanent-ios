@@ -29,8 +29,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:Permanent/Tests/Permanent-DEV-UnitTests.xctestplan"
-            default = "YES">
+            reference = "container:Permanent/Tests/Permanent-DEV-UnitTests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
             reference = "container:Permanent/Tests/TestPullRequest.xctestplan">
@@ -42,7 +41,8 @@
             reference = "container:Permanent/Tests/ui-tests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:Permanent/Tests/all-tests.xctestplan">
+            reference = "container:Permanent/Tests/all-tests.xctestplan"
+            default = "YES">
          </TestPlanReference>
       </TestPlans>
       <Testables>

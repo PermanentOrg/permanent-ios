@@ -309,23 +309,25 @@ struct ShareItemView: View {
                             .truncationMode(.tail)
                     }
                 HStack(spacing: 8) {
-                    Button(action: { 
+                    Button(action: {
                         viewModel.navigationDirection = .forward
-                        viewModel.showLinkSettings = true 
+                        viewModel.showLinkSettings = true
                     }) {
                         Image(.publishGear)
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(Color.blue900)
-                        
+
                     }
-                    
+                    .accessibilityIdentifier("shareLinkSettingsButton")
+
                     Button(action: { viewModel.copyLink() }) {
                         Image(.shareCopyV2)
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(Color.blue900)
                     }
+                    .accessibilityIdentifier("shareLinkCopyButton")
                 }
             }
         }

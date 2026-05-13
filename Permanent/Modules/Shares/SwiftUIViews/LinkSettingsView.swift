@@ -229,31 +229,38 @@ struct LinkSettingsView: View {
                 .foregroundColor(Color.blue900)
                 .textCase(.uppercase)
             
-            HStack(spacing: 16) {
-                Group {
-                    viewModel.selectedAccessLevel.icon
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(viewModel.selectedAccessLevel.iconColor)
-                        .padding(10)
-                        .background(viewModel.selectedAccessLevel.iconColor.opacity(0.1))
-                        .cornerRadius(4)
-                }
-                
-                Text(viewModel.selectedAccessLevel.title)
-                    .font(.custom("Usual-Medium", size: 14))
-                    .foregroundColor(Color.blue900)
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14))
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(Color.blue200)
-            }
-            .onTapGesture {
+            Button(action: {
                 viewModel.navigationDirection = .forward
                 viewModel.showGeneralAccess = true
+            }) {
+                HStack(spacing: 16) {
+                    Group {
+                        viewModel.selectedAccessLevel.icon
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(viewModel.selectedAccessLevel.iconColor)
+                            .padding(10)
+                            .background(viewModel.selectedAccessLevel.iconColor.opacity(0.1))
+                            .cornerRadius(4)
+                    }
+
+                    Text(viewModel.selectedAccessLevel.title)
+                        .font(.custom("Usual-Medium", size: 14))
+                        .foregroundColor(Color.blue900)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14))
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(Color.blue200)
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(viewModel.selectedAccessLevel.title)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityIdentifier("generalAccessRow")
             
             // Show additional options when Restricted is selected
             if viewModel.selectedAccessLevel == .restricted {
