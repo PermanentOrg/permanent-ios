@@ -24,12 +24,19 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
         case noAccount(String)
     }
 
+    typealias SearchProvider = (String, @escaping (SearchOutcome) -> Void) -> Void
+
     @Published var searchText = ""
     @Published private(set) var submittedSearchEmail: String?
     @Published private(set) var searchOutcome: SearchOutcome = .idle
     @Published private(set) var isSearching = false
 
     private var searchOperation: APIOperation?
+    private let searchProvider: SearchProvider?
+
+    init(searchProvider: SearchProvider? = nil) {
+        self.searchProvider = searchProvider
+    }
 
     private var trimmedSearchText: String {
         searchText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -79,6 +86,17 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
         isSearching = true
         withAnimation(.easeInOut(duration: 0.2)) {
             searchOutcome = .idle
+        }
+
+        if let searchProvider {
+            searchProvider(emailToSearch) { [weak self] outcome in
+                guard let self else { return }
+                self.isSearching = false
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    self.searchOutcome = outcome
+                }
+            }
+            return true
         }
 
         searchOperation?.cancel()

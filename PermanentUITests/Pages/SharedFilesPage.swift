@@ -68,6 +68,15 @@ class SharedFilesPage {
     var emptyFolder: XCUIElement {
         app.collectionViews.staticTexts["You haven’t shared any content with anyone. Choose an item from My Files and share it with someone!"]
     }
+    var switchViewButton: XCUIElement {
+        app.buttons["switchViewButton"]
+    }
+    var headerSelectButton: XCUIElement {
+        app.buttons["headerSelectButton"]
+    }
+    var headerClearSelectionButton: XCUIElement {
+        app.buttons["headerClearSelectionButton"]
+    }
     var notificationCompletedDownload: XCUIElement {
         let predicate = NSPredicate(format: "label CONTAINS[cd] \"download completed\"")
         return app.staticTexts.matching(predicate).firstMatch
@@ -131,7 +140,7 @@ class SharedFilesPage {
         
         sleep(1)
         
-        fileMenu.doneButton.tap()
+        fileMenu.closeButton.tap()
     }
     
     func testMoreFileOptionsMenuOwnerAccess() {
@@ -145,7 +154,7 @@ class SharedFilesPage {
         
         sleep(1)
         
-        fileMenu.doneButton.tap()
+        fileMenu.closeButton.tap()
     }
     
     func testMoreFileOptionsMenuViewerAccess() {
@@ -159,7 +168,7 @@ class SharedFilesPage {
         
         sleep(1)
         
-        fileMenu.doneButton.tap()
+        fileMenu.closeButton.tap()
     }
     
     func createNewFolder(name: String) {
@@ -266,5 +275,29 @@ class SharedFilesPage {
     
     func emptyFolderTest() {
         XCTAssertTrue(emptyFolder.waitForExistence(timeout: 60))
+    }
+
+    func goToSharedByMeTab() {
+        XCTAssertTrue(sharedByMeButton.waitForExistence(timeout: 5))
+        sharedByMeButton.tap()
+        sleep(2)
+    }
+
+    func toggleListGridView() {
+        XCTAssertTrue(switchViewButton.waitForExistence(timeout: 10))
+        switchViewButton.tap()
+        sleep(1)
+    }
+
+    func openFileMenuOnFirstItem() {
+        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
+        firstElementMoreButton.tap()
+    }
+
+    func closeFileMenu() {
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertTrue(fileMenu.closeButton.waitForExistence(timeout: 10))
+        fileMenu.closeButton.tap()
+        sleep(1)
     }
 }

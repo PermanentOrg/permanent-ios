@@ -74,6 +74,8 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
         collectionViewTopConstraint.constant = 0
         
         searchBar.setDefaultStyle(placeholder: .searchFiles)
+        searchBar.accessibilityIdentifier = "filesSearchBar"
+        searchBar.searchTextField.accessibilityIdentifier = "filesSearchBar"
         
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay

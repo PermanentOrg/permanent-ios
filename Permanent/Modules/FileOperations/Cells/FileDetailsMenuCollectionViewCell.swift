@@ -23,6 +23,7 @@ class FileDetailsMenuCollectionViewCell: FileDetailsBaseCollectionViewCell {
         segmentedControl.backgroundColor = .darkGray
         segmentedControl.tintColor = .clear
         segmentedControl.selectedSegmentTintColor = .black
+        segmentedControl.accessibilityIdentifier = "fileDetailsSegmentedControl"
         
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style9.font], for: .selected)
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style9.font], for: .normal)

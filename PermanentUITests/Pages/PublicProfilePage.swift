@@ -11,7 +11,7 @@ import XCTest
 class PublicProfilePage {
     let app: XCUIApplication
     
-    var aboutHeader: XCUIElement { app.collectionViews.otherElements.containing(.staticText, identifier: "About").firstMatch }
+    var aboutHeader: XCUIElement { app.collectionViews.otherElements.containing(.staticText, identifier: "Archive Information").firstMatch }
     var aboutEditButton: XCUIElement { aboutHeader.staticTexts["Edit"] }
         
     var personInformationHeader: XCUIElement { app.collectionViews.otherElements.containing(.staticText, identifier: "Person Information").firstMatch }

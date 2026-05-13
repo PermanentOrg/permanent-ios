@@ -116,6 +116,7 @@ struct RedeemCodeView: View {
             }
         }
         .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

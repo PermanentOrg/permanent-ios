@@ -52,6 +52,7 @@ struct AddStorageView: View {
             }
         }
         .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

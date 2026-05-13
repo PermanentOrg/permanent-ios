@@ -69,8 +69,6 @@ extension ShareItemViewModel {
                 await MainActor.run {
                     guard let self = self else { return }
 
-                    self.isLoadingArchives = false
-
                     switch result {
                     case .json(let response, _):
                         guard let model: RecordV2Response = JSONHelper.decoding(
@@ -86,27 +84,13 @@ extension ShareItemViewModel {
                         if let folderLinkIdString = recordData.folderLinkId,
                            let folderLinkIdInt = Int(folderLinkIdString) {
                             self.correctFolderLinkId = folderLinkIdInt
-
-                            // Convert V2 shares to V1 format if available
-                            if let sharesV2 = recordData.shares, !sharesV2.isEmpty {
-                                let convertedShares = self.convertV2SharesToV1(sharesV2)
-                                // Sort: pending first, then approved
-                                let sortedShares = convertedShares.sorted { share1, share2 in
-                                    let isPending1 = share1.status?.contains("pending") ?? false
-                                    let isPending2 = share2.status?.contains("pending") ?? false
-                                    return isPending1 && !isPending2
-                                }
-                                self.finalizeSharedArchives(sortedShares, pendingSharesV2: recordData.pendingShares)
-                            } else {
-                                self.finalizeSharedArchives([], pendingSharesV2: recordData.pendingShares)
-                            }
-                        } else {
-                            // No folder_linkId in V2 response, fall back to V1
-                            self.fetchSharedArchivesV1()
                         }
 
+                        // V2 API may not return pending archive share requests,
+                        // so delegate to V1 which returns the complete share list
+                        self.fetchSharedArchivesV1()
+
                     case .error:
-                        // Fall back to V1 API
                         self.fetchSharedArchivesV1()
 
                     default:
@@ -129,8 +113,6 @@ extension ShareItemViewModel {
                 await MainActor.run {
                     guard let self = self else { return }
 
-                    self.isLoadingArchives = false
-
                     switch result {
                     case .json(let response, _):
                         guard let model: FolderV2Response = JSONHelper.decoding(
@@ -145,21 +127,11 @@ extension ShareItemViewModel {
                            let folderLinkIdString = folderData.folderLinkId,
                            let folderLinkIdInt = Int(folderLinkIdString) {
                             self.correctFolderLinkId = folderLinkIdInt
-
-                            if let sharesV2 = folderData.shares, !sharesV2.isEmpty {
-                                let convertedShares = self.convertV2SharesToV1(sharesV2)
-                                let sortedShares = convertedShares.sorted { share1, share2 in
-                                    let isPending1 = share1.status?.contains("pending") ?? false
-                                    let isPending2 = share2.status?.contains("pending") ?? false
-                                    return isPending1 && !isPending2
-                                }
-                                self.finalizeSharedArchives(sortedShares, pendingSharesV2: folderData.pendingShares)
-                            } else {
-                                self.finalizeSharedArchives([], pendingSharesV2: folderData.pendingShares)
-                            }
-                        } else {
-                            self.fetchSharedArchivesV1()
                         }
+
+                        // V2 API may not return pending archive share requests,
+                        // so delegate to V1 which returns the complete share list
+                        self.fetchSharedArchivesV1()
 
                     case .error:
                         self.fetchSharedArchivesV1()

@@ -55,6 +55,7 @@ struct LoginSecurityView: View {
                             descText: "Update your password to keep your account secure."
                         )
                     }
+                    .accessibilityIdentifier("securityChangePasswordOption")
                     Divider()
                     NavigationLink {
                         TwoStepVerificationView(
@@ -73,6 +74,7 @@ struct LoginSecurityView: View {
                         )
                         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: viewModel.twoFactorBadgeStatus)
                     }
+                    .accessibilityIdentifier("securityTwoStepOption")
                     Divider()
                     CustomListItemView(
                         image: Image(.securityFaceId),
@@ -177,6 +179,7 @@ struct LoginSecurityView: View {
             }
         }
         .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

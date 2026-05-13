@@ -26,32 +26,24 @@ class AccountOnboardingTests: XCTestCase {
     
     func testArchiveNameNotification() throws {
         expectation(forNotification: AccountOnboardingViewModel.archiveNameChanged, object: sut) { notification in
-            XCTAssertTrue(self.sut.archiveName == "Test")
             return true
         }
-        
+
         sut.archiveName = "Test"
-        
-        waitForExpectations(timeout: 10) { error in
-            if error != nil {
-                XCTFail(error.debugDescription)
-            }
-        }
+
+        waitForExpectations(timeout: 10)
+        XCTAssertEqual(sut.archiveName, "Test")
     }
-    
+
     func testArchiveTypeNotification() throws {
         expectation(forNotification: AccountOnboardingViewModel.archiveTypeChanged, object: sut) { notification in
-            XCTAssertTrue(self.sut.archiveType == .family)
             return true
         }
-        
+
         sut.archiveType = .family
-        
-        waitForExpectations(timeout: 10) { error in
-            if error != nil {
-                XCTFail(error.debugDescription)
-            }
-        }
+
+        waitForExpectations(timeout: 10)
+        XCTAssertEqual(sut.archiveType, .family)
     }
     
     func testHasBackButton() throws {
@@ -104,35 +96,35 @@ class AccountOnboardingTests: XCTestCase {
 
     func testRightButtonTitle() throws {
         sut.currentPage = .getStarted
-        XCTAssertTrue(sut.nextButtonTitle == "Get Started".localized())
-        
+        XCTAssertEqual(sut.nextButtonTitle, "Get Started".localized())
+
         sut.currentPage = .acceptedInvitation
         XCTAssertTrue(sut.nextButtonTitle.isEmpty)
-        
+
         sut.currentPage = .nameArchive
-        XCTAssertTrue(sut.nextButtonTitle == "Create Archive".localized())
-        
+        XCTAssertEqual(sut.nextButtonTitle, "Create Archive".localized())
+
         sut.currentPage = .pendingInvitation
-        XCTAssertTrue(sut.nextButtonTitle == "Accept All".localized())
-        
+        XCTAssertEqual(sut.nextButtonTitle, "Accept All".localized())
+
         sut.currentPage = .createArchive
-        XCTAssertTrue(sut.nextButtonTitle == "Next: Name Archive".localized())
+        XCTAssertEqual(sut.nextButtonTitle, "Next: Name Archive".localized())
     }
-    
+
     func testLeftButtonTitle() throws {
         sut.currentPage = .getStarted
         XCTAssertTrue(sut.backButtonTitle.isEmpty)
-        
+
         sut.currentPage = .acceptedInvitation
-        XCTAssertTrue(sut.backButtonTitle == "Create New Archive".localized())
-        
+        XCTAssertEqual(sut.backButtonTitle, "Create New Archive".localized())
+
         sut.currentPage = .pendingInvitation
-        XCTAssertTrue(sut.backButtonTitle == "Create New Archive".localized())
-        
+        XCTAssertEqual(sut.backButtonTitle, "Create New Archive".localized())
+
         sut.currentPage = .nameArchive
-        XCTAssertTrue(sut.backButtonTitle == "Back".localized())
-        
+        XCTAssertEqual(sut.backButtonTitle, "Back".localized())
+
         sut.currentPage = .createArchive
-        XCTAssertTrue(sut.backButtonTitle == "Back".localized())
+        XCTAssertEqual(sut.backButtonTitle, "Back".localized())
     }
 }

@@ -10,25 +10,16 @@ import XCTest
 
 class SignUpPage {
     let app: XCUIApplication
-    
-    var enterLoginScreenButton: XCUIElement {
-        app.staticTexts["Already have an account?"]
-    }
+
     var signUpStaticText: XCUIElement {
-        app.staticTexts["Sign Up"]
+        app.staticTexts["Create your new account"]
     }
-    
+
     init(app: XCUIApplication, testCase: XCTestCase) {
         self.app = app
     }
-    
+
     func waitForExistence() {
         XCTAssertTrue(signUpStaticText.waitForExistence(timeout: 30))
-    }
-    
-    func navigateToLogin() {
-        XCTAssertTrue(enterLoginScreenButton.waitForExistence(timeout: 120))
-        enterLoginScreenButton.tap()
-        sleep(5)
     }
 }

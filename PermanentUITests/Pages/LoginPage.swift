@@ -12,10 +12,10 @@ class LoginPage {
     let app: XCUIApplication
     
     var emailField: XCUIElement {
-        app.textFields["Email"]
+        app.textFields.firstMatch
     }
     var passwordField: XCUIElement {
-        app.secureTextFields["Password"]
+        app.secureTextFields.firstMatch
     }
     var logInButton: XCUIElement {
         app.buttons["Sign in"]
@@ -24,15 +24,19 @@ class LoginPage {
         app.buttons["Sign Up"]
     }
     var forgotPasswordButton: XCUIElement {
-        app.buttons["Forgot Password?"]
+        app.buttons["Forgot password?"]
     }
-    
-    var errorStaticText: XCUIElement {
-        app.staticTexts["Something went wrong. Please try again later."]
+
+    var loginScreenTitle: XCUIElement {
+        app.staticTexts["Sign in to\nPermanent"]
     }
-    
-    var okButton: XCUIElement {
-        app.buttons["Ok"]
+
+    var errorBannerText: XCUIElement {
+        app.staticTexts["Incorrect email or password."]
+    }
+
+    var bannerOkButton: XCUIElement {
+        app.buttons["OK"]
     }
     
     init(app: XCUIApplication, testCase: XCTestCase) {
@@ -50,18 +54,43 @@ class LoginPage {
         
         XCTAssertTrue(logInButton.waitForExistence(timeout: 5))
         logInButton.tap()
-        
+
         sleep(5)
+
+        dismissSavePasswordPrompt()
+    }
+
+    func dismissSavePasswordPrompt() {
+        let notNowButton = app.buttons["Not Now"]
+        if notNowButton.exists {
+            notNowButton.tap()
+            sleep(1)
+            return
+        }
+
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let springboardNotNow = springboard.buttons["Not Now"]
+        if springboardNotNow.exists {
+            springboardNotNow.tap()
+            sleep(1)
+            return
+        }
+
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.05)).tap()
+        sleep(1)
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.05)).tap()
+        sleep(1)
     }
     
-    func pressCancelButton() {
-        XCTAssertTrue(errorStaticText.waitForExistence(timeout: 5))
-        
-        XCTAssertTrue(okButton.waitForExistence(timeout: 5))
-        okButton.tap()
-        
-        XCTAssertTrue(signUpButton.waitForExistence(timeout: 5))
-        signUpButton.tap()
+    func waitForExistence() {
+        XCTAssertTrue(loginScreenTitle.waitForExistence(timeout: 30))
+    }
+
+    func dismissErrorBanner() {
+        XCTAssertTrue(errorBannerText.waitForExistence(timeout: 10))
+        XCTAssertTrue(bannerOkButton.waitForExistence(timeout: 5))
+        bannerOkButton.tap()
+        sleep(1)
     }
     
     func navigateToForgotPasswordPage() {

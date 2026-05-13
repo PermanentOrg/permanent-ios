@@ -11,7 +11,14 @@ import XCTest
 class RenameAlertPage {
     let app: XCUIApplication
     
-    var textField: XCUIElement { app.textFields["Name"] }
+    var textField: XCUIElement {
+        let identified = app.textFields["renameTextField"]
+        if identified.exists { return identified }
+        // Legacy UIKit alert fallback.
+        let legacy = app.textFields["Name"]
+        if legacy.exists { return legacy }
+        return identified
+    }
     var cancelButton: XCUIElement { app.buttons["Cancel"] }
     var renameButton: XCUIElement { app.buttons["Rename"] }
     

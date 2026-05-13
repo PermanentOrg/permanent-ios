@@ -230,6 +230,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     fileprivate func setupCollectionView() {
         isGridView = viewModel?.isGridView ?? false
+        switchViewButton.accessibilityIdentifier = "switchViewButton"
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")

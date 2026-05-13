@@ -279,6 +279,7 @@ struct ChangePasswordView: View {
             }
         }
         .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

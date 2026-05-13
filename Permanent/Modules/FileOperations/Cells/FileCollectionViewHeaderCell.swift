@@ -35,14 +35,17 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
         
         leftButton.setFont(TextFontStyle.style34.font)
         leftButton.setTitleColor(.lightGray, for: [])
+        leftButton.accessibilityIdentifier = "headerSortButton"
         
         clearButton.setTitle("Clear".localized(), for: .normal)
         clearButton.setFont(TextFontStyle.style34.font)
         clearButton.setTitleColor(.paleRed, for: [])
         clearButton.isHidden = true
+        clearButton.accessibilityIdentifier = "headerClearSelectionButton"
         
         rightButton.setFont(TextFontStyle.style34.font)
         rightButton.setTitleColor(.darkBlue, for: [])
+        rightButton.accessibilityIdentifier = "headerSelectButton"
         
         rightButton.semanticContentAttribute = .forceRightToLeft
         rightButton.imageView?.contentMode = .scaleAspectFit

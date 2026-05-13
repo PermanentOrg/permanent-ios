@@ -136,6 +136,7 @@ struct FileMoreMenuView: View {
                         .contentShape(.circle)
                         .controlSize(.regular)
                         .padding(.trailing, -12)
+                        .accessibilityIdentifier("fileMenuCloseButton")
                     } else {
                         Button(action: {
                             viewModel.dismissWithAnimation()
@@ -143,6 +144,7 @@ struct FileMoreMenuView: View {
                             Image(.closeButtonV2)
                                 .frame(width: 24, height: 24)
                         }
+                        .accessibilityIdentifier("fileMenuCloseButton")
                     }
                 }
                 .padding(24)

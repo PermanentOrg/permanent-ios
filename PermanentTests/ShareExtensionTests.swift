@@ -91,7 +91,7 @@ class ShareExtensionTests: XCTestCase {
     }
     
     func testCellConfigurationParametersNegative() throws {
-        guard let url = URL(string: "file:///tmp/test.txt") else { return }
+        let url = try XCTUnwrap(URL(string: "file:///tmp/test.txt"))
         let file = FileInfo.init(withURL: url, named: "", folder: FolderInfo(folderId: -1, folderLinkId: -1))
         let parameterForTest: ShareExtensionCellConfiguration = (nil, "", nil)
         negativeTestInit()

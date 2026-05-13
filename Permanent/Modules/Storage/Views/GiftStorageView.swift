@@ -66,6 +66,7 @@ struct GiftStorageView: View {
         }
         .foregroundColor(.blue900)
         .tint(.blue900)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     var backgroundView: some View {

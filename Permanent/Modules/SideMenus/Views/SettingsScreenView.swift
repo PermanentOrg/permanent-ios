@@ -126,36 +126,43 @@ struct SettingsScreenView: View {
                                 } label: {
                                     CustomSimpleListItemView(image: Image(.accountSettings), titleText: "Account")
                                 }
+                                .accessibilityIdentifier("settingsAccountOption")
                                 Button {
                                     settingsRouter.navigate(to: .storage, router: settingsRouter)
                                 } label: {
                                     CustomSimpleListItemView(image: Image(.storageSettings), titleText: "Storage")
                                 }
+                                .accessibilityIdentifier("settingsStorageOption")
                                 Button {
                                     settingsRouter.navigate(to: .myArchives, router: settingsRouter)
                                 } label: {
                                     CustomSimpleListItemView(image: Image(.myArchivesSettings), titleText: "My archives")
                                 }
+                                .accessibilityIdentifier("settingsMyArchivesOption")
                                 Button {
                                     settingsRouter.navigate(to: .invitations, router: settingsRouter)
                                 } label: {
                                     CustomSimpleListItemView(image: Image(.invitationsSettings), titleText: "Invitations")
                                 }
+                                .accessibilityIdentifier("settingsInvitationsOption")
                                 Button {
                                     settingsRouter.navigate(to: .activityFeed, router: settingsRouter)
                                 } label: {
                                     CustomSimpleListItemView(image: Image(.activityFeedSettings), titleText: "Activity feed")
                                 }
+                                .accessibilityIdentifier("settingsActivityFeedOption")
                                 Button {
                                     settingsRouter.navigate(to: .loginAndSecurity, router: settingsRouter)
                                 } label: {
                                     CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Login & Security", notificationIcon: !(viewModel.twoFactorAuthenticationEnabled == true)&&(viewModel.isLoading2FAStatus == false))
                                 }
+                                .accessibilityIdentifier("settingsLoginSecurityOption")
                                 Button {
                                     settingsRouter.navigate(to: .legacyPlanning, router: settingsRouter)
                                 } label: {
                                     CustomSimpleListItemView(image: Image(.legacyPlanningSettings), titleText: "Legacy Planning")
                                 }
+                                .accessibilityIdentifier("settingsLegacyPlanningOption")
                                 Spacer()
                             }
                         }

@@ -106,8 +106,13 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         let leftButtonImage: UIImage!
         leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
+        let closeButton = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+        closeButton.accessibilityIdentifier = "fileDetailsCloseButton"
+        navigationItem.leftBarButtonItem = closeButton
+
+        let shareButton = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
+        shareButton.accessibilityIdentifier = "fileDetailsShareButton"
+        navigationItem.rightBarButtonItem = shareButton
     }
     
     override func styleNavBar() {

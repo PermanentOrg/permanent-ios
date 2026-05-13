@@ -378,29 +378,65 @@ struct SharePreviewView: View {
         }
         .overlay(alignment: .leading) {
             if viewModel.showArchiveTypeSelection {
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.28)) {
-                        viewModel.closeArchiveTypeSelection()
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.28)) {
+                            viewModel.closeArchiveTypeSelection()
+                        }
+                    }) {
+                        Image(systemName: "arrow.left")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
                     }
-                }) {
-                    Image(systemName: "arrow.left")
-                        .font(.custom("Usual", size: 17))
-                        .foregroundColor(.blue900)
-                        .frame(width: 24, height: 24)
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.leading, 8)
+                } else {
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.28)) {
+                            viewModel.closeArchiveTypeSelection()
+                        }
+                    }) {
+                        Image(systemName: "arrow.left")
+                            .font(.custom("Usual", size: 17))
+                            .foregroundColor(.blue900)
+                            .frame(width: 24, height: 24)
+                    }
+                    .padding(.leading, 20)
                 }
-                .padding(.leading, 20)
             }
         }
         .overlay(alignment: .trailing) {
-            Button(action: {
-                viewModel.closeCreateArchiveSheet()
-            }) {
-                Image(systemName: "xmark")
-                    .font(.custom("Usual", size: 17))
-                    .foregroundColor(.blue200)
-                    .frame(width: 24, height: 24)
+            if #available(iOS 26.0, *) {
+                Button(action: {
+                    viewModel.closeCreateArchiveSheet()
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.custom("Usual-Regular", size: 24))
+                        .frame(width: 36, height: 36)
+                        .contentTransition(.symbolEffect(.replace))
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .contentShape(.circle)
+                .controlSize(.regular)
+                .padding(.trailing, 8)
+            } else {
+                Button(action: {
+                    viewModel.closeCreateArchiveSheet()
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.custom("Usual", size: 17))
+                        .foregroundColor(.blue200)
+                        .frame(width: 24, height: 24)
+                }
+                .padding(.trailing, 20)
             }
-            .padding(.trailing, 20)
         }
         .frame(height: 64)
         .background(Color.white)
@@ -409,7 +445,9 @@ struct SharePreviewView: View {
     private var createArchiveDetailsScreen: some View {
         ScrollViewReader { scrollProxy in
             VStack(spacing: 0) {
-                Divider()
+                if #unavailable(iOS 26.0) {
+                    Divider()
+                }
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 24) {
                         VStack(alignment: .leading, spacing: 24) {
@@ -472,7 +510,9 @@ struct SharePreviewView: View {
                                     .fill(Color.blue25)
 
                                 HStack(spacing: 16) {
-                                    Image(.shareArchivePending)
+                                    Image("SharePreviewArchiveNotselected")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
                                         .cornerRadius(8)
                                         .frame(width: 32, height: 32)
 
@@ -569,7 +609,9 @@ struct SharePreviewView: View {
 
     private var archiveTypeSelectionScreen: some View {
         VStack(spacing: 0) {
-            Divider()
+            if #unavailable(iOS 26.0) {
+                Divider()
+            }
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     ForEach(onboardingArchiveTypeOptions, id: \.onboardingType) { type in
