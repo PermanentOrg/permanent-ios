@@ -20,6 +20,7 @@ class FileInfo: NSObject, NSCoding {
     var folder: FolderInfo
     
     var didFailUpload = false
+    var retryCount: Int = 0
     
     static func == (lhs: FileInfo, rhs: FileInfo) -> Bool {
         return lhs.name == rhs.name && lhs.url == rhs.url && lhs.folder.folderId == rhs.folder.folderId && lhs.archiveId == rhs.archiveId
@@ -74,6 +75,7 @@ class FileInfo: NSObject, NSCoding {
         coder.encode(url, forKey: "url")
         coder.encode(folder, forKey: "folder")
         coder.encode(didFailUpload, forKey: "didFailUpload")
+        coder.encode(retryCount, forKey: "retryCount")
     }
     
     required convenience init?(coder: NSCoder) {
@@ -86,5 +88,6 @@ class FileInfo: NSObject, NSCoding {
         
         id = coder.decodeObject(forKey: "id") as! String
         didFailUpload = coder.decodeBool(forKey: "didFailUpload")
+        retryCount = coder.decodeInteger(forKey: "retryCount")
     }
 }
