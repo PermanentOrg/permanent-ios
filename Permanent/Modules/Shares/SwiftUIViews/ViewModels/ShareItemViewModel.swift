@@ -147,6 +147,7 @@ class ShareItemViewModel: ObservableObject {
 
     @Published var showFindArchiveByEmail = false
     @Published var showSelectArchiveFromPastShares = false
+    @Published var isPreparingPastShares = false
     @Published var showGrantArchiveAccess = false
     @Published var showInviteAndGrantAccess = false
     @Published var pendingArchiveGrant: PendingArchiveGrant?

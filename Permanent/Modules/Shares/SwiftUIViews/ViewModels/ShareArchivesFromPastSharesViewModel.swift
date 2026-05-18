@@ -28,6 +28,16 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
     @Published private(set) var myArchivesList: [PastSharedArchive] = []
     @Published private(set) var otherArchivesList: [PastSharedArchive] = []
     @Published private(set) var isLoading = false
+    @Published private(set) var accessedArchiveIDs: Set<Int> = []
+
+    func setAccessedArchiveIDs(_ ids: Set<Int>) {
+        accessedArchiveIDs = ids
+    }
+
+    func hasAccess(_ archive: PastSharedArchive) -> Bool {
+        guard let id = archive.archiveID else { return false }
+        return accessedArchiveIDs.contains(id)
+    }
 
     var title: String {
         "Select archive from past shares"
@@ -53,17 +63,24 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
         }
     }
 
+    func accessedLast(_ list: [PastSharedArchive]) -> [PastSharedArchive] {
+        list.filter { !hasAccess($0) } + list.filter { hasAccess($0) }
+    }
+
     var myArchives: [PastSharedArchive] {
-        filtered(myArchivesList)
+        accessedLast(filtered(myArchivesList))
     }
 
     var otherArchives: [PastSharedArchive] {
-        filtered(otherArchivesList)
+        accessedLast(filtered(otherArchivesList))
     }
 
-    func fetchArchives() {
+    func fetchArchives(completion: (() -> Void)? = nil) {
         guard let accountId = PermSession.currentSession?.account.accountID,
-              let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return }
+              let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else {
+            completion?()
+            return
+        }
 
         isLoading = true
 
@@ -139,13 +156,17 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
         }
 
         group.notify(queue: .main) { [weak self] in
-            guard let self else { return }
+            guard let self else {
+                completion?()
+                return
+            }
             let myArchiveIDs = Set(fetchedMyArchives.compactMap { $0.archiveID })
             let dedupedOther = fetchedOtherArchives.filter { !myArchiveIDs.contains($0.archiveID ?? -1) }
 
             self.myArchivesList = fetchedMyArchives
             self.otherArchivesList = dedupedOther
             self.isLoading = false
+            completion?()
         }
     }
 
