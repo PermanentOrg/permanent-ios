@@ -220,21 +220,9 @@ struct ShareGrantArchiveAccessView: View {
     }
 
     private var avatar: some View {
-        Group {
-            if let thumbnailURL = archiveThumbnailURL,
-               let url = URL(string: thumbnailURL) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Image(.shareArchivePending)
-                        .cornerRadius(8)
-                }
-            } else {
-                Image(.shareArchivePending)
-                    .cornerRadius(8)
-            }
+        CachedAsyncImage(url: archiveThumbnailURL.flatMap { URL(string: $0) }) {
+            Image(.shareArchivePending)
+                .cornerRadius(8)
         }
         .frame(width: 32, height: 32)
         .clipShape(RoundedRectangle(cornerRadius: 8))

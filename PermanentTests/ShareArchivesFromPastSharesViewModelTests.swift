@@ -159,4 +159,120 @@ final class ShareArchivesFromPastSharesViewModelTests: XCTestCase {
         sut.searchText = "café résumé"
         XCTAssertTrue(sut.myArchives.isEmpty)
     }
+
+    // MARK: - accessedArchiveIDs / setAccessedArchiveIDs
+
+    func testAccessedArchiveIDs_InitialState_IsEmpty() {
+        XCTAssertTrue(sut.accessedArchiveIDs.isEmpty)
+    }
+
+    func testSetAccessedArchiveIDs_UpdatesPublishedValue() {
+        sut.setAccessedArchiveIDs([1, 2, 3])
+        XCTAssertEqual(sut.accessedArchiveIDs, [1, 2, 3])
+    }
+
+    func testSetAccessedArchiveIDs_ReplacesPreviousSnapshot() {
+        sut.setAccessedArchiveIDs([1, 2])
+        sut.setAccessedArchiveIDs([7, 8, 9])
+        XCTAssertEqual(sut.accessedArchiveIDs, [7, 8, 9])
+    }
+
+    func testSetAccessedArchiveIDs_EmptySet_Clears() {
+        sut.setAccessedArchiveIDs([1, 2])
+        sut.setAccessedArchiveIDs([])
+        XCTAssertTrue(sut.accessedArchiveIDs.isEmpty)
+    }
+
+    // MARK: - hasAccess
+
+    private func makeArchive(id: Int?, name: String = "Test") -> ShareArchivesFromPastSharesViewModel.PastSharedArchive {
+        ShareArchivesFromPastSharesViewModel.PastSharedArchive(
+            group: .mine,
+            archiveID: id,
+            rawName: name,
+            title: "The \(name) Archive",
+            initials: String(name.prefix(2)).uppercased(),
+            thumbnailURL: nil
+        )
+    }
+
+    func testHasAccess_ReturnsTrueWhenArchiveIDInAccessedSet() {
+        sut.setAccessedArchiveIDs([42])
+        XCTAssertTrue(sut.hasAccess(makeArchive(id: 42)))
+    }
+
+    func testHasAccess_ReturnsFalseWhenArchiveIDNotInAccessedSet() {
+        sut.setAccessedArchiveIDs([42])
+        XCTAssertFalse(sut.hasAccess(makeArchive(id: 99)))
+    }
+
+    func testHasAccess_ReturnsFalseWhenArchiveIDIsNil() {
+        sut.setAccessedArchiveIDs([42])
+        XCTAssertFalse(sut.hasAccess(makeArchive(id: nil)))
+    }
+
+    func testHasAccess_ReturnsFalseWhenAccessedSetIsEmpty() {
+        XCTAssertFalse(sut.hasAccess(makeArchive(id: 42)))
+    }
+
+    // MARK: - accessedLast Ordering
+
+    func testAccessedLast_EmptyList_ReturnsEmpty() {
+        XCTAssertTrue(sut.accessedLast([]).isEmpty)
+    }
+
+    func testAccessedLast_NoneAccessed_PreservesOrder() {
+        let a = makeArchive(id: 1, name: "Alpha")
+        let b = makeArchive(id: 2, name: "Bravo")
+        let c = makeArchive(id: 3, name: "Charlie")
+        sut.setAccessedArchiveIDs([])
+
+        let result = sut.accessedLast([a, b, c])
+
+        XCTAssertEqual(result.map { $0.archiveID }, [1, 2, 3])
+    }
+
+    func testAccessedLast_AllAccessed_PreservesOrder() {
+        let a = makeArchive(id: 1, name: "Alpha")
+        let b = makeArchive(id: 2, name: "Bravo")
+        sut.setAccessedArchiveIDs([1, 2])
+
+        let result = sut.accessedLast([a, b])
+
+        XCTAssertEqual(result.map { $0.archiveID }, [1, 2])
+    }
+
+    func testAccessedLast_MixedAccessed_MovesAccessedToEnd() {
+        let a = makeArchive(id: 1, name: "Alpha")
+        let b = makeArchive(id: 2, name: "Bravo")
+        let c = makeArchive(id: 3, name: "Charlie")
+        let d = makeArchive(id: 4, name: "Delta")
+        sut.setAccessedArchiveIDs([2, 3])
+
+        let result = sut.accessedLast([a, b, c, d])
+
+        XCTAssertEqual(result.map { $0.archiveID }, [1, 4, 2, 3])
+    }
+
+    func testAccessedLast_PreservesAlphabeticalWithinGroups() {
+        let alpha = makeArchive(id: 1, name: "Alpha")
+        let bravo = makeArchive(id: 2, name: "Bravo")
+        let charlie = makeArchive(id: 3, name: "Charlie")
+        let delta = makeArchive(id: 4, name: "Delta")
+        sut.setAccessedArchiveIDs([1, 3])
+
+        let result = sut.accessedLast([alpha, bravo, charlie, delta])
+
+        XCTAssertEqual(result.map { $0.rawName }, ["Bravo", "Delta", "Alpha", "Charlie"])
+    }
+
+    func testAccessedLast_NilArchiveID_TreatedAsNotAccessed() {
+        let nilID = makeArchive(id: nil, name: "NoID")
+        let accessed = makeArchive(id: 1, name: "Accessed")
+        sut.setAccessedArchiveIDs([1])
+
+        let result = sut.accessedLast([nilID, accessed])
+
+        XCTAssertEqual(result.map { $0.rawName }, ["NoID", "Accessed"])
+    }
 }
