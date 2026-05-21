@@ -161,6 +161,7 @@ extension Constants.API.NotificationType {
 extension Constants.Keys.StorageKeys {
     static let uploadFilesKey = "uploadFilesKey"
     static let backgroundUploadMetadataKey = "backgroundUploadMetadataKey"
+    static let uploadLiveActivitySnapshotKey = "uploadLiveActivitySnapshotKey"
     static let completedUploadFileIdsKey = "completedUploadFileIdsKey"
     static let shareURLToken = "shareURLTokenStorageKey"
     static let publicURLToken = "publicURLTokenKey"

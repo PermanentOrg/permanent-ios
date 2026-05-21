@@ -38,21 +38,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Reconnect to any in-flight background uploads from a previous session
         BackgroundUploadSessionManager.shared.reconnectToExistingSession()
         
-        // End any Live Activities orphaned by a previous force-quit
-        UploadLiveActivityManager.shared.cleanupStaleActivities()
+        // Reattach to in-flight Live Activity or end orphans from a previous session
+        UploadLiveActivityManager.shared.reconcileOnLaunch()
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = RootViewController()
         window?.makeKeyAndVisible()
 
         return true
-    }
-    
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Best-effort: end the Live Activity when the app is being terminated.
-        // This won't run on a force-quit from the app switcher, but handles
-        // graceful termination by the system.
-        UploadLiveActivityManager.shared.cancelActivity()
     }
     
     func application(_ application: UIApplication,

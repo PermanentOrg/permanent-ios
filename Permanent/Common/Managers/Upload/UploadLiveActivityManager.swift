@@ -10,6 +10,19 @@ import ActivityKit
 import UIKit
 import os.log
 
+/// Disk-persisted snapshot of the manager's in-memory counters so the Live Activity
+/// can be reattached after the app is terminated mid-upload.
+struct UploadLiveActivitySnapshot: Codable {
+    let activityId: String
+    var totalFiles: Int
+    var completedFiles: Int
+    var failedFiles: Int
+    var currentFileName: String
+    var lastReportedProgress: Double
+    var archiveNo: String
+    var folderLinkId: Int
+}
+
 class UploadLiveActivityManager {
     static let shared = UploadLiveActivityManager()
 
@@ -50,14 +63,52 @@ class UploadLiveActivityManager {
         )
     }
 
-    // MARK: - Stale Activity Cleanup
+    // MARK: - Launch Reconciliation
 
-    /// Call on app launch to end any Live Activities orphaned by a previous force-quit.
-    /// When the app is killed, in-memory state is lost but the Live Activity persists
-    /// on the Lock Screen. This method finds and ends those stale activities.
-    func cleanupStaleActivities() {
+    /// Call on app launch to either reattach to a Live Activity from a previous
+    /// session or end orphans that no longer correspond to in-flight uploads.
+    ///
+    /// Three cases:
+    /// 1. We have a persisted snapshot AND a matching running activity → reattach.
+    ///    In-memory counters are restored so `fileCompleted`/`updateProgress` from
+    ///    background URLSession callbacks keep the Live Activity in sync.
+    /// 2. No snapshot, but `BackgroundUploadMetadata` shows in-flight uploads →
+    ///    leave the activities alone. We can't update them (no counter state) but
+    ///    they stay visible until uploads finish or iOS marks them stale.
+    /// 3. No snapshot AND no in-flight metadata → truly orphaned, end them.
+    func reconcileOnLaunch() {
         let runningActivities = Activity<UploadActivityAttributes>.activities
-        guard !runningActivities.isEmpty else { return }
+        let snapshot = loadSnapshot()
+
+        if let snapshot = snapshot,
+           let reattached = runningActivities.first(where: { $0.id == snapshot.activityId && $0.activityState != .ended }) {
+            currentActivity = reattached
+            totalFiles = snapshot.totalFiles
+            completedFiles = snapshot.completedFiles
+            failedFiles = snapshot.failedFiles
+            currentFileName = snapshot.currentFileName
+            lastReportedProgress = snapshot.lastReportedProgress
+
+            flowLogger.info("[LIVE ACTIVITY] Reattached id=\(reattached.id, privacy: .public) completed=\(self.completedFiles, privacy: .public)/\(self.totalFiles, privacy: .public) failed=\(self.failedFiles, privacy: .public)")
+
+            // End any other activities that don't match — they're zombies from
+            // earlier sessions that were never cleaned up.
+            for activity in runningActivities where activity.id != reattached.id {
+                Task { await activity.end(nil, dismissalPolicy: .immediate) }
+            }
+            return
+        }
+
+        guard !runningActivities.isEmpty else {
+            clearSnapshot()
+            return
+        }
+
+        let inFlightMetadata = BackgroundUploadMetadata.loadAll()
+        if !inFlightMetadata.isEmpty {
+            logger.info("Found \(runningActivities.count) Live Activities and \(inFlightMetadata.count) in-flight background uploads but no snapshot — preserving activities")
+            return
+        }
 
         logger.info("Found \(runningActivities.count) stale Live Activities from previous session — ending them")
 
@@ -79,9 +130,40 @@ class UploadLiveActivityManager {
             }
         }
 
-        // Reset any leftover in-memory state
         currentActivity = nil
         resetState()
+        clearSnapshot()
+    }
+
+    // MARK: - Snapshot Persistence
+
+    private var snapshotStorageKey: String { Constants.Keys.StorageKeys.uploadLiveActivitySnapshotKey }
+
+    private func persistSnapshot(archiveNo: String? = nil, folderLinkId: Int? = nil) {
+        guard let activity = currentActivity else { return }
+        let existing = loadSnapshot()
+        let snapshot = UploadLiveActivitySnapshot(
+            activityId: activity.id,
+            totalFiles: totalFiles,
+            completedFiles: completedFiles,
+            failedFiles: failedFiles,
+            currentFileName: currentFileName,
+            lastReportedProgress: lastReportedProgress,
+            archiveNo: archiveNo ?? existing?.archiveNo ?? activity.attributes.archiveNo,
+            folderLinkId: folderLinkId ?? existing?.folderLinkId ?? activity.attributes.folderLinkId
+        )
+        if let data = try? JSONEncoder().encode(snapshot) {
+            UserDefaults.standard.set(data, forKey: snapshotStorageKey)
+        }
+    }
+
+    private func loadSnapshot() -> UploadLiveActivitySnapshot? {
+        guard let data = UserDefaults.standard.data(forKey: snapshotStorageKey) else { return nil }
+        return try? JSONDecoder().decode(UploadLiveActivitySnapshot.self, from: data)
+    }
+
+    private func clearSnapshot() {
+        UserDefaults.standard.removeObject(forKey: snapshotStorageKey)
     }
 
     // MARK: - Lifecycle
@@ -124,6 +206,7 @@ class UploadLiveActivityManager {
                 content: .init(state: initialState, staleDate: Date() + staleInterval),
                 pushType: nil
             )
+            persistSnapshot(archiveNo: archiveNo, folderLinkId: folderLinkId)
             flowLogger.info("[LIVE ACTIVITY] Started for \(totalFiles, privacy: .public) files, id=\(self.currentActivity?.id ?? "nil", privacy: .public)")
         } catch {
             flowLogger.error("[LIVE ACTIVITY] Failed to start: \(error.localizedDescription, privacy: .public)")
@@ -165,6 +248,7 @@ class UploadLiveActivityManager {
             failedFiles += 1
             flowLogger.info("[LIVE ACTIVITY] fileCompleted failed (\(self.failedFiles) failures) isActive=\(self.isActive, privacy: .public)")
         }
+        persistSnapshot()
 
         // Check if all files have been processed
         if completedFiles + failedFiles >= totalFiles {
@@ -192,6 +276,7 @@ class UploadLiveActivityManager {
         processingTimer?.invalidate()
         processingTimer = nil
         totalFiles += count
+        persistSnapshot()
         logger.info("Added \(count) files to batch, new total: \(self.totalFiles)")
 
         // Update the activity with new totals
@@ -328,6 +413,7 @@ class UploadLiveActivityManager {
         }
 
         totalFiles -= 1
+        persistSnapshot()
 
         // Check if all remaining files have been processed
         if completedFiles + failedFiles >= totalFiles {
@@ -405,5 +491,6 @@ class UploadLiveActivityManager {
         processingDuration = 0
         processingTimer?.invalidate()
         processingTimer = nil
+        clearSnapshot()
     }
 }

@@ -248,6 +248,9 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
                     cleanupTempFile(at: metadata.tempFilePath)
                     BackgroundUploadMetadata.remove(taskIdentifier: taskId)
                 }
+                DispatchQueue.main.async {
+                    UploadLiveActivityManager.shared.fileCompleted(success: false)
+                }
             }
         }
 

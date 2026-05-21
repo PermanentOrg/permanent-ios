@@ -87,6 +87,8 @@ enum BackgroundUploadCompletionHandler {
                 FileHelper().deleteFile(at: fileURL)
             }
 
+            UploadLiveActivityManager.shared.fileCompleted(success: success)
+
             NotificationCenter.default.post(name: UploadManager.didUploadFileNotification, object: nil, userInfo: nil)
         }
     }

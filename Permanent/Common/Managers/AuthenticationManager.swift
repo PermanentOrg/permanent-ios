@@ -206,6 +206,11 @@ class AuthenticationManager {
     }
     
     func logout() {
+        // Cancel any in-flight uploads and tear down their Live Activity before
+        // dropping the session — otherwise the next user inherits a zombie LA and
+        // background uploads keep retrying with no auth.
+        UploadManager.shared.cancelAll()
+
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
 
         session = nil
