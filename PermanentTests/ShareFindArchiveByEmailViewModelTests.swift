@@ -499,4 +499,118 @@ final class ShareFindArchiveByEmailViewModelTests: XCTestCase {
             XCTFail("Expected .noAccount")
         }
     }
+
+    // MARK: - accessedArchiveIDs / setAccessedArchiveIDs
+
+    func testAccessedArchiveIDs_InitialState_IsEmpty() {
+        XCTAssertTrue(sut.accessedArchiveIDs.isEmpty)
+    }
+
+    func testSetAccessedArchiveIDs_UpdatesPublishedValue() {
+        sut.setAccessedArchiveIDs([1, 2, 3])
+        XCTAssertEqual(sut.accessedArchiveIDs, [1, 2, 3])
+    }
+
+    func testSetAccessedArchiveIDs_ReplacesPreviousSnapshot() {
+        sut.setAccessedArchiveIDs([1, 2])
+        sut.setAccessedArchiveIDs([7, 8, 9])
+        XCTAssertEqual(sut.accessedArchiveIDs, [7, 8, 9])
+    }
+
+    func testSetAccessedArchiveIDs_EmptySet_Clears() {
+        sut.setAccessedArchiveIDs([1, 2])
+        sut.setAccessedArchiveIDs([])
+        XCTAssertTrue(sut.accessedArchiveIDs.isEmpty)
+    }
+
+    // MARK: - hasAccess
+
+    private func makeArchiveResult(id: Int?, name: String = "Test") -> ShareFindArchiveByEmailViewModel.ArchiveResult {
+        ShareFindArchiveByEmailViewModel.ArchiveResult(
+            archiveID: id,
+            initials: String(name.prefix(2)).uppercased(),
+            name: name,
+            thumbnailURL: nil
+        )
+    }
+
+    func testHasAccess_ReturnsTrueWhenArchiveIDInAccessedSet() {
+        sut.setAccessedArchiveIDs([42])
+        XCTAssertTrue(sut.hasAccess(makeArchiveResult(id: 42)))
+    }
+
+    func testHasAccess_ReturnsFalseWhenArchiveIDNotInAccessedSet() {
+        sut.setAccessedArchiveIDs([42])
+        XCTAssertFalse(sut.hasAccess(makeArchiveResult(id: 99)))
+    }
+
+    func testHasAccess_ReturnsFalseWhenArchiveIDIsNil() {
+        sut.setAccessedArchiveIDs([42])
+        XCTAssertFalse(sut.hasAccess(makeArchiveResult(id: nil)))
+    }
+
+    func testHasAccess_ReturnsFalseWhenAccessedSetIsEmpty() {
+        XCTAssertFalse(sut.hasAccess(makeArchiveResult(id: 42)))
+    }
+
+    // MARK: - sortedByAccess Ordering
+
+    func testSortedByAccess_EmptyList_ReturnsEmpty() {
+        XCTAssertTrue(sut.sortedByAccess([]).isEmpty)
+    }
+
+    func testSortedByAccess_NoneAccessed_PreservesOrder() {
+        let a = makeArchiveResult(id: 1, name: "Alpha")
+        let b = makeArchiveResult(id: 2, name: "Bravo")
+        let c = makeArchiveResult(id: 3, name: "Charlie")
+        sut.setAccessedArchiveIDs([])
+
+        let result = sut.sortedByAccess([a, b, c])
+
+        XCTAssertEqual(result.map { $0.archiveID }, [1, 2, 3])
+    }
+
+    func testSortedByAccess_AllAccessed_PreservesOrder() {
+        let a = makeArchiveResult(id: 1, name: "Alpha")
+        let b = makeArchiveResult(id: 2, name: "Bravo")
+        sut.setAccessedArchiveIDs([1, 2])
+
+        let result = sut.sortedByAccess([a, b])
+
+        XCTAssertEqual(result.map { $0.archiveID }, [1, 2])
+    }
+
+    func testSortedByAccess_MixedAccessed_MovesAccessedToEnd() {
+        let a = makeArchiveResult(id: 1, name: "Alpha")
+        let b = makeArchiveResult(id: 2, name: "Bravo")
+        let c = makeArchiveResult(id: 3, name: "Charlie")
+        let d = makeArchiveResult(id: 4, name: "Delta")
+        sut.setAccessedArchiveIDs([2, 3])
+
+        let result = sut.sortedByAccess([a, b, c, d])
+
+        XCTAssertEqual(result.map { $0.archiveID }, [1, 4, 2, 3])
+    }
+
+    func testSortedByAccess_PreservesOrderWithinGroups() {
+        let alpha = makeArchiveResult(id: 1, name: "Alpha")
+        let bravo = makeArchiveResult(id: 2, name: "Bravo")
+        let charlie = makeArchiveResult(id: 3, name: "Charlie")
+        let delta = makeArchiveResult(id: 4, name: "Delta")
+        sut.setAccessedArchiveIDs([1, 3])
+
+        let result = sut.sortedByAccess([alpha, bravo, charlie, delta])
+
+        XCTAssertEqual(result.map { $0.name }, ["Bravo", "Delta", "Alpha", "Charlie"])
+    }
+
+    func testSortedByAccess_NilArchiveID_TreatedAsNotAccessed() {
+        let nilID = makeArchiveResult(id: nil, name: "NoID")
+        let accessed = makeArchiveResult(id: 1, name: "Accessed")
+        sut.setAccessedArchiveIDs([1])
+
+        let result = sut.sortedByAccess([nilID, accessed])
+
+        XCTAssertEqual(result.map { $0.name }, ["NoID", "Accessed"])
+    }
 }

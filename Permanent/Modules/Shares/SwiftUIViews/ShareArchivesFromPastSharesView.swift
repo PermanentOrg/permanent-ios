@@ -241,49 +241,68 @@ struct ShareArchivesFromPastSharesView: View {
     }
 
     private func archiveRow(_ archive: ShareArchivesFromPastSharesViewModel.PastSharedArchive) -> some View {
-        Button(action: {
-            dismissKeyboard()
-            viewModel.openGrantArchiveAccess(
-                archiveName: archive.title,
-                archiveInitials: archive.initials,
-                archiveID: archive.archiveID,
-                thumbnailURL: archive.thumbnailURL,
-                source: .pastShares
-            )
-        }) {
-            HStack(spacing: 16) {
-                archiveThumbnail(thumbnailURL: archive.thumbnailURL)
-                    .frame(width: 40, height: 40)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+        let hasAccess = archivesViewModel.hasAccess(archive)
 
+        return Group {
+            if hasAccess {
+                archiveRowContent(archive, hasAccess: true)
+            } else {
+                Button(action: {
+                    dismissKeyboard()
+                    viewModel.openGrantArchiveAccess(
+                        archiveName: archive.title,
+                        archiveInitials: archive.initials,
+                        archiveID: archive.archiveID,
+                        thumbnailURL: archive.thumbnailURL,
+                        source: .pastShares
+                    )
+                }) {
+                    archiveRowContent(archive, hasAccess: false)
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
+
+    private func archiveRowContent(_ archive: ShareArchivesFromPastSharesViewModel.PastSharedArchive, hasAccess: Bool) -> some View {
+        HStack(spacing: 16) {
+            archiveThumbnail(thumbnailURL: archive.thumbnailURL)
+                .frame(width: 40, height: 40)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .opacity(hasAccess ? 0.5 : 1)
+
+            VStack(alignment: .leading, spacing: 2) {
                 Text(archive.title)
                     .font(.custom("Usual-Regular", size: 14))
-                    .foregroundColor(Color.blue900)
+                    .foregroundColor(hasAccess ? Color.blue300 : Color.blue900)
                     .lineLimit(1)
 
-                Spacer()
+                if hasAccess {
+                    Text("Already has access to this share")
+                        .font(.custom("Usual-Regular", size: 12))
+                        .foregroundColor(Color.success500)
+                        .lineLimit(1)
+                }
+            }
 
+            Spacer()
+
+            if hasAccess {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 18, weight: .regular))
+                    .foregroundColor(Color.blue200)
+            } else {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(Color.blue200)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(PlainButtonStyle())
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
     private func archiveThumbnail(thumbnailURL: String?) -> some View {
-        if let thumbnailURL, let url = URL(string: thumbnailURL) {
-            AsyncImage(url: url) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                Image(.shareArchivePending)
-                    .cornerRadius(8)
-            }
-        } else {
+        CachedAsyncImage(url: thumbnailURL.flatMap { URL(string: $0) }) {
             Image(.shareArchivePending)
                 .cornerRadius(8)
         }

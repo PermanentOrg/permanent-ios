@@ -21,10 +21,15 @@ extension ShareItemViewModel {
     func openFindArchiveByEmail() {
         navigationDirection = .forward
         findArchiveByEmailViewModel.reset()
+        findArchiveByEmailViewModel.setAccessedArchiveIDs(currentlyAccessedArchiveIDs())
         showInviteAndGrantAccess = false
         showGrantArchiveAccess = false
         showSelectArchiveFromPastShares = false
         showFindArchiveByEmail = true
+    }
+
+    private func currentlyAccessedArchiveIDs() -> Set<Int> {
+        Set(sharedArchives.compactMap { $0.archiveID })
     }
 
     func closeFindArchiveByEmail() {
@@ -36,10 +41,17 @@ extension ShareItemViewModel {
     // MARK: - Select Archive from Past Shares Flow
 
     func openSelectArchiveFromPastShares() {
-        pastSharesViewModel.fetchArchives()
-        navigationDirection = .forward
-        showFindArchiveByEmail = false
-        showSelectArchiveFromPastShares = true
+        guard !isPreparingPastShares else { return }
+
+        pastSharesViewModel.setAccessedArchiveIDs(currentlyAccessedArchiveIDs())
+        isPreparingPastShares = true
+        pastSharesViewModel.fetchArchives { [weak self] in
+            guard let self else { return }
+            self.isPreparingPastShares = false
+            self.navigationDirection = .forward
+            self.showFindArchiveByEmail = false
+            self.showSelectArchiveFromPastShares = true
+        }
     }
 
     func closeSelectArchiveFromPastShares() {

@@ -30,6 +30,20 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
     @Published private(set) var submittedSearchEmail: String?
     @Published private(set) var searchOutcome: SearchOutcome = .idle
     @Published private(set) var isSearching = false
+    @Published private(set) var accessedArchiveIDs: Set<Int> = []
+
+    func setAccessedArchiveIDs(_ ids: Set<Int>) {
+        accessedArchiveIDs = ids
+    }
+
+    func hasAccess(_ archive: ArchiveResult) -> Bool {
+        guard let id = archive.archiveID else { return false }
+        return accessedArchiveIDs.contains(id)
+    }
+
+    func sortedByAccess(_ archives: [ArchiveResult]) -> [ArchiveResult] {
+        archives.filter { !hasAccess($0) } + archives.filter { hasAccess($0) }
+    }
 
     private var searchOperation: APIOperation?
     private let searchProvider: SearchProvider?

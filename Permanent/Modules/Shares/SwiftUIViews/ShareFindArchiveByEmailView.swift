@@ -285,7 +285,7 @@ struct ShareFindArchiveByEmailView: View {
 
     private func archiveResultsSection(_ archives: [ShareFindArchiveByEmailViewModel.ArchiveResult]) -> some View {
         VStack(spacing: 24) {
-            ForEach(archives) { archive in
+            ForEach(findArchiveViewModel.sortedByAccess(archives)) { archive in
                 archiveRow(archive)
             }
         }
@@ -345,62 +345,78 @@ struct ShareFindArchiveByEmailView: View {
     }
 
     private func archiveRow(_ archive: ShareFindArchiveByEmailViewModel.ArchiveResult) -> some View {
-        Button(action: {
-            if isSearchFocused || isKeyboardVisible {
-                isSearchFocused = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    viewModel.openGrantArchiveAccess(
-                        archiveName: archive.name,
-                        archiveInitials: archive.initials,
-                        archiveID: archive.archiveID,
-                        thumbnailURL: archive.thumbnailURL,
-                        source: .findByEmail
-                    )
-                }
+        let hasAccess = findArchiveViewModel.hasAccess(archive)
+
+        return Group {
+            if hasAccess {
+                archiveRowContent(archive, hasAccess: true)
             } else {
-                viewModel.openGrantArchiveAccess(
-                    archiveName: archive.name,
-                    archiveInitials: archive.initials,
-                    archiveID: archive.archiveID,
-                    thumbnailURL: archive.thumbnailURL,
-                    source: .findByEmail
-                )
-            }
-        }) {
-            HStack(spacing: 16) {
-                Group {
-                    if let thumbnailURL = archive.thumbnailURL,
-                       let url = URL(string: thumbnailURL) {
-                        AsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        } placeholder: {
-                            Image(.shareArchivePending)
-                                .cornerRadius(8)
+                Button(action: {
+                    if isSearchFocused || isKeyboardVisible {
+                        isSearchFocused = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            viewModel.openGrantArchiveAccess(
+                                archiveName: archive.name,
+                                archiveInitials: archive.initials,
+                                archiveID: archive.archiveID,
+                                thumbnailURL: archive.thumbnailURL,
+                                source: .findByEmail
+                            )
                         }
                     } else {
-                        Image(.shareArchivePending)
-                            .cornerRadius(8)
+                        viewModel.openGrantArchiveAccess(
+                            archiveName: archive.name,
+                            archiveInitials: archive.initials,
+                            archiveID: archive.archiveID,
+                            thumbnailURL: archive.thumbnailURL,
+                            source: .findByEmail
+                        )
                     }
+                }) {
+                    archiveRowContent(archive, hasAccess: false)
                 }
-                .frame(width: 40, height: 40)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
 
+    private func archiveRowContent(_ archive: ShareFindArchiveByEmailViewModel.ArchiveResult, hasAccess: Bool) -> some View {
+        HStack(spacing: 16) {
+            CachedAsyncImage(url: archive.thumbnailURL.flatMap { URL(string: $0) }) {
+                Image(.shareArchivePending)
+                    .cornerRadius(8)
+            }
+            .frame(width: 40, height: 40)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .opacity(hasAccess ? 0.5 : 1)
+
+            VStack(alignment: .leading, spacing: 2) {
                 Text(archive.name)
                     .font(.custom("Usual-Regular", size: 14))
-                    .foregroundColor(Color.blue900)
+                    .foregroundColor(hasAccess ? Color.blue300 : Color.blue900)
                     .lineLimit(1)
 
-                Spacer()
+                if hasAccess {
+                    Text("Already has access to this share")
+                        .font(.custom("Usual-Regular", size: 12))
+                        .foregroundColor(Color.success500)
+                        .lineLimit(1)
+                }
+            }
 
+            Spacer()
+
+            if hasAccess {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 18, weight: .regular))
+                    .foregroundColor(Color.blue200)
+            } else {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(Color.blue200)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(PlainButtonStyle())
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var bottomActionSection: some View {
