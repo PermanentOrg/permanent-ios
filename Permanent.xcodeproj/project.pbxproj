@@ -124,7 +124,6 @@
 		5E1E61A72F6AFD4900998DCE /* LinkSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E61A62F6AFD4900998DCE /* LinkSettingsViewTests.swift */; };
 		5E1E61A92F6AFFFA00998DCE /* RenameViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E61A82F6AFFFA00998DCE /* RenameViewTests.swift */; };
 		5E1E61AB2F6B000700998DCE /* RegisterViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E61AA2F6B000700998DCE /* RegisterViewTests.swift */; };
-		5E1E92F42FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F32FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift */; };
 		5E1E92F52FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F32FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift */; };
 		5E1E92F82FC993C700F44FA8 /* ItemVOMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F72FC993C700F44FA8 /* ItemVOMatching.swift */; };
 		5E1E92F92FC993C700F44FA8 /* ItemVOMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F72FC993C700F44FA8 /* ItemVOMatching.swift */; };
@@ -6330,7 +6329,6 @@
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
 				F559F89D28FEEABA0015A522 /* APIPayload.swift in Sources */,
-				5E1E92F42FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift in Sources */,
 				5ED3B3B229F7E503000CFF48 /* LegacyPlanningIntroViewController.swift in Sources */,
 				F559F88C28FEE9690015A522 /* FolderSortViewModel.swift in Sources */,
 				5E4739FD2A4187C700A20D85 /* MilestoneProfileItem.swift in Sources */,
@@ -7100,6 +7098,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG APP_EXTENSION";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -7138,6 +7137,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG APP_EXTENSION";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -7176,6 +7176,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = APP_EXTENSION;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -7215,6 +7216,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = APP_EXTENSION;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

@@ -90,8 +90,11 @@ class UploadManager {
         logger.info("🔼 App entered background — limiting to 3 concurrent uploads")
 
         // Ask iOS to wake us later so the queue can keep draining once the
-        // foreground beginBackgroundTask budget expires.
+        // foreground beginBackgroundTask budget expires. Host-app only —
+        // BGTaskScheduler is unavailable in app extensions.
+        #if !APP_EXTENSION
         BackgroundUploadDrainTask.schedule()
+        #endif
     }
 
     /// True while any operation is still in-flight or any file remains in the
@@ -431,11 +434,14 @@ class UploadManager {
                             UploadLiveActivityManager.shared.fileCompleted(success: true)
 
                             // Keep a wake request pending while work remains; pull it once empty.
+                            // Host-app only — BGTaskScheduler is unavailable in app extensions.
+                            #if !APP_EXTENSION
                             if self.hasPendingWork {
                                 BackgroundUploadDrainTask.schedule()
                             } else {
                                 BackgroundUploadDrainTask.cancel()
                             }
+                            #endif
                         } else if (error as? UploadError) == .authenticationRequired {
                             self.flowLogger.error("🔼 [HANDLER] AUTH FAILED file=\(file.name, privacy: .public) id=\(file.id, privacy: .public) — suspending queue, re-queuing without retry")
                             if var savedFiles = savedFiles {
