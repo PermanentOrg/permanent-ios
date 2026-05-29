@@ -27,9 +27,16 @@ class PermSession: Codable {
         return Date.distantFuture
     }
     var account: AccountVOData!
-    
-    var selectedArchive: ArchiveVOData?
-    
+
+    /// Setting `selectedArchive` mirrors the value into App Group shared
+    /// UserDefaults via `SharedSelectedArchiveStore` so the ShareExtension
+    /// can fall back to this snapshot when the keychain session is unavailable.
+    /// `didSet` does not fire during decoding, so the keychain → in-memory
+    /// hydration path is unaffected.
+    var selectedArchive: ArchiveVOData? {
+        didSet { SharedSelectedArchiveStore.write(selectedArchive) }
+    }
+
     var selectedFiles: [FileModel]?
     var fileAction: FileAction?
     
@@ -65,5 +72,25 @@ class PermSession: Codable {
         try container.encode(fileAction, forKey: .fileAction)
         
         try container.encode(isGridView, forKey: .isGridView)
+    }
+}
+
+/// Mirrors the host app's currently-selected archive into App Group
+/// shared UserDefaults so the ShareExtension has a fallback when the
+/// keychain session is missing or doesn't carry a `selectedArchive`
+/// (e.g. fresh install of the extension after a recent host login).
+enum SharedSelectedArchiveStore {
+    static func write(_ archive: ArchiveVOData?) {
+        let key = Constants.Keys.StorageKeys.sharedSelectedArchiveKey
+        guard let archive = archive else {
+            PreferencesManager.shared.removeValue(forKey: key)
+            return
+        }
+        try? PreferencesManager.shared.setCodableObject(archive, forKey: key)
+    }
+
+    static func read() -> ArchiveVOData? {
+        let key = Constants.Keys.StorageKeys.sharedSelectedArchiveKey
+        return (try? PreferencesManager.shared.getCodableObject(forKey: key)) ?? nil
     }
 }

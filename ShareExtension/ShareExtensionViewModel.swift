@@ -46,13 +46,17 @@ class ShareExtensionViewModel: ViewModelInterface {
         if let providedSession = session {
             sessionToUse = providedSession
         } else {
-            do {
-                sessionToUse = try SessionKeychainHandler().savedSession()
-            } catch {
-                sessionToUse = nil
-            }
+            sessionToUse = try? SessionKeychainHandler().savedSession()
         }
-        
+
+        // If the session loaded but lacks a selectedArchive (fresh extension
+        // install after host login, or stale session blob), pull from the
+        // App Group snapshot the host mirrors on every selectedArchive write.
+        if sessionToUse != nil, sessionToUse?.selectedArchive == nil,
+           let mirrored = SharedSelectedArchiveStore.read() {
+            sessionToUse?.selectedArchive = mirrored
+        }
+
         PermSession.currentSession = sessionToUse
     }
     
