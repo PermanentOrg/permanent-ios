@@ -21,21 +21,29 @@ import WidgetKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     static let navigateToFolderNotifName = NSNotification.Name("AppDelegate.navigateToFolderNotifName")
+    static let willNavigateToFolderNotifName = NSNotification.Name("AppDelegate.willNavigateToFolderNotifName")
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if CommandLine.arguments.contains("--AddTextClearButton") {
             UITextField.appearance().clearButtonMode = .always
         }
-        
+
         clearShareDeepLinks()
-        
+
         initFirebase()
         initNotifications()
         configureLogging()
-        
+
         StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
-        
-        // Reconnect to any in-flight background uploads from a previous session
+
+        // Must be called during didFinishLaunching, or iOS won't deliver wakes.
+        BackgroundUploadDrainTask.register()
+
+        // LEGACY DRAIN PATH — remove after one release cycle.
+        // The upload pipeline no longer uses background URLSession; new uploads
+        // run through the foreground session. This call exists to drain any
+        // in-flight background tasks left over from older app versions so
+        // those files don't get orphaned.
         BackgroundUploadSessionManager.shared.reconnectToExistingSession()
         
         // Reattach to in-flight Live Activity or end orphans from a previous session
@@ -48,6 +56,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    // LEGACY DRAIN PATH — remove after one release cycle.
+    // The upload pipeline no longer creates background URLSession tasks. iOS
+    // only calls this if an older app version left tasks in flight; this
+    // handler exists to let them complete cleanly before the system suspends
+    // us again.
     func application(_ application: UIApplication,
                      handleEventsForBackgroundURLSession identifier: String,
                      completionHandler: @escaping () -> Void) {
@@ -338,7 +351,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             folderName: nil
         )
         try? PreferencesManager.shared.setCodableObject(navData, forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
-        
+
+        // Tell MainViewController to show its spinner immediately so the user
+        // gets feedback during the 1.0s settle delay below + the navigateMin
+        // fetch that follows. Without this, an LA tap looks like a 2–3s freeze
+        // before the destination folder loads in.
+        NotificationCenter.default.post(name: AppDelegate.willNavigateToFolderNotifName, object: nil)
+
         // Give the app time to finish foregrounding and any root content loading,
         // then trigger navigation. If onFilesFetchCompletion already consumed the
         // saved data, navigationToShareFolderLink() will be a no-op.

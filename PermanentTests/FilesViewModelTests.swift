@@ -324,9 +324,20 @@ final class FilesViewModelTests: XCTestCase {
 
     // MARK: - updateTimerCount
 
-    func testUpdateTimerCount_IncrementsAndResets() {
+    func testUpdateTimerCount_IncrementsAcrossBackoffChain() {
+        // The thumbnail-poll chain uses exponential-backoff intervals; each
+        // fire bumps timerRunCount, and invalidateTimer is only triggered once
+        // the chain is exhausted. Confirm increments and the final reset.
         let vm = FilesViewModel()
         XCTAssertEqual(vm.timerRunCount, 0)
+
+        let totalSteps = FilesViewModel.thumbnailPollIntervals.count
+        for step in 1..<totalSteps {
+            vm.updateTimerCount()
+            XCTAssertEqual(vm.timerRunCount, step)
+        }
+
+        // Final fire — exhausts the chain and invalidateTimer resets to 0.
         vm.updateTimerCount()
         XCTAssertEqual(vm.timerRunCount, 0)
     }

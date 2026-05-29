@@ -18,7 +18,7 @@ enum BackgroundUploadCompletionHandler {
     /// Called by BackgroundUploadSessionManager when an upload completed but
     /// no in-memory UploadOperation handler exists (app was relaunched).
     static func handleCompletedUpload(metadata: BackgroundUploadMetadata) {
-        logger.info("Handling post-relaunch registerRecord for file: \(metadata.fileName, privacy: .public)")
+        logger.info("🔼 Handling post-relaunch registerRecord for file: \(metadata.fileName, privacy: .public)")
 
         registerRecord(metadata: metadata, attempt: 1)
     }
@@ -39,20 +39,20 @@ enum BackgroundUploadCompletionHandler {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response),
                       model.isSuccessful == true else {
-                    logger.error("registerRecord response unsuccessful for file: \(metadata.fileName, privacy: .public), attempt: \(attempt, privacy: .public)")
+                    logger.error("🔼 registerRecord response unsuccessful for file: \(metadata.fileName, privacy: .public), attempt: \(attempt, privacy: .public)")
                     retryOrFail(metadata: metadata, attempt: attempt)
                     return
                 }
 
-                logger.info("Successfully registered file after relaunch: \(metadata.fileName, privacy: .public)")
+                logger.info("🔼 Successfully registered file after relaunch: \(metadata.fileName, privacy: .public)")
                 cleanup(metadata: metadata, success: true)
 
             case .error(let error, _):
-                logger.error("registerRecord error: \(error.debugDescription, privacy: .public), attempt: \(attempt, privacy: .public)")
+                logger.error("🔼 registerRecord error: \(error?.localizedDescription ?? "unknown", privacy: .public), attempt: \(attempt, privacy: .public)")
                 retryOrFail(metadata: metadata, attempt: attempt)
 
             default:
-                logger.error("Unexpected result from registerRecord for file: \(metadata.fileName, privacy: .public)")
+                logger.error("🔼 Unexpected result from registerRecord for file: \(metadata.fileName, privacy: .public)")
                 cleanup(metadata: metadata, success: false)
             }
         }
@@ -61,19 +61,20 @@ enum BackgroundUploadCompletionHandler {
     private static func retryOrFail(metadata: BackgroundUploadMetadata, attempt: Int) {
         if attempt < maxRetries {
             let delay = pow(2.0, Double(attempt)) // Exponential backoff: 2s, 4s, 8s
-            logger.info("Retrying registerRecord in \(delay, privacy: .public)s (attempt \(attempt + 1, privacy: .public)/\(maxRetries, privacy: .public))")
+            logger.info("🔼 Retrying registerRecord in \(delay, privacy: .public)s (attempt \(attempt + 1, privacy: .public)/\(maxRetries, privacy: .public))")
 
             DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
                 registerRecord(metadata: metadata, attempt: attempt + 1)
             }
         } else {
-            logger.error("All \(maxRetries, privacy: .public) registerRecord retries exhausted for file: \(metadata.fileName, privacy: .public)")
+            logger.error("🔼 All \(maxRetries, privacy: .public) registerRecord retries exhausted for file: \(metadata.fileName, privacy: .public)")
             cleanup(metadata: metadata, success: false)
         }
     }
 
     private static func cleanup(metadata: BackgroundUploadMetadata, success: Bool) {
-        BackgroundUploadMetadata.remove(taskIdentifier: metadata.taskIdentifier)
+        let taskId = metadata.taskIdentifier
+        BackgroundUploadMetadata.remove(taskIdentifier: taskId)
         BackgroundUploadSessionManager.shared.cleanupTempFile(at: metadata.tempFilePath)
 
         DispatchQueue.main.async {
@@ -90,6 +91,10 @@ enum BackgroundUploadCompletionHandler {
             UploadLiveActivityManager.shared.fileCompleted(success: success)
 
             NotificationCenter.default.post(name: UploadManager.didUploadFileNotification, object: nil, userInfo: nil)
+
+            // Signal that the post-relaunch follow-up for this task is done so
+            // the system background completion handler can be invoked.
+            BackgroundUploadSessionManager.shared.notifyPostProcessingComplete(taskIdentifier: taskId)
         }
     }
 }

@@ -124,6 +124,11 @@
 		5E1E61A72F6AFD4900998DCE /* LinkSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E61A62F6AFD4900998DCE /* LinkSettingsViewTests.swift */; };
 		5E1E61A92F6AFFFA00998DCE /* RenameViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E61A82F6AFFFA00998DCE /* RenameViewTests.swift */; };
 		5E1E61AB2F6B000700998DCE /* RegisterViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E61AA2F6B000700998DCE /* RegisterViewTests.swift */; };
+		5E1E92F42FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F32FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift */; };
+		5E1E92F52FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F32FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift */; };
+		5E1E92F82FC993C700F44FA8 /* ItemVOMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F72FC993C700F44FA8 /* ItemVOMatching.swift */; };
+		5E1E92F92FC993C700F44FA8 /* ItemVOMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92F72FC993C700F44FA8 /* ItemVOMatching.swift */; };
+		5E1E92FB2FC993E300F44FA8 /* UIViewControllerDuplicateUploadPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E92FA2FC993E300F44FA8 /* UIViewControllerDuplicateUploadPrompt.swift */; };
 		5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */; };
 		5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */; };
 		5E2114922B026CB300944386 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2114912B026CB300944386 /* ViewExtension.swift */; };
@@ -1299,6 +1304,9 @@
 		5E1E61A62F6AFD4900998DCE /* LinkSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkSettingsViewTests.swift; sourceTree = "<group>"; };
 		5E1E61A82F6AFFFA00998DCE /* RenameViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameViewTests.swift; sourceTree = "<group>"; };
 		5E1E61AA2F6B000700998DCE /* RegisterViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewTests.swift; sourceTree = "<group>"; };
+		5E1E92F32FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundUploadDrainTask.swift; sourceTree = "<group>"; };
+		5E1E92F72FC993C700F44FA8 /* ItemVOMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemVOMatching.swift; sourceTree = "<group>"; };
+		5E1E92FA2FC993E300F44FA8 /* UIViewControllerDuplicateUploadPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerDuplicateUploadPrompt.swift; sourceTree = "<group>"; };
 		5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E2114912B026CB300944386 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
@@ -2234,6 +2242,7 @@
 				BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */,
 				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
 				5E2114912B026CB300944386 /* ViewExtension.swift */,
+				5E1E92FA2FC993E300F44FA8 /* UIViewControllerDuplicateUploadPrompt.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2466,6 +2475,14 @@
 				5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */,
 			);
 			path = Local;
+			sourceTree = "<group>";
+		};
+		5E1E92F62FC993C600F44FA8 /* Matching */ = {
+			isa = PBXGroup;
+			children = (
+				5E1E92F72FC993C700F44FA8 /* ItemVOMatching.swift */,
+			);
+			path = Matching;
 			sourceTree = "<group>";
 		};
 		5E202E032981FCEF0063DDED /* ArchiveSettings */ = {
@@ -4842,6 +4859,8 @@
 				5E9097E52F99790800C2EAEC /* BackgroundUploadMetadata.swift */,
 				5E9097E82F99793100C2EAEC /* BackgroundUploadSessionManager.swift */,
 				5E9097EB2F99794A00C2EAEC /* BackgroundUploadCompletionHandler.swift */,
+				5E1E92F32FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift */,
+				5E1E92F62FC993C600F44FA8 /* Matching */,
 			);
 			path = Upload;
 			sourceTree = "<group>";
@@ -5740,6 +5759,7 @@
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
 				5E0950862D6F58EE0002EFC5 /* BannerBottomMessage.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
+				5E1E92F52FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift in Sources */,
 				5EA106E72E67177C0083B6A0 /* ShareLinkV2.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				5EEEA00F2E1E92CF00777E2C /* InviteCodeManager.swift in Sources */,
@@ -5932,6 +5952,7 @@
 				9295F3F32A9CC2C70061C9C9 /* AddLocationViewModel.swift in Sources */,
 				5E37F2D52AA75248004F00E8 /* CustomDialogView.swift in Sources */,
 				92C73E462A14D530000EF633 /* RoundedView.swift in Sources */,
+				5E1E92FB2FC993E300F44FA8 /* UIViewControllerDuplicateUploadPrompt.swift in Sources */,
 				5E814A432C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift in Sources */,
 				5E6CCEDF2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift in Sources */,
 				5E08C0D52E6F063600374D0F /* ShareContainerView.swift in Sources */,
@@ -5941,6 +5962,7 @@
 				5E0AB9E52CAEBAF500C80A94 /* CustomForgotPasswordFieldView.swift in Sources */,
 				F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */,
 				F502C4D926DCF1E700657D37 /* ArchivesViewModel.swift in Sources */,
+				5E1E92F82FC993C700F44FA8 /* ItemVOMatching.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
 				F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */,
@@ -6297,6 +6319,7 @@
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
 				F559F89D28FEEABA0015A522 /* APIPayload.swift in Sources */,
+				5E1E92F42FC81EAD00F44FA8 /* BackgroundUploadDrainTask.swift in Sources */,
 				5ED3B3B229F7E503000CFF48 /* LegacyPlanningIntroViewController.swift in Sources */,
 				F559F88C28FEE9690015A522 /* FolderSortViewModel.swift in Sources */,
 				5E4739FD2A4187C700A20D85 /* MilestoneProfileItem.swift in Sources */,
@@ -6342,6 +6365,7 @@
 				5E1CCC26287F055100913EEA /* CustomTextField.swift in Sources */,
 				5E1CCC25287F054000913EEA /* DropdownView.swift in Sources */,
 				F559F89028FEE9690015A522 /* FolderNavigationViewModel.swift in Sources */,
+				5E1E92F92FC993C700F44FA8 /* ItemVOMatching.swift in Sources */,
 				5E4739F52A41879800A20D85 /* BlurbProfileItem.swift in Sources */,
 				5E3E12462A41F3B700682DE5 /* FileCollectionViewCell.swift in Sources */,
 				F559F8A228FEEBFB0015A522 /* APIOperation.swift in Sources */,

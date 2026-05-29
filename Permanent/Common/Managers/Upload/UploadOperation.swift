@@ -40,11 +40,16 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     var destinationUrl: String!
     var fields: [String: String]!
     var createdDT: String!
+    /// Populated in Phase 2 (`uploadFileDataToS3`) once the byte count is
+    /// known. Used by Phase 3 / Guard B as the duplicate-prevention match key
+    /// (matched against `ItemVO.size` returned by `navigateMin`). Size is
+    /// numeric and round-trips through the server exactly, unlike `createdDT`
+    /// which is reformatted server-side.
+    var phase2FileSize: Int64?
     
     var progress: Double = 0
-    var error: UploadError?
+    var error: Error?
 
-    var backgroundTaskIdentifier: Int?
     private var foregroundUploadTask: URLSessionUploadTask?
     private var foregroundTempFileURL: URL?
     private var progressObservation: NSKeyValueObservation?
@@ -112,14 +117,13 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         if let app = extensionSafeApplication() {
             backgroundTaskId = app.beginBackgroundTask(withName: "UploadFile-\(file.id)") { [weak self] in
                 guard let self = self else { return }
-                self.logger.warning("Background task expired for file: \(self.file.name, privacy: .public)")
+                self.logger.warning("🔼 Background task expired for file: \(self.file.name, privacy: .public)")
                 extensionSafeApplication()?.endBackgroundTask(self.backgroundTaskId)
                 self.backgroundTaskId = .invalid
             }
         }
 
         operationStartTime = Date()
-        flowLogger.info("[START] t=0.0s file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) url=\(self.file.url.path, privacy: .public)")
 
         foregroundObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.willEnterForegroundNotification,
@@ -142,20 +146,26 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         guard let startTime = operationStartTime,
               Date().timeIntervalSince(startTime) > 10 else { return }
 
-        if backgroundTaskIdentifier == nil && foregroundUploadTask == nil, let op = getPresignedURLOperation {
-            logger.info("Cancelling stale presignedUrl after foreground resume for: \(self.file.name, privacy: .public)")
+        if foregroundUploadTask == nil, let op = getPresignedURLOperation {
+            logger.info("🔼 Cancelling stale presignedUrl after foreground resume for: \(self.file.name, privacy: .public)")
             op.cancel()
         } else if let task = foregroundUploadTask {
-            logger.info("Cancelling stale foreground upload after foreground resume for: \(self.file.name, privacy: .public)")
+            logger.info("🔼 Cancelling stale foreground upload after foreground resume for: \(self.file.name, privacy: .public)")
             task.cancel()
-        } else if backgroundTaskIdentifier != nil, let op = registerRecordOperation {
-            logger.info("Cancelling stale registerRecord after foreground resume for: \(self.file.name, privacy: .public)")
+        } else if let op = registerRecordOperation {
+            logger.info("🔼 Cancelling stale registerRecord after foreground resume for: \(self.file.name, privacy: .public)")
             op.cancel()
         }
     }
     
     override func finish() {
-        flowLogger.info("[FINISH] t=\(self.elapsed, privacy: .public)s file=\(self.file.name, privacy: .public) error=\(self.error.map { String(describing: $0) } ?? "none", privacy: .public)")
+        // Single terminal log per file so we can trace the success path too.
+        // Failures already log via `[PHASE N FAILED]`; skips via `[PHASE 3 SKIP]`.
+        // This line is the silent-success complement, so for a 100-file batch
+        // every file has exactly one outcome line in Console.app.
+        if error == nil {
+            flowLogger.info("🔼 [OK] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) t=\(self.elapsed, privacy: .public)s")
+        }
 
         progressObservation?.invalidate()
         progressObservation = nil
@@ -194,9 +204,6 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         getPresignedURLOperation?.cancel()
         registerRecordOperation?.cancel()
         foregroundUploadTask?.cancel()
-        if let taskId = backgroundTaskIdentifier {
-            BackgroundUploadSessionManager.shared.removeCompletionHandler(forTaskIdentifier: taskId)
-        }
         
         DispatchQueue.main.async {
             let userInfo: [String: Any]?
@@ -219,12 +226,10 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     
     private func getPresignedUrl(success: @escaping (() -> Void)) {
         phaseStartTime = Date()
-        let fileExists = FileManager.default.fileExists(atPath: file.url.path)
-        flowLogger.info("[PHASE 1] t=\(self.elapsed, privacy: .public)s getPresignedUrl started — fileExists=\(fileExists, privacy: .public) path=\(self.file.url.path, privacy: .public)")
 
         guard let resources = try? file.url.resourceValues(forKeys:[.fileSizeKey]),
               let fileSize = resources.fileSize else {
-            flowLogger.error("[PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s Cannot get file size for: \(self.file.name, privacy: .public)")
+            flowLogger.error("🔼 [PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s Cannot get file size for: \(self.file.name, privacy: .public)")
             error = UploadError.presignedURL
             handler(UploadError.presignedURL)
             finish()
@@ -257,23 +262,29 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                     self.s3Url = s3Url
                     self.destinationUrl = destinationUrl
                     self.fields = fields
-                    self.flowLogger.info("[PHASE 1 OK] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s s3Url=\(s3Url, privacy: .public)")
                     success()
                 } else if model.isSuccessful == false, model.results?.first?.data == nil {
-                    self.flowLogger.error("[PHASE 1 AUTH] t=\(self.elapsed, privacy: .public)s session invalid for: \(self.file.name, privacy: .public)")
+                    self.flowLogger.error("🔼 [PHASE 1 AUTH] t=\(self.elapsed, privacy: .public)s session invalid for: \(self.file.name, privacy: .public)")
                     error = UploadError.authenticationRequired
                     handler(UploadError.authenticationRequired)
                     finish()
                 } else {
-                    self.flowLogger.error("[PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s presignedUrl response unsuccessful for: \(self.file.name, privacy: .public)")
+                    self.flowLogger.error("🔼 [PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s presignedUrl response unsuccessful for: \(self.file.name, privacy: .public)")
                     error = UploadError.presignedURL
                     handler(UploadError.presignedURL)
                     finish()
                 }
             case .error(let err, _):
-                self.flowLogger.error("[PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s presignedUrl network error: \(err.debugDescription, privacy: .public)")
-                self.error = UploadError.presignedURL
-                handler(UploadError.presignedURL)
+                self.flowLogger.error("🔼 [PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s presignedUrl network error: \(err?.localizedDescription ?? "unknown", privacy: .public)")
+                // Preserve URLError so UploadManager's isTransientNetworkError
+                // check fires and retry without burning attempts.
+                if let urlError = err as? URLError {
+                    self.error = urlError
+                    handler(urlError)
+                } else {
+                    self.error = UploadError.presignedURL
+                    handler(UploadError.presignedURL)
+                }
                 finish()
             default:
                 finish()
@@ -284,22 +295,46 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     
     private func uploadFileDataToS3(success: @escaping (() -> Void)) {
         phaseStartTime = Date()
-        flowLogger.info("[PHASE 2] t=\(self.elapsed, privacy: .public)s S3 upload started for: \(self.file.name, privacy: .public)")
         var contentLength = prefixData.count
-        let resources = try! file.url.resourceValues(forKeys:[.fileSizeKey, .creationDateKey])
-        let fileSize = resources.fileSize!
+
+        guard let resources = try? file.url.resourceValues(forKeys: [.fileSizeKey, .creationDateKey]),
+              let fileSize = resources.fileSize,
+              let creationDate = resources.creationDate else {
+            flowLogger.error("🔼 [PHASE 2 FAILED] file=\(self.file.name, privacy: .public) — missing resource values (file may be gone)")
+            self.error = UploadError.s3
+            handler(UploadError.s3)
+            finish()
+            return
+        }
+        // Cache the byte count so Phase 3 can use it as the duplicate-prevention
+        // match key (server's ItemVO.size round-trips numerically, unlike
+        // createdDT which gets timezone-normalised).
+        phase2FileSize = Int64(fileSize)
         contentLength += fileSize
-        contentLength += "\r\n--\(boundary)--".data(using: .utf8)!.count
+
+        guard let boundaryClose = "\r\n--\(boundary)--".data(using: .utf8) else {
+            flowLogger.error("🔼 [PHASE 2 FAILED] file=\(self.file.name, privacy: .public) — could not encode boundary")
+            self.error = UploadError.s3
+            handler(UploadError.s3)
+            finish()
+            return
+        }
+        contentLength += boundaryClose.count
 
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-
-        let creationDate = resources.creationDate!
         createdDT = dateFormatter.string(from: creationDate)
 
-        var uploadRequest = URLRequest(url: URL(string: s3Url)!)
+        guard let uploadURL = URL(string: s3Url) else {
+            flowLogger.error("🔼 [PHASE 2 FAILED] file=\(self.file.name, privacy: .public) — invalid s3Url")
+            self.error = UploadError.s3
+            handler(UploadError.s3)
+            finish()
+            return
+        }
+        var uploadRequest = URLRequest(url: uploadURL)
         uploadRequest.timeoutInterval = 86400
         uploadRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
         uploadRequest.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
@@ -308,7 +343,13 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         // Build multipart body into a temp file in the app group container
         // so it survives app termination.
         let tempURL = BackgroundUploadSessionManager.uploadTempDirectory.appendingPathComponent(UUID().uuidString)
-        let outputStream = OutputStream(url: tempURL, append: false)!
+        guard let outputStream = OutputStream(url: tempURL, append: false) else {
+            flowLogger.error("🔼 [PHASE 2 FAILED] file=\(self.file.name, privacy: .public) — could not open tempfile output stream (disk full?)")
+            self.error = UploadError.s3
+            handler(UploadError.s3)
+            finish()
+            return
+        }
         outputStream.open()
 
         var buffer = [UInt8](repeating: 0, count: 1024 * 64)
@@ -321,7 +362,15 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         }
         prefixStream.close()
 
-        let fileStream = InputStream(url: file.url)!
+        guard let fileStream = InputStream(url: file.url) else {
+            outputStream.close()
+            try? FileManager.default.removeItem(at: tempURL)
+            flowLogger.error("🔼 [PHASE 2 FAILED] file=\(self.file.name, privacy: .public) — could not open input stream for source file")
+            self.error = UploadError.s3
+            handler(UploadError.s3)
+            finish()
+            return
+        }
         fileStream.open()
         while fileStream.hasBytesAvailable {
             let bytesRead = fileStream.read(&buffer, maxLength: buffer.count)
@@ -329,7 +378,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         }
         fileStream.close()
 
-        let postfixStream = InputStream(data: "\r\n--\(boundary)--".data(using: .utf8)!)
+        let postfixStream = InputStream(data: boundaryClose)
         postfixStream.open()
         while postfixStream.hasBytesAvailable {
             let bytesRead = postfixStream.read(&buffer, maxLength: buffer.count)
@@ -338,115 +387,176 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         postfixStream.close()
         outputStream.close()
 
-        let tempFileSize = (try? FileManager.default.attributesOfItem(atPath: tempURL.path)[.size] as? Int) ?? -1
-        flowLogger.info("[PHASE 2] t=\(self.elapsed, privacy: .public)s tempFile: size=\(tempFileSize, privacy: .public) contentLength=\(contentLength, privacy: .public) match=\(tempFileSize == contentLength, privacy: .public)")
+        // All uploads run through the foreground URLSession. iOS gives the app
+        // ~30s of runtime via beginBackgroundTask after backgrounding; uploads
+        // that exceed that pause until the user reopens the app (LA shows the
+        // orange "Upload Paused — tap to resume" state).
+        foregroundTempFileURL = tempURL
+        let task = Self.foregroundSession.uploadTask(with: uploadRequest, fromFile: tempURL) { [weak self] _, response, error in
+            guard let self = self, !self.isCancelled else { return }
 
-        if UploadManager.shared.isInForeground {
-            // Fast foreground upload — uses default URLSession, ~10x faster than background daemon
-            foregroundTempFileURL = tempURL
-            let task = Self.foregroundSession.uploadTask(with: uploadRequest, fromFile: tempURL) { [weak self] _, response, error in
-                guard let self = self, !self.isCancelled else { return }
+            // Clean up temp file
+            if let tempPath = self.foregroundTempFileURL {
+                try? FileManager.default.removeItem(at: tempPath)
+            }
+            self.foregroundUploadTask = nil
 
-                // Clean up temp file
-                if let tempPath = self.foregroundTempFileURL {
-                    try? FileManager.default.removeItem(at: tempPath)
-                }
-                self.foregroundUploadTask = nil
-
-                if let error = error {
-                    self.flowLogger.error("[PHASE 2 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s foreground error=\(error.localizedDescription, privacy: .public)")
-                    self.error = .s3
-                    self.handler(UploadError.s3)
-                    self.finish()
-                } else if let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) {
-                    self.flowLogger.info("[PHASE 2 OK] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s foreground upload completed")
-                    success()
+            if let error = error {
+                self.flowLogger.error("🔼 [PHASE 2 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s error=\(error.localizedDescription, privacy: .public)")
+                // Preserve URLError so UploadManager's isTransientNetworkError
+                // check fires and the file is re-queued without burning attempts.
+                if let urlError = error as? URLError {
+                    self.error = urlError
+                    self.handler(urlError)
                 } else {
-                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
-                    self.flowLogger.error("[PHASE 2 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s foreground status=\(statusCode, privacy: .public)")
-                    self.error = .s3
+                    self.error = UploadError.s3
                     self.handler(UploadError.s3)
-                    self.finish()
                 }
+                self.finish()
+            } else if let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) {
+                success()
+            } else {
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                self.flowLogger.error("🔼 [PHASE 2 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s status=\(statusCode, privacy: .public)")
+                self.error = UploadError.s3
+                self.handler(UploadError.s3)
+                self.finish()
             }
-            foregroundUploadTask = task
-
-            progressObservation = task.progress.observe(\.fractionCompleted) { [weak self] taskProgress, _ in
-                guard let self = self else { return }
-                let fraction = taskProgress.fractionCompleted
-                self.progress = fraction
-
-                DispatchQueue.main.async {
-                    let userInfo: [String: Any] = ["fileInfoId": self.file.id, "progress": fraction]
-                    NotificationCenter.default.post(name: Self.uploadProgressNotification, object: nil, userInfo: userInfo)
-
-                    let queueIndex = UploadManager.shared.uploadQueue.operations
-                        .compactMap { $0 as? UploadOperation }
-                        .firstIndex(where: { $0.file.id == self.file.id })
-                    let fileIndex = (queueIndex ?? 0) + 1
-
-                    UploadLiveActivityManager.shared.updateProgress(
-                        fileInfoId: self.file.id,
-                        fileName: self.file.name,
-                        fileIndex: fileIndex,
-                        fileProgress: fraction
-                    )
-                }
-            }
-
-            task.resume()
-            flowLogger.info("[PHASE 2] t=\(self.elapsed, privacy: .public)s foreground upload task started for: \(self.file.name, privacy: .public)")
-        } else {
-            // Background-resilient upload — slower but survives app suspension/termination
-            let metadata = BackgroundUploadMetadata(
-                fileInfoId: file.id,
-                fileName: file.name,
-                s3Url: s3Url,
-                destinationUrl: destinationUrl,
-                createdDT: createdDT,
-                folderId: file.folder.folderId,
-                folderLinkId: file.folder.folderLinkId,
-                tempFilePath: tempURL.path,
-                taskIdentifier: 0
-            )
-
-            backgroundTaskIdentifier = BackgroundUploadSessionManager.shared.startUpload(
-                request: uploadRequest,
-                fileURL: tempURL,
-                metadata: metadata
-            ) { [weak self] error in
-                guard let self = self, !self.isCancelled else { return }
-
-                if let error = error {
-                    self.flowLogger.error("[PHASE 2 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s background error=\(error.localizedDescription, privacy: .public)")
-                    self.error = .s3
-                    self.handler(UploadError.s3)
-                    self.finish()
-                } else {
-                    self.flowLogger.info("[PHASE 2 OK] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s background upload completed")
-                    success()
-                }
-            }
-
-            flowLogger.info("[PHASE 2] t=\(self.elapsed, privacy: .public)s background upload task \(self.backgroundTaskIdentifier ?? -1, privacy: .public) started for: \(self.file.name, privacy: .public)")
         }
+        foregroundUploadTask = task
+
+        progressObservation = task.progress.observe(\Progress.fractionCompleted) { [weak self] (taskProgress: Progress, _: NSKeyValueObservedChange<Double>) in
+            guard let self = self else { return }
+            let fraction = taskProgress.fractionCompleted
+            self.progress = fraction
+
+            DispatchQueue.main.async {
+                let userInfo: [String: Any] = ["fileInfoId": self.file.id, "progress": fraction]
+                NotificationCenter.default.post(name: Self.uploadProgressNotification, object: nil, userInfo: userInfo)
+
+                let queueIndex = UploadManager.shared.uploadQueue.operations
+                    .compactMap { $0 as? UploadOperation }
+                    .firstIndex(where: { $0.file.id == self.file.id })
+                let fileIndex = (queueIndex ?? 0) + 1
+
+                UploadLiveActivityManager.shared.updateProgress(
+                    fileInfoId: self.file.id,
+                    fileName: self.file.name,
+                    fileIndex: fileIndex,
+                    fileProgress: fraction
+                )
+            }
+        }
+
+        task.resume()
     }
-    
+
     private func registerRecord() {
+        // Guard A: in-memory dedup. If this operation already finished Phase 3
+        // successfully in the current process (re-queued mid-flight), skip the
+        // API call entirely.
+        if UploadManager.isFileAlreadyCompleted(fileId: file.id) {
+            flowLogger.info("🔼 [PHASE 3 SKIP] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) already registered — in-memory dedup")
+            handler(nil)
+            finish()
+            return
+        }
+
+        // Guard B: if a previous attempt for this file got as far as issuing
+        // registerRecord but didn't return success to the client (server may
+        // still have created the record while the response was lost in
+        // transit — common during Wi-Fi/cellular handoff), list the
+        // destination folder and look for a matching record by name +
+        // millisecond-precise createdDT. If found, the server already has it
+        // and a fresh call would create a duplicate.
+        if UploadManager.wasPhase3Attempted(fileId: file.id) {
+            let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+            UploadManager.shared.fetchFolderContents(archiveNo: archiveNo, folderLinkId: file.folder.folderLinkId) { [self] items in
+                guard !isCancelled else { return }
+
+                // Fix 2: if navigateMin itself failed, we have NO idea whether
+                // the server already has this record. Falling through to a
+                // fresh `registerRecord` is exactly what creates the duplicate
+                // we're trying to prevent. Defer instead — re-queue as a
+                // transient network error so the next retry can try Guard B
+                // again. The retry doesn't count against the 3-attempt cap
+                // (it goes through `isTransientNetworkError`).
+                guard let items = items else {
+                    flowLogger.error("🔼 [PHASE 3 FAILED] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) — Guard B navigateMin unreachable, deferring")
+                    let urlError = URLError(.networkConnectionLost)
+                    self.error = urlError
+                    handler(urlError)
+                    finish()
+                    return
+                }
+
+                // Shared matcher: `uploadFileName` exact, with stripped
+                // `displayName` as fallback, and `size` as a tiebreaker. See
+                // `ItemVOMatching.swift` for the full rationale behind the
+                // key choice.
+                if items.record(forUploadName: file.name, size: resolvedFileSize()) != nil {
+                    flowLogger.info("🔼 [PHASE 3 SKIP] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) found in folder — server already has it (folder-existence-check)")
+                    UploadManager.markFileAsCompleted(fileId: file.id)
+                    UploadManager.removePhase3InFlight(fileId: file.id)
+                    handler(nil)
+                    finish()
+                    return
+                }
+                doRegisterRecord()
+            }
+            return
+        }
+
+        doRegisterRecord()
+    }
+
+    /// Returns the file's byte count for use as the duplicate-prevention match
+    /// key. Prefers the Phase-2-cached value (already on disk's perspective when
+    /// we built the upload body); falls back to a fresh `resourceValues` read
+    /// for any pathological path that skipped Phase 2 (shouldn't happen — we
+    /// only reach Phase 3 after Phase 2 success).
+    private func resolvedFileSize() -> Int64 {
+        if let cached = phase2FileSize { return cached }
+        if let fs = (try? file.url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize {
+            return Int64(fs)
+        }
+        return 0
+    }
+
+    private func doRegisterRecord() {
+        // Capture retry-or-first-attempt BEFORE marking. After API success the
+        // in-flight marker is removed only for first attempts — for retries
+        // it must persist so the end-of-batch verifier can confirm there
+        // isn't a leftover duplicate from an earlier attempt that the server
+        // processed without acknowledging.
+        let wasRetry = UploadManager.wasPhase3Attempted(fileId: file.id)
+
+        // Mark in-flight BEFORE the API call so that if the response is lost
+        // mid-flight, the next retry takes the folder-existence-check path
+        // (Guard B) and the end-of-batch verifier has the metadata it needs
+        // to look this record up via navigateMin. Idempotent.
+        let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+        let fileSizeBytes = resolvedFileSize()
+        UploadManager.markPhase3InFlight(entry: UploadManager.Phase3InFlightEntry(
+            fileId: file.id,
+            fileName: file.name,
+            createdDT: createdDT,
+            fileSize: fileSizeBytes,
+            folderLinkId: file.folder.folderLinkId,
+            archiveNo: archiveNo
+        ))
+
         let registerStartTime = Date()
         let params = RegisterRecordParams(file.folder.folderId, file.folder.folderLinkId, file.name, createdDT, s3Url, destinationUrl)
 
         phaseStartTime = Date()
-        flowLogger.info("[PHASE 3] t=\(self.elapsed, privacy: .public)s registerRecord started — folderId=\(self.file.folder.folderId, privacy: .public) destinationUrl=\(self.destinationUrl ?? "nil", privacy: .public)")
-        
+
         let apiOperation = APIOperation(FilesEndpoint.registerRecord(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
             guard isCancelled == false else { return }
-            
-            // Calculate and notify about registerRecord response time
+
             let registerTime = Date().timeIntervalSince(registerStartTime)
-            logger.info("registerRecord response time: \(registerTime, privacy: .public) seconds for file: \(self.file.name, privacy: .public)")
-            
+
             DispatchQueue.main.async {
                 NotificationCenter.default.post(
                     name: Self.registerRecordTimingNotification,
@@ -454,11 +564,11 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                     userInfo: ["registerTime": registerTime]
                 )
             }
-            
+
             switch result {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
-                    logger.error("Failed to convert registerRecord response to model for file: \(self.file.name, privacy: .public)")
+                    logger.error("🔼 Failed to convert registerRecord response to model for file: \(self.file.name, privacy: .public)")
                     self.error = UploadError.registerRecord
                     handler(UploadError.registerRecord)
                     finish()
@@ -466,24 +576,43 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                 }
 
                 if model.isSuccessful == true {
-                    flowLogger.info("[PHASE 3 OK] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s registerRecord succeeded")
                     uploadedFile = model.results?.first?.data?.first?.recordVO
                     UploadManager.markFileAsCompleted(fileId: self.file.id)
+                    if !wasRetry {
+                        // First-attempt success — no risk of a prior server
+                        // success we missed, so safe to drop the marker.
+                        UploadManager.removePhase3InFlight(fileId: self.file.id)
+                    }
+                    // Invalidate the cached folder listing so the next reader
+                    // gets a fresh navigateMin response that includes this
+                    // newly-registered record (prevents stale-empty reads
+                    // from triggering a duplicate-creating fall-through).
+                    UploadManager.shared.invalidateFolderListingCache(folderLinkId: self.file.folder.folderLinkId)
                     handler(nil)
                     finish()
                 } else {
-                    flowLogger.error("[PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s registerRecord unsuccessful")
+                    flowLogger.error("🔼 [PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s registerRecord unsuccessful")
+                    // Leave in-flight marker in place so the next retry
+                    // consults the folder before re-issuing.
                     self.error = UploadError.registerRecord
                     handler(UploadError.registerRecord)
                     finish()
                 }
             case .error(let error, _):
-                flowLogger.error("[PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s network error: \(error.debugDescription, privacy: .public)")
-                self.error = UploadError.registerRecord
-                handler(UploadError.registerRecord)
+                flowLogger.error("🔼 [PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s network error: \(error?.localizedDescription ?? "unknown", privacy: .public)")
+                // Leave in-flight marker — the lost response is *exactly* the
+                // case we want the next retry to catch via Guard B.
+                if let urlError = error as? URLError {
+                    self.error = urlError
+                    handler(urlError)
+                } else {
+                    self.error = UploadError.registerRecord
+                    handler(UploadError.registerRecord)
+                }
                 finish()
             default:
-                flowLogger.error("[PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s unexpected result type")
+                flowLogger.error("🔼 [PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s unexpected result type")
+                // Leave in-flight marker.
                 finish()
                 break
             }

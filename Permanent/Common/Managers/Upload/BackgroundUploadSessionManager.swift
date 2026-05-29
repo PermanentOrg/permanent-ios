@@ -41,12 +41,23 @@ class BackgroundUploadSessionManager: NSObject {
         config.sessionSendsLaunchEvents = true
         config.shouldUseExtendedBackgroundIdleMode = true
         config.timeoutIntervalForResource = 86400 // 24 hours
+        // Hold tasks in a waiting state during network handoffs (Wi-Fi ↔ cellular)
+        // instead of failing them. This is critical for background uploads where
+        // app-side retry timers can't fire while the app is suspended.
+        config.waitsForConnectivity = true
         return URLSession(configuration: config, delegate: self, delegateQueue: delegateQueue)
     }()
 
     /// In-memory map of taskIdentifier → completion callback for in-process operations.
     private var completionHandlers: [Int: (Error?) -> Void] = [:]
     private let lock = NSLock()
+
+    /// Task identifiers whose URLSession completion event has fired but whose
+    /// follow-up work (Phase 3 registerRecord) hasn't finished yet. The system
+    /// completion handler must NOT be invoked while this set is non-empty —
+    /// doing so causes iOS to suspend the app mid-API-call.
+    private var awaitingPostProcessing: Set<Int> = []
+    private let postProcessingLock = NSLock()
 
     /// Directory in the app group container for temp upload files.
     static var uploadTempDirectory: URL {
@@ -67,7 +78,7 @@ class BackgroundUploadSessionManager: NSObject {
         session.getTasksWithCompletionHandler { [weak self] _, uploadTasks, _ in
             guard let self = self else { return }
             if !uploadTasks.isEmpty {
-                self.logger.info("Reconnected to \(uploadTasks.count, privacy: .public) in-flight background upload tasks")
+                self.logger.info("🔼 Reconnected to \(uploadTasks.count, privacy: .public) in-flight background upload tasks")
             }
 
             let activeTaskIds = Set(uploadTasks.map(\.taskIdentifier))
@@ -75,7 +86,7 @@ class BackgroundUploadSessionManager: NSObject {
             let staleMetadata = allMetadata.filter { !activeTaskIds.contains($0.taskIdentifier) }
 
             if !staleMetadata.isEmpty {
-                self.logger.info("Cleaning up \(staleMetadata.count, privacy: .public) stale background upload metadata entries")
+                self.logger.info("🔼 Cleaning up \(staleMetadata.count, privacy: .public) stale background upload metadata entries")
                 for metadata in staleMetadata {
                     self.cleanupTempFile(at: metadata.tempFilePath)
                     BackgroundUploadMetadata.remove(taskIdentifier: metadata.taskIdentifier)
@@ -89,12 +100,20 @@ class BackgroundUploadSessionManager: NSObject {
     }
 
     /// Start a background upload and register a completion handler.
+    ///
+    /// **Deprecated:** the upload pipeline now runs entirely through the
+    /// foreground `URLSession.shared` via `UploadOperation`. This method is
+    /// kept only so that legacy in-flight tasks from older app versions can
+    /// drain on launch via the existing delegate methods. New uploads must
+    /// not call this — remove this entire file after one release cycle.
+    ///
     /// - Parameters:
     ///   - request: The URLRequest for the S3 upload.
     ///   - fileURL: Path to the temp file containing the multipart body (must be in the app group container).
     ///   - metadata: The metadata to persist so registerRecord can run after relaunch.
     ///   - completion: Called when the upload finishes. May not be called if the app is terminated
     ///                 (in that case BackgroundUploadCompletionHandler handles it on relaunch).
+    @available(*, deprecated, message: "Background URLSession path removed — UploadOperation now uses foreground session exclusively. Do not call.")
     /// - Returns: The task identifier for tracking.
     @discardableResult
     func startUpload(request: URLRequest, fileURL: URL, metadata: BackgroundUploadMetadata, completion: @escaping (Error?) -> Void) -> Int {
@@ -120,7 +139,7 @@ class BackgroundUploadSessionManager: NSObject {
         lock.unlock()
 
         task.resume()
-        logger.info("Started background upload task \(taskId, privacy: .public) for file: \(metadata.fileName, privacy: .public)")
+        logger.info("🔼 Started background upload task \(taskId, privacy: .public) for file: \(metadata.fileName, privacy: .public)")
 
         return taskId
     }
@@ -137,7 +156,7 @@ class BackgroundUploadSessionManager: NSObject {
     func cancelTask(identifier taskId: Int) {
         session.getAllTasks { [weak self] tasks in
             if let task = tasks.first(where: { $0.taskIdentifier == taskId }) {
-                self?.logger.info("Cancelling background upload task \(taskId, privacy: .public) for foreground promotion")
+                self?.logger.info("🔼 Cancelling background upload task \(taskId, privacy: .public) for foreground promotion")
                 task.cancel()
             }
         }
@@ -161,7 +180,7 @@ class BackgroundUploadSessionManager: NSObject {
 
         let operation = APIOperation(AccountEndpoint.getSessionAccount)
         operation.execute(in: APIRequestDispatcher()) { [weak self] _ in
-            self?.logger.info("Session keepalive ping sent (force=\(force, privacy: .public))")
+            self?.logger.info("🔼 Session keepalive ping sent (force=\(force, privacy: .public))")
         }
     }
 }
@@ -169,6 +188,10 @@ class BackgroundUploadSessionManager: NSObject {
 // MARK: - URLSessionTaskDelegate
 
 extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
+    func urlSession(_ session: URLSession, taskIsWaitingForConnectivity task: URLSessionTask) {
+        flowLogger.info("🔼 [WAIT] task=\(task.taskIdentifier, privacy: .public) waiting for connectivity")
+    }
+
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         let progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
         let taskId = task.taskIdentifier
@@ -197,24 +220,29 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let taskId = task.taskIdentifier
 
+        // Mark this task as needing follow-up work before invoking the system
+        // completion handler. UploadOperation.finish() or BackgroundUploadCompletionHandler
+        // will call `notifyPostProcessingComplete(taskIdentifier:)` when Phase 3 is done.
+        registerPostProcessingStart(taskIdentifier: taskId)
+
         if let error = error {
-            logger.error("Background upload task \(taskId, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
+            logger.error("🔼 Background upload task \(taskId, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
         } else if let response = task.response as? HTTPURLResponse {
-            logger.info("Background upload task \(taskId, privacy: .public) completed with status: \(response.statusCode, privacy: .public)")
+            logger.info("🔼 Background upload task \(taskId, privacy: .public) completed with status: \(response.statusCode, privacy: .public)")
         }
 
         // Determine success
         let uploadError: Error?
         if let error = error {
             uploadError = error
-            flowLogger.error("[S3 RESPONSE] task=\(taskId, privacy: .public) networkError=\(error.localizedDescription, privacy: .public)")
+            flowLogger.error("🔼 [S3 RESPONSE] task=\(taskId, privacy: .public) networkError=\(error.localizedDescription, privacy: .public)")
         } else if let response = task.response as? HTTPURLResponse, response.statusCode >= 200, response.statusCode < 300 {
             uploadError = nil
-            flowLogger.info("[S3 RESPONSE] task=\(taskId, privacy: .public) status=\(response.statusCode, privacy: .public) SUCCESS")
+            flowLogger.info("🔼 [S3 RESPONSE] task=\(taskId, privacy: .public) status=\(response.statusCode, privacy: .public) SUCCESS")
         } else {
             let statusCode = (task.response as? HTTPURLResponse)?.statusCode ?? -1
             uploadError = UploadError.s3
-            flowLogger.error("[S3 RESPONSE] task=\(taskId, privacy: .public) status=\(statusCode, privacy: .public) FAILED (non-2xx)")
+            flowLogger.error("🔼 [S3 RESPONSE] task=\(taskId, privacy: .public) status=\(statusCode, privacy: .public) FAILED (non-2xx)")
         }
 
         // Keep the server session alive while background uploads are running.
@@ -227,7 +255,7 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
         let handler = completionHandlers.removeValue(forKey: taskId)
         lock.unlock()
 
-        flowLogger.info("[S3 RESPONSE] task=\(taskId, privacy: .public) hasInMemoryHandler=\(handler != nil, privacy: .public)")
+        flowLogger.info("🔼 [S3 RESPONSE] task=\(taskId, privacy: .public) hasInMemoryHandler=\(handler != nil, privacy: .public)")
 
         if let handler = handler {
             // UploadOperation is still alive — clean up persisted metadata and temp file,
@@ -240,7 +268,7 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
         } else {
             // App was relaunched — no in-memory handler. Use BackgroundUploadCompletionHandler.
             if uploadError == nil, let metadata = BackgroundUploadMetadata.find(taskIdentifier: taskId) {
-                logger.info("No in-memory handler for task \(taskId, privacy: .public). Using BackgroundUploadCompletionHandler.")
+                logger.info("🔼 No in-memory handler for task \(taskId, privacy: .public). Using BackgroundUploadCompletionHandler.")
                 BackgroundUploadCompletionHandler.handleCompletedUpload(metadata: metadata)
             } else {
                 // Upload failed and no handler — just clean up
@@ -248,8 +276,9 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
                     cleanupTempFile(at: metadata.tempFilePath)
                     BackgroundUploadMetadata.remove(taskIdentifier: taskId)
                 }
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
                     UploadLiveActivityManager.shared.fileCompleted(success: false)
+                    self?.notifyPostProcessingComplete(taskIdentifier: taskId)
                 }
             }
         }
@@ -269,10 +298,53 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
 
 extension BackgroundUploadSessionManager: URLSessionDelegate {
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-        logger.info("Background session finished all events")
+        logger.info("🔼 Background session finished all events — checking for pending Phase 3 work")
+        invokeSystemCompletionHandlerIfReady()
+    }
+}
+
+// MARK: - Post-processing tracking
+
+extension BackgroundUploadSessionManager {
+    /// Called when a URLSession completion event fires, before kicking off
+    /// Phase 3 follow-up work. iOS expects us to call the system completion
+    /// handler only after this Phase 3 is done.
+    private func registerPostProcessingStart(taskIdentifier: Int) {
+        postProcessingLock.lock()
+        awaitingPostProcessing.insert(taskIdentifier)
+        postProcessingLock.unlock()
+    }
+
+    /// Call this when Phase 3 follow-up for a specific task is fully done.
+    /// Once the set is empty AND iOS has signalled all events delivered, we
+    /// invoke the stored system completion handler.
+    func notifyPostProcessingComplete(taskIdentifier: Int) {
+        postProcessingLock.lock()
+        let didRemove = awaitingPostProcessing.remove(taskIdentifier) != nil
+        let isEmpty = awaitingPostProcessing.isEmpty
+        postProcessingLock.unlock()
+
+        guard didRemove, isEmpty else { return }
+        invokeSystemCompletionHandlerIfReady()
+    }
+
+    private func invokeSystemCompletionHandlerIfReady() {
+        postProcessingLock.lock()
+        let isEmpty = awaitingPostProcessing.isEmpty
+        let count = awaitingPostProcessing.count
+        postProcessingLock.unlock()
+
         DispatchQueue.main.async { [weak self] in
-            self?.backgroundSessionCompletionHandler?()
-            self?.backgroundSessionCompletionHandler = nil
+            guard let self = self else { return }
+            guard isEmpty else {
+                self.logger.info("🔼 System completion handler deferred — still awaiting \(count, privacy: .public) Phase 3 tasks")
+                return
+            }
+            if let handler = self.backgroundSessionCompletionHandler {
+                self.logger.info("🔼 All Phase 3 work done — invoking system completion handler")
+                handler()
+                self.backgroundSessionCompletionHandler = nil
+            }
         }
     }
 }

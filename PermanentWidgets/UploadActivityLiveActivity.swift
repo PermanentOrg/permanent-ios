@@ -16,41 +16,54 @@ struct UploadActivityLiveActivity: Widget {
             lockScreenView(context: context)
                 .widgetURL(folderURL(for: context))
         } dynamicIsland: { context in
-            DynamicIsland {
-                // EXPANDED DYNAMIC ISLAND
+            let status = effectiveStatus(context)
+            let progressTint: Color = (status == .paused ? .orange : .blue)
+            let deepLink = folderURL(for: context)
+            return DynamicIsland {
+                // EXPANDED DYNAMIC ISLAND — wrap each region in a Link so taps
+                // anywhere in the expanded presentation open the upload folder
+                // (the outer .widgetURL only covers compact + minimal).
                 DynamicIslandExpandedRegion(.leading) {
-                    Image(systemName: expandedIcon(for: context.state.status))
-                        .foregroundColor(expandedIconColor(for: context.state.status))
-                        .font(.title2)
+                    Link(destination: deepLink) {
+                        Image(systemName: expandedIcon(for: status))
+                            .foregroundColor(expandedIconColor(for: status))
+                            .font(.title2)
+                    }
                 }
                 DynamicIslandExpandedRegion(.center) {
-                    expandedCenterView(context: context)
+                    Link(destination: deepLink) {
+                        expandedCenterView(context: context)
+                    }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text("\(context.state.completedCount)/\(context.state.totalFiles)")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .monospacedDigit()
+                    Link(destination: deepLink) {
+                        Text("\(context.state.completedCount)/\(context.state.totalFiles)")
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .monospacedDigit()
+                    }
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    if context.state.status == .uploading || context.state.status == .paused || context.state.status == .processing {
-                        ProgressView(value: context.state.overallProgress)
-                            .tint(.blue)
+                    if status == .uploading || status == .paused || status == .processing {
+                        Link(destination: deepLink) {
+                            ProgressView(value: context.state.overallProgress)
+                                .tint(progressTint)
+                        }
                     }
                 }
             } compactLeading: {
                 // COMPACT LEADING — icon
-                Image(systemName: compactIcon(for: context.state.status))
-                    .foregroundColor(compactIconColor(for: context.state.status))
+                Image(systemName: compactIcon(for: status))
+                    .foregroundColor(compactIconColor(for: status))
             } compactTrailing: {
                 // COMPACT TRAILING — percentage or status
                 compactTrailingView(context: context)
             } minimal: {
                 // MINIMAL — when competing with other Live Activities
-                Image(systemName: compactIcon(for: context.state.status))
-                    .foregroundColor(compactIconColor(for: context.state.status))
+                Image(systemName: compactIcon(for: status))
+                    .foregroundColor(compactIconColor(for: status))
             }
-            .widgetURL(folderURL(for: context))
+            .widgetURL(deepLink)
         }
     }
 
@@ -80,13 +93,13 @@ struct UploadActivityLiveActivity: Widget {
     private func backgroundUploadingLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 12) {
-                Image(systemName: "icloud.and.arrow.up.fill")
-                    .foregroundColor(.blue)
+                Image(systemName: "pause.circle.fill")
+                    .foregroundColor(.orange)
                     .font(.title2)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Uploading in Background")
+                    Text("Upload Paused")
                         .font(.headline)
-                    Text("\(context.state.completedCount) of \(context.state.totalFiles) files uploaded")
+                    Text("\(context.state.completedCount) of \(context.state.totalFiles) uploaded — tap to resume")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .monospacedDigit()
@@ -95,7 +108,7 @@ struct UploadActivityLiveActivity: Widget {
             }
 
             ProgressView(value: context.state.overallProgress)
-                .tint(.blue)
+                .tint(.orange)
         }
         .padding()
     }
@@ -206,7 +219,7 @@ struct UploadActivityLiveActivity: Widget {
 
     @ViewBuilder
     private func expandedCenterView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        switch context.state.status {
+        switch effectiveStatus(context) {
         case .uploading:
             VStack(alignment: .leading, spacing: 4) {
                 Text("Uploading to Permanent")
@@ -219,10 +232,10 @@ struct UploadActivityLiveActivity: Widget {
             }
         case .paused:
             VStack(alignment: .leading, spacing: 4) {
-                Text("Uploading in Background")
+                Text("Upload Paused")
                     .font(.caption)
                     .fontWeight(.medium)
-                Text("\(context.state.completedCount)/\(context.state.totalFiles) files")
+                Text("\(context.state.completedCount)/\(context.state.totalFiles) — tap to resume")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -251,7 +264,7 @@ struct UploadActivityLiveActivity: Widget {
 
     @ViewBuilder
     private func compactTrailingView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        switch context.state.status {
+        switch effectiveStatus(context) {
         case .uploading:
             Text("\(Int(context.state.overallProgress * 100))%")
                 .font(.caption2)
@@ -280,10 +293,19 @@ struct UploadActivityLiveActivity: Widget {
 
     // MARK: - Helpers
 
+    /// Treat a stale `.uploading` activity as `.paused` for visual purposes,
+    /// so Dynamic Island icons match the Lock Screen's orange paused state.
+    private func effectiveStatus(_ context: ActivityViewContext<UploadActivityAttributes>) -> UploadActivityAttributes.UploadStatus {
+        if context.state.status == .uploading && context.isStale {
+            return .paused
+        }
+        return context.state.status
+    }
+
     private func expandedIcon(for status: UploadActivityAttributes.UploadStatus) -> String {
         switch status {
         case .uploading: return "arrow.up.circle.fill"
-        case .paused: return "icloud.and.arrow.up.fill"
+        case .paused: return "pause.circle.fill"
         case .processing: return "gearshape.circle.fill"
         case .completed: return "checkmark.circle.fill"
         case .failed: return "exclamationmark.triangle.fill"
@@ -293,7 +315,7 @@ struct UploadActivityLiveActivity: Widget {
     private func expandedIconColor(for status: UploadActivityAttributes.UploadStatus) -> Color {
         switch status {
         case .uploading: return .blue
-        case .paused: return .blue
+        case .paused: return .orange
         case .processing: return .blue
         case .completed: return .green
         case .failed: return .orange
@@ -303,7 +325,7 @@ struct UploadActivityLiveActivity: Widget {
     private func compactIcon(for status: UploadActivityAttributes.UploadStatus) -> String {
         switch status {
         case .uploading: return "arrow.up.circle.fill"
-        case .paused: return "icloud.and.arrow.up.fill"
+        case .paused: return "pause.circle.fill"
         case .processing: return "gearshape.circle.fill"
         case .completed: return "checkmark.circle.fill"
         case .failed: return "exclamationmark.triangle.fill"
@@ -313,7 +335,7 @@ struct UploadActivityLiveActivity: Widget {
     private func compactIconColor(for status: UploadActivityAttributes.UploadStatus) -> Color {
         switch status {
         case .uploading: return .blue
-        case .paused: return .blue
+        case .paused: return .orange
         case .processing: return .blue
         case .completed: return .green
         case .failed: return .orange

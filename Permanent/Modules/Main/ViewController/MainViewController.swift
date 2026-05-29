@@ -42,14 +42,23 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         initUI()
         setupCollectionView()
         setupBottomActionSheet()
-        
+
         fabView.delegate = self
-        
+
         getRootFolder()
+
+        // Cold-launch path: if AppDelegate's willNavigateToFolderNotifName
+        // fired before our observer was registered (LA tap that woke the
+        // process), the persisted nav data tells us a deep-link is queued.
+        // Show the spinner immediately so the user has feedback during the
+        // settle delay + fetch.
+        if let _: NavigationDataForShareFolderLink = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink) {
+            showSpinner()
+        }
         
         NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
             if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
@@ -93,7 +102,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
                         queueUploadCount == 0 {
-                        self?.viewModel?.timer = Timer.scheduledTimer(timeInterval: 9, target: self as Any, selector: #selector(self?.timerActions), userInfo: nil, repeats: true)
+                        // Kick the exponential-backoff thumbnail poll chain.
+                        // Server-side thumbnail processing typically completes
+                        // within ~45 s; we re-fetch the folder at 3 / 6 / 12 / 24
+                        // s offsets to surface thumbURL fields as they land.
+                        self?.viewModel?.timerRunCount = 0
+                        self?.scheduleNextThumbnailPoll()
                     }
                 } else {
                     self?.viewModel?.refreshUploadQueue()
@@ -179,6 +193,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         NotificationCenter.default.addObserver(forName: AppDelegate.navigateToFolderNotifName, object: nil, queue: nil) { [weak self] _ in
             self?.navigationToShareFolderLink()
+        }
+
+        // Spinner during the LA-tap → folder-open gap. AppDelegate posts this
+        // the instant it knows a deep-link navigation is queued, so the
+        // 1.0s settle delay + navigateMin fetch no longer looks like a freeze.
+        // Dismissed via the existing hideSpinner() in onFilesFetchCompletion.
+        NotificationCenter.default.addObserver(forName: AppDelegate.willNavigateToFolderNotifName, object: nil, queue: .main) { [weak self] _ in
+            self?.showSpinner()
         }
         
         NotificationCenter.default.addObserver(forName: SettingsRouter.showMemberChecklistNotifName, object: nil, queue: nil) { [weak self] _ in
@@ -858,8 +880,59 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
     }
     
-    private func upload(files: [FileInfo]) {
-        viewModel?.uploadFiles(files)
+    private func upload(files: [FileInfo], completion: ((Bool) -> Void)? = nil) {
+        viewModel?.uploadFiles(files, completion: completion)
+    }
+
+    /// Guard 0: if any of the picked files already exist in `folder` by
+    /// `uploadFileName`, surface the conflict to the user before any bytes
+    /// leave the device. On `.skipDuplicates` we upload only the new ones;
+    /// on `.uploadAll` we proceed with all files (creating duplicates is
+    /// allowed for users who deliberately want a second copy); on `.cancel`
+    /// nothing is uploaded.
+    ///
+    /// Spinner contract: caller is responsible for showing the spinner before
+    /// this call and hiding it via `completion`. While the user is reading
+    /// the alert the spinner is hidden so it doesn't obscure the choice.
+    private func checkDuplicatesThenUpload(
+        files: [FileInfo],
+        in folder: FileModel,
+        completion: @escaping ((Bool) -> Void)
+    ) {
+        let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+        UploadManager.shared.findExistingRecords(
+            archiveNo: archiveNo,
+            folderLinkId: folder.folderLinkId,
+            forFiles: files
+        ) { [weak self] duplicates in
+            guard let self = self else { return }
+            if duplicates.isEmpty {
+                self.upload(files: files, completion: completion)
+                return
+            }
+            // Hide the spinner so the alert isn't obscured; re-show only if
+            // the user opts into an upload path.
+            self.hideSpinner()
+            let duplicateIds = Set(duplicates.map { $0.file.id })
+            let duplicateNames = duplicates.map { $0.file.name }
+            self.promptDuplicateUploadDecision(
+                total: files.count,
+                duplicateFileNames: duplicateNames
+            ) { [weak self] choice in
+                guard let self = self else { return }
+                switch choice {
+                case .skipDuplicates:
+                    let filtered = files.filter { !duplicateIds.contains($0.id) }
+                    self.showSpinner()
+                    self.upload(files: filtered, completion: completion)
+                case .uploadAll:
+                    self.showSpinner()
+                    self.upload(files: files, completion: completion)
+                case .cancel:
+                    completion(false)
+                }
+            }
+        }
     }
     
     private func createNewFolder(named name: String) {
@@ -1143,6 +1216,21 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     private func timerActions() {
         pullToRefreshAction()
         viewModel?.updateTimerCount()
+        // If we still have steps in the backoff chain, schedule the next one.
+        scheduleNextThumbnailPoll()
+    }
+
+    /// Schedules the next thumbnail-poll fire using the backoff interval at
+    /// `timerRunCount`. No-op once the chain is exhausted (the previous
+    /// `updateTimerCount` call already invalidated the timer in that case).
+    private func scheduleNextThumbnailPoll() {
+        guard let viewModel = viewModel else { return }
+        let step = viewModel.timerRunCount
+        guard step < FilesViewModel.thumbnailPollIntervals.count else { return }
+        let interval = FilesViewModel.thumbnailPollIntervals[step]
+        viewModel.timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
+            self?.timerActions()
+        }
     }
 }
 
@@ -1808,10 +1896,28 @@ extension MainViewController: FABActionSheetDelegate {
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let currentFolder = viewModel?.currentFolder else {
+            controller.dismiss(animated: true)
             return showErrorAlert(message: .cannotUpload)
         }
-        
-        processUpload(toFolder: currentFolder, forURLS: urls)
+
+        // Dismiss the picker FIRST. Then move the file enumeration off the
+        // main thread — iCloud Drive URLs may trigger blocking file system
+        // I/O when reading attributes, which otherwise freezes the dismiss
+        // animation and makes the modal look stuck.
+        controller.dismiss(animated: true) { [weak self] in
+            guard let self = self else { return }
+            self.showSpinner()
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                let folderInfo = FolderInfo(folderId: currentFolder.folderId, folderLinkId: currentFolder.folderLinkId)
+                let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: false)
+                DispatchQueue.main.async {
+                    self?.checkDuplicatesThenUpload(files: files, in: currentFolder) { _ in
+                        self?.hideSpinner()
+                    }
+                    self?.viewModel?.trackEvent(action: RecordEventAction.submit)
+                }
+            }
+        }
     }
 }
 

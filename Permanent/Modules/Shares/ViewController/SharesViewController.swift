@@ -1428,10 +1428,51 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
     }
     
-    private func upload(files: [FileInfo]) {
-        viewModel?.uploadFiles(files)
+    private func upload(files: [FileInfo], completion: ((Bool) -> Void)? = nil) {
+        viewModel?.uploadFiles(files, completion: completion)
     }
-    
+
+    /// Guard 0: same semantics as `MainViewController.checkDuplicatesThenUpload`.
+    /// See that doc-comment for full behaviour notes.
+    private func checkDuplicatesThenUpload(
+        files: [FileInfo],
+        in folder: FileModel,
+        completion: @escaping ((Bool) -> Void)
+    ) {
+        let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+        UploadManager.shared.findExistingRecords(
+            archiveNo: archiveNo,
+            folderLinkId: folder.folderLinkId,
+            forFiles: files
+        ) { [weak self] duplicates in
+            guard let self = self else { return }
+            if duplicates.isEmpty {
+                self.upload(files: files, completion: completion)
+                return
+            }
+            self.hideSpinner()
+            let duplicateIds = Set(duplicates.map { $0.file.id })
+            let duplicateNames = duplicates.map { $0.file.name }
+            self.promptDuplicateUploadDecision(
+                total: files.count,
+                duplicateFileNames: duplicateNames
+            ) { [weak self] choice in
+                guard let self = self else { return }
+                switch choice {
+                case .skipDuplicates:
+                    let filtered = files.filter { !duplicateIds.contains($0.id) }
+                    self.showSpinner()
+                    self.upload(files: filtered, completion: completion)
+                case .uploadAll:
+                    self.showSpinner()
+                    self.upload(files: files, completion: completion)
+                case .cancel:
+                    completion(false)
+                }
+            }
+        }
+    }
+
     private func createNewFolder(named name: String) {
         guard
             let viewModel = viewModel,
@@ -1939,8 +1980,17 @@ extension SharesViewController: UIDocumentPickerDelegate {
         guard let currentFolder = viewModel?.currentFolder else {
             return showErrorAlert(message: .cannotUpload)
         }
-        
-        processUpload(toFolder: currentFolder, forURLS: urls)
+
+        showSpinner()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let folderInfo = FolderInfo(folderId: currentFolder.folderId, folderLinkId: currentFolder.folderLinkId)
+            let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: false)
+            DispatchQueue.main.async {
+                self?.checkDuplicatesThenUpload(files: files, in: currentFolder) { _ in
+                    self?.hideSpinner()
+                }
+            }
+        }
     }
 }
 

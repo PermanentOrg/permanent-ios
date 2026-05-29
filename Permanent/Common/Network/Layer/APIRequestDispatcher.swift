@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import os.log
 
 class APIRequestDispatcher: RequestDispatcherProtocol {
     static let sessionExpiredNotificationName = Notification.Name("APIRequestDispatcher.sessionExpiredNotificationName")
+    private let authLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
     
     var ignoresMFAWarning = false
     
@@ -55,8 +57,19 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             }
         }
         
-        if !request.skipAuthentication, let token = PermSession.currentSession?.token {
-            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if !request.skipAuthentication {
+            if let token = PermSession.currentSession?.token {
+                urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            } else {
+                // The Bearer token is missing. Server falls back to cookie auth,
+                // which on the Permanent API requires a CSRF token that we don't
+                // send — so the request will fail with `error.generic.invalid_csrf`.
+                // Track this loudly to find when/why `currentSession.token` got nil.
+                let path = urlRequest.url?.path ?? "<no path>"
+                let hasSession = PermSession.currentSession != nil
+                let cookieCount = HTTPCookieStorage.shared.cookies(for: urlRequest.url!)?.count ?? 0
+                authLogger.error("🔼 [AUTH] No Bearer token for \(path, privacy: .public) — hasSession=\(hasSession, privacy: .public) cookies=\(cookieCount, privacy: .public)")
+            }
         }
         
         // Share token header for V2 folder endpoints
@@ -114,6 +127,16 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             return completion(.error(apiError, nil))
         }
 
+        // Preserve URLError so callers can detect transient connectivity issues
+        // (network dropped during Wi-Fi/cellular handoff, etc.) and retry without
+        // burning a retry attempt. Without this, all network errors get reduced
+        // to APIError.invalidResponse and the upload pipeline can't tell them
+        // apart from real server-side bugs.
+        if let urlError = error as? URLError {
+            authLogger.debug("🔼 [NETWORK] URLError code=\(urlError.code.rawValue, privacy: .public) for \(urlResponse?.url?.path ?? "<no path>", privacy: .public)")
+            return completion(.error(urlError, urlResponse as? HTTPURLResponse))
+        }
+
         // Check if the response is valid.
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
             completion(OperationResult.error(APIError.invalidResponse, nil))
@@ -148,6 +171,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             
         case .failure(let error):
             if error as? APIError == APIError.unauthorized && !shouldIgnoreAuthErrors {
+                let failPath = urlResponse.url?.path ?? "<no path>"
+                authLogger.error("🔼 [AUTH] 401 from \(failPath, privacy: .public) — posting sessionExpired (will trigger logout)")
                 completion(OperationResult.error(error, urlResponse))
                 
                 DispatchQueue.main.async {
