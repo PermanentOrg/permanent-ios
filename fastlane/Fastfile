@@ -175,6 +175,7 @@ platform :ios do
     build_app(workspace: "Permanent.xcworkspace",
               scheme: "Permanent",
 	            configuration: "Release",
+              xcargs: "-allowProvisioningUpdates",
               include_bitcode: false,
               clean: true,
               export_options: {
