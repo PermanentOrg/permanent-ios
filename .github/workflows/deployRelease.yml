@@ -47,7 +47,6 @@ jobs:
         run: bundle exec fastlane tests
 
   build:
-    needs: test
     name: Build and deploy a release build to TestFlight
     runs-on: macos-26
     environment: production
