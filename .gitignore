@@ -108,3 +108,8 @@ docs/
 
 # Claude Code
 .claude/
+CLAUDE.md
+
+# AI maturity assessment
+ai-maturity-assessment.md
+.ai-maturity/
