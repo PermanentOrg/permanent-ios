@@ -577,7 +577,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.performRevokeLink()
 
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        await waitUntil(vm.shareLink == nil && vm.shareLinkV2Data == nil)
 
         XCTAssertTrue(repo.deleteShareLinkV2Called)
         XCTAssertEqual(repo.lastDeleteShareLinkId, "link-to-delete")
@@ -1955,6 +1955,19 @@ extension ShareItemViewModelExtendedTests {
         while vm.isLoading && attempts < 50 {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.05))
             attempts += 1
+        }
+    }
+
+    /// Polls `condition` every 10 ms until it returns true or `timeout` elapses.
+    /// Replaces fragile fixed-duration `Task.sleep` waits whose short window
+    /// was enough locally but flaked on slower CI runners.
+    private func waitUntil(
+        timeout: TimeInterval = 2.0,
+        _ condition: @autoclosure () -> Bool
+    ) async {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition() && Date() < deadline {
+            try? await Task.sleep(nanoseconds: 10_000_000)
         }
     }
 
