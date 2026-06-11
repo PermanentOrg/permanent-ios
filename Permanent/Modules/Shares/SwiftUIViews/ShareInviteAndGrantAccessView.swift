@@ -14,7 +14,6 @@ struct ShareInviteAndGrantAccessView: View {
 
     private enum Field {
         case fullName
-        case email
     }
 
     var body: some View {
@@ -140,6 +139,24 @@ struct ShareInviteAndGrantAccessView: View {
     private var content: some View {
         VStack(alignment: .leading, spacing: 24) {
             VStack(alignment: .leading, spacing: 16) {
+                sectionTitle("RECIPIENT EMAIL ADDRESS")
+
+                Text(viewModel.invitationRecipientEmail)
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(Color.blue900)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .frame(height: 48)
+                    .background(Color.blue25)
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .inset(by: 0.5)
+                            .stroke(Color.blue50, lineWidth: 1)
+                    )
+            }
+
+            VStack(alignment: .leading, spacing: 16) {
                 sectionTitle("RECIPIENT FULL NAME")
 
                 TextField("", text: $viewModel.invitationRecipientFullName)
@@ -155,28 +172,7 @@ struct ShareInviteAndGrantAccessView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .inset(by: 0.5)
-                            .stroke(Color.blue50, lineWidth: 1)
-                    )
-            }
-
-            VStack(alignment: .leading, spacing: 16) {
-                sectionTitle("RECIPIENT EMAIL ADDRESS")
-
-                TextField("", text: $viewModel.invitationRecipientEmail)
-                    .font(.custom("Usual-Regular", size: 14))
-                    .foregroundColor(Color.blue900)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled(true)
-                    .keyboardType(.emailAddress)
-                    .focused($focusedField, equals: .email)
-                    .padding(.horizontal, 16)
-                    .frame(height: 48)
-                    .background(Color.white)
-                    .cornerRadius(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .inset(by: 0.5)
-                            .stroke(Color.blue50, lineWidth: 1)
+                            .stroke(Color.blue100, lineWidth: 1)
                     )
             }
 
