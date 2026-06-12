@@ -19,16 +19,22 @@ struct ConfirmationBottomAlertView: View {
     enum ActionType {
         case delete
         case leaveShare
-        
+        case cancelUploads
+        case uploadToPublicFolder
+
         func title(isFolder: Bool) -> String {
             switch self {
             case .delete:
                 return "Are you sure you want to delete the selected \(isFolder ? "folder" : "file")"
             case .leaveShare:
                 return "Are you sure you want to give up your access to the"
+            case .cancelUploads:
+                return "Are you sure you want to cancel all uploads?"
+            case .uploadToPublicFolder:
+                return "This is a public folder. Are you sure you want to upload here?"
             }
         }
-        
+
         func multipleItemsTitle() -> Text {
             switch self {
             case .delete:
@@ -53,15 +59,43 @@ struct ConfirmationBottomAlertView: View {
                 + Text("?")
                     .font(.custom("Usual-Regular", size: 14))
                     .foregroundColor(.blue700)
+            case .cancelUploads:
+                return Text("Are you sure you want to cancel all uploads?")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
+            case .uploadToPublicFolder:
+                return Text("This is a public folder. Are you sure you want to upload here?")
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
             }
         }
-        
+
         var buttonText: String {
             switch self {
             case .delete:
                 return "Delete"
             case .leaveShare:
                 return "Leave share"
+            case .cancelUploads:
+                return "Cancel All"
+            case .uploadToPublicFolder:
+                return "Upload"
+            }
+        }
+
+        /// True when the title is a complete standalone sentence — no filename is appended.
+        var isStandaloneMessage: Bool {
+            switch self {
+            case .cancelUploads, .uploadToPublicFolder: return true
+            default: return false
+            }
+        }
+
+        /// Color of the confirm action button.
+        var confirmButtonColor: Color {
+            switch self {
+            case .uploadToPublicFolder: return .blue900
+            default: return .error500
             }
         }
     }
@@ -97,9 +131,23 @@ struct ConfirmationBottomAlertView: View {
                     onCancel?()
                 }
             
-            alertCard
-                .offset(y: isPresented ? 0 : 400)
-                .animation(.easeOut(duration: 0.3), value: isPresented)
+            if #available(iOS 26.0, *) {
+                alertCard
+                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                    .offset(y: isPresented ? 0 : 400)
+                    .animation(.easeOut(duration: 0.3), value: isPresented)
+            } else {
+                alertCard
+                    .clipShape(UnevenRoundedRectangle(
+                        topLeadingRadius: 16,
+                        bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 0,
+                        topTrailingRadius: 16,
+                        style: .continuous
+                    ))
+                    .offset(y: isPresented ? 0 : 400)
+                    .animation(.easeOut(duration: 0.3), value: isPresented)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         .ignoresSafeArea()
@@ -124,7 +172,7 @@ struct ConfirmationBottomAlertView: View {
                     }
                     .padding(16)
                     .frame(height: 56)
-                    .background(Color.error500)
+                    .background(actionType.confirmButtonColor)
                     .cornerRadius(12)
                     .shadow(color: Color.black.opacity(0.07), radius: 40, x: 0, y: 5)
                     .frame(maxWidth: .infinity)
@@ -151,13 +199,16 @@ struct ConfirmationBottomAlertView: View {
         }
         .frame(maxWidth: .infinity)
         .background(Color(.white))
-        .cornerRadius(12)
         .padding(.horizontal, 0)
     }
     
     private var titleView: some View {
         Group {
-            if isMultipleItems {
+            if actionType.isStandaloneMessage {
+                Text(actionType.title(isFolder: false))
+                    .font(.custom("Usual-Regular", size: 14))
+                    .foregroundColor(.blue700)
+            } else if isMultipleItems {
                 actionType.multipleItemsTitle()
             } else {
                 Text(actionType.title(isFolder: isFolder) + " ")
@@ -198,6 +249,70 @@ struct ConfirmationBottomAlertView: View {
             isPresented = false
         }
         onCancel?()
+    }
+}
+
+/// Wrapper used when presenting CancelUploads confirmation from UIKit via UIHostingController.
+/// Starts hidden and animates in on appear so the sheet slides up (not fades in).
+struct CancelUploadsConfirmationView: View {
+    @State private var isPresented = false
+    let onConfirm: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        ConfirmationBottomAlertView(
+            isPresented: $isPresented,
+            fileName: "",
+            actionType: .cancelUploads,
+            onConfirm: {
+                onConfirm()
+                onDismiss()
+            },
+            onCancel: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    onDismiss()
+                }
+            }
+        )
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.3)) {
+                isPresented = true
+            }
+        }
+    }
+}
+
+/// Wrapper used when presenting PublicFolderUpload confirmation from UIKit via UIHostingController.
+/// Starts hidden and animates in on appear so the sheet slides up (not fades in).
+/// onDismiss is called before the upload action so that the hosting controller is fully
+/// removed before the action presents another view controller.
+struct PublicFolderUploadConfirmationView: View {
+    @State private var isPresented = false
+    let onConfirm: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        ConfirmationBottomAlertView(
+            isPresented: $isPresented,
+            fileName: "",
+            actionType: .uploadToPublicFolder,
+            onConfirm: {
+                onDismiss()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    onConfirm()
+                }
+            },
+            onCancel: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    onDismiss()
+                }
+            }
+        )
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.3)) {
+                isPresented = true
+            }
+        }
     }
 }
 

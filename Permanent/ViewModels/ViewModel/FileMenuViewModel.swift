@@ -181,7 +181,8 @@ class FileMenuViewModel: ObservableObject {
         }
         
         let topPadding: CGFloat = 24
-        let bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        var bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        if #available(iOS 26.0, *) { bottomPadding += 16 }
         
         let menuItemsHeight: CGFloat = CGFloat(totalItemCount) * itemHeight
         
@@ -197,10 +198,16 @@ class FileMenuViewModel: ObservableObject {
         let hasDestructiveItem = menuItems.contains { $0.type == .delete || $0.type == .unshare }
         
         let topPadding: CGFloat = 24
-        let bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        var bottomPadding: CGFloat = (regularItemsCount == 0 && hasDestructiveItem) ? 16 : 24
+        let additionalBottomPaddingiOS26: CGFloat = 16.0
         
         let totalItemCount = regularItemsCount + (hasDestructiveItem ? 1 : 0)
         let menuItemsHeight: CGFloat = CGFloat(totalItemCount) * itemHeight
+        
+        if #available(iOS 26.0, *) {
+            bottomPadding += additionalBottomPaddingiOS26
+        }
+
         
         return topPadding + menuItemsHeight + bottomPadding
     }
@@ -885,5 +892,21 @@ class FileMenuViewModel: ObservableObject {
         case .editMetadata:
             return "Edit Metadata"
         }
+    }
+
+    func shouldShowPendingInvitationBadge(for itemType: MenuItem.ItemType) -> Bool {
+        pendingInvitationBadgeCount(for: itemType) > 0
+    }
+
+    func pendingInvitationBadgeCount(for itemType: MenuItem.ItemType) -> Int {
+        guard itemType == .shareToPermanent else {
+            return 0
+        }
+
+        let count = fileViewModel.minArchiveVOS.filter {
+            ArchiveVOData.Status(rawValue: $0.shareStatus) == .pending
+        }.count
+        
+        return count
     }
 }

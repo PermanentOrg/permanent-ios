@@ -136,11 +136,15 @@ class ShareManagementTests: XCTestCase {
         sut.getRecord { record in
             XCTAssertNotNil(record)
 
-            self.sut.fileViewModel = FileModel(model: record!.recordVO!, permissions: [], accessRole: .owner)
+            guard let recordVO = record?.recordVO else {
+                XCTFail("record or recordVO should not be nil")
+                return
+            }
+            self.sut.fileViewModel = FileModel(model: recordVO, permissions: [], accessRole: .owner)
 
-            XCTAssert(self.sut.shareVOS?.count == 2)
-            XCTAssert(self.sut.acceptedShareVOs.count == 1)
-            XCTAssert(self.sut.pendingShareVOs.count == 1)
+            XCTAssertEqual(self.sut.shareVOS?.count, 2)
+            XCTAssertEqual(self.sut.acceptedShareVOs.count, 1)
+            XCTAssertEqual(self.sut.pendingShareVOs.count, 1)
 
             expectation.fulfill()
         }
@@ -151,7 +155,7 @@ class ShareManagementTests: XCTestCase {
         createMockSession()
 
         let accountName = sut.getAccountName()
-        XCTAssert(accountName == "Test Account")
+        XCTAssertEqual(accountName, "Test Account")
     }
 
     func shareVODataMock() -> ShareVOData {

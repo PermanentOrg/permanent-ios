@@ -58,6 +58,7 @@ struct TextFontStyle {
     static let style49 = TextStyle(UIFont(name: "Usual-Bold", size: 56)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style50 = TextStyle(UIFont(name: "Usual-Medium", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style51 = TextStyle(UIFont(name: "Usual-Medium", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    static let style52 = TextStyle(UIFont(name: "Usual-Medium", size: 8)!, TextStyle.calculateSpacing(fontSize: CGFloat(8), lineHeight: CGFloat(19)), NSTextAlignment.natural)
 }
 
 struct Constants {
@@ -75,11 +76,6 @@ struct Constants {
         struct StorageKeys {}
     }
     
-    struct FeatureFlags {
-        /// Enable SwiftUI SharePreview instead of UIKit version
-        static let useSwiftUISharePreview = true
-    }
-
     // TODO: Move these to String
     static let onboardingTextBold = [
         "Share your most cherished \nmemories with total control.",

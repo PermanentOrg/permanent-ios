@@ -30,30 +30,20 @@ class FloatingActionTextItem: FloatingActionItem {
     }
 
     override var barButtonItem: UIBarButtonItem? {
-        let view = UIView()
-        let label = UILabel()
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 32))
+
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 80, height: 32))
         label.text = text
         label.font = TextFontStyle.style34.font
         label.textColor = .middleGray
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.lineBreakMode = .byTruncatingTail
 
         let button = UIButton(type: .custom)
-        button.translatesAutoresizingMaskIntoConstraints = false
+        button.frame = CGRect(x: 0, y: 0, width: 80, height: 32)
         button.addTarget(self, action: #selector(barButtonItemPressed(_:)), for: .touchUpInside)
 
         view.addSubview(label)
         view.addSubview(button)
-
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.topAnchor),
-            label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            label.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            button.topAnchor.constraint(equalTo: label.topAnchor),
-            button.leadingAnchor.constraint(equalTo: label.leadingAnchor),
-            button.trailingAnchor.constraint(equalTo: label.trailingAnchor),
-            button.bottomAnchor.constraint(equalTo: label.bottomAnchor)
-        ])
 
         let barButton = UIBarButtonItem(customView: view)
         barButton.accessibilityLabel = "\(text)"
@@ -72,38 +62,50 @@ class FloatingActionTextSubtitleItem: FloatingActionTextItem {
 
     override var barButtonItem: UIBarButtonItem? {
         let view = UIView()
+
         let label = UILabel()
         label.text = text
         label.font = TextFontStyle.style42.font
         label.textColor = .lightGray
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.lineBreakMode = .byTruncatingTail
+        // Allow the required width=110 constraint below to compress the label
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         let subtitleLabel = UILabel()
         subtitleLabel.text = subtitle
         subtitleLabel.font = TextFontStyle.style12.font
         subtitleLabel.textColor = .dustyGray
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.lineBreakMode = .byTruncatingTail
+        subtitleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         let button = UIButton(type: .custom)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(barButtonItemPressed(_:)), for: .touchUpInside)
+
+        label.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        button.translatesAutoresizingMaskIntoConstraints = false
 
         view.addSubview(label)
         view.addSubview(subtitleLabel)
         view.addSubview(button)
 
+        // A required width constraint is internal to the view, so systemLayoutSizeFitting
+        // returns exactly 60pt — UIToolbar allocates 60pt regardless of filename length.
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.topAnchor),
+            view.widthAnchor.constraint(equalToConstant: 60),
+            view.heightAnchor.constraint(equalToConstant: 32),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 1),
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            subtitleLabel.topAnchor.constraint(equalTo: label.bottomAnchor, constant: -2),
+            label.heightAnchor.constraint(equalToConstant: 15),
+            subtitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 17),
             subtitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             subtitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            subtitleLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            subtitleLabel.heightAnchor.constraint(equalToConstant: 14),
             button.topAnchor.constraint(equalTo: view.topAnchor),
             button.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             button.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            button.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            button.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
         let barButton = UIBarButtonItem(customView: view)
@@ -118,6 +120,11 @@ class FloatingActionImageItem: FloatingActionItem {
     let contentMode: UIView.ContentMode
 
     override var barButtonItem: UIBarButtonItem? {
+        // On iOS 26, zero-size images serve as spacers — return fixedSpace to split Liquid Glass groups
+        if #available(iOS 26, *), let img = image, img.size.width <= 0 {
+            return UIBarButtonItem.fixedSpace(8)
+        }
+
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 28, height: 32))
 
         let imageView = UIImageView()
@@ -191,6 +198,8 @@ class FloatingActionImageTextItem: FloatingActionTextItem {
         button.addTarget(self, action: #selector(barButtonItemPressed(_:)), for: .touchUpInside)
         button.frame = CGRect(x: 0, y: 0, width: 28 + label.frame.width, height: 32)
         button.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        button.accessibilityLabel = text
+        button.accessibilityIdentifier = text
 
         view.frame = CGRect(x: 0, y: 0, width: 28 + label.frame.width, height: 32)
 
@@ -199,6 +208,8 @@ class FloatingActionImageTextItem: FloatingActionTextItem {
         view.addSubview(button)
 
         let barButton = UIBarButtonItem(customView: view)
+        barButton.accessibilityLabel = text
+        barButton.accessibilityIdentifier = text
         return barButton
     }
 }
@@ -242,27 +253,53 @@ class FloatingActionIslandViewController: UIViewController {
         bgView.layer.cornerRadius = 32
 
         toolbar.translatesAutoresizingMaskIntoConstraints = false
-        toolbar.backgroundColor = .white
-        toolbar.barTintColor = .white
-        toolbar.layer.cornerRadius = 32
-        toolbar.clipsToBounds = true
+        if #available(iOS 26, *) {
+            // Fully transparent toolbar — no Liquid Glass container, no item glass pills
+            let appearance = UIToolbarAppearance()
+            appearance.configureWithTransparentBackground()
+            toolbar.standardAppearance = appearance
+            toolbar.scrollEdgeAppearance = appearance
+            // Prevent UIToolbar from reserving bottom safe area space internally
+            toolbar.insetsLayoutMarginsFromSafeArea = false
+
+        } else {
+            toolbar.backgroundColor = .white
+            toolbar.barTintColor = .white
+            toolbar.layer.cornerRadius = 32
+            toolbar.clipsToBounds = true
+        }
         toolbar.isHidden = true
 
         view.addSubview(bgView)
         view.addSubview(toolbar)
 
         widthConstraint = bgView.widthAnchor.constraint(equalToConstant: 32)
+        let toolbarConstraints: [NSLayoutConstraint]
+        if #available(iOS 26, *) {
+            // Inset the transparent toolbar 16pt from each pill edge so items
+            // don't clip. Also center at 44pt height — iOS 26 reserves bottom
+            // safe-area space in UIToolbar which shifts content up in a 64pt frame.
+            toolbarConstraints = [
+                toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                toolbar.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                toolbar.heightAnchor.constraint(equalToConstant: 44),
+            ]
+        } else {
+            toolbarConstraints = [
+                toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                toolbar.topAnchor.constraint(equalTo: view.topAnchor),
+                toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                toolbar.heightAnchor.constraint(equalToConstant: 64),
+            ]
+        }
         NSLayoutConstraint.activate([
             bgView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             bgView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             bgView.heightAnchor.constraint(equalToConstant: 64),
             widthConstraint,
-            toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            toolbar.heightAnchor.constraint(equalToConstant: 64),
-            toolbar.topAnchor.constraint(equalTo: view.topAnchor)
-        ])
+        ] + toolbarConstraints)
 
         updateToolbarItems()
     }
@@ -271,7 +308,10 @@ class FloatingActionIslandViewController: UIViewController {
         super.viewDidAppear(animated)
 
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
-            self.widthConstraint.constant = self.toolbar.frame.width
+            // On iOS 26 the toolbar is inset from the view edges, so toolbar.frame.width
+            // is narrower than the pill should be. Use view.frame.width so the bgView
+            // always expands to the full pill width regardless of toolbar insets.
+            self.widthConstraint.constant = self.view.frame.width
             self.view.layoutIfNeeded()
         }, completion: { _ in
             self.toolbar.isHidden = false
@@ -343,14 +383,24 @@ class FloatingActionIslandViewController: UIViewController {
 
         var items: [UIBarButtonItem] = []
 
-        leftToolbarItems.forEach { (item: UIBarButtonItem) in
-            items.append(item)
-        }
+        leftToolbarItems.forEach { items.append($0) }
         items.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
-        rightToolbarItems.forEach { (item: UIBarButtonItem) in
-            items.append(item)
+        rightToolbarItems.forEach { items.append($0) }
+
+        if #available(iOS 26, *) {
+            // Suppress individual Liquid Glass pill backgrounds on all items
+            items.forEach { $0.hidesSharedBackground = true }
+            // When already visible, cross-dissolve for a smooth count update.
+            // animated: true triggers a ~1s Liquid Glass rebuild which causes flicker.
+            if toolbar.isHidden {
+                toolbar.setItems(items, animated: false)
+            } else {
+                UIView.transition(with: toolbar, duration: 0.2, options: [.transitionCrossDissolve], animations: {
+                    self.toolbar.setItems(items, animated: false)
+                })
+            }
+        } else {
+            toolbar.setItems(items, animated: true)
         }
-        
-        toolbar.setItems(items, animated: true)
     }
 }

@@ -34,6 +34,13 @@ class PublicProfileUITests: BaseUITestCase {
         
         let longDescriptionCell = app.collectionViews.cells.containing(.staticText, identifier: longUUID).firstMatch
         XCTAssertTrue(longDescriptionCell.waitForExistence(timeout: 5))
+
+        profilePage.aboutEditButton.tap()
+        aboutPage.shortDescriptionElement.tap()
+        aboutPage.shortDescriptionElement.selectAndDeleteText(inApp: app)
+        aboutPage.longDescriptionElement.tap()
+        aboutPage.longDescriptionElement.clearTextView()
+        aboutPage.doneButton.tap()
     }
     
     func testPersonInformation() {
@@ -58,6 +65,15 @@ class PublicProfileUITests: BaseUITestCase {
         
         let genderCell = app.collectionViews.cells.containing(.staticText, identifier: genderUUID).firstMatch
         XCTAssertTrue(genderCell.waitForExistence(timeout: 5))
+
+        profilePage.personInformationEditButton.tap()
+        personInfoPage.fullNameTextField.tap()
+        personInfoPage.fullNameTextField.selectAndDeleteText(inApp: app)
+        personInfoPage.nicknameTextField.tap()
+        personInfoPage.nicknameTextField.selectAndDeleteText(inApp: app)
+        personInfoPage.genderTextField.tap()
+        personInfoPage.genderTextField.selectAndDeleteText(inApp: app)
+        doneButton.tap()
     }
     
     func testOnlinePresence() {
@@ -98,13 +114,16 @@ class PublicProfileUITests: BaseUITestCase {
         
         let editPresenceDoneButton = app.navigationBars["Edit Online Presence"].buttons["Done"].firstMatch
         editPresenceDoneButton.tap()
-        
+
+        app.swipeUp()
+        app.swipeUp()
+
         let emailCollectionCell = app.collectionViews.cells.containing(.staticText, identifier: emailUUID).firstMatch
         XCTAssertTrue(emailCollectionCell.waitForExistence(timeout: 5))
-        
+
         let linkCollectionCell = app.collectionViews.cells.containing(.staticText, identifier: linkUUID).firstMatch
         XCTAssertTrue(linkCollectionCell.waitForExistence(timeout: 5))
-        
+
         personInformationHeader.staticTexts["Edit"].tap()
         
         emailCell.buttons.firstMatch.tap()
@@ -119,39 +138,44 @@ class PublicProfileUITests: BaseUITestCase {
     
     func testMilestones() {
         navigateToPublicProfile()
-        
+
         app.swipeUp()
-        
+        app.swipeUp()
+
         let milestonesHeader = app.collectionViews.otherElements.containing(.staticText, identifier: "Milestones").firstMatch
+        XCTAssertTrue(milestonesHeader.waitForExistence(timeout: 5))
         milestonesHeader.staticTexts["Edit"].tap()
-        
+
         app.buttons["Add Milestone"].tap()
-        
+
         let descriptionUUID = UUID().uuidString
         let descriptionElement = app.textViews.firstMatch
         descriptionElement.clearTextView()
         descriptionElement.typeText(descriptionUUID)
-        
+
         let titleUUID = UUID().uuidString
         let titleTextField = app.textFields.firstMatch
         titleTextField.selectAndDeleteText(inApp: app)
         titleTextField.tap()
         titleTextField.typeText(titleUUID)
-        
+
         let addMilestoneDoneButton = app.navigationBars["Add Milestone"].buttons["Done"].firstMatch
         addMilestoneDoneButton.tap()
-        
+
         let milestoneCell = app.tables.cells.containing(.staticText, identifier: titleUUID).firstMatch
         XCTAssertTrue(milestoneCell.waitForExistence(timeout: 5))
-        
+
         let editMilestonesDoneButton = app.navigationBars["Edit Milestones"].buttons["Done"].firstMatch
         editMilestonesDoneButton.tap()
-        
+
+        app.swipeUp()
+        app.swipeUp()
+
         let milestoneCollectionCell = app.collectionViews.cells.containing(.staticText, identifier: titleUUID).firstMatch
         XCTAssertTrue(milestoneCollectionCell.waitForExistence(timeout: 5))
-        
+
         milestonesHeader.staticTexts["Edit"].tap()
-        
+
         milestoneCell.buttons.firstMatch.tap()
         app.otherElements.containing(.staticText, identifier: "Delete").firstMatch.buttons.element(boundBy: 1).tap()
         sleep(1)
@@ -160,13 +184,10 @@ class PublicProfileUITests: BaseUITestCase {
     func navigateToPublicProfile() {
         let accountEmail = uiTestCredentials.username
         let accountPassword = uiTestCredentials.password
-        
-        let signUpPage = SignUpPage(app: app, testCase: self)
-        signUpPage.navigateToLogin()
-        
+
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)
-        
+
         let leftMenu = LeftSideMenuPage(app: app, testCase: self)
         leftMenu.goToPublicProfile()
     }

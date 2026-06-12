@@ -12,22 +12,19 @@ class ForgotPasswordPage {
     let app: XCUIApplication
     
     var emailField: XCUIElement {
-        app.textFields["Email"]
+        app.textFields.firstMatch
     }
-    var recoverPasswordButton: XCUIElement {
-        app.buttons["Recover password"]
+    var sendRequestButton: XCUIElement {
+        app.buttons["Send Request"]
     }
     var backToSignInButton: XCUIElement {
         app.buttons["Back to Sign in"]
     }
-    var passedStaticTitleText: XCUIElement {
-        app.staticTexts["Success!"]
+    var confirmationText: XCUIElement {
+        app.staticTexts["Thank you! If your email was found in our system, you will receive an email shortly."]
     }
-    var passedStaticText: XCUIElement {
-        app.staticTexts["If the email you entered is correct, you will receive instructions to reset your password."]
-    }
-    var okButton: XCUIElement {
-        app.buttons["Ok"]
+    var goToSignInButton: XCUIElement {
+        app.buttons["Go to Sign in"]
     }
     
     init(app: XCUIApplication, testCase: XCTestCase) {
@@ -43,16 +40,15 @@ class ForgotPasswordPage {
         XCTAssertTrue(emailField.waitForExistence(timeout: 5))
         emailField.tap()
         emailField.typeText(email)
-        
-        XCTAssertTrue(recoverPasswordButton.waitForExistence(timeout: 5))
-        recoverPasswordButton.tap()
+
+        XCTAssertTrue(sendRequestButton.waitForExistence(timeout: 5))
+        sendRequestButton.tap()
     }
-    
-    func pressOkButton() {
-        XCTAssertTrue(passedStaticTitleText.waitForExistence(timeout: 5))
-        XCTAssertTrue(passedStaticText.waitForExistence(timeout: 5))
-        
-        XCTAssertTrue(okButton.waitForExistence(timeout: 5))
-        okButton.tap()
+
+    func confirmAndReturnToLogin() {
+        XCTAssertTrue(confirmationText.waitForExistence(timeout: 10))
+        XCTAssertTrue(goToSignInButton.waitForExistence(timeout: 5))
+        goToSignInButton.tap()
+        sleep(2)
     }
 }

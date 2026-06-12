@@ -70,7 +70,7 @@ class DrawerViewController: UIViewController {
             let bgViewOrigin = CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight - offset)
             backgroundView.frame = CGRect(origin: bgViewOrigin, size: CGSize(width: view.bounds.width, height: view.bounds.height - bgViewOrigin.y + offset))
             view.addSubview(backgroundView)
-            
+
             addChild(leftSideMenuController)
             view.addSubview(leftSideMenuController.view)
             leftSideMenuController.didMove(toParent: self)

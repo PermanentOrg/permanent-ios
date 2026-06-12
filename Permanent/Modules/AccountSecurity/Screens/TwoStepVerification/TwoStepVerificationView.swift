@@ -155,6 +155,8 @@ struct TwoStepVerificationView: View {
             }
         })
         .navigationBarTitle("Two-step verification", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .sheet(isPresented: $viewModel.checkVerificationMethod) {
             TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired, methodSelectedForDelete: viewModel.changeAuthFlow ? $viewModel.changeMethodConfirmed : $viewModel.deleteMethodConfirmed, twoStepVerificationBottomBannerMessage: $viewModel.bottomBannerMessage, changingAuthFlow: viewModel.changeAuthFlow))
         }
@@ -244,6 +246,8 @@ struct TwoStepVerificationView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

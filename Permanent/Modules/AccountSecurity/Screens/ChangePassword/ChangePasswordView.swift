@@ -24,6 +24,10 @@ struct ChangePasswordView: View {
     init() {
         self._viewModel = StateObject(wrappedValue: ChangePasswordViewModel())
     }
+
+    init(viewModel: ChangePasswordViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         ZStack {
@@ -236,6 +240,8 @@ struct ChangePasswordView: View {
             }
         })
         .navigationBarTitle("Change password", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
     }
     
     var descriptionView: some View {
@@ -272,6 +278,8 @@ struct ChangePasswordView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {
@@ -324,4 +332,3 @@ struct ChangePasswordView: View {
         }
     }
 }
-

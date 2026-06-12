@@ -11,8 +11,7 @@ import XCTest
 class CreateFolderAlertPage {
     let app: XCUIApplication
     
-    var textField: XCUIElement { app.textFields["Folder Name"] }
-    var cancelButton: XCUIElement { app.buttons["Cancel"] }
+    var textField: XCUIElement { app.textFields["New folder"] }
     var createButton: XCUIElement { app.buttons["Create"] }
     
     init(app: XCUIApplication) {

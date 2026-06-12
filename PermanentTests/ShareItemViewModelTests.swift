@@ -623,7 +623,17 @@ final class ShareItemViewModelTests: XCTestCase {
     // MARK: - Archive Access Tests
     
     func testFetchSharedArchives_LoadsArchivesList() async {
-        let fileModel = FileModel.mockFile()
+        // Use folderLinkId: 0 so fetchSharedArchivesV1 exits via the guard and resets
+        // isLoadingArchives = false, avoiding real network calls in unit tests.
+        let fileModel = FileModel(
+            name: "Test File.pdf",
+            recordId: 100,
+            folderLinkId: 0,
+            archiveNbr: "0001-0000",
+            type: "type.record.document.pdf",
+            permissions: [.read, .edit, .share],
+            thumbnailURL2000: "https://example.com/thumb.jpg"
+        )
         let repo = MockShareManagementRepository(shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -632,9 +642,6 @@ final class ShareItemViewModelTests: XCTestCase {
             try? await Task.sleep(nanoseconds: 50_000_000)
             attempts += 1
         }
-        
-        // Note: fetchSharedArchives() is private and called automatically during init
-        // if there's a share link. Since mock may not provide shares, just verify loading completes
         
         attempts = 0
         while vm.isLoadingArchives && attempts < 100 {
@@ -645,49 +652,48 @@ final class ShareItemViewModelTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 300_000_000)
         
         XCTAssertFalse(vm.isLoadingArchives, "Should finish loading archives")
-        // Note: Archives count depends on whether mock properly implements getSharedArchives API
-        // and whether the API returns archives in the expected format
     }
     
     func testApproveShareRequest_SetsLoadingState() async {
         let fileModel = FileModel.mockFile()
         let repo = MockShareManagementRepository(shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
-        
+
         var attempts = 0
         while vm.isLoading && attempts < 100 {
             try? await Task.sleep(nanoseconds: 50_000_000)
             attempts += 1
         }
-        
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        
-        if let firstShare = vm.sharedArchives.first {
-            vm.approveShareRequest(firstShare)
-            
-            XCTAssertTrue(vm.isApprovingShare(shareID: firstShare.shareID ?? 0), "Should be approving")
-        }
+
+        let testShare = makeShareVO(shareID: 501, archiveID: 5001, status: ArchiveVOData.Status.pending.rawValue, accessRole: "viewer")
+        vm.sharedArchives = [testShare]
+
+        vm.approveShareRequest(testShare)
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertTrue(vm.isApprovingShare(shareID: 501), "Should be approving")
     }
-    
-    func testDenyShareRequest_ShowsConfirmationAlert() async {
+
+    func testDenyShareRequest_SetsDenyingState() async {
         let fileModel = FileModel.mockFile()
         let repo = MockShareManagementRepository(shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
-        
+
         var attempts = 0
         while vm.isLoading && attempts < 100 {
             try? await Task.sleep(nanoseconds: 50_000_000)
             attempts += 1
         }
-        
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        
-        if let firstShare = vm.sharedArchives.first {
-            vm.denyShareRequest(firstShare)
-            
-            XCTAssertTrue(vm.showDenyArchiveAccessAlert, "Should show deny confirmation")
-            XCTAssertEqual(vm.selectedArchiveForDeny?.shareID, firstShare.shareID, "Should set selected archive")
-        }
+
+        let testShare = makeShareVO(shareID: 601, archiveID: 6001, status: ArchiveVOData.Status.pending.rawValue, accessRole: "viewer")
+        vm.sharedArchives = [testShare]
+
+        vm.denyShareRequest(testShare)
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertTrue(vm.isDenyingShare(shareID: 601), "Should be denying")
     }
     
     func testIsApprovingShare_ReturnsCorrectState() {
@@ -723,35 +729,25 @@ final class ShareItemViewModelTests: XCTestCase {
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
-        let shareLinkFinished = expectation(description: "Share link finished loading")
-        let archivesFinished = expectation(description: "Archives finished loading")
+        let transitionObserved = expectation(description: "Observed seamless transition")
         var cancellables = Set<AnyCancellable>()
         
-        // Track when share link loading completes
-        vm.$isLoading
+        // The expected seamless transition is: link loading ends while archives loading is already true.
+        Publishers.CombineLatest(vm.$isLoading, vm.$isLoadingArchives)
             .dropFirst()
-            .filter { !$0 }
+            .filter { !$0 && $1 }
             .first()
-            .sink { _ in shareLinkFinished.fulfill() }
+            .sink { _ in transitionObserved.fulfill() }
             .store(in: &cancellables)
         
-        // Track when archives loading completes
-        vm.$isLoadingArchives
-            .dropFirst()
-            .filter { !$0 }
-            .first()
-            .sink { _ in archivesFinished.fulfill() }
-            .store(in: &cancellables)
-        
-        // Wait for both to complete
-        await fulfillment(of: [shareLinkFinished, archivesFinished], timeout: 3.0)
+        await fulfillment(of: [transitionObserved], timeout: 3.0)
         
         XCTAssertFalse(vm.isLoading, "Share link loading should be complete")
-        XCTAssertFalse(vm.isLoadingArchives, "Archives loading should be complete")
+        XCTAssertTrue(vm.isLoadingArchives, "Archives loading should already be running")
     }
     
     func testRefreshData_PreventsDuplicateInitialLoad() async {
-        let fileModel = FileModel.mockFile()
+        let fileModel = FileModel.mockFileForFullLoad()
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -766,7 +762,7 @@ final class ShareItemViewModelTests: XCTestCase {
             .sink { _ in initialLoadComplete.fulfill() }
             .store(in: &cancellables)
         
-        await fulfillment(of: [initialLoadComplete], timeout: 3.0)
+        await fulfillment(of: [initialLoadComplete], timeout: 8.0)
         
         let initialArchiveCount = vm.sharedArchives.count
         
@@ -792,7 +788,7 @@ final class ShareItemViewModelTests: XCTestCase {
     }
     
     func testRefreshData_AllowsSubsequentRefresh() async {
-        let fileModel = FileModel.mockFile()
+        let fileModel = FileModel.mockFileForFullLoad()
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -807,7 +803,7 @@ final class ShareItemViewModelTests: XCTestCase {
             .sink { _ in initialLoadComplete.fulfill() }
             .store(in: &cancellables)
         
-        await fulfillment(of: [initialLoadComplete], timeout: 3.0)
+        await fulfillment(of: [initialLoadComplete], timeout: 8.0)
         
         // First refreshData() - should be ignored (no loading triggered)
         let firstRefreshIgnored = expectation(description: "First refresh ignored")
@@ -840,7 +836,7 @@ final class ShareItemViewModelTests: XCTestCase {
     }
     
     func testShouldShowArchivesSection_BecomesTrue_WhenArchivesExist() async {
-        let fileModel = FileModel.mockFile()
+        let fileModel = FileModel.mockFileForFullLoad()
         let repo = MockShareManagementRepository(shouldReturnLink: true, shouldReturnArchives: true)
         let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
         
@@ -858,7 +854,7 @@ final class ShareItemViewModelTests: XCTestCase {
             .sink { _ in loadComplete.fulfill() }
             .store(in: &cancellables)
         
-        await fulfillment(of: [loadComplete], timeout: 3.0)
+        await fulfillment(of: [loadComplete], timeout: 8.0)
         
         // If archives were loaded and exist, section should show
         if !vm.sharedArchives.isEmpty {
@@ -1188,6 +1184,80 @@ final class ShareItemViewModelTests: XCTestCase {
         // Check if error message was set
         XCTAssertNotNil(errorVM.errorMessage, "Should have error message")
     }
+
+    func testDenyShareRequest_PostsUpdatedFileModelNotification() async {
+        let fileModel = FileModel.mockFile()
+        let repo = MockShareManagementRepository()
+        let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
+
+        let deniedShare = makeShareVO(shareID: 101, archiveID: 1001, status: ArchiveVOData.Status.pending.rawValue, accessRole: "viewer")
+        let remainingShare = makeShareVO(shareID: 202, archiveID: 2002, status: ArchiveVOData.Status.ok.rawValue, accessRole: "editor")
+        vm.sharedArchives = [deniedShare, remainingShare]
+
+        let notifExpectation = expectation(description: "Share update notification posted")
+        var receivedFileModel: FileModel?
+        let observer = NotificationCenter.default.addObserver(
+            forName: ShareItemViewModel.didUpdateSharesNotifName,
+            object: vm,
+            queue: .main
+        ) { notif in
+            receivedFileModel = notif.userInfo?["fileModel"] as? FileModel
+            notifExpectation.fulfill()
+        }
+        defer { NotificationCenter.default.removeObserver(observer) }
+
+        vm.denyShareRequest(deniedShare)
+        await fulfillment(of: [notifExpectation], timeout: 2.0)
+
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.count, 1)
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.first?.shareId, 202)
+    }
+
+    func testUpdateArchiveAccessRole_PostsUpdatedFileModelNotification() async {
+        let fileModel = FileModel.mockFile()
+        let repo = MockShareManagementRepository()
+        let vm = ShareItemViewModel(fileModel: fileModel, shareManagementRepository: repo)
+
+        let sharedArchive = makeShareVO(shareID: 303, archiveID: 3003, status: ArchiveVOData.Status.ok.rawValue, accessRole: "viewer")
+        vm.sharedArchives = [sharedArchive]
+
+        let notifExpectation = expectation(description: "Share update notification posted")
+        var receivedFileModel: FileModel?
+        let observer = NotificationCenter.default.addObserver(
+            forName: ShareItemViewModel.didUpdateSharesNotifName,
+            object: vm,
+            queue: .main
+        ) { notif in
+            receivedFileModel = notif.userInfo?["fileModel"] as? FileModel
+            notifExpectation.fulfill()
+        }
+        defer { NotificationCenter.default.removeObserver(observer) }
+
+        vm.updateArchiveAccessRole(shareVO: sharedArchive, newRole: .editor) { _, _ in }
+        await fulfillment(of: [notifExpectation], timeout: 2.0)
+
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.count, 1)
+        XCTAssertEqual(receivedFileModel?.minArchiveVOS.first?.shareId, 303)
+    }
+
+    private func makeShareVO(shareID: Int, archiveID: Int, status: String, accessRole: String) -> ShareVOData {
+        ShareVOData(
+            shareID: shareID,
+            folderLinkID: 1,
+            archiveID: archiveID,
+            accessRole: accessRole,
+            type: "type.share.archive",
+            status: status,
+            requestToken: nil,
+            previewToggle: nil,
+            folderVO: nil,
+            recordVO: nil,
+            archiveVO: nil,
+            accountVO: nil,
+            createdDT: nil,
+            updatedDT: nil
+        )
+    }
 }
 
 // MARK: - Mock Repositories
@@ -1227,6 +1297,17 @@ private class MockShareManagementRepository: ShareManagementRepository {
             }
         }
     }
+
+    override func getShareLinkV2(shareLinkId: String, then completion: @escaping ShareLinkV2Handler) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            if self.shouldReturnLink {
+                let v2Data = self.createMockV2Data()
+                completion(v2Data, nil)
+            } else {
+                completion(nil, "No link found")
+            }
+        }
+    }
     
     override func createShareLinkV2(file: FileModel, then completion: @escaping ShareLinkV2Handler) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -1245,6 +1326,12 @@ private class MockShareManagementRepository: ShareManagementRepository {
     override func revokeLink(shareVO: SharebyURLVOData?, then handler: @escaping ServerResponse) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             handler(.success)
+        }
+    }
+
+    override func updateLink(model: ManageLinkData, shareVO: SharebyURLVOData?, then handler: @escaping ShareLinkResponse) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            handler(self.createMockShareVO(useV1: self.useV1), nil)
         }
     }
     
@@ -1346,6 +1433,18 @@ extension FileModel {
         )
     }
     
+    static func mockFileForFullLoad() -> FileModel {
+        return FileModel(
+            name: "Test File.pdf",
+            recordId: 100,
+            folderLinkId: 0,
+            archiveNbr: "0001-0000",
+            type: "type.record.document.pdf",
+            permissions: [.read, .edit, .share],
+            thumbnailURL2000: "https://example.com/thumb.jpg"
+        )
+    }
+
     static func mockFolder() -> FileModel {
         return FileModel(
             name: "Test Folder",

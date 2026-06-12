@@ -14,6 +14,18 @@ struct FileMoreMenuView: View {
     private let onRenameRequested: ((FileModel) -> Void)?
     private let onDeleteConfirmed: (([FileModel]) -> Void)?
     private let onLeaveShareConfirmed: ((FileModel) -> Void)?
+
+    init(viewModel: FileMenuViewModel,
+         onShareManagementRequested: ((FileModel) -> Void)? = nil,
+         onRenameRequested: ((FileModel) -> Void)? = nil,
+         onDeleteConfirmed: (([FileModel]) -> Void)? = nil,
+         onLeaveShareConfirmed: ((FileModel) -> Void)? = nil) {
+        self.viewModel = viewModel
+        self.onShareManagementRequested = onShareManagementRequested
+        self.onRenameRequested = onRenameRequested
+        self.onDeleteConfirmed = onDeleteConfirmed
+        self.onLeaveShareConfirmed = onLeaveShareConfirmed
+    }
     
     init(fileViewModel: FileModel, menuItems: [FileMenuViewModel.MenuItem], selectedItemCount: Int? = nil, selectedFiles: [FileModel]? = nil, showArchiveInfo: Bool = false, onDismiss: @escaping () -> Void, onShareManagementRequested: ((FileModel) -> Void)? = nil, onRenameRequested: ((FileModel) -> Void)? = nil, onDeleteConfirmed: (([FileModel]) -> Void)? = nil, onLeaveShareConfirmed: ((FileModel) -> Void)? = nil, downloadHandler: FileMenuViewModel.DownloadHandler? = nil, menuItemsGenerator: FileMenuViewModel.MenuItemsGenerator? = nil, fileModelUpdateHandler: FileMenuViewModel.FileModelUpdateHandler? = nil) {
         let newViewModel = FileMenuViewModel(
@@ -45,6 +57,113 @@ struct FileMoreMenuView: View {
     }
     
     
+    @ViewBuilder
+    private var panelContent: some View {
+        VStack(spacing: 0) {
+            // Header components
+            VStack(spacing: 0) {
+                HStack(spacing: 16) {
+                    VStack(spacing: 0) {
+                        ZStack {
+                            thumbnailPlaceholder
+                                .frame(width: 40, height: 40)
+                                .opacity(viewModel.thumbnailPlaceholderOpacity)
+
+                            if viewModel.shouldShowThumbnail,
+                               let thumbnailURL = viewModel.thumbnailURL,
+                               viewModel.shouldLoadImage {
+                                WebImage(url: thumbnailURL)
+                                    .onSuccess { _, _, _ in
+                                        viewModel.onImageLoadSuccess()
+                                    }
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 40, height: 40)
+                                    .opacity(viewModel.imageOpacity)
+                            }
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                        // Multiple files indicator
+                        if let selectedItemCount = viewModel.selectedItemCount, selectedItemCount > 1 {
+                            Image(.publishMultipleFiles)
+                                .frame(width: 33.33333, height: 6)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(viewModel.displayTitle)
+                            .font(.custom("Usual-Regular", size: 14))
+                            .fontWeight(.medium)
+                            .foregroundColor(Color.blue900)
+                            .lineLimit(1)
+
+                        HStack(spacing: 8) {
+                            if let size = viewModel.cachedFormattedFileSize {
+                                Text(size)
+                                    .font(.custom("Usual-Regular", size: 12))
+                                    .foregroundColor(Color.blue400)
+                            }
+
+                            if viewModel.cachedFormattedFileSize != nil && !viewModel.cachedFormattedDate.isEmpty {
+                                Text("•")
+                                    .font(.custom("Usual-Regular", size: 12))
+                                    .foregroundColor(Color.blue400)
+                            }
+
+                            if !viewModel.cachedFormattedDate.isEmpty {
+                                Text(viewModel.cachedFormattedDate)
+                                    .font(.custom("Usual-Regular", size: 12))
+                                    .foregroundColor(Color.blue400)
+                            }
+                        }
+                    }
+
+                    Spacer()
+
+                    if #available(iOS 26.0, *) {
+                        Button(action: {
+                            viewModel.dismissWithAnimation()
+                        }) {
+                            Image(systemName: "xmark")
+                                .font(.custom("Usual-Regular", size: 24)) // same as system size
+                                .frame(width: 36, height: 36)
+                                .contentTransition(.symbolEffect(.replace))
+                        }
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.glass)       // new iOS 26 liquid glass style
+                        .buttonBorderShape(.circle)
+                        .contentShape(.circle)
+                        .controlSize(.regular)
+                        .padding(.trailing, -12)
+                        .accessibilityIdentifier("fileMenuCloseButton")
+                    } else {
+                        Button(action: {
+                            viewModel.dismissWithAnimation()
+                        }) {
+                            Image(.closeButtonV2)
+                                .frame(width: 24, height: 24)
+                        }
+                        .accessibilityIdentifier("fileMenuCloseButton")
+                    }
+                }
+                .padding(24)
+            }
+            .background(Color.blue25)
+
+            ScrollView(showsIndicators: false) {
+                menuContent
+            }
+            .scrollDisabled(!viewModel.needsScrolling)
+            .frame(maxHeight: viewModel.needsScrolling ? viewModel.maxContentHeight : nil)
+            .background(Color.white)
+            .frame(maxWidth: .infinity)
+            .allowsHitTesting(!viewModel.isDragging)
+
+            Spacer(minLength: 0)
+        }
+    }
+
     private var thumbnailPlaceholder: some View {
         RoundedRectangle(cornerRadius: 6)
             .fill(Color.blue25)
@@ -93,98 +212,20 @@ struct FileMoreMenuView: View {
             VStack {
                 Spacer()
                 
-                VStack(spacing: 0) {
-                    // Header components
-                    VStack(spacing: 0) {
-                        HStack(spacing: 16) {
-                            VStack(spacing: 0) {
-                                ZStack {
-                                    thumbnailPlaceholder
-                                        .frame(width: 40, height: 40)
-                                        .opacity(viewModel.thumbnailPlaceholderOpacity)
-                                    
-                                    if viewModel.shouldShowThumbnail,
-                                       let thumbnailURL = viewModel.thumbnailURL,
-                                       viewModel.shouldLoadImage {
-                                        WebImage(url: thumbnailURL)
-                                            .onSuccess { _, _, _ in
-                                                viewModel.onImageLoadSuccess()
-                                            }
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 40, height: 40)
-                                            .opacity(viewModel.imageOpacity)
-                                    }
-                                }
-                                .clipShape(RoundedRectangle(cornerRadius: 6))
-                                
-                                // Multiple files indicator
-                                if let selectedItemCount = viewModel.selectedItemCount, selectedItemCount > 1 {
-                                    Image(.publishMultipleFiles)
-                                        .frame(width: 33.33333, height: 6)
-                                }
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(viewModel.displayTitle)
-                                    .font(
-                                        .custom("Usual-Regular", size: 14))
-                                    .fontWeight(.medium)
-                                    .foregroundColor(Color.blue900)
-                                    .lineLimit(1)
-                                
-                                HStack(spacing: 8) {
-                                    if let size = viewModel.cachedFormattedFileSize {
-                                        Text(size)
-                                            .font(
-                                                .custom("Usual-Regular", size: 12))
-                                            .foregroundColor(Color.blue400)
-                                    }
-                                    
-                                    if viewModel.cachedFormattedFileSize != nil && !viewModel.cachedFormattedDate.isEmpty {
-                                        Text("•")
-                                            .font(
-                                                .custom("Usual-Regular", size: 12))
-                                            .foregroundColor(Color.blue400)
-                                    }
-                                    
-                                    if !viewModel.cachedFormattedDate.isEmpty {
-                                        Text(viewModel.cachedFormattedDate)
-                                            .font(
-                                                .custom("Usual-Regular", size: 12))
-                                            .foregroundColor(Color.blue400)
-                                    }
-                                }
-                            }
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                viewModel.dismissWithAnimation()
-                            }) {
-                                Image(.closeButtonV2)
-                                    .frame(width: 24, height: 24)
-                            }
-                        }
-                        .padding(24)
+                Group {
+                    if #available(iOS 26.0, *) {
+                        panelContent
+                            .background(Color.white)
+                            //.clipShape(ConcentricRectangle())
+                            .cornerRadius(32, corners: [.topLeft, .topRight])
+                    } else {
+                        panelContent
+                            .background(Color.white)
+                            .cornerRadius(16, corners: [.topLeft, .topRight])
                     }
-                    .background(Color.blue25)
-                    
-                    ScrollView(showsIndicators: false) {
-                        menuContent
-                    }
-                    .scrollDisabled(!viewModel.needsScrolling)
-                    .frame(maxHeight: viewModel.needsScrolling ? viewModel.maxContentHeight : nil)
-                    .background(Color.white)
-                    .frame(maxWidth: .infinity)
-                    .allowsHitTesting(!viewModel.isDragging)
-                    
-                    Spacer(minLength: 0)
                 }
                 .frame(height: viewModel.dynamicHeight)
                 .frame(maxWidth: .infinity)
-                .background(Color.white)
-                .cornerRadius(16, corners: [.topLeft, .topRight])
                 .offset(y: viewModel.isAnimating ? viewModel.dragOffset : viewModel.dynamicHeight)
                 .gesture(
                     DragGesture()

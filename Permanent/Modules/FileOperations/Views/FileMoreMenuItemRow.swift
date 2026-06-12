@@ -32,6 +32,22 @@ struct FileMoreMenuItemRow: View {
                     .custom("Usual-Regular", size: 14))
                 .foregroundColor(isDestructive ? viewModel.isMenuItemPressed(item.type) ? Color.error500.opacity(0.5) : Color.error500 : viewModel.isMenuItemPressed(item.type) ? Color.blue900.opacity(0.5) : Color.blue900)
                 .multilineTextAlignment(.leading)
+
+            let pendingInvitationCount = viewModel.pendingInvitationBadgeCount(for: item.type)
+            if pendingInvitationCount > 0 {
+                let badgeText = pendingInvitationCount > 9 ? "9+" : "\(pendingInvitationCount)"
+                Text(badgeText)
+                    .font(
+                        .custom("Usual-Medium", size: 8))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .foregroundColor(.white)
+                    .frame(width: 20, height: 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.error500)
+                    )
+            }
             
             Spacer()
         }

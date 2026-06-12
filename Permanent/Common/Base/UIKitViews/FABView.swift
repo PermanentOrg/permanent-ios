@@ -72,6 +72,8 @@ class FABView: UIView {
         plusImageView = UIImageView(image: UIImage(named: "plus"))
         plusImageView.contentMode = .scaleAspectFit
         plusImageView.translatesAutoresizingMaskIntoConstraints = false
+        plusImageView.accessibilityIdentifier = "fabPlusButton"
+        plusImageView.isAccessibilityElement = true
         
         checklistImageView = UIImageView(image: UIImage(named: "mainChecklistButton"))
         checklistImageView.contentMode = .scaleAspectFit

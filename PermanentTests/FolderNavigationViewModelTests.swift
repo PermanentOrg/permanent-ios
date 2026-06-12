@@ -58,34 +58,34 @@ class FolderNavigationViewModelTests: XCTestCase {
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
         let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
-        
+
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in
-            XCTAssertEqual(self.sut.folderStack, [childFolder])
             return true
         }
 
         sut.pushFolder(childFolder)
 
         waitForExpectations(timeout: 5)
+        XCTAssertEqual(sut.folderStack, [childFolder])
     }
-    
+
     func testPopNavigation() {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
         let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
-        
+
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in
-            XCTAssertEqual(self.sut.folderStack, [])
             return true
         }
 
         sut.popFolder()
 
         waitForExpectations(timeout: 5)
+        XCTAssertEqual(sut.folderStack, [])
     }
-    
+
     func testPopToFolderNavigation() {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
@@ -96,26 +96,25 @@ class FolderNavigationViewModelTests: XCTestCase {
         sut.pushFolder(childFolder1)
         let childFolder2 = FileModel(name: "Test3", recordId: 444, folderLinkId: 114, archiveNbr: "ooo-015", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder2)
-        
+
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in
-            XCTAssertEqual(self.sut.folderStack, [childFolder])
             return true
         }
 
         sut.popToFolder(childFolder)
 
         waitForExpectations(timeout: 5)
+        XCTAssertEqual(sut.folderStack, [childFolder])
     }
-    
+
     func testOverPopNavigation() {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
         let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
-        
+
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in
-            XCTAssertEqual(self.sut.folderStack, [])
             return true
         }
 
@@ -124,5 +123,6 @@ class FolderNavigationViewModelTests: XCTestCase {
         sut.popFolder()
 
         waitForExpectations(timeout: 5)
+        XCTAssertEqual(sut.folderStack, [])
     }
 }

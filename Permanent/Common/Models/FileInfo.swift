@@ -54,6 +54,17 @@ class FileInfo: NSObject, NSCoding {
         return files
     }
 
+    static func createFiles(from selectedFiles: [SelectedUploadFile], parentFolder: FolderInfo, loadInMemory: Bool = false) -> [FileInfo] {
+        selectedFiles.map { selectedFile in
+            FileInfo(
+                withURL: selectedFile.url,
+                named: selectedFile.originalFilename,
+                folder: parentFolder,
+                loadInMemory: loadInMemory
+            )
+        }
+    }
+
     func encode(with coder: NSCoder) {
         coder.encode(id, forKey: "id")
         

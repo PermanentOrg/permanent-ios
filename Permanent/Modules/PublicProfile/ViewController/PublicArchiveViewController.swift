@@ -37,6 +37,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     
     var isPickingProfilePicture: Bool = false
     var isViewingPublicProfile: Bool = false
+    private var isViewingOwnArchive: Bool = false
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -103,6 +104,11 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     }
 
     func initUI() {
+        if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive,
+           sessionArchive.archiveID == archiveData?.archiveID {
+            isViewingOwnArchive = true
+        }
+
         viewModel?.archiveData = archiveData
         
         if let archiveName = archiveData.fullName {
@@ -243,9 +249,8 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     }
     
     func handleArchiveNameUpdate() {
-        // Called when user switches their selected archive (full archive change)
-        // This triggers a complete refresh with scroll to top
-        
+        guard isViewingOwnArchive else { return }
+
         guard let sessionArchive = AuthenticationManager.shared.session?.selectedArchive,
               let currentArchive = self.archiveData else {
             return

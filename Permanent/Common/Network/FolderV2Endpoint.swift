@@ -43,7 +43,7 @@ extension FolderV2Endpoint: RequestProtocol {
     var shareToken: String? {
         switch self {
         case .getFolderById(_, let token), .getFolderChildren(_, let token, _):
-            return token
+            return token.isEmpty ? nil : token
         }
     }
     

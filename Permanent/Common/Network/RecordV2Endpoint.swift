@@ -40,6 +40,7 @@ extension RecordV2Endpoint: RequestProtocol {
     var shareToken: String? {
         switch self {
         case .getRecordById(_, let token):
+            guard let token, !token.isEmpty else { return nil }
             return token
         }
     }

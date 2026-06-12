@@ -82,8 +82,8 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             viewModel?.checkAccountStewardExists()
         }
         
-        setupUI()
         styleNavBar()
+        setupUI()
         
         addedLegacyStewardDeleteButton.isHidden = true
     }
@@ -169,25 +169,47 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     }
     
     private func backButtonSetup() {
-        let backButton = UIButton(type: .system)
-        backButton.setImage(UIImage(named: "newBackButton"), for: .normal)
-        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        backButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-        backButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 10) // Adjust the position
-        
-        let backButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem = backButtonItem
+        if #available(iOS 26.0, *) {
+            let backButton = UIButton(type: .custom)
+            backButton.setImage(UIImage(named: "newBackButton"), for: .normal)
+            backButton.tintColor = .white
+            backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+            backButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+            backButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 10)
+            let backButtonItem = UIBarButtonItem(customView: backButton)
+            backButtonItem.hidesSharedBackground = true
+            navigationItem.leftBarButtonItem = backButtonItem
+        } else {
+            let backButton = UIButton(type: .system)
+            backButton.setImage(UIImage(named: "newBackButton"), for: .normal)
+            backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+            backButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+            backButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 10)
+            let backButtonItem = UIBarButtonItem(customView: backButton)
+            navigationItem.leftBarButtonItem = backButtonItem
+        }
     }
     
     private func closeButtonSetup() {
-        let closeButton = UIButton(type: .system)
-        closeButton.setImage(UIImage(named: "newCloseButton"), for: .normal)
-        closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
-        closeButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-        closeButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -20)
-        
-        let closeButtonItem = UIBarButtonItem(customView: closeButton)
-        navigationItem.rightBarButtonItem = closeButtonItem
+        if #available(iOS 26.0, *) {
+            let closeButton = UIButton(type: .custom)
+            closeButton.setImage(UIImage(named: "newCloseButton"), for: .normal)
+            closeButton.tintColor = .white
+            closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+            closeButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+            closeButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -20)
+            let closeButtonItem = UIBarButtonItem(customView: closeButton)
+            closeButtonItem.hidesSharedBackground = true
+            navigationItem.rightBarButtonItem = closeButtonItem
+        } else {
+            let closeButton = UIButton(type: .system)
+            closeButton.setImage(UIImage(named: "newCloseButton"), for: .normal)
+            closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+            closeButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+            closeButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -20)
+            let closeButtonItem = UIBarButtonItem(customView: closeButton)
+            navigationItem.rightBarButtonItem = closeButtonItem
+        }
     }
     
     private func archiveNameLabelSetup(text: String) {

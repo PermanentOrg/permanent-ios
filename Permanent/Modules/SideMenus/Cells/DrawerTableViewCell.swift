@@ -23,7 +23,9 @@ class DrawerTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
-    
+
+        bottomSpaceConstraint.priority = UILayoutPriority(999)
+
         menuItemImageView.tintColor = .iconTintLight
         menuItemTitleLabel.textColor = .white
         menuItemTitleLabel.font = TextFontStyle.style35.font

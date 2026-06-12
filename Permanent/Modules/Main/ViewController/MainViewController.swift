@@ -32,6 +32,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
     var navParams: NavigateMinParams? = nil
+    var makeSearchViewController: (() -> SearchViewController?) = {
+        UIViewController.create(withIdentifier: .search, from: .main) as? SearchViewController
+    }
+    var presentSearchController: ((UIViewController, Bool) -> Void)?
+    var getRootRequest: ((@escaping ServerResponse) -> Void)?
+    var navigateMinRequest: ((NavigateMinParams, Bool, @escaping ServerResponse) -> Void)?
+    var displayController: ((UIViewController) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,7 +108,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
             guard let shareLinkVM = notif.object as? ShareLinkViewModel,
-                  let index = self?.viewModel?.viewModels.firstIndex(where: { $0.recordId == shareLinkVM.fileViewModel.recordId })
+                  let index = self?.viewModel?.viewModels.firstIndex(where: {
+                      $0.recordId == shareLinkVM.fileViewModel.recordId &&
+                      $0.folderLinkId == shareLinkVM.fileViewModel.folderLinkId
+                  })
             else {
                 return
             }
@@ -109,6 +119,20 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
             
+            self?.collectionView.reloadData()
+        }
+
+        NotificationCenter.default.addObserver(forName: ShareItemViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
+            guard let updatedFileModel = notif.userInfo?["fileModel"] as? FileModel,
+                  let index = self?.viewModel?.viewModels.firstIndex(where: {
+                      $0.recordId == updatedFileModel.recordId &&
+                      $0.folderLinkId == updatedFileModel.folderLinkId
+                  }) else {
+                return
+            }
+
+            self?.viewModel?.viewModels[index].accessRole = updatedFileModel.accessRole
+            self?.viewModel?.viewModels[index].minArchiveVOS = updatedFileModel.minArchiveVOS
             self?.collectionView.reloadData()
         }
         
@@ -146,12 +170,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.resetCollectionViewState()
             }
         }
-        
-        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
-            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
-                self?.refreshCollectionView()
-            }
-        }
 
         NotificationCenter.default.addObserver(forName: AppDelegate.navigateToFolderNotifName, object: nil, queue: nil) { [weak self] _ in
             self?.navigationToShareFolderLink()
@@ -186,7 +204,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         navigationItem.backBarButtonItem?.tintColor = .white
 
         if let rightBarItem = navigationItem.rightBarButtonItem, viewModel!.isPickingImage == false {
-            let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonPressed(_:)))
+            var searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(searchButtonPressed(_:)))
+            if #available(iOS 26.0, *) {
+                searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .prominent, target: self, action: #selector(searchButtonPressed(_:)))
+                searchButton.tintColor = .darkBlue
+            }
+            searchButton.accessibilityIdentifier = "searchButton"
             navigationItem.rightBarButtonItems = [rightBarItem, searchButton]
         }
         
@@ -218,6 +241,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     fileprivate func setupCollectionView() {
         isGridView = viewModel?.isGridView ?? false
+        switchViewButton.accessibilityIdentifier = "switchViewButton"
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
@@ -285,7 +309,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
         let pasteTitle = action == .copy ? "Paste Here".localized() : "Move Here".localized()
-        let rightItems = [
+        var rightItems: [FloatingActionItem] = [
             FloatingActionImageTextItem(text: pasteTitle, image: UIImage(named: "pasteToolbarIcon")!) { [weak self] _, _ in
                 guard let destination = self?.viewModel?.currentFolder else {
                     self?.showErrorAlert(message: .errorMessage)
@@ -321,17 +345,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.relocate(files: selectedFiles, to: destination)
                 }
             },
-            FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
-                self?.dismissFloatingActionIsland()
-                self?.fabView.isHidden = false
-
-                self?.viewModel?.selectedFiles = []
-                self?.viewModel?.fileAction = .none
-                self?.viewModel?.isSelectingDestination = false
-
-                self?.collectionView?.reloadData()
-            },
         ]
+        // On iOS 26 the toolbar is transparent so items sit flush; add a gap before the X.
+        // Pre-iOS 26 the white pill layout looks correct without an extra gap.
+        if #available(iOS 26, *) {
+            rightItems.append(FloatingActionImageItem(image: UIColor.clear.imageWithColor(width: 0, height: 0), action: nil))
+        }
+        rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
+            self?.dismissFloatingActionIsland()
+            self?.fabView.isHidden = false
+
+            self?.viewModel?.selectedFiles = []
+            self?.viewModel?.fileAction = .none
+            self?.viewModel?.isSelectingDestination = false
+
+            self?.collectionView?.reloadData()
+        })
 
         if viewModel?.fileAction != FileAction.none {
             showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
@@ -460,7 +489,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @IBAction
     func backButtonAction(_ sender: UIButton) {
-        // Fall back to regular navigation hierarchy
         guard
             let viewModel = viewModel,
             let _ = viewModel.removeCurrentFolderFromHierarchy(),
@@ -526,29 +554,25 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func cancelAllUploadsAction(_ sender: UIButton) {
-        let title = "Cancel all uploads".localized()
-        let description = "Are you sure you want to cancel all uploads?".localized()
-        
-        self.showActionDialog(
-            styled: .simpleWithDescription,
-            withTitle: title,
-            description: description,
-            positiveButtonTitle: .cancelAll,
-            positiveAction: {
-                self.actionDialog?.dismiss()
-                self.viewModel?.cancelUploadsInFolder()
-                
-                if self.viewModel?.refreshUploadQueue() == true {
-                    self.refreshCollectionView()
+        let confirmationView = CancelUploadsConfirmationView(
+            onConfirm: { [weak self] in
+                self?.viewModel?.cancelUploadsInFolder()
+                if self?.viewModel?.refreshUploadQueue() == true {
+                    self?.refreshCollectionView()
                 }
             },
-            cancelButtonTitle: "No".localized(),
-            positiveButtonColor: .brightRed,
-            cancelButtonColor: .primary,
-            overlayView: self.overlayView
+            onDismiss: { [weak self] in
+                self?.dismiss(animated: false)
+            }
         )
+
+        let hosting = UIHostingController(rootView: confirmationView)
+        hosting.modalPresentationStyle = .overFullScreen
+        hosting.view.backgroundColor = .clear
+        // animated: false lets SwiftUI own the full slide-up/down animation
+        present(hosting, animated: false)
     }
-    
+
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
@@ -580,7 +604,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             backButton.isUserInteractionEnabled = true
             backButton.layer.opacity = 1
         }
-        
+
         viewModel?.selectedFiles = []
         viewModel?.isSelecting = false
         collectionView.reloadData()
@@ -604,13 +628,17 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     @objc func searchButtonPressed(_ sender: Any) {
-        guard let searchVC = UIViewController.create(withIdentifier: .search, from: .main) as? SearchViewController else {
+        guard let searchVC = makeSearchViewController() else {
             return
         }
         
         let navController = NavigationController(rootViewController: searchVC)
         navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: false)
+        if let presenter = presentSearchController {
+            presenter(navController, false)
+        } else {
+            present(navController, animated: false)
+        }
     }
     
     func showBanner() {
@@ -650,8 +678,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     private func getRootFolder() {
         showSpinner()
-        
-        viewModel?.getRoot(then: { status in
+
+        let runRequest: (@escaping ServerResponse) -> Void = getRootRequest ?? { [weak self] completion in
+            self?.viewModel?.getRoot(then: completion)
+        }
+
+        runRequest({ status in
             self.onFilesFetchCompletion(status)
             self.checkForSavedUniversalLink()
             self.checkForRequestShareAccess()
@@ -680,8 +712,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
-        
-        viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
+
+        let runRequest: (NavigateMinParams, Bool, @escaping ServerResponse) -> Void = navigateMinRequest ?? { [weak self] requestParams, requestBackNavigation, completion in
+            self?.viewModel?.navigateMin(params: requestParams, backNavigation: requestBackNavigation, then: completion)
+        }
+
+        runRequest(params, backNavigation, { status in
             self.onFilesFetchCompletion(status)
             handler?()
         })
@@ -719,31 +755,18 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         
         let viewController: UIViewController
-        
-        if Constants.FeatureFlags.useSwiftUISharePreview {
-            // Use new SwiftUI version
-            let hostingController = SharePreviewHostingController(shareToken: token)
-            hostingController.navigateTo = { [weak self] params in
-                self?.navigateToFolder(withParams: params, backNavigation: false)
-            }
-            hostingController.wireCallbacks()
-            viewController = hostingController
-        } else {
-            // Use legacy UIKit version
-            guard let sharePreviewVC = UIViewController.create(
-                withIdentifier: .sharePreview,
-                from: .share
-            ) as? SharePreviewViewController else {
-                return
-            }
-            
-            let viewModel = SharePreviewViewModel()
-            viewModel.urlToken = token
-            sharePreviewVC.viewModel = viewModel
-            viewController = sharePreviewVC
+        let hostingController = SharePreviewHostingController(shareToken: token)
+        hostingController.navigateTo = { [weak self] params in
+            self?.navigateToFolder(withParams: params, backNavigation: false)
         }
+        hostingController.wireCallbacks()
+        viewController = hostingController
         
-        navigationController?.display(viewController: viewController)
+        if let displayController {
+            displayController(viewController)
+        } else {
+            navigationController?.display(viewController: viewController)
+        }
     }
     
     func checkForRequestShareAccess() {
@@ -838,16 +861,21 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         showSpinner()
         viewModel?.delete(files, then: { status in
             self.hideSpinner()
-            
+
             switch status {
             case .success:
                 DispatchQueue.main.async {
                     self.viewModel?.removeSyncedFiles(files)
                     self.refreshCollectionView()
                 }
-                
-            case .error(let message):
-                self.showErrorAlert(message: message)
+
+            case .error(_):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: .deleteError) {
+                        self.refreshCurrentFolder()
+                        self.fabView.isHidden = false
+                    }
+                }
             }
         })
     }
@@ -898,14 +926,18 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                         })
                     }
                     
-                case .error(let message):
+                case .error(_):
                     self.dismissFloatingActionIsland()
-                    self.showErrorAlert(message: message)
+                    self.showErrorAlert(message: .relocateError) {
+                        self.refreshCurrentFolder()
+                        self.fabView?.isHidden = false
+                        self.viewModel?.isSelectingDestination = false
+                    }
                 }
             })
         }
     }
-    
+
     func publish(file: FileModel) {
         showSpinner()
         viewModel?.publish(files: [file], then: { status in
@@ -956,6 +988,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         
         cell.moreButton.isHidden = cell.moreButton.isHidden || viewModel.isPickingImage
         cell.rightButtonImageView.isHidden = cell.rightButtonImageView.isHidden || viewModel.isPickingImage
+        let pendingInvitationCount = pendingInvitationBadgeCount(for: file)
+        cell.setMoreButtonBadgeCount(cell.moreButton.isHidden ? 0 : pendingInvitationCount)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
@@ -1017,6 +1051,12 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         guard let viewModel = viewModel else { return }
         
         viewModel.pickerDelegate?.myFilesVMDidPickFile(viewModel: viewModel, file: file)
+    }
+    
+    private func pendingInvitationBadgeCount(for file: FileModel) -> Int {
+        file.minArchiveVOS.filter {
+            ArchiveVOData.Status(rawValue: $0.shareStatus) == .pending
+        }.count
     }
     
     func handlePreviewSelection(file: FileModel) {
@@ -1264,27 +1304,16 @@ extension MainViewController: FABViewDelegate {
     
     private func handleUploadAction(action: @escaping () -> Void) {
         if viewModel is PublicFilesViewModel {
-            let title = ""
-            let description = "This is a public folder. Are you sure you want to upload here?".localized()
-            showActionDialog(
-                styled: .simpleWithDescription,
-                withTitle: title,
-                description: description,
-                positiveButtonTitle: "Upload".localized(),
-                positiveAction: { [weak self] in
-                    self?.view.dismissPopup(
-                        self?.actionDialog,
-                        overlayView: self?.overlayView,
-                        completion: { _ in
-                            self?.actionDialog?.removeFromSuperview()
-                            self?.actionDialog = nil
-                            action()
-                        }
-                    )
-                },
-                cancelButtonTitle: "Cancel".localized(),
-                overlayView: overlayView
+            let confirmationView = PublicFolderUploadConfirmationView(
+                onConfirm: action,
+                onDismiss: { [weak self] in
+                    self?.dismiss(animated: false)
+                }
             )
+            let hosting = UIHostingController(rootView: confirmationView)
+            hosting.modalPresentationStyle = .overFullScreen
+            hosting.view.backgroundColor = .clear
+            present(hosting, animated: false)
         } else {
             action()
         }
@@ -1436,16 +1465,21 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.showSpinner()
                     self?.viewModel?.delete(files, then: { status in
                         self?.hideSpinner()
-                        
+
                         switch status {
                         case .success:
                             DispatchQueue.main.async {
                                 self?.viewModel?.removeSyncedFiles(files)
                                 self?.refreshCollectionView()
                             }
-                            
-                        case .error(let message):
-                            self?.showErrorAlert(message: message)
+
+                        case .error(_):
+                            DispatchQueue.main.async {
+                                self?.showErrorAlert(message: .deleteError) {
+                                    self?.refreshCurrentFolder()
+                                    self?.fabView.isHidden = false
+                                }
+                            }
                         }
                     })
                 })
@@ -1568,7 +1602,7 @@ extension MainViewController: FABActionSheetDelegate {
                     self?.showSpinner()
                     self?.viewModel?.delete(files, then: { status in
                         self?.hideSpinner()
-                        
+
                         switch status {
                         case .success:
                             DispatchQueue.main.async {
@@ -1578,9 +1612,16 @@ extension MainViewController: FABActionSheetDelegate {
                                 self?.fabView.isHidden = false
                                 self?.clearButtonWasPressed(UIButton())
                             }
-                            
-                        case .error(let message):
-                            self?.showErrorAlert(message: message)
+
+                        case .error(_):
+                            DispatchQueue.main.async {
+                                self?.showErrorAlert(message: .deleteError) {
+                                    self?.refreshCurrentFolder()
+                                    self?.dismissFloatingActionIsland()
+                                    self?.fabView.isHidden = false
+                                    self?.clearButtonWasPressed(UIButton())
+                                }
+                            }
                         }
                     })
                 })
@@ -1635,39 +1676,39 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openPhotoLibrary() {
-        PHPhotoLibrary.requestAuthorization { (authStatus) in
-            switch authStatus {
-            case .authorized, .limited:
-                DispatchQueue.main.async {
-                    let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
-                    let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
-                    imagePicker.pickerDelegate = self
-                    
-                    self.present(imagePicker, animated: true, completion: nil)
-                }
-                
-            case .denied:
-                let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
-                
-                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
-                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+        var hostingController: UIHostingController<PhotoLibraryPickerView>?
+
+        let pickerView = PhotoLibraryPickerView(
+            onCompletion: { [weak self] selectedFiles in
+                hostingController?.dismiss(animated: true) {
+                    guard let self else {
                         return
                     }
-                    if UIApplication.shared.canOpenURL(settingsUrl) {
-                        UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+
+                    guard let currentFolder = self.viewModel?.currentFolder else {
+                        self.showErrorAlert(message: .cannotUpload)
+                        return
                     }
+
+                    guard selectedFiles.isEmpty == false else {
+                        self.showErrorAlert(message: .cannotUpload)
+                        return
+                    }
+
+                    self.processUpload(toFolder: currentFolder, selectedFiles: selectedFiles)
                 }
-                let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
-                
-                alertController.addAction(cancelAction)
-                alertController.addAction(settingsAction)
-                
-                DispatchQueue.main.async {
-                    self.present(alertController, animated: true, completion: nil)
-                }
-                
-            default: break
+            },
+            onCancel: {
+                hostingController?.dismiss(animated: true)
             }
+        )
+
+        hostingController = UIHostingController(rootView: pickerView)
+        hostingController?.modalPresentationStyle = .overFullScreen
+        hostingController?.view.backgroundColor = .clear
+
+        if let hostingController {
+            present(hostingController, animated: true)
         }
     }
     
@@ -1689,6 +1730,14 @@ extension MainViewController: FABActionSheetDelegate {
         let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
+        upload(files: files)
+        viewModel?.trackEvent(action: RecordEventAction.submit)
+    }
+
+    private func processUpload(toFolder folder: FileModel, selectedFiles: [SelectedUploadFile], loadInMemory: Bool = false) {
+        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
+
+        let files = FileInfo.createFiles(from: selectedFiles, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
         viewModel?.trackEvent(action: RecordEventAction.submit)
     }
@@ -1922,23 +1971,6 @@ extension MainViewController: FilePreviewNavigationControllerDelegate {
     
     func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {
         downloadAction(file: file)
-    }
-}
-
-// MARK: - PhotoPickerViewControllerDelegate
-extension MainViewController: PhotoPickerViewControllerDelegate {
-    func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
-        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
-        present(alert, animated: true)
-        viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-            dismiss(animated: true) { [self] in
-                guard let currentFolder = viewModel?.currentFolder else {
-                    return showErrorAlert(message: .cannotUpload)
-                }
-                
-                processUpload(toFolder: currentFolder, forURLS: urls)
-            }
-        })
     }
 }
 

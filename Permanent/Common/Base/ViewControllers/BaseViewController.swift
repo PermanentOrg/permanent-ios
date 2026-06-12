@@ -31,18 +31,27 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: .ok, style: .default, handler: nil))
+            self.present(alert, animated: true)
+        }
+    }
 
+    func showErrorAlert(message: String?) {
+        self.showAlert(title: .error, message: message)
+    }
+
+    func showErrorAlert(message: String?, completion: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: .ok, style: .default) { _ in
+                completion()
+            })
             self.present(alert, animated: true)
         }
     }
     
-    func showErrorAlert(message: String?) {
-        self.showAlert(title: .error, message: message)
-    }
-    
     func styleNavBar() {
         navigationController?.navigationBar.tintColor = .white
-        
+
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .darkBlue
@@ -50,9 +59,13 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             .foregroundColor: UIColor.white,
             .font: TextFontStyle.style14.font
         ]
-        
+
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+
+        if #available(iOS 26.0, *) {
+            navigationController?.navigationBar.isTranslucent = false
+        }
     }
     
     func closeKeyboard() {
@@ -119,10 +132,20 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         addChild(floatingActionIsland!)
         view.addSubview(floatingActionIsland!.view)
 
+        let bottomAnchor: NSLayoutConstraint
+        if #available(iOS 26, *) {
+            // Anchor above the safe area so the pill clears the home indicator
+            bottomAnchor = floatingActionIsland!.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -6)
+        } else {
+            bottomAnchor = floatingActionIsland!.view.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32)
+        }
         NSLayoutConstraint.activate([
             floatingActionIsland!.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            floatingActionIsland!.view.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32),
-            floatingActionIsland!.view.widthAnchor.constraint(equalToConstant: view.frame.width - 64)
+            bottomAnchor,
+            floatingActionIsland!.view.widthAnchor.constraint(equalToConstant: view.frame.width - 64),
+            // Explicit height so the view has a proper touch target (required on iOS 26 where
+            // toolbar uses centerY rather than top+bottom anchors to define view height)
+            floatingActionIsland!.view.heightAnchor.constraint(equalToConstant: 64),
         ])
 
         floatingActionIsland?.didMove(toParent: self)

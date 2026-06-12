@@ -33,6 +33,13 @@ struct SharePreviewArchiveSelectorView: View {
         return Color.white
     }
 
+    @ViewBuilder
+    private func archivePlaceholderThumbnail() -> some View {
+        Image(.shareArchivePending)
+            .cornerRadius(8)
+            .frame(width: 40, height: 40)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             Button(action: {
@@ -43,24 +50,19 @@ struct SharePreviewArchiveSelectorView: View {
                         if let thumbnailURL = archive.thumbURL200,
                            let url = URL(string: thumbnailURL) {
                             AsyncImage(url: url) { image in
-                                image.resizable().aspectRatio(contentMode: .fill)
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
                             } placeholder: {
-                                Color.gray.opacity(0.3)
+                                archivePlaceholderThumbnail()
                             }
                             .frame(width: 40, height: 40)
-                            .cornerRadius(8)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         } else {
-                            Image(systemName: "archivebox.fill")
-                                .resizable()
-                                .frame(width: 40, height: 40)
-                                .foregroundColor(.purple)
-                                .frame(width: 48, height: 48)
+                            archivePlaceholderThumbnail()
                         }
                     } else {
-                        Image("SharePreviewArchiveNotselected")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 40, height: 40)
+                        archivePlaceholderThumbnail()
                     }
                     
                     VStack(alignment: .leading, spacing: 4) {
@@ -201,6 +203,7 @@ struct ArchivePickerView: View {
     let selectedArchive: ArchiveVOData?
     let maxHeight: CGFloat
     let onSelect: (ArchiveVOData) -> Void
+    let onCreateArchive: () -> Void
     var onClose: (() -> Void)? = nil
     @Environment(\.presentationMode) var presentationMode
     
@@ -240,30 +243,47 @@ struct ArchivePickerView: View {
             // Archive list
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    Button(action: {
+                        onCreateArchive()
+                    }) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "plus")
+                                .font(.custom("Usual", size: 20))
+                                .foregroundColor(.white)
+                                .frame(width: 40, height: 40)
+                                .background(Color.blue900)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            
+                            Text("Create a new Archive...")
+                                .font(.custom("Usual", size: 14))
+                                .foregroundColor(.blue900)
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 16)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
                     ForEach(archives, id: \.archiveID) { archive in
                         Button(action: {
                             onSelect(archive)
                             if let onClose = onClose { onClose() }
                         }) {
                             HStack(spacing: 16) {
-                                // Archive thumbnail or gradient placeholder
+                                // Archive thumbnail or fallback placeholder
                                 if let thumbURL = archive.thumbURL200, let url = URL(string: thumbURL) {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fill)
-                                                .frame(width: 40, height: 40)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        case .failure(_), .empty:
-                                            gradientPlaceholder(for: archive)
-                                        @unknown default:
-                                            gradientPlaceholder(for: archive)
-                                        }
+                                    AsyncImage(url: url) { image in
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                    } placeholder: {
+                                        archivePlaceholderThumbnail()
                                     }
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
                                 } else {
-                                    gradientPlaceholder(for: archive)
+                                    archivePlaceholderThumbnail()
                                 }
                                 
                                 HStack(alignment: .center) {
@@ -298,35 +318,10 @@ struct ArchivePickerView: View {
     }
     
     @ViewBuilder
-    private func gradientPlaceholder(for archive: ArchiveVOData) -> some View {
-        ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.4, green: 0.6, blue: 0.9),
-                    Color(red: 0.6, green: 0.4, blue: 0.8)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            
-            Text(extractInitials(from: archive.fullName ?? ""))
-                .font(.custom("Usual", size: 20))
-                .foregroundColor(.white)
-        }
-        .frame(width: 40, height: 40)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-    
-    private func extractInitials(from name: String) -> String {
-        let words = name.split(separator: " ").map(String.init)
-        if words.count >= 2 {
-            let first = words.first?.prefix(1).uppercased() ?? ""
-            let last = words.last?.prefix(1).uppercased() ?? ""
-            return first + last
-        } else if let first = words.first?.prefix(2).uppercased() {
-            return String(first)
-        }
-        return ""
+    private func archivePlaceholderThumbnail() -> some View {
+        Image(.shareArchivePending)
+            .cornerRadius(8)
+            .frame(width: 40, height: 40)
     }
 }
 

@@ -26,6 +26,8 @@ extension String {
     static var enterCode: String { return "EnterCode".localized() }
     static var error: String { return "Error".localized() }
     static var errorMessage: String { return "ErrorMessage".localized() }
+    static var deleteError: String { return "The delete operation timed out. The file may have been deleted. Please check your folder." }
+    static var relocateError: String { return "The operation timed out. The file may have been moved or copied. Please check your folders." }
     static var ok: String { return "Ok".localized() }
     static var accept: String { return "Accept".localized() }
     static var decline: String { return "Decline".localized() }

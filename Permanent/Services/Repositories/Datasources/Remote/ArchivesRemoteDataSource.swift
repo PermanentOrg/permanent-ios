@@ -75,19 +75,15 @@ class MockArchivesRemoteDataSource: ArchivesRemoteDataSourceInterface {
     var getAccountArchivesResult: Result<[ArchiveVO], Error>?
     var changeArchiveResult: Result<Bool, Error>?
 
+    private let callbackQueue = DispatchQueue(label: "MockArchivesRemoteDataSource", qos: .userInitiated)
+
     func getAccountArchives(accountId: Int, completion: @escaping (Result<[ArchiveVO], Error>) -> Void) {
-        if let result = getAccountArchivesResult {
-            completion(result)
-        } else {
-            completion(.failure(NSError(domain: "MockArchivesRemoteDataSource", code: -1, userInfo: nil)))
-        }
+        let result = getAccountArchivesResult ?? .failure(NSError(domain: "MockArchivesRemoteDataSource", code: -1, userInfo: nil))
+        callbackQueue.async { completion(result) }
     }
-    
+
     func changeArchive(archiveId: Int, archiveNbr: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        if let result = changeArchiveResult {
-            completion(result)
-        } else {
-            completion(.failure(NSError(domain: "MockArchivesRemoteDataSource", code: -1, userInfo: nil)))
-        }
+        let result = changeArchiveResult ?? .failure(NSError(domain: "MockArchivesRemoteDataSource", code: -1, userInfo: nil))
+        callbackQueue.async { completion(result) }
     }
 }

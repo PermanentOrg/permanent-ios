@@ -9,6 +9,15 @@
     }
   ],
   "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Permanent.xcodeproj",
+          "identifier" : "5E2C5D1624D98EE100E2B95F",
+          "name" : "Permanent"
+        }
+      ]
+    },
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [

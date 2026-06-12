@@ -104,3 +104,12 @@ buildServer.json
 
 # Local documentation and context
 .docs-local/
+docs/
+
+# Claude Code
+.claude/
+CLAUDE.md
+
+# AI maturity assessment
+ai-maturity-assessment.md
+.ai-maturity/

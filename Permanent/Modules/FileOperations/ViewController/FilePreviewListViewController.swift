@@ -95,14 +95,18 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     
     func setupNavigationBar() {
         let shareButton = UIBarButtonItem(image: .more, style: .plain, target: self, action: #selector(shareButtonAction(_:)))
+        shareButton.accessibilityIdentifier = "filePreviewShareButton"
         
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
+        infoButton.accessibilityIdentifier = "filePreviewInfoButton"
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
         
         let leftButtonImage: UIImage!
         leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+        let closeButton = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+        closeButton.accessibilityIdentifier = "filePreviewCloseButton"
+        navigationItem.leftBarButtonItem = closeButton
     }
     
     @objc func closeButtonAction(_ sender: Any) {

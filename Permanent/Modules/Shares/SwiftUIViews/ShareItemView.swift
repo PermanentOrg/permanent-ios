@@ -25,58 +25,86 @@ struct ShareItemView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                ZStack {
-                    topBar
-                        .padding(.horizontal, 16)
-                        .padding(.top, 12)
-                        .padding(.bottom, 8)
+                if #available(iOS 26.0, *) {
+                    ZStack {
+                        topBar
+                            .padding(.horizontal, 16)
+                            .padding(.top, 16)
+                            .padding(.bottom, 12)
+                    }
+                    .frame(height: 72)
+                    .background(Color.white)
+                } else {
+                    ZStack {
+                        topBar
+                            .padding(.horizontal, 16)
+                            .padding(.top, 12)
+                            .padding(.bottom, 8)
+                    }
+                    .frame(height: 64)
+                    .background(Color.white)
                 }
-                .frame(height: 64)
-                .background(Color.white)
                 
-                VStack(spacing: 0) {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                        .background(Color.blue50)
-                    
-                    VStack(spacing: 20) {
-                        fileInfoSection
-                        
-                        Group {
-                            if viewModel.genLinkLoading {
-                                linkCreationLoadingSection
-                                    .transition(.opacity.combined(with: .scale))
-                            } else if viewModel.shouldShowCreateButton {
-                                createLinkSection
-                                    .transition(.opacity.combined(with: .scale))
-                            } else if viewModel.hasShareLink {
-                                shareLinkSection
-                                    .transition(.opacity.combined(with: .scale))
-                            }
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        if #unavailable(iOS 26.0) {
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                                .background(Color.blue50)
                         }
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
-                    }
-                    .padding(24)
-                    
-                    // Current Requests and Access Section - Scrollable
-                    if viewModel.shouldShowArchivesSection {
-                        currentRequestsAndAccessSection
-                    } else {
-                        // Spacer to fill remaining space with blue25 background when no archives
-                        Spacer()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.blue25)
+
+                        VStack(spacing: 20) {
+                            fileInfoSection
+
+                            Group {
+                                if viewModel.genLinkLoading {
+                                    linkCreationLoadingSection
+                                        .transition(.opacity.combined(with: .scale))
+                                } else if viewModel.shouldShowCreateButton {
+                                    createLinkSection
+                                        .transition(.opacity.combined(with: .scale))
+                                } else if viewModel.hasShareLink {
+                                    shareLinkSection
+                                        .transition(.opacity.combined(with: .scale))
+                                }
+                            }
+                            .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
+                            .animation(.easeInOut(duration: 0.3), value: viewModel.genLinkLoading)
+                            .animation(.easeInOut(duration: 0.3), value: viewModel.hasShareLink)
+                            .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowCreateButton)
+                        }
+                        .padding(24)
+                        .background(Color.blue25)
+
+                        shareManagementSections
                     }
                 }
-                .background(Color.blue25)
+                .background(Color.white)
             }
-            .background(Color.blue25)
+            .background(Color.white)
+            .overlay(alignment: .bottom) {
+                if viewModel.pendingShares.count >= 2 && !viewModel.isApprovingAll {
+                    VStack(spacing: 0) {
+                        LinearGradient(
+                            colors: [Color.white.opacity(0), Color.white],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 32)
+
+                        approveAllButton
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 8)
+                            .background(Color.white)
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.isApprovingAll)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.pendingShares.count >= 2)
+                }
+            }
             .overlay {
-                if (viewModel.isLoading && !viewModel.genLinkLoading) || viewModel.isLoadingArchives {
+                if (viewModel.isLoading && !viewModel.genLinkLoading) || viewModel.isLoadingArchives || viewModel.isApprovingAll {
                     loadingOverlay
                 }
             }
@@ -127,12 +155,27 @@ struct ShareItemView: View {
             
             HStack {
                 Spacer()
-                Button(action: { dismiss() }) {
-                    Image(.closeButtonV2)
-                        .resizable()
-                        .renderingMode(.original)
-                        .frame(width: 20, height: 20)
-                        .contentShape(Rectangle())
+                if #available(iOS 26.0, *) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                            .font(.custom("Usual-Regular", size: 24))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .contentShape(.circle)
+                    .controlSize(.regular)
+                    .padding(.trailing, -12)
+                } else {
+                    Button(action: { dismiss() }) {
+                        Image(.closeButtonV2)
+                            .resizable()
+                            .renderingMode(.original)
+                            .frame(width: 20, height: 20)
+                            .contentShape(Rectangle())
+                    }
                 }
             }
         }
@@ -266,23 +309,25 @@ struct ShareItemView: View {
                             .truncationMode(.tail)
                     }
                 HStack(spacing: 8) {
-                    Button(action: { 
+                    Button(action: {
                         viewModel.navigationDirection = .forward
-                        viewModel.showLinkSettings = true 
+                        viewModel.showLinkSettings = true
                     }) {
                         Image(.publishGear)
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(Color.blue900)
-                        
+
                     }
-                    
+                    .accessibilityIdentifier("shareLinkSettingsButton")
+
                     Button(action: { viewModel.copyLink() }) {
                         Image(.shareCopyV2)
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(Color.blue900)
                     }
+                    .accessibilityIdentifier("shareLinkCopyButton")
                 }
             }
         }
@@ -299,38 +344,93 @@ struct ShareItemView: View {
         )
     }
     
-    // MARK: - Current Requests and Access Section
-    private var currentRequestsAndAccessSection: some View {
+    // MARK: - Share Management Sections
+    private var shareManagementSections: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("CURRENT REQUESTS AND ACCESS:")
+            grantAccessToOtherArchivesSection
+
+            if viewModel.shouldShowArchivesSection {
+                Text("CURRENT REQUESTS AND ACCESS:")
+                    .font(.custom("Usual", size: 11))
+                    .foregroundColor(Color.blue900)
+                    .textCase(.uppercase)
+                    .kerning(1.6)
+                    .padding(.top, 20)
+                    .padding(.bottom, 16)
+                    .padding(.horizontal, 24)
+
+                scrollableContent
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white)
+    }
+
+    private var grantAccessToOtherArchivesSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("GRANT ACCESS TO OTHER ARCHIVES")
                 .font(.custom("Usual", size: 11))
                 .foregroundColor(Color.blue900)
                 .textCase(.uppercase)
                 .kerning(1.6)
-                .padding(.top, 32)
-                .padding(.bottom, 16)
-                .padding(.horizontal, 24)
-                .background(Color.white)
-            
-            Group {
-                if #available(iOS 16.4, *) {
-                    ScrollView(showsIndicators: false) {
-                        scrollableContent
-                    }
-                    .scrollBounceBehavior(.basedOnSize, axes: .vertical)
-                    .background(Color.white)
-                } else {
-                    ScrollView(showsIndicators: false) {
-                        scrollableContent
-                    }
-                    .background(Color.white)
+                .padding(.bottom, 2)
+
+            grantAccessRow(
+                systemIcon: "magnifyingglass",
+                title: "Find an archive using email address",
+                action: {
+                    viewModel.openFindArchiveByEmail()
                 }
-            }
+            )
+
+            grantAccessRow(
+                systemIcon: "archivebox",
+                title: "Select an archive from past shares",
+                action: {
+                    viewModel.openSelectArchiveFromPastShares()
+                }
+            )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .padding(.horizontal, 24)
+        .padding(.top, 32)
         .background(Color.white)
     }
-    
+
+    private func grantAccessRow(systemIcon: String, title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: systemIcon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 40, height: 40)
+                    .background(
+                        LinearGradient(
+                        stops: [
+                        Gradient.Stop(color: Color(red: 0.07, green: 0.11, blue: 0.29), location: 0.00),
+                        Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00),
+                        ],
+                        startPoint: UnitPoint(x: 0, y: 0),
+                        endPoint: UnitPoint(x: 1, y: 1)
+                        )
+                    )
+                    .cornerRadius(6)
+
+                Text(title)
+                    .font(.custom("Usual-Medium", size: 14))
+                    .foregroundColor(Color.blue900)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color.blue200)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 8)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+
     private var scrollableContent: some View {
         VStack(alignment: .leading, spacing: 16) {
             if viewModel.isLoadingArchives {
@@ -352,7 +452,7 @@ struct ShareItemView: View {
             }
         }
         .padding(.horizontal, 24)
-        .padding(.bottom, 40)
+        .padding(.bottom, viewModel.pendingShares.count >= 2 ? 76 : 40)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
@@ -361,6 +461,7 @@ struct ShareItemView: View {
         HStack(spacing: 12) {
             // Check if this is a pending request or approved archive
             let isPending = shareVO.status?.contains("pending") == true
+            let isInvited = shareVO.status?.contains("invited") == true
             
             if isPending {
                 userAvatarView(shareVO: shareVO)
@@ -442,6 +543,36 @@ struct ShareItemView: View {
                         }
                     }
                 }
+            } else if isInvited {
+                userAvatarView(shareVO: shareVO)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 8) {
+                        Text(shareVO.accountVO?.fullName ?? "Invited user")
+                            .font(.custom("Usual-Medium", size: 14))
+                            .foregroundColor(Color.blue900)
+                            .lineLimit(1)
+
+                        Text("Invited")
+                            .font(.custom("Usual-Regular", size: 12))
+                            .foregroundColor(Color.success500)
+                    }
+
+                    Text(shareVO.accountVO?.primaryEmail ?? "")
+                        .font(.custom("Usual-Regular", size: 12))
+                        .foregroundColor(Color.blue300)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Button(action: {
+                    viewModel.openEditInvitation(shareVO: shareVO)
+                }) {
+                    Image(.shareArchiveEditShare)
+                        .frame(width: 24, height: 24)
+                }
+                .buttonStyle(PlainButtonStyle())
             } else {
                 archiveThumbnailView(shareVO: shareVO)
                 
@@ -478,6 +609,24 @@ struct ShareItemView: View {
             }
         }
         .padding(.vertical, 8)
+    }
+    
+    // MARK: - Approve All Button
+    private var approveAllButton: some View {
+        Button(action: {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred()
+            viewModel.approveAllPendingRequests()
+        }) {
+            Text("Approve all")
+                .font(.custom("Usual-Medium", size: 16))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .background(Color.success500)
+                .cornerRadius(12)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     // MARK: - Helper Views
@@ -574,6 +723,10 @@ struct ShareItemView: View {
                     
                     if viewModel.isCreatingLink {
                         Text("Creating share link...")
+                            .foregroundColor(.white)
+                            .font(.body)
+                    } else if viewModel.isApprovingAll {
+                        Text("Accepting requests...")
                             .foregroundColor(.white)
                             .font(.body)
                     }

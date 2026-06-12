@@ -55,6 +55,7 @@ struct LoginSecurityView: View {
                             descText: "Update your password to keep your account secure."
                         )
                     }
+                    .accessibilityIdentifier("securityChangePasswordOption")
                     Divider()
                     NavigationLink {
                         TwoStepVerificationView(
@@ -73,6 +74,7 @@ struct LoginSecurityView: View {
                         )
                         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: viewModel.twoFactorBadgeStatus)
                     }
+                    .accessibilityIdentifier("securityTwoStepOption")
                     Divider()
                     CustomListItemView(
                         image: Image(.securityFaceId),
@@ -160,6 +162,8 @@ struct LoginSecurityView: View {
             }
         }
         .navigationBarTitle("Login & Security", displayMode: .inline)
+        .toolbarBackground(Color(UIColor.darkBlue), for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .onChange(of: viewModel.isSecurityToggleOn) { newValue in
             viewModel.updateBiometricsStatus(isEnabled: newValue)
         }
@@ -174,6 +178,8 @@ struct LoginSecurityView: View {
                     .foregroundColor(.white)
             }
         }
+        .tint(.white)
+        .accessibilityIdentifier("settingsContainerBackButton")
     }
     
     func dismissView() {

@@ -81,6 +81,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .filePreviewVMDidSaveData, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onFailedUpdateData(_:)), name: .filePreviewVMSaveDataFailed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareLinkViewModel.didUpdateSharesNotifName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareItemViewModel.didUpdateSharesNotifName, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -88,10 +90,13 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
         super.viewWillDisappear(animated)
         
         view.endEditing(true)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func initUI() {
@@ -101,8 +106,13 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         let leftButtonImage: UIImage!
         leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
+        let closeButton = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+        closeButton.accessibilityIdentifier = "fileDetailsCloseButton"
+        navigationItem.leftBarButtonItem = closeButton
+
+        let shareButton = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
+        shareButton.accessibilityIdentifier = "fileDetailsShareButton"
+        navigationItem.rightBarButtonItem = shareButton
     }
     
     override func styleNavBar() {
@@ -198,6 +208,25 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             self.delegate?.filePreviewNavigationControllerWillClose(self, hasChanges: (self.navigationController as? FilePreviewNavigationController)?.hasChanges ?? false)
         }
     }
+
+    @objc private func onDidUpdateShares(_ notification: Notification) {
+        if let shareLinkVM = notification.object as? ShareLinkViewModel,
+           file.recordId == shareLinkVM.fileViewModel.recordId,
+           file.folderLinkId == shareLinkVM.fileViewModel.folderLinkId {
+            file.accessRole = shareLinkVM.fileViewModel.accessRole
+            file.minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
+            return
+        }
+
+        guard let updatedFileModel = notification.userInfo?["fileModel"] as? FileModel,
+              file.recordId == updatedFileModel.recordId,
+              file.folderLinkId == updatedFileModel.folderLinkId else {
+            return
+        }
+
+        file.accessRole = updatedFileModel.accessRole
+        file.minArchiveVOS = updatedFileModel.minArchiveVOS
+    }
     
     @objc func keyboardWillShow(_ notification: Notification) {
         guard let collectionView = collectionView,
@@ -275,7 +304,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     @objc func onFailedUpdateData(_ notification: Notification) {
         if let notifVM = notification.object as? FilePreviewViewModel, notifVM.file == viewModel?.file {
-            view.showNotificationBanner(title: "Failed to save changes".localized(), backgroundColor: .deepRed)
+            view.showNotificationBanner(title: "Failed to save changes".localized(), backgroundColor: .deepRed, textColor: .white)
         }
     }
     

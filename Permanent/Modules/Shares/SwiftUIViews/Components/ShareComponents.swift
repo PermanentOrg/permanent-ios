@@ -218,6 +218,7 @@ struct LinkCopyNotificationView: View {
 }
 
 struct ArchiveAccessNotificationView: View {
+    let message: String
     @State private var isVisible = false
     @State private var checkmarkScale: CGFloat = 0.5
     
@@ -229,7 +230,7 @@ struct ArchiveAccessNotificationView: View {
                 .scaleEffect(checkmarkScale)
                 .animation(.spring(response: 0.4, dampingFraction: 0.6), value: checkmarkScale)
             
-            Text("Archive access has been updated.")
+            Text(message)
                 .foregroundColor(.white)
                 .font(.custom("Usual-Regular", size: 14))
                 .opacity(isVisible ? 1.0 : 0.0)
@@ -330,6 +331,47 @@ struct RevokeLinkNotificationView: View {
         }
     }
 }
+
+struct ApproveAllNotificationView: View {
+    let message: String
+    let isError: Bool
+    @State private var isVisible = false
+    @State private var iconScale: CGFloat = 0.5
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: isError ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
+                .foregroundColor(isError ? .red : .green)
+                .font(.system(size: 20, weight: .medium))
+                .scaleEffect(iconScale)
+                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: iconScale)
+            
+            Text(message)
+                .foregroundColor(.white)
+                .font(.custom("Usual-Regular", size: 14))
+                .opacity(isVisible ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.3).delay(0.1), value: isVisible)
+            
+            Spacer()
+        }
+        .padding(.vertical, 4)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.85))
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                .scaleEffect(isVisible ? 1.0 : 0.8)
+                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isVisible)
+        )
+        .onAppear {
+            withAnimation {
+                isVisible = true
+                iconScale = 1.0
+            }
+        }
+    }
+}
+
 struct AnimatedTextWithDotsView: View {
     @State private var dotCount = 0
     

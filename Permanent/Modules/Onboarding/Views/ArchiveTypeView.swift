@@ -8,6 +8,7 @@ import SwiftUI
 
 struct ArchiveTypeView: View {
     var archiveType: ArchiveType
+    var showsDivider: Bool = true
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -44,7 +45,9 @@ struct ArchiveTypeView: View {
             }
             .padding(.vertical, 24)
             .padding(.horizontal, Constants.Design.isPhone ? 24 : 32)
-            Divider()
+            if showsDivider {
+                Divider()
+            }
         }
         .frame(height: Constants.Design.isPhone ? 96 : 120)
     }

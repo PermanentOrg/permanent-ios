@@ -37,3 +37,9 @@ protocol ShareDetails {
     // Clean archive name without "From" prefix
     var cleanArchiveName: String? { get }
 }
+
+struct NavigationDataForShareFolderLink: Codable {
+    var archiveNo: String = ""
+    var folderLinkId: Int = 0
+    var folderName: String?
+}

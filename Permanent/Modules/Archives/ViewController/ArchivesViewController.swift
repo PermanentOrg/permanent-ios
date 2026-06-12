@@ -69,6 +69,9 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     private func initUI() {
         currentArchiveContainer.layer.borderWidth = 1
         currentArchiveContainer.layer.borderColor = UIColor.gray.cgColor
+
+        currentArhiveImage.layer.cornerRadius = 8
+        currentArhiveImage.clipsToBounds = true
         
         currentArchiveLabel.text = "Current Archive".localized()
         currentArchiveLabel.font = TextFontStyle.style7.font
@@ -197,12 +200,20 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     // MARK: - UI
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
-           let archiveName: String = archive.fullName,
-           let archiveThumbURL: String = archive.thumbURL500 {
+           let archiveName: String = archive.fullName {
             currentArhiveImage.image = nil
             currentArchiveRightButton.isHidden = true
-            currentArhiveImage.load(urlString: archiveThumbURL)
-            
+            let archiveThumbURL = archive.preferredThumbnailURL
+            if let archiveThumbURL {
+                currentArhiveImage.load(urlString: archiveThumbURL) { [weak self] success in
+                    if !success {
+                        self?.currentArhiveImage.image = UIImage(named: "shareArchivePending")
+                    }
+                }
+            } else {
+                currentArhiveImage.image = UIImage(named: "shareArchivePending")
+            }
+
             currentArhiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
             if AppEnvironment.shared.isRunningInAppExtension() {
                 if archive.archiveID == viewModel?.defaultArchiveId {
