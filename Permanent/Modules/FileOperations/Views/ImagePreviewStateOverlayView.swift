@@ -47,6 +47,7 @@ class ImagePreviewStateOverlayView: UIView {
 
     private func setupUI() {
         isHidden = true
+        accessibilityIdentifier = "imagePreviewStateOverlay"
 
         noThumbnailBackground.backgroundColor = UIColor(white: 0.88, alpha: 1)
         noThumbnailBackground.translatesAutoresizingMaskIntoConstraints = false
@@ -80,6 +81,7 @@ class ImagePreviewStateOverlayView: UIView {
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
+        messageLabel.accessibilityIdentifier = "imagePreviewStateMessage"
 
         let cardStack = UIStackView(arrangedSubviews: [iconImageView, messageLabel])
         cardStack.axis = .vertical
