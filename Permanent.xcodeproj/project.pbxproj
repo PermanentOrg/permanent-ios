@@ -975,6 +975,8 @@
 		F5216AE429228E7E0042914D /* PublicProfileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5216AE329228E7E0042914D /* PublicProfileUITests.swift */; };
 		F5216AED2923E03B0042914D /* XCUIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5216AEC2923E03B0042914D /* XCUIApplication+Extensions.swift */; };
 		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
+		5E17680000000000000000A2 /* ReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E17680000000000000000A1 /* ReachabilityManager.swift */; };
+		5E17680000000000000000A4 /* ImagePreviewStateOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E17680000000000000000A3 /* ImagePreviewStateOverlayView.swift */; };
 		F53519C6290BCB850035CCE9 /* Archives.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D0E26D058940090EF02 /* Archives.storyboard */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
@@ -2004,6 +2006,8 @@
 		F5216AE329228E7E0042914D /* PublicProfileUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicProfileUITests.swift; sourceTree = "<group>"; };
 		F5216AEC2923E03B0042914D /* XCUIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		5E17680000000000000000A1 /* ReachabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityManager.swift; sourceTree = "<group>"; };
+		5E17680000000000000000A3 /* ImagePreviewStateOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewStateOverlayView.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -3866,6 +3870,7 @@
 				5E7A697C2EBA4CB4005FA69B /* Components */,
 				5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */,
 				5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */,
+				5E17680000000000000000A3 /* ImagePreviewStateOverlayView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4630,6 +4635,7 @@
 				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
 				BCE8DA7425652F4400842ABD /* FileAction.swift */,
 				F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */,
+				5E17680000000000000000A1 /* ReachabilityManager.swift */,
 				F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */,
 			);
 			path = Managers;
@@ -5680,6 +5686,8 @@
 				5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */,
 				92430A5F2AF2A1F00098597D /* EmailChipView.swift in Sources */,
 				F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */,
+				5E17680000000000000000A2 /* ReachabilityManager.swift in Sources */,
+				5E17680000000000000000A4 /* ImagePreviewStateOverlayView.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */,

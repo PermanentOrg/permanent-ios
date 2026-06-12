@@ -43,15 +43,19 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
+
+    let imageStateOverlay = ImagePreviewStateOverlayView()
+
     var recordLoadedCB: ((FilePreviewViewController) -> Void)?
     var closeAction: (() -> Void)?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        setupImageStateOverlay()
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareLinkViewModel.didUpdateSharesNotifName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareItemViewModel.didUpdateSharesNotifName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onReachabilityChanged(_:)), name: ReachabilityManager.reachabilityDidChangeNotifName, object: nil)
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
@@ -81,37 +85,109 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     func loadVM() {
         guard recordLoaded == false else { return }
-        
+
         if isViewLoaded {
             activityIndicator.startAnimating()
             if let url = URL(string: file.preferredThumbnailURL) {
                 thumbnailImageView.sd_setImage(with: url)
             }
         }
-        
+
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
-            
-            if file.type == .image, let thumbnailURLString = file.preferredThumbnailURL {
-                loadThumbnailPreview(urlString: thumbnailURLString)
+            bindImagePreviewState()
+
+            if file.type == .image {
+                var thumbnailURL = file.preferredThumbnailURL
+                #if DEBUG
+                if debugForceNoThumbnail { thumbnailURL = nil }
+                #endif
+                let canLoad = viewModel?.startImageLoad(hasThumbnail: thumbnailURL != nil) ?? true
+                guard canLoad else {
+                    // Offline (S7): show whatever the cache has under the blur, but start no network load.
+                    activityIndicator.stopAnimating()
+                    if let thumbnailURLString = thumbnailURL {
+                        loadThumbnailPreview(urlString: thumbnailURLString, cacheOnly: true)
+                    }
+                    return
+                }
+                if let thumbnailURLString = thumbnailURL {
+                    loadThumbnailPreview(urlString: thumbnailURLString)
+                }
             }
-            
+
             viewModel?.getRecord(file: file, then: { [weak self] record in
                 if record != nil {
                     self?.loadRecord()
                 } else {
                     self?.activityIndicator.stopAnimating()
-                    self?.thumbnailImageView.isHidden = true
-                    
-                    self?.errorLabel.isHidden = false
-                    self?.retryButton.isHidden = false
+
+                    if self?.file.type == .image {
+                        self?.viewModel?.imageLoadDidFail(error: nil)
+                    } else {
+                        self?.thumbnailImageView.isHidden = true
+                        self?.errorLabel.isHidden = false
+                        self?.retryButton.isHidden = false
+                    }
                 }
             })
         } else if file.type == .image, let thumbnailURLString = file.preferredThumbnailURL {
+            bindImagePreviewState()
             loadThumbnailPreview(urlString: thumbnailURLString)
         } else {
             loadRecord()
         }
+    }
+
+    // MARK: - Image preview state handling (VSP-1768)
+
+    private func setupImageStateOverlay() {
+        imageStateOverlay.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageStateOverlay)
+        NSLayoutConstraint.activate([
+            imageStateOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            imageStateOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            imageStateOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageStateOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        imageStateOverlay.onRetryTapped = { [weak self] in
+            self?.retryImageLoad()
+        }
+    }
+
+    private func bindImagePreviewState() {
+        viewModel?.onImagePreviewStateChanged = { [weak self] state in
+            DispatchQueue.main.async {
+                self?.imageStateOverlay.render(state)
+            }
+        }
+        if let state = viewModel?.imagePreviewState {
+            imageStateOverlay.render(state)
+        }
+    }
+
+    private func retryImageLoad() {
+        guard file.type == .image, viewModel?.retryRequested() == true else { return }
+        resumeImageLoad()
+    }
+
+    private func resumeImageLoad() {
+        if viewModel?.recordVO == nil {
+            viewModel?.getRecord(file: file, then: { [weak self] record in
+                if record != nil {
+                    self?.loadRecord()
+                } else {
+                    self?.viewModel?.imageLoadDidFail(error: nil)
+                }
+            })
+        } else {
+            loadRecord()
+        }
+    }
+
+    @objc private func onReachabilityChanged(_ notification: Notification) {
+        guard file.type == .image, viewModel?.connectivityRestored() == true else { return }
+        resumeImageLoad()
     }
 
     func initUI() {
@@ -215,41 +291,48 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             default:
                 self.loadMisc(withURL: downloadURL)
             }
+        } else if file.type == .image {
+            self.viewModel?.imageLoadDidFail(error: nil)
         } else {
             self.errorLabel.isHidden = false
             self.retryButton.isHidden = false
         }
-        
+
         if recordLoaded != true {
             recordLoaded = true
         }
     }
     
     /// Loads the 256px thumbnail into the zoomable image preview as a quick placeholder.
-    private func loadThumbnailPreview(urlString: String) {
+    /// With `cacheOnly` set, no network request is made (used while offline — S7).
+    private func loadThumbnailPreview(urlString: String, cacheOnly: Bool = false) {
         guard let url = URL(string: urlString) else { return }
-        
+
         let previewVC = ImagePreviewViewController()
         previewVC.delegate = self
         self.imagePreviewVC = previewVC
-        
+
         addChild(previewVC)
         previewVC.view.frame = view.bounds
         previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.insertSubview(previewVC.view, at: 0)
         previewVC.didMove(toParent: self)
-        
-        previewVC.imageView.sd_setImage(with: url) { [weak self] _, error, _, _ in
+
+        previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: cacheOnly ? [.fromCacheOnly] : []) { [weak self] _, error, _, _ in
             guard let self = self else { return }
             self.activityIndicator.stopAnimating()
             self.thumbnailImageView.isHidden = true
-            
+
             if error != nil {
-                self.errorLabel.isHidden = false
-                self.retryButton.isHidden = false
-                self.removeImagePreviewVC()
+                if !cacheOnly {
+                    self.viewModel?.imageLoadDidFail(error: error)
+                }
             } else {
                 previewVC.newImageLoaded()
+                self.imageStateOverlay.setSourceImage(previewVC.imageView.image)
+                if !cacheOnly {
+                    self.viewModel?.thumbnailDidLoad()
+                }
             }
         }
     }
@@ -268,9 +351,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             placeholderImage: previewVC.imageView.image,
             options: [.avoidAutoSetImage, .retryFailed],
             progress: nil
-        ) { [weak previewVC] image, _, cacheType, _ in
-            guard let previewVC = previewVC, let image = image else { return }
-            
+        ) { [weak self, weak previewVC] image, error, cacheType, _ in
+            guard let previewVC = previewVC, let image = image, error == nil else {
+                // Full-res failed (S6) — keep the thumbnail beneath the blur so retry can reuse it.
+                self?.viewModel?.imageLoadDidFail(error: error)
+                return
+            }
+
             if cachedFromMemory || cacheType == .memory {
                 // Cached in memory — swap immediately, no animation needed
                 previewVC.imageView.image = image
@@ -283,6 +370,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     previewVC.newImageLoaded()
                 }
             }
+            self?.viewModel?.fullResDidLoad()
         }
     }
     
@@ -293,9 +381,48 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         imagePreviewVC = nil
     }
     
+    #if DEBUG
+    /// QA hook: launch with `--slowImageLoad=5` to delay the full-res upgrade by N seconds,
+    /// making the blur + spinner loading state observable on fast networks.
+    private var debugFullResDelay: TimeInterval {
+        guard let arg = CommandLine.arguments.first(where: { $0.hasPrefix("--slowImageLoad=") }),
+              let seconds = Double(arg.split(separator: "=").last ?? "") else { return 0 }
+        return seconds
+    }
+
+    /// QA hook: launch with `--failFullResOnce` to make the first full-res load attempt fail,
+    /// exercising S6 (load failed) and, after tap-to-retry, S8 → success.
+    private static var debugFailFullResConsumed = false
+    private var debugShouldFailFullRes: Bool {
+        guard CommandLine.arguments.contains("--failFullResOnce"), !Self.debugFailFullResConsumed else { return false }
+        Self.debugFailFullResConsumed = true
+        return true
+    }
+
+    /// QA hook: launch with `--forceNoThumbnail` to pretend the record has no 256px thumbnail,
+    /// exercising S5 (neutral placeholder + spinner).
+    var debugForceNoThumbnail: Bool {
+        CommandLine.arguments.contains("--forceNoThumbnail")
+    }
+    #endif
+
     func loadImage(withURL url: URL) {
         if imagePreviewVC != nil {
             // Image preview already showing thumbnail — upgrade to full-res
+            #if DEBUG
+            if debugShouldFailFullRes {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.viewModel?.imageLoadDidFail(error: NSError(domain: "QA.failFullResOnce", code: -1))
+                }
+                return
+            }
+            if debugFullResDelay > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + debugFullResDelay) { [weak self] in
+                    self?.upgradeToFullResolution(urlString: url.absoluteString)
+                }
+                return
+            }
+            #endif
             upgradeToFullResolution(urlString: url.absoluteString)
         } else {
             // No preview yet (e.g. record already loaded) — load directly
@@ -309,19 +436,28 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             view.insertSubview(previewVC.view, at: 0)
             previewVC.didMove(toParent: self)
             
-            previewVC.imageView.sd_setImage(with: url) { [weak self] _, error, _, _ in
-                guard let self = self else { return }
-                self.activityIndicator.stopAnimating()
-                self.thumbnailImageView.isHidden = true
-                
-                if error != nil {
-                    self.errorLabel.isHidden = false
-                    self.retryButton.isHidden = false
-                    self.removeImagePreviewVC()
-                } else {
-                    previewVC.newImageLoaded()
+            let startDirectLoad = { [weak self, weak previewVC] in
+                guard let previewVC = previewVC else { return }
+                previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: [.retryFailed]) { _, error, _, _ in
+                    guard let self = self else { return }
+                    self.activityIndicator.stopAnimating()
+                    self.thumbnailImageView.isHidden = true
+
+                    if error != nil {
+                        self.viewModel?.imageLoadDidFail(error: error)
+                    } else {
+                        previewVC.newImageLoaded()
+                        self.viewModel?.fullResDidLoad()
+                    }
                 }
             }
+            #if DEBUG
+            if debugFullResDelay > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + debugFullResDelay, execute: startDirectLoad)
+                return
+            }
+            #endif
+            startDirectLoad()
         }
     }
     

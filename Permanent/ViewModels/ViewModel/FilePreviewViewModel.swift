@@ -9,47 +9,137 @@ import UIKit
 import WebKit
 import AVKit
 
+enum ImagePreviewState: Equatable {
+    case idle
+    case loadingThumbnail
+    case loadingFullRes(hasThumbnail: Bool)   // S5 when hasThumbnail == false; S8 reuses this after retry
+    case loaded
+    case failed(hasThumbnail: Bool)           // S6, or the S5 failure variant when no thumbnail exists
+    case offline(hasThumbnail: Bool)          // S7
+}
+
 class FilePreviewViewModel: ViewModelInterface {
+    static let maxRecordFetchAttempts = 3
+
     let file: FileModel
     var name: String
     var publicURL: URL?
-    
+
     var recordVO: RecordVO?
     var isEditable: Bool {
         return file.permissions.contains(.edit)
     }
-    
+
     weak var delegate: FilePreviewNavigationControllerDelegate?
-    
+
     var downloader: DownloadManagerGCD? = nil
-    
+
     let tagsRepository: TagsRepository
-    
-    init(file: FileModel, tagsRepository: TagsRepository = TagsRepository()) {
+    let reachability: ReachabilityProviding
+
+    var onImagePreviewStateChanged: ((ImagePreviewState) -> Void)?
+    private(set) var imagePreviewState: ImagePreviewState = .idle {
+        didSet {
+            guard oldValue != imagePreviewState else { return }
+            onImagePreviewStateChanged?(imagePreviewState)
+        }
+    }
+
+    private var recordFetchAttempts = 0
+
+    init(file: FileModel, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
         self.tagsRepository = tagsRepository
+        self.reachability = reachability
         self.file = file
         name = file.name
     }
-    
+
+    // MARK: - Image preview state transitions
+
+    private var stateHasThumbnail: Bool {
+        switch imagePreviewState {
+        case .loadingFullRes(let hasThumbnail), .failed(let hasThumbnail), .offline(let hasThumbnail):
+            return hasThumbnail
+        case .loadingThumbnail, .loaded:
+            return true
+        case .idle:
+            return false
+        }
+    }
+
+    /// Returns false when offline: the caller should not start any network load.
+    @discardableResult
+    func startImageLoad(hasThumbnail: Bool) -> Bool {
+        guard reachability.isConnected else {
+            imagePreviewState = .offline(hasThumbnail: hasThumbnail)
+            return false
+        }
+        imagePreviewState = hasThumbnail ? .loadingThumbnail : .loadingFullRes(hasThumbnail: false)
+        return true
+    }
+
+    func thumbnailDidLoad() {
+        imagePreviewState = .loadingFullRes(hasThumbnail: true)
+    }
+
+    func fullResDidLoad() {
+        imagePreviewState = .loaded
+    }
+
+    func imageLoadDidFail(error: Error?) {
+        guard imagePreviewState != .loaded else { return }
+        if reachability.isConnected {
+            imagePreviewState = .failed(hasThumbnail: stateHasThumbnail)
+        } else {
+            imagePreviewState = .offline(hasThumbnail: stateHasThumbnail)
+        }
+    }
+
+    /// Returns true when the caller should restart the failed load (S8). While still offline it keeps the offline state and returns false (S7).
+    func retryRequested() -> Bool {
+        guard reachability.isConnected else {
+            imagePreviewState = .offline(hasThumbnail: stateHasThumbnail)
+            return false
+        }
+        recordFetchAttempts = 0
+        imagePreviewState = .loadingFullRes(hasThumbnail: stateHasThumbnail)
+        return true
+    }
+
+    /// Returns true when the caller should resume loading after connectivity came back while in the offline state.
+    func connectivityRestored() -> Bool {
+        guard case .offline = imagePreviewState, reachability.isConnected else { return false }
+        return retryRequested()
+    }
+
+    // MARK: - Record fetching
+
     func getRecord(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
         let downloadInfo = FileDownloadInfoVM(
             fileType: file.type,
             folderLinkId: file.folderLinkId,
             parentFolderLinkId: file.parentFolderLinkId
         )
-        
+
         downloader = DownloadManagerGCD()
         downloader?.getRecord(downloadInfo) { [weak self] (record, error) in
             self?.onRecordCallback(file: file, record: record, error: error, then: handler)
         }
     }
-    
+
     func onRecordCallback(file: FileModel, record: RecordVO?, error: Error?, then handler: @escaping (RecordVO?) -> Void) {
         if record != nil && error == nil {
+            recordFetchAttempts = 0
             recordVO = record
-            
+
             handler(record)
         } else {
+            recordFetchAttempts += 1
+            guard recordFetchAttempts < Self.maxRecordFetchAttempts, reachability.isConnected else {
+                recordFetchAttempts = 0
+                handler(nil)
+                return
+            }
             getRecord(file: file, then: handler)
         }
     }

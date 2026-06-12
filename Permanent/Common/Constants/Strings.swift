@@ -37,6 +37,10 @@ extension String {
     static var emailSent: String { return "EmailSent".localized() }
     static var cancel: String { return "Cancel".localized() }
     static var retry: String { return "Retry".localized() }
+    static var couldntLoadImage: String { return "CouldntLoadImage".localized() }
+    static var tapToRetry: String { return "TapToRetry".localized() }
+    static var youreOffline: String { return "YoureOffline".localized() }
+    static var connectToLoadFullQuality: String { return "ConnectToLoadFullQuality".localized() }
     static var resetPassword: String { return "ResetPassword".localized() }
     static var twoStepTitle: String { return "TwoStepTitle".localized() }
     static var twoStepSubtitle: String { return "TwoStepSubtitle".localized() }

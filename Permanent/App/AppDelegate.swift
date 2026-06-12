@@ -26,11 +26,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         clearShareDeepLinks()
-        
+
         initFirebase()
         initNotifications()
         configureLogging()
         configureImageCache()
+        ReachabilityManager.shared.startMonitoring()
+        #if DEBUG
+        if CommandLine.arguments.contains("--forceOffline") {
+            ReachabilityManager.shared.forceOffline = true
+            if let restoreArg = CommandLine.arguments.first(where: { $0.hasPrefix("--restoreConnectivityAfter=") }),
+               let seconds = Double(restoreArg.split(separator: "=").last ?? "") {
+                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                    ReachabilityManager.shared.forceOffline = false
+                }
+            }
+        }
+        #endif
         
         StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
         
