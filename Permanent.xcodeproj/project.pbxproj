@@ -245,6 +245,7 @@
 		5E4A256F2FB492FD009B1BF9 /* SearchFilesPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A256E2FB492FC009B1BF9 /* SearchFilesPage.swift */; };
 		5E4A25712FB4931D009B1BF9 /* SharedFilesBrowsingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25702FB4931D009B1BF9 /* SharedFilesBrowsingUITests.swift */; };
 		5E4A25732FB49352009B1BF9 /* MainFileOperationsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25722FB49352009B1BF9 /* MainFileOperationsUITests.swift */; };
+		5E17680000000000000000B2 /* FilePreviewStateUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E17680000000000000000B1 /* FilePreviewStateUITests.swift */; };
 		5E4A25752FB4937D009B1BF9 /* FileMenuActionsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25742FB4937D009B1BF9 /* FileMenuActionsUITests.swift */; };
 		5E4A25772FB4AE8D009B1BF9 /* FilePreviewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25762FB4AE8D009B1BF9 /* FilePreviewPage.swift */; };
 		5E4A25792FB4AE99009B1BF9 /* FileDetailsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25782FB4AE99009B1BF9 /* FileDetailsPage.swift */; };
@@ -975,6 +976,8 @@
 		F5216AE429228E7E0042914D /* PublicProfileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5216AE329228E7E0042914D /* PublicProfileUITests.swift */; };
 		F5216AED2923E03B0042914D /* XCUIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5216AEC2923E03B0042914D /* XCUIApplication+Extensions.swift */; };
 		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
+		5E17680000000000000000A2 /* ReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E17680000000000000000A1 /* ReachabilityManager.swift */; };
+		5E17680000000000000000A4 /* ImagePreviewStateOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E17680000000000000000A3 /* ImagePreviewStateOverlayView.swift */; };
 		F53519C6290BCB850035CCE9 /* Archives.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D0E26D058940090EF02 /* Archives.storyboard */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
@@ -1351,6 +1354,7 @@
 		5E4A256E2FB492FC009B1BF9 /* SearchFilesPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilesPage.swift; sourceTree = "<group>"; };
 		5E4A25702FB4931D009B1BF9 /* SharedFilesBrowsingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesBrowsingUITests.swift; sourceTree = "<group>"; };
 		5E4A25722FB49352009B1BF9 /* MainFileOperationsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFileOperationsUITests.swift; sourceTree = "<group>"; };
+		5E17680000000000000000B1 /* FilePreviewStateUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewStateUITests.swift; sourceTree = "<group>"; };
 		5E4A25742FB4937D009B1BF9 /* FileMenuActionsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuActionsUITests.swift; sourceTree = "<group>"; };
 		5E4A25762FB4AE8D009B1BF9 /* FilePreviewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewPage.swift; sourceTree = "<group>"; };
 		5E4A25782FB4AE99009B1BF9 /* FileDetailsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsPage.swift; sourceTree = "<group>"; };
@@ -2004,6 +2008,8 @@
 		F5216AE329228E7E0042914D /* PublicProfileUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicProfileUITests.swift; sourceTree = "<group>"; };
 		F5216AEC2923E03B0042914D /* XCUIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		5E17680000000000000000A1 /* ReachabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityManager.swift; sourceTree = "<group>"; };
+		5E17680000000000000000A3 /* ImagePreviewStateOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewStateOverlayView.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -3453,6 +3459,7 @@
 				5E7B9C262FB3D8AE00C1D3D0 /* ShareManagementUITests.swift */,
 				5E4A25702FB4931D009B1BF9 /* SharedFilesBrowsingUITests.swift */,
 				5E4A25722FB49352009B1BF9 /* MainFileOperationsUITests.swift */,
+				5E17680000000000000000B1 /* FilePreviewStateUITests.swift */,
 				5E4A25742FB4937D009B1BF9 /* FileMenuActionsUITests.swift */,
 				5EB0CEDD2FB4CC44002B8601 /* SettingsMenuNavigationUITests.swift */,
 			);
@@ -3866,6 +3873,7 @@
 				5E7A697C2EBA4CB4005FA69B /* Components */,
 				5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */,
 				5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */,
+				5E17680000000000000000A3 /* ImagePreviewStateOverlayView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4630,6 +4638,7 @@
 				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
 				BCE8DA7425652F4400842ABD /* FileAction.swift */,
 				F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */,
+				5E17680000000000000000A1 /* ReachabilityManager.swift */,
 				F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */,
 			);
 			path = Managers;
@@ -5680,6 +5689,8 @@
 				5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */,
 				92430A5F2AF2A1F00098597D /* EmailChipView.swift in Sources */,
 				F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */,
+				5E17680000000000000000A2 /* ReachabilityManager.swift in Sources */,
+				5E17680000000000000000A4 /* ImagePreviewStateOverlayView.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */,
@@ -5891,6 +5902,7 @@
 				5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */,
 				F5BEF69029241A1F00668A29 /* PublicProfilePage.swift in Sources */,
 				5E4A25732FB49352009B1BF9 /* MainFileOperationsUITests.swift in Sources */,
+				5E17680000000000000000B2 /* FilePreviewStateUITests.swift in Sources */,
 				5E07D44C28915C8E008C0A6B /* LoginPage.swift in Sources */,
 				F5BEF69229241B8E00668A29 /* PublicProfileAboutPage.swift in Sources */,
 				5E4A25772FB4AE8D009B1BF9 /* FilePreviewPage.swift in Sources */,

@@ -204,8 +204,16 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func closeButtonAction(_ sender: Any) {
-        dismiss(animated: false) {
-            self.delegate?.filePreviewNavigationControllerWillClose(self, hasChanges: (self.navigationController as? FilePreviewNavigationController)?.hasChanges ?? false)
+        // Hand off to the delegate (the preview pager), which dismisses the whole
+        // presentation chain in one animated transition. Dismissing this details modal
+        // here first (animated: false) would briefly reveal the fullscreen preview
+        // underneath before it too gets dismissed — a visible flash.
+        let hasChanges = (self.navigationController as? FilePreviewNavigationController)?.hasChanges ?? false
+        if let delegate = delegate {
+            delegate.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
+        } else {
+            // No delegate wired — still ensure the modal closes rather than getting stuck.
+            dismiss(animated: true)
         }
     }
 
