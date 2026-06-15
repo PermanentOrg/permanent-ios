@@ -115,6 +115,14 @@ class FilePreviewViewModel: ViewModelInterface {
     // MARK: - Record fetching
 
     func getRecord(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
+        #if DEBUG
+        // QA hook: launch with `--failRecordLoad` to simulate a failed record fetch
+        // (e.g. a real-device offline open), exercising the failure/offline preview card.
+        if CommandLine.arguments.contains("--failRecordLoad") {
+            handler(nil)
+            return
+        }
+        #endif
         let downloadInfo = FileDownloadInfoVM(
             fileType: file.type,
             folderLinkId: file.folderLinkId,

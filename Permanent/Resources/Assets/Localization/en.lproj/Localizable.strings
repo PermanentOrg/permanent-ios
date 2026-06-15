@@ -199,6 +199,7 @@
 
 /// Full screen image preview states (VSP-1768)
 "CouldntLoadImage" = "Couldn't load image.";
+"CouldntLoadFile" = "Couldn't load file.";
 "TapToRetry" = "Tap to Retry.";
 "YoureOffline" = "You're offline.";
 "ConnectToLoadFullQuality" = "Connect to load full quality.";

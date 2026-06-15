@@ -38,6 +38,7 @@ extension String {
     static var cancel: String { return "Cancel".localized() }
     static var retry: String { return "Retry".localized() }
     static var couldntLoadImage: String { return "CouldntLoadImage".localized() }
+    static var couldntLoadFile: String { return "CouldntLoadFile".localized() }
     static var tapToRetry: String { return "TapToRetry".localized() }
     static var youreOffline: String { return "YoureOffline".localized() }
     static var connectToLoadFullQuality: String { return "ConnectToLoadFullQuality".localized() }

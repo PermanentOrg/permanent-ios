@@ -44,29 +44,18 @@ final class AccountDeleteViewModelTests: XCTestCase {
     }
 
     // MARK: - Delete Account Tests
-
-    func testDeleteAccount_WithNoSession_ReturnsFalse() {
-        let viewModel = AccountDeleteViewModel()
-        let expectation = expectation(description: "deleteAccount completion called")
-
-        viewModel.deleteAccount { success in
-            XCTAssertFalse(success, "deleteAccount should return false when there is no active session")
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: 2.0)
-    }
-
-    func testDeleteAccount_WithNoSession_CallsCompletionSynchronously() {
-        let viewModel = AccountDeleteViewModel()
-        var completionCalled = false
-
-        viewModel.deleteAccount { _ in
-            completionCalled = true
-        }
-
-        XCTAssertTrue(completionCalled, "Completion should be called immediately when session is nil (guard returns early)")
-    }
+    //
+    // DO NOT call viewModel.deleteAccount() from a unit test. It is NOT mockable:
+    // it reads AuthenticationManager.shared.session and hits the real
+    // /account/delete endpoint via APIRequestDispatcher(). These tests assumed no
+    // active session (so deleteAccount would early-return false), but the session
+    // persists in the shared keychain across runs — if any account is logged in on
+    // the test host, running them DELETES that real account on the backend.
+    //
+    // Safe coverage requires making AccountDeleteViewModel injectable (a session
+    // provider + dispatcher seam, like FilePreviewViewModel's ReachabilityProviding)
+    // and asserting against a mock. Until then, the delete path is left untested
+    // here rather than risk destroying a live account.
 
     // MARK: - ViewModelInterface Default Methods Tests
 

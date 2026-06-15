@@ -15,6 +15,9 @@ import CoreImage.CIFilterBuiltins
 /// so letterbox areas around the image stay black (per design); it never touches the image itself.
 class ImagePreviewStateOverlayView: UIView {
     var onRetryTapped: (() -> Void)?
+    /// Selects the noun in the failed-load copy: "Couldn't load image" for photos,
+    /// "Couldn't load file" for video/audio/documents.
+    var isImageContent = true
 
     private let blurredImageView = UIImageView()
     private let noThumbnailBackground = UIView()
@@ -29,6 +32,10 @@ class ImagePreviewStateOverlayView: UIView {
 
     private var sourceImage: UIImage?
     private var spinnerDelayWorkItem: DispatchWorkItem?
+    /// Resting opacity of the loader. Over photos the screen blend already makes it read
+    /// as soft/translucent at full alpha; on the light neutral background screen blend
+    /// vanishes, so a reduced alpha gives the same melted-into-the-glow look instead.
+    private var spinnerTargetAlpha: CGFloat = 1
 
     /// The loader appears only when the full image hasn't arrived within this interval (S2).
     static let spinnerAppearanceDelay: TimeInterval = 0.5
@@ -54,9 +61,11 @@ class ImagePreviewStateOverlayView: UIView {
         addSubview(noThumbnailBackground)
 
         logoImageView.contentMode = .scaleAspectFit
+        logoImageView.alpha = 0.7
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         noThumbnailBackground.addSubview(logoImageView)
-        Self.blurred(UIImage(named: "logo_preview")) { [weak self] blurredLogo in
+        // Soft edges: the logo glow must melt into the background, not end in a rectangle.
+        Self.blurred(UIImage(named: "logo_preview"), softEdges: true) { [weak self] blurredLogo in
             self?.logoImageView.image = blurredLogo
         }
 
@@ -129,6 +138,20 @@ class ImagePreviewStateOverlayView: UIView {
     }
 
     @objc private func overlayTapped() {
+        // Acknowledge the tap with a quick press animation on the card — gives the user
+        // visual feedback even when the retry can't proceed (e.g. still offline) or fails
+        // again immediately.
+        if !messageCard.isHidden {
+            UIView.animate(withDuration: 0.12, delay: 0, options: [.allowUserInteraction], animations: {
+                self.messageCard.transform = CGAffineTransform(scaleX: 0.94, y: 0.94)
+                self.messageCard.alpha = 0.6
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.12, delay: 0, options: [.allowUserInteraction], animations: {
+                    self.messageCard.transform = .identity
+                    self.messageCard.alpha = 1
+                })
+            })
+        }
         onRetryTapped?()
     }
 
@@ -171,6 +194,7 @@ class ImagePreviewStateOverlayView: UIView {
             showOverlay()
             blurredImageView.isHidden = !hasThumbnail
             noThumbnailBackground.isHidden = hasThumbnail
+            updateSpinnerBlend(overPhoto: hasThumbnail)
             messageCard.isHidden = true
             // S2: the loader appears only when the full image hasn't arrived within 500 ms,
             // so fast loads never flash a spinner.
@@ -180,7 +204,7 @@ class ImagePreviewStateOverlayView: UIView {
                 self.spinnerHost.view.alpha = 0
                 self.spinnerHost.view.isHidden = false
                 UIView.animate(withDuration: 0.2) {
-                    self.spinnerHost.view.alpha = 1
+                    self.spinnerHost.view.alpha = self.spinnerTargetAlpha
                 }
             }
             spinnerDelayWorkItem = workItem
@@ -191,7 +215,8 @@ class ImagePreviewStateOverlayView: UIView {
             blurredImageView.isHidden = !hasThumbnail
             noThumbnailBackground.isHidden = hasThumbnail
             spinnerHost.view.isHidden = true
-            showCard(icon: "arrow.clockwise", message: "\(String.couldntLoadImage)\n\(String.tapToRetry)")
+            let failedTitle = isImageContent ? String.couldntLoadImage : String.couldntLoadFile
+            showCard(icon: "arrow.clockwise", message: "\(failedTitle)\n\(String.tapToRetry)")
 
         case .offline(let hasThumbnail):
             showOverlay()
@@ -206,24 +231,39 @@ class ImagePreviewStateOverlayView: UIView {
         layer.removeAllAnimations()
         alpha = 1
         isHidden = false
-        spinnerHost.view.alpha = 1
+        spinnerHost.view.alpha = spinnerTargetAlpha
     }
 
-    /// Gaussian-blurs an image off the main thread, clamping the edges so the blur
-    /// doesn't fade to transparent at the borders.
-    private static func blurred(_ image: UIImage?, radius: Double = 24, completion: @escaping (UIImage?) -> Void) {
+    /// Over photo blur the loader uses screen blending (per the Figma component) at full
+    /// alpha — the blend keeps it soft. On the light neutral background screen blending
+    /// vanishes, so the loader instead drops to a lower alpha to melt into the logo glow,
+    /// matching the translucent feel of the photo loader.
+    private func updateSpinnerBlend(overPhoto: Bool) {
+        spinnerHost.view.layer.compositingFilter = overPhoto ? "screenBlendMode" : nil
+        spinnerTargetAlpha = overPhoto ? 1 : 0.5
+        spinnerHost.view.alpha = spinnerTargetAlpha
+    }
+
+    // CIContext creation is expensive (~100-300 ms); share one across blurs so the
+    // placeholder appears within a frame or two of the thumbnail.
+    private static let blurContext = CIContext()
+
+    /// Gaussian-blurs an image off the main thread. With `softEdges` false the edges are
+    /// clamped so the blur stays full-bleed (photo placeholders); with `softEdges` true the
+    /// blur fades out into transparency beyond the original bounds (logo glow).
+    private static func blurred(_ image: UIImage?, radius: Double = 24, softEdges: Bool = false, completion: @escaping (UIImage?) -> Void) {
         guard let image = image, let ciImage = CIImage(image: image) else {
             completion(nil)
             return
         }
         DispatchQueue.global(qos: .userInitiated).async {
             let filter = CIFilter.gaussianBlur()
-            filter.inputImage = ciImage.clampedToExtent()
+            filter.inputImage = softEdges ? ciImage : ciImage.clampedToExtent()
             filter.radius = Float(radius)
 
-            let context = CIContext()
+            let renderRect = softEdges ? ciImage.extent.insetBy(dx: -2 * radius, dy: -2 * radius) : ciImage.extent
             guard let output = filter.outputImage,
-                  let cgImage = context.createCGImage(output, from: ciImage.extent) else {
+                  let cgImage = blurContext.createCGImage(output, from: renderRect) else {
                 DispatchQueue.main.async { completion(image) }
                 return
             }
@@ -233,6 +273,9 @@ class ImagePreviewStateOverlayView: UIView {
     }
 
     private func showCard(icon: String, message: String) {
+        // Reset any leftover press-animation transform/alpha before showing.
+        messageCard.transform = .identity
+        messageCard.alpha = 1
         iconImageView.image = UIImage(systemName: icon, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))
 
         let paragraphStyle = NSMutableParagraphStyle()
