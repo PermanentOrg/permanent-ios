@@ -115,7 +115,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             itemVOS: nil, birthDay: nil, company: nil, archiveVODescription: nil,
             archiveID: 9999, publicDT: nil, archiveNbr: "9999-0000",
             view: nil, viewProperty: nil, archiveVOPublic: nil, vaultKey: nil,
-            thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil,
+            thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil, thumbnail256: nil,
             thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil,
             thumbDT: nil, createdDT: nil, updatedDT: nil, status: nil
         )
@@ -158,7 +158,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             itemVOS: nil, birthDay: nil, company: nil, archiveVODescription: nil,
             archiveID: 9999, publicDT: nil, archiveNbr: "9999-0000",
             view: nil, viewProperty: nil, archiveVOPublic: nil, vaultKey: nil,
-            thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil,
+            thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil, thumbnail256: nil,
             thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil,
             thumbDT: nil, createdDT: nil, updatedDT: nil, status: nil
         )
@@ -826,7 +826,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 9999,
             publicDT: nil, archiveNbr: "9999-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: nil
         )
@@ -873,7 +873,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 9999,
             publicDT: nil, archiveNbr: "9999-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: nil
         )
@@ -1191,7 +1191,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 9999,
             publicDT: nil, archiveNbr: "9999-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: nil
         )
@@ -1352,7 +1352,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 9999,
             publicDT: nil, archiveNbr: "9999-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: nil
         )
@@ -1441,7 +1441,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 10629,
             publicDT: nil, archiveNbr: "07cm-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: .ok
         )
@@ -1473,7 +1473,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 10272,
             publicDT: nil, archiveNbr: "072p-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: .ok
         )
@@ -1504,7 +1504,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 99999,
             publicDT: nil, archiveNbr: "9999-0000", view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: nil, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil,
             updatedDT: nil, status: .ok
         )
@@ -1814,6 +1814,7 @@ private struct RestrictedShareApprovedRepo: SharePreviewRepositoryProtocol {
                 type: data.folderData?.type,
                 thumbStatus: data.folderData?.thumbStatus,
                 imageRatio: data.folderData?.imageRatio,
+                thumbnail256: data.folderData?.thumbnail256,
                 thumbURL200: data.folderData?.thumbURL200,
                 thumbURL500: data.folderData?.thumbURL500,
                 thumbURL1000: data.folderData?.thumbURL1000,

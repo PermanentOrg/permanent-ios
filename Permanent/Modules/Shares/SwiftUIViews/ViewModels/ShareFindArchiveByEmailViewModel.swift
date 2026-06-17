@@ -198,7 +198,7 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
             archiveID: archive.archiveID,
             initials: initials(for: fullName),
             name: formattedArchiveName(from: fullName),
-            thumbnailURL: archive.thumbURL200 ?? archive.thumbURL500
+            thumbnailURL: archive.preferredThumbnailURL
         )
     }
 

@@ -241,10 +241,11 @@ class ShareItemViewModel: ObservableObject {
     var thumbnailURL: String? {
         // Use V2 record thumbnail if available, otherwise use fileModel
         if let v2Data = shareLinkV2Data, v2Data.itemType == "record",
-           let recordThumb = recordV2ThumbnailURL {
+           let recordThumb = recordV2ThumbnailURL, !recordThumb.isEmpty {
             return recordThumb
         }
-        return fileModel.thumbnailURL500
+        guard let url = fileModel.preferredThumbnailURL, !url.isEmpty else { return nil }
+        return url
     }
 
     var isFolder: Bool {

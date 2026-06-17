@@ -46,6 +46,7 @@ final class ArchivesEndpointTests: XCTestCase {
             type: type,
             thumbStatus: nil,
             imageRatio: nil,
+            thumbnail256: nil,
             thumbURL200: nil,
             thumbURL500: nil,
             thumbURL1000: nil,

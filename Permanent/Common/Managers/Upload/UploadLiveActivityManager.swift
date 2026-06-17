@@ -466,7 +466,18 @@ class UploadLiveActivityManager {
 
     private func calculateOverallProgress() -> Double {
         guard totalFiles > 0 else { return 0.0 }
-        return min((Double(completedFiles) + currentFileProgress) / Double(totalFiles), 1.0)
+
+        // The batch is only ever 100% once every file has actually finished
+        // (completed or failed). A file whose *bytes* have all uploaded isn't
+        // "done" until its server-side registration lands — so while any file is
+        // still in flight we cap below 100%. Without this, the current file's
+        // byte progress fills its slot to 1.0 and the bar reads "100%" next to
+        // e.g. "3 of 4", which looks finished while the upload is still working.
+        let processed = completedFiles + failedFiles
+        guard processed < totalFiles else { return 1.0 }
+
+        let raw = (Double(completedFiles) + currentFileProgress) / Double(totalFiles)
+        return min(raw, 0.99)
     }
 
     private func resetState() {

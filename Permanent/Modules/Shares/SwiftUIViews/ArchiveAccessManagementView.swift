@@ -212,7 +212,7 @@ struct ArchiveAccessManagementView: View {
                     return nil
                 }()
                 archiveName = archiveVO?.fullName ?? "Unknown Archive"
-                archiveThumbnailURL = archiveVO?.thumbURL200 ?? archiveVO?.thumbURL500 ?? archiveVO?.thumbURL1000 ?? archiveVO?.thumbURL2000
+                archiveThumbnailURL = archiveVO?.preferredThumbnailURL
             }
         }
         .overlay {

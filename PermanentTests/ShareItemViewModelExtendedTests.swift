@@ -550,7 +550,10 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.updateShareLinkV2(shareLinkId: "link-123")
 
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        // Poll for the merge to complete instead of a fixed sleep: the merged
+        // permissionsLevel is the last value set in the async chain (Task →
+        // repo callback → MainActor), so a fixed 500ms window flaked on slow CI.
+        await waitUntil(vm.shareLinkV2Data?.permissionsLevel == "editor")
 
         XCTAssertEqual(vm.shareLinkV2Data?.itemId, "folder-1", "Should preserve itemId from previous data")
         XCTAssertEqual(vm.shareLinkV2Data?.itemType, "folder", "Should preserve itemType from previous data")
@@ -577,7 +580,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.performRevokeLink()
 
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        await waitUntil(vm.shareLink == nil && vm.shareLinkV2Data == nil)
 
         XCTAssertTrue(repo.deleteShareLinkV2Called)
         XCTAssertEqual(repo.lastDeleteShareLinkId, "link-to-delete")
@@ -752,7 +755,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
         vm.shareLinkV2Data = nil
         vm.recordV2ThumbnailURL = nil
 
-        XCTAssertEqual(vm.thumbnailURL, vm.fileModel.thumbnailURL500)
+        XCTAssertEqual(vm.thumbnailURL, vm.fileModel.preferredThumbnailURL)
     }
 
     // MARK: - Navigation Flow Tests
@@ -1383,7 +1386,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
             itemVOS: nil, birthDay: nil, company: nil, archiveVODescription: nil,
             archiveID: 500, publicDT: nil, archiveNbr: nil, view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil,
-            thumbStatus: .ok, imageRatio: nil, thumbURL200: nil, thumbURL500: nil,
+            thumbStatus: .ok, imageRatio: nil, thumbnail256: nil, thumbURL200: nil, thumbURL500: nil,
             thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil,
             createdDT: nil, updatedDT: nil, status: .ok
         )

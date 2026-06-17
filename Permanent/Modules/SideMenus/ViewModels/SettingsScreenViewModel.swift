@@ -167,7 +167,7 @@ class SettingsScreenViewModel: ObservableObject {
     func getCurrentArchiveThumbnail() {
         guard let defaultArchiveID = accountData?.defaultArchiveID,
               let accountId = AuthenticationManager.shared.session?.account.accountID else {
-            if let fallback = AuthenticationManager.shared.session?.selectedArchive?.thumbURL200 ?? AuthenticationManager.shared.session?.selectedArchive?.thumbURL500 {
+            if let fallback = AuthenticationManager.shared.session?.selectedArchive?.preferredThumbnailURL {
                 selectedArchiveThumbnailURL = URL(string: fallback)
             }
             return
@@ -181,7 +181,7 @@ class SettingsScreenViewModel: ObservableObject {
                model.isSuccessful,
                let archives = model.results.first?.data {
                 let defaultArchive = archives.first(where: { $0.archiveVO?.archiveID == defaultArchiveID })?.archiveVO
-                let thumbString = defaultArchive?.thumbURL200 ?? defaultArchive?.thumbURL500 ?? defaultArchive?.thumbURL1000 ?? defaultArchive?.thumbURL2000
+                let thumbString = defaultArchive?.preferredThumbnailURL
                 if let thumbString, let url = URL(string: thumbString) {
                     DispatchQueue.main.async {
                         self.selectedArchiveThumbnailURL = url

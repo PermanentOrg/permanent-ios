@@ -25,6 +25,7 @@ struct FileModel: Equatable, Codable {
         }
     }
     
+    let thumbnailURL256: String?
     let thumbnailURL: String?
     let thumbnailURL500: String?
     let thumbnailURL1000: String?
@@ -62,7 +63,7 @@ struct FileModel: Equatable, Codable {
     var accessRole: AccessRole = .viewer
     
     var sharedByArchive: MinArchiveVO?
-    
+
     init(model: FileInfo, archiveThumbnailURL: String? = nil, permissions: [Permission], thumbnailURL2000: String? = nil) {
         self.name = model.name
         self.date = DateUtils.currentDate
@@ -73,6 +74,7 @@ struct FileModel: Equatable, Codable {
         self.size = -1
         self.uploadFileName = ""
         self.archiveThumbnailURL = archiveThumbnailURL
+        self.thumbnailURL256 = nil
         self.thumbnailURL = nil
         self.thumbnailURL500 = nil
         self.thumbnailURL1000 = nil
@@ -103,6 +105,7 @@ struct FileModel: Equatable, Codable {
         self.size = -1
         self.uploadFileName = ""
         self.archiveThumbnailURL = ""
+        self.thumbnailURL256 = nil
         self.thumbnailURL = nil
         self.thumbnailURL500 = nil
         self.thumbnailURL1000 = nil
@@ -128,10 +131,11 @@ struct FileModel: Equatable, Codable {
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
             
-        self.thumbnailURL = model.thumbURL200
-        self.thumbnailURL500 = model.thumbURL500
-        self.thumbnailURL1000 = model.thumbURL1000
-        self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbnailURL256 = model.thumbnail256
+        self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
+        self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
+        self.thumbnailURL1000 = model.preferredThumbnailURL ?? model.thumbURL1000
+        self.thumbnailURL2000 = model.preferredThumbnailURL ?? model.thumbURL2000
         self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.description = model.itemVODescription ?? ""
         self.size = model.size ?? -1
@@ -153,7 +157,7 @@ struct FileModel: Equatable, Codable {
         self.permissions = permissions
         self.accessRole = accessRole
         self.tagVOS = model.tagVOS
-        
+
         if let fullName = sharedByArchive?.fullName,
            let archiveIdURL = sharedByArchive?.archiveID {
             let minArchive = MinArchiveVO(name: fullName, thumbnail: sharedByArchive?.thumbURL200, shareStatus: "", shareId: 0, archiveID: archiveIdURL, folderLinkID: nil, accessRole: sharedByArchive?.accessRole)
@@ -178,10 +182,11 @@ struct FileModel: Equatable, Codable {
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
             
-        self.thumbnailURL = model.thumbURL200
-        self.thumbnailURL500 = model.thumbURL500
-        self.thumbnailURL1000 = model.thumbURL1000
-        self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbnailURL256 = model.thumbnail256
+        self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
+        self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
+        self.thumbnailURL1000 = model.preferredThumbnailURL ?? model.thumbURL1000
+        self.thumbnailURL2000 = model.preferredThumbnailURL ?? model.thumbURL2000
         self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.description = model.recordVODescription ?? ""
         self.size = Int64(model.size ?? -1)
@@ -203,7 +208,7 @@ struct FileModel: Equatable, Codable {
         self.permissions = permissions
         self.accessRole = accessRole
         self.tagVOS = model.tagVOS
-        
+
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
                let thumbnailURL = $0.archiveVO?.thumbURL200,
@@ -223,10 +228,11 @@ struct FileModel: Equatable, Codable {
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
             
-        self.thumbnailURL = model.thumbURL200
-        self.thumbnailURL500 = model.thumbURL500
-        self.thumbnailURL1000 = model.thumbURL1000
-        self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbnailURL256 = model.thumbnail256
+        self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
+        self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
+        self.thumbnailURL1000 = model.preferredThumbnailURL ?? model.thumbURL1000
+        self.thumbnailURL2000 = model.preferredThumbnailURL ?? model.thumbURL2000
         self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         self.description = model.childFolderVOS?.description ?? ""
@@ -247,7 +253,7 @@ struct FileModel: Equatable, Codable {
         self.permissions = permissions
         self.accessRole = accessRole
         self.tagVOS = model.tagVOS
-        
+
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
                let thumbnailURL = $0.archiveVO?.thumbURL200,
@@ -267,10 +273,11 @@ struct FileModel: Equatable, Codable {
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
             
-        self.thumbnailURL = model.thumbURL200
-        self.thumbnailURL500 = model.thumbURL500
-        self.thumbnailURL1000 = model.thumbURL1000
-        self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbnailURL256 = model.thumbnail256
+        self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
+        self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
+        self.thumbnailURL1000 = model.preferredThumbnailURL ?? model.thumbURL1000
+        self.thumbnailURL2000 = model.preferredThumbnailURL ?? model.thumbURL2000
         self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.type = FileType.publicRootFolder
         self.description = model.childFolderVOS?.description ?? ""
@@ -290,9 +297,16 @@ struct FileModel: Equatable, Codable {
         self.tagVOS = nil
         
         self.permissions = []
+
     }
     
     var canBeAccessed: Bool {
         return thumbStatus != .copying && thumbStatus != .moving
+    }
+
+    var preferredThumbnailURL: String? {
+        [thumbnailURL256, thumbnailURL500, thumbnailURL, thumbnailURL1000, thumbnailURL2000]
+            .compactMap { $0 }
+            .first { !$0.isEmpty }
     }
 }

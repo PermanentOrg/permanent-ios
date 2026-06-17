@@ -79,7 +79,7 @@ extension ShareItemViewModel {
                             return
                         }
 
-                        self.recordV2ThumbnailURL = recordData.thumbUrl500 ?? recordData.thumbnailUrls?.url500
+                        self.recordV2ThumbnailURL = recordData.preferredThumbnailURL
 
                         if let folderLinkIdString = recordData.folderLinkId,
                            let folderLinkIdInt = Int(folderLinkIdString) {
@@ -382,16 +382,17 @@ extension ShareItemViewModel {
         ]
 
         // Add thumbnail URLs in priority order (use highest quality available)
-        if let thumbUrl2000 = archiveData.thumbUrl2000 {
+        // Filter out empty strings that V2 API may return instead of null
+        if let thumbUrl2000 = archiveData.thumbUrl2000, !thumbUrl2000.isEmpty {
             archiveDict["thumbURL2000"] = thumbUrl2000
         }
-        if let thumbUrl1000 = archiveData.thumbUrl1000 {
+        if let thumbUrl1000 = archiveData.thumbUrl1000, !thumbUrl1000.isEmpty {
             archiveDict["thumbURL1000"] = thumbUrl1000
         }
-        if let thumbUrl500 = archiveData.thumbUrl500 {
+        if let thumbUrl500 = archiveData.thumbUrl500, !thumbUrl500.isEmpty {
             archiveDict["thumbURL500"] = thumbUrl500
         }
-        if let thumbUrl200 = archiveData.thumbUrl200 {
+        if let thumbUrl200 = archiveData.thumbUrl200, !thumbUrl200.isEmpty {
             archiveDict["thumbURL200"] = thumbUrl200
         }
 

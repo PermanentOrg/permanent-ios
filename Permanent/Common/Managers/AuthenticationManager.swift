@@ -9,6 +9,7 @@ import UIKit
 import KeychainSwift
 import FirebaseMessaging
 import os.log
+import SDWebImage
 
 class AuthenticationManager {
     static let shared = AuthenticationManager()
@@ -228,6 +229,10 @@ class AuthenticationManager {
         session = nil
         keychainHandler.clearSession()
         UserDefaults.standard.set(false, forKey: Constants.Keys.StorageKeys.memberChecklistWasShown)
+        
+        // Clear cached images to prevent data leaking between accounts
+        SDImageCache.shared.clearMemory()
+        SDImageCache.shared.clearDisk()
         
         Messaging.messaging().deleteFCMToken(forSenderID: googleServiceInfo.gcmSenderId) { _ in }
     }

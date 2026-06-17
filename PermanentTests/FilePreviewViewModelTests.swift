@@ -186,3 +186,200 @@ final class FilePreviewViewModelTests: XCTestCase {
         XCTAssertEqual(vm.publicURL?.absoluteString, "https://example.com/file")
     }
 }
+
+// MARK: - Image preview state machine (VSP-1768)
+
+private final class MockReachability: ReachabilityProviding {
+    var isConnected: Bool
+
+    init(isConnected: Bool = true) {
+        self.isConnected = isConnected
+    }
+}
+
+extension FilePreviewViewModelTests {
+
+    private func makeImageVM(isConnected: Bool = true) -> (FilePreviewViewModel, MockReachability) {
+        let reachability = MockReachability(isConnected: isConnected)
+        let vm = FilePreviewViewModel(file: FileModel.mockFile(), reachability: reachability)
+        return (vm, reachability)
+    }
+
+    func testStartImageLoad_WithThumbnail_EntersLoadingThumbnail() {
+        let (vm, _) = makeImageVM()
+
+        XCTAssertTrue(vm.startImageLoad(hasThumbnail: true))
+        XCTAssertEqual(vm.imagePreviewState, .loadingThumbnail)
+    }
+
+    func testStartImageLoad_NoThumbnail_EntersLoadingFullResWithoutThumbnail() {
+        let (vm, _) = makeImageVM()
+
+        XCTAssertTrue(vm.startImageLoad(hasThumbnail: false))
+        XCTAssertEqual(vm.imagePreviewState, .loadingFullRes(hasThumbnail: false))
+    }
+
+    func testStartImageLoad_Offline_EntersOfflineState_AndBlocksLoading() {
+        let (vm, _) = makeImageVM(isConnected: false)
+
+        XCTAssertFalse(vm.startImageLoad(hasThumbnail: true))
+        XCTAssertEqual(vm.imagePreviewState, .offline(hasThumbnail: true))
+    }
+
+    func testThumbnailDidLoad_TransitionsToLoadingFullRes() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+
+        vm.thumbnailDidLoad()
+
+        XCTAssertEqual(vm.imagePreviewState, .loadingFullRes(hasThumbnail: true))
+    }
+
+    func testFullResDidLoad_TransitionsToLoaded() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.thumbnailDidLoad()
+
+        vm.fullResDidLoad()
+
+        XCTAssertEqual(vm.imagePreviewState, .loaded)
+    }
+
+    func testImageLoadDidFail_Online_EntersFailedState_PreservingHasThumbnail() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.thumbnailDidLoad()
+
+        vm.imageLoadDidFail(error: nil)
+
+        XCTAssertEqual(vm.imagePreviewState, .failed(hasThumbnail: true))
+    }
+
+    func testImageLoadDidFail_Online_NoThumbnail_KeepsHasThumbnailFalse() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: false)
+
+        vm.imageLoadDidFail(error: nil)
+
+        XCTAssertEqual(vm.imagePreviewState, .failed(hasThumbnail: false))
+    }
+
+    func testImageLoadDidFail_Offline_EntersOfflineState() {
+        let (vm, reachability) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.thumbnailDidLoad()
+        reachability.isConnected = false
+
+        vm.imageLoadDidFail(error: nil)
+
+        XCTAssertEqual(vm.imagePreviewState, .offline(hasThumbnail: true))
+    }
+
+    func testImageLoadDidFail_AfterLoaded_IsIgnored() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.fullResDidLoad()
+
+        vm.imageLoadDidFail(error: nil)
+
+        XCTAssertEqual(vm.imagePreviewState, .loaded)
+    }
+
+    func testRetryRequested_Online_EntersLoadingFullRes_ReturnsTrue() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.thumbnailDidLoad()
+        vm.imageLoadDidFail(error: nil)
+
+        XCTAssertTrue(vm.retryRequested())
+        XCTAssertEqual(vm.imagePreviewState, .loadingFullRes(hasThumbnail: true))
+    }
+
+    func testRetryRequested_StillOffline_StaysOffline_ReturnsFalse() {
+        let (vm, _) = makeImageVM(isConnected: false)
+        vm.startImageLoad(hasThumbnail: true)
+
+        XCTAssertFalse(vm.retryRequested())
+        XCTAssertEqual(vm.imagePreviewState, .offline(hasThumbnail: true))
+    }
+
+    func testConnectivityRestored_FromOffline_ResumesLoading() {
+        let (vm, reachability) = makeImageVM(isConnected: false)
+        vm.startImageLoad(hasThumbnail: true)
+        reachability.isConnected = true
+
+        XCTAssertTrue(vm.connectivityRestored())
+        XCTAssertEqual(vm.imagePreviewState, .loadingFullRes(hasThumbnail: true))
+    }
+
+    func testConnectivityRestored_WhenNotOffline_DoesNothing() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.fullResDidLoad()
+
+        XCTAssertFalse(vm.connectivityRestored())
+        XCTAssertEqual(vm.imagePreviewState, .loaded)
+    }
+
+    func testStateChangeClosure_FiresOnlyOnDistinctStates() {
+        let (vm, _) = makeImageVM()
+        var observedStates: [ImagePreviewState] = []
+        vm.onImagePreviewStateChanged = { observedStates.append($0) }
+
+        vm.startImageLoad(hasThumbnail: true)
+        vm.thumbnailDidLoad()
+        vm.thumbnailDidLoad()
+        vm.fullResDidLoad()
+
+        XCTAssertEqual(observedStates, [.loadingThumbnail, .loadingFullRes(hasThumbnail: true), .loaded])
+    }
+
+    /// Regression test for the former infinite retry loop: repeated record-fetch
+    /// failures must stop after maxRecordFetchAttempts and report nil to the caller.
+    func testOnRecordCallback_RepeatedErrors_StopsAfterCapAndCallsHandlerWithNil() {
+        final class GetRecordSpyViewModel: FilePreviewViewModel {
+            var getRecordCallCount = 0
+            override func getRecord(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
+                getRecordCallCount += 1
+            }
+        }
+
+        let vm = GetRecordSpyViewModel(file: FileModel.mockFile(), reachability: MockReachability(isConnected: true))
+        let error = NSError(domain: "test", code: -1)
+        var handlerCalled = false
+        var handlerRecord: RecordVO? = RecordVO(recordVO: nil)
+        let handler: (RecordVO?) -> Void = { record in
+            handlerCalled = true
+            handlerRecord = record
+        }
+
+        // Failures below the cap retry by re-calling getRecord, never the handler.
+        vm.onRecordCallback(file: FileModel.mockFile(), record: nil, error: error, then: handler)
+        XCTAssertEqual(vm.getRecordCallCount, 1)
+        XCTAssertFalse(handlerCalled)
+
+        vm.onRecordCallback(file: FileModel.mockFile(), record: nil, error: error, then: handler)
+        XCTAssertEqual(vm.getRecordCallCount, 2)
+        XCTAssertFalse(handlerCalled)
+
+        // The attempt that reaches the cap stops retrying and surfaces nil.
+        vm.onRecordCallback(file: FileModel.mockFile(), record: nil, error: error, then: handler)
+        XCTAssertEqual(vm.getRecordCallCount, 2)
+        XCTAssertTrue(handlerCalled)
+        XCTAssertNil(handlerRecord)
+    }
+
+    func testOnRecordCallback_Offline_FailsImmediately() {
+        let (vm, _) = makeImageVM(isConnected: false)
+        var handlerCalled = false
+        var handlerRecord: RecordVO? = RecordVO(recordVO: nil)
+
+        vm.onRecordCallback(file: FileModel.mockFile(), record: nil, error: NSError(domain: "test", code: -1)) { record in
+            handlerCalled = true
+            handlerRecord = record
+        }
+
+        XCTAssertTrue(handlerCalled)
+        XCTAssertNil(handlerRecord)
+    }
+}

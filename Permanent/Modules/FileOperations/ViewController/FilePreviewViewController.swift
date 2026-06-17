@@ -10,6 +10,7 @@ import WebKit
 import AVKit
 import PDFKit
 import SwiftUI
+import SDWebImage
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -42,15 +43,19 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
+
+    let imageStateOverlay = ImagePreviewStateOverlayView()
+
     var recordLoadedCB: ((FilePreviewViewController) -> Void)?
     var closeAction: (() -> Void)?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        setupImageStateOverlay()
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareLinkViewModel.didUpdateSharesNotifName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareItemViewModel.didUpdateSharesNotifName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onReachabilityChanged(_:)), name: ReachabilityManager.reachabilityDidChangeNotifName, object: nil)
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
@@ -62,6 +67,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        stopObservingPlayerItem()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -72,42 +78,179 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         styleNavBar()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if pendingAudioReveal {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                self?.startAudioBlurRevealIfPossible()
+            }
+        }
+    }
+    
+    var imagePreviewVC: ImagePreviewViewController?
     
     func loadVM() {
         guard recordLoaded == false else { return }
-        
+        imageStateOverlay.isImageContent = file.type == .image
+
         if isViewLoaded {
             activityIndicator.startAnimating()
-            if let url = URL(string: file.thumbnailURL) {
-                thumbnailImageView.sd_setImage(with: url)
+            if file.type == .audio {
+                // Audio goes straight from black + spinner to the blurred QuickTime
+                // artwork (loadAudio) — no neutral glow, and no thumbnail either
+                // (it is a file-type icon, not content).
+                thumbnailImageView.isHidden = true
+            } else {
+                if let url = URL(string: file.preferredThumbnailURL) {
+                    thumbnailImageView.sd_setImage(with: url) { [weak self] image, _, _, _ in
+                        guard let self = self, self.file.type != .image else { return }
+                        self.previewBlurAvailable = image != nil
+                        self.imageStateOverlay.setSourceImage(image)
+                    }
+                }
+                if file.type != .image {
+                    // Videos show the blurred-frame placeholder from the first frame; other
+                    // non-image files load behind the neutral placeholder (logo + loader,
+                    // S5 style), since document thumbnails are file-type icons and blurring
+                    // an icon reads as a glowing blob. FileModel.type is unreliable for
+                    // videos, so the filename extension is consulted too — loadVideo
+                    // remains the authoritative upgrade for anything missed here.
+                    activityIndicator.stopAnimating()
+                    if isLikelyVideoFile {
+                        imageStateOverlay.render(.loadingFullRes(hasThumbnail: file.preferredThumbnailURL != nil))
+                    } else {
+                        imageStateOverlay.render(.loadingFullRes(hasThumbnail: false))
+                    }
+                }
             }
         }
-        
+
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
-            
-            if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
-                loadImage(withURL: url)
+            bindImagePreviewState()
+
+            if file.type == .image {
+                var thumbnailURL = file.preferredThumbnailURL
+                #if DEBUG
+                if debugForceNoThumbnail { thumbnailURL = nil }
+                #endif
+                let canLoad = viewModel?.startImageLoad(hasThumbnail: thumbnailURL != nil) ?? true
+                guard canLoad else {
+                    // Offline (S7): show whatever the cache has under the blur, but start no network load.
+                    activityIndicator.stopAnimating()
+                    if let thumbnailURLString = thumbnailURL {
+                        loadThumbnailPreview(urlString: thumbnailURLString, cacheOnly: true)
+                    }
+                    return
+                }
+                if let thumbnailURLString = thumbnailURL {
+                    loadThumbnailPreview(urlString: thumbnailURLString)
+                }
             }
-            
+
             viewModel?.getRecord(file: file, then: { [weak self] record in
                 if record != nil {
                     self?.loadRecord()
                 } else {
                     self?.activityIndicator.stopAnimating()
-                    self?.thumbnailImageView.isHidden = true
-                    
-                    self?.errorLabel.isHidden = false
-                    self?.retryButton.isHidden = false
+
+                    if self?.file.type == .image {
+                        self?.viewModel?.imageLoadDidFail(error: nil)
+                    } else {
+                        self?.showPreviewLoadFailure()
+                    }
                 }
             })
-        } else if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
-            loadImage(withURL: url)
+        } else if file.type == .image, let thumbnailURLString = file.preferredThumbnailURL {
+            bindImagePreviewState()
+            loadThumbnailPreview(urlString: thumbnailURLString)
         } else {
             loadRecord()
+        }
+    }
+
+    // MARK: - Image preview state handling (VSP-1768)
+
+    private func setupImageStateOverlay() {
+        imageStateOverlay.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageStateOverlay)
+        NSLayoutConstraint.activate([
+            imageStateOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            imageStateOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            imageStateOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageStateOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        imageStateOverlay.onRetryTapped = { [weak self] in
+            self?.retryPreviewLoad()
+        }
+    }
+
+    private func bindImagePreviewState() {
+        viewModel?.onImagePreviewStateChanged = { [weak self] state in
+            DispatchQueue.main.async {
+                self?.imageStateOverlay.render(state)
+            }
+        }
+        // Non-image types drive the overlay directly (the VM state machine stays .idle
+        // for them) — syncing it here would hide the placeholder rendered in loadVM.
+        if file.type == .image, let state = viewModel?.imagePreviewState {
+            imageStateOverlay.render(state)
+        }
+    }
+
+    private func retryPreviewLoad() {
+        if file.type == .image {
+            guard viewModel?.retryRequested() == true else { return }
+            resumeImageLoad()
+            return
+        }
+        // Non-image: the offline card stays until connectivity returns (S7 behaviour);
+        // tapping it while still offline is a no-op. When online, re-run the load.
+        guard ReachabilityManager.shared.isConnected else { return }
+        nonImageAwaitingReconnect = false
+        imageStateOverlay.render(.idle)
+        recordLoaded = false
+        loadVM()
+    }
+
+    /// Branded failure/offline card for non-image previews (images run through the view
+    /// model's state machine). Offline shows the "You're offline" card and waits for
+    /// reconnect to auto-retry; an online failure shows the tap-to-retry card. Replaces
+    /// the generic storyboard errorLabel/retryButton for video/audio/document previews.
+    private func showPreviewLoadFailure() {
+        activityIndicator.stopAnimating()
+        thumbnailImageView.isHidden = true
+        let connected = ReachabilityManager.shared.isConnected
+        nonImageAwaitingReconnect = !connected
+        imageStateOverlay.render(connected ? .failed(hasThumbnail: previewBlurAvailable)
+                                           : .offline(hasThumbnail: previewBlurAvailable))
+    }
+
+    private func resumeImageLoad() {
+        if viewModel?.recordVO == nil {
+            viewModel?.getRecord(file: file, then: { [weak self] record in
+                if record != nil {
+                    self?.loadRecord()
+                } else {
+                    self?.viewModel?.imageLoadDidFail(error: nil)
+                }
+            })
+        } else {
+            loadRecord()
+        }
+    }
+
+    @objc private func onReachabilityChanged(_ notification: Notification) {
+        if file.type == .image {
+            guard viewModel?.connectivityRestored() == true else { return }
+            resumeImageLoad()
+        } else if nonImageAwaitingReconnect, ReachabilityManager.shared.isConnected {
+            retryPreviewLoad()
         }
     }
 
@@ -174,7 +317,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
-                if let url = URL(string: self.viewModel?.fileThumbnailURL()) {
+                // Use download URL for full-res; fall back to thumbnail URL
+                let fullResURL = fileVO.downloadURL ?? self.viewModel?.fileThumbnailURL()
+                if let urlString = fullResURL, let url = URL(string: urlString) {
                     self.loadImage(withURL: url)
                 }
         
@@ -195,9 +340,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
-                if let url = URL(string: self.viewModel?.fileThumbnailURL()) {
-                    self.loadImage(withURL: url)
-                }
+                // Use download URL for full-resolution image
+                self.loadImage(withURL: downloadURL)
                 
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
@@ -211,39 +355,172 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             default:
                 self.loadMisc(withURL: downloadURL)
             }
+        } else if file.type == .image {
+            self.viewModel?.imageLoadDidFail(error: nil)
         } else {
-            self.errorLabel.isHidden = false
-            self.retryButton.isHidden = false
+            self.showPreviewLoadFailure()
         }
-        
+
         if recordLoaded != true {
             recordLoaded = true
         }
     }
     
-    func loadImage(withURL url: URL) {
-        let imagePreviewVC = ImagePreviewViewController()
-        imagePreviewVC.delegate = self
-        addChild(imagePreviewVC)
-        imagePreviewVC.view.frame = view.bounds
-        imagePreviewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        // Insert view under the spinner
-        view.insertSubview(imagePreviewVC.view, at: 0)
-        imagePreviewVC.didMove(toParent: self)
-        imagePreviewVC.imageView.sd_setImage(with: url) { _, error, _, _ in
+    /// Loads the 256px thumbnail into the zoomable image preview as a quick placeholder.
+    /// With `cacheOnly` set, no network request is made (used while offline — S7).
+    private func loadThumbnailPreview(urlString: String, cacheOnly: Bool = false) {
+        guard let url = URL(string: urlString) else { return }
+
+        let previewVC = ImagePreviewViewController()
+        previewVC.delegate = self
+        self.imagePreviewVC = previewVC
+
+        addChild(previewVC)
+        previewVC.view.frame = view.bounds
+        previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(previewVC.view, at: 0)
+        previewVC.didMove(toParent: self)
+
+        previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: cacheOnly ? [.fromCacheOnly] : []) { [weak self] _, error, _, _ in
+            guard let self = self else { return }
             self.activityIndicator.stopAnimating()
             self.thumbnailImageView.isHidden = true
-            
-            if error != nil {
-                self.errorLabel.isHidden = false
-                self.retryButton.isHidden = false
 
-                imagePreviewVC.view.removeFromSuperview()
-                imagePreviewVC.removeFromParent()
-                imagePreviewVC.didMove(toParent: nil)
+            if error != nil {
+                if !cacheOnly {
+                    self.viewModel?.imageLoadDidFail(error: error)
+                }
             } else {
-                imagePreviewVC.newImageLoaded()
+                previewVC.newImageLoaded()
+                self.imageStateOverlay.setSourceImage(previewVC.imageView.image)
+                if !cacheOnly {
+                    self.viewModel?.thumbnailDidLoad()
+                }
             }
+        }
+    }
+    
+    /// Upgrades the existing image preview from thumbnail to full-resolution using the download URL.
+    /// SDWebImage caches the full-res image, so subsequent opens load instantly from disk.
+    private func upgradeToFullResolution(urlString: String) {
+        guard let url = URL(string: urlString),
+              let previewVC = self.imagePreviewVC else { return }
+        
+        // Check if SDWebImage already has this URL cached (from a previous open)
+        let cachedFromMemory = SDImageCache.shared.imageFromMemoryCache(forKey: urlString) != nil
+        
+        previewVC.imageView.sd_setImage(
+            with: url,
+            placeholderImage: previewVC.imageView.image,
+            options: [.avoidAutoSetImage, .retryFailed],
+            progress: nil
+        ) { [weak self, weak previewVC] image, error, cacheType, _ in
+            guard let previewVC = previewVC, let image = image, error == nil else {
+                // Full-res failed (S6) — keep the thumbnail beneath the blur so retry can reuse it.
+                self?.viewModel?.imageLoadDidFail(error: error)
+                return
+            }
+
+            if cachedFromMemory || cacheType == .memory {
+                // Cached in memory — swap immediately, no animation needed
+                previewVC.imageView.image = image
+                previewVC.newImageLoaded()
+            } else {
+                // Downloaded or loaded from disk — crossfade for smooth transition
+                UIView.transition(with: previewVC.imageView, duration: 0.3, options: .transitionCrossDissolve) {
+                    previewVC.imageView.image = image
+                } completion: { _ in
+                    previewVC.newImageLoaded()
+                }
+            }
+            self?.viewModel?.fullResDidLoad()
+        }
+    }
+    
+    private func removeImagePreviewVC() {
+        imagePreviewVC?.view.removeFromSuperview()
+        imagePreviewVC?.removeFromParent()
+        imagePreviewVC?.didMove(toParent: nil)
+        imagePreviewVC = nil
+    }
+    
+    #if DEBUG
+    /// QA hook: launch with `--slowImageLoad=5` to delay the full-res upgrade by N seconds,
+    /// making the blur + spinner loading state observable on fast networks.
+    private var debugFullResDelay: TimeInterval {
+        guard let arg = CommandLine.arguments.first(where: { $0.hasPrefix("--slowImageLoad=") }),
+              let seconds = Double(arg.split(separator: "=").last ?? "") else { return 0 }
+        return seconds
+    }
+
+    /// QA hook: launch with `--failFullResOnce` to make the first full-res load attempt fail,
+    /// exercising S6 (load failed) and, after tap-to-retry, S8 → success.
+    private static var debugFailFullResConsumed = false
+    private var debugShouldFailFullRes: Bool {
+        guard CommandLine.arguments.contains("--failFullResOnce"), !Self.debugFailFullResConsumed else { return false }
+        Self.debugFailFullResConsumed = true
+        return true
+    }
+
+    /// QA hook: launch with `--forceNoThumbnail` to pretend the record has no 256px thumbnail,
+    /// exercising S5 (neutral placeholder + spinner).
+    var debugForceNoThumbnail: Bool {
+        CommandLine.arguments.contains("--forceNoThumbnail")
+    }
+    #endif
+
+    func loadImage(withURL url: URL) {
+        if imagePreviewVC != nil {
+            // Image preview already showing thumbnail — upgrade to full-res
+            #if DEBUG
+            if debugShouldFailFullRes {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.viewModel?.imageLoadDidFail(error: NSError(domain: "QA.failFullResOnce", code: -1))
+                }
+                return
+            }
+            if debugFullResDelay > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + debugFullResDelay) { [weak self] in
+                    self?.upgradeToFullResolution(urlString: url.absoluteString)
+                }
+                return
+            }
+            #endif
+            upgradeToFullResolution(urlString: url.absoluteString)
+        } else {
+            // No preview yet (e.g. record already loaded) — load directly
+            let previewVC = ImagePreviewViewController()
+            previewVC.delegate = self
+            self.imagePreviewVC = previewVC
+            
+            addChild(previewVC)
+            previewVC.view.frame = view.bounds
+            previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            view.insertSubview(previewVC.view, at: 0)
+            previewVC.didMove(toParent: self)
+            
+            let startDirectLoad = { [weak self, weak previewVC] in
+                guard let previewVC = previewVC else { return }
+                previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: [.retryFailed]) { _, error, _, _ in
+                    guard let self = self else { return }
+                    self.activityIndicator.stopAnimating()
+                    self.thumbnailImageView.isHidden = true
+
+                    if error != nil {
+                        self.viewModel?.imageLoadDidFail(error: error)
+                    } else {
+                        previewVC.newImageLoaded()
+                        self.viewModel?.fullResDidLoad()
+                    }
+                }
+            }
+            #if DEBUG
+            if debugFullResDelay > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + debugFullResDelay, execute: startDirectLoad)
+                return
+            }
+            #endif
+            startDirectLoad()
         }
     }
     
@@ -255,7 +532,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     pdfView.autoScales = true
 
                     pdfView.translatesAutoresizingMaskIntoConstraints = false
-                    view.addSubview(pdfView)
+                    // Insert behind the loading overlay (like image/video/web) so the
+                    // overlay's fade-out cross-dissolves into the document. addSubview
+                    // would place it on top, hiding the fade and snapping the spinner away.
+                    view.insertSubview(pdfView, at: 0)
+                    // Hide the storyboard thumbnail (loaded with the doc's 256px preview in
+                    // loadVM) — otherwise it floats on top of the scrolling document, since
+                    // pdfView now sits at the back. Matches how the image path hides it.
+                    thumbnailImageView.isHidden = true
 
                     pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
                     pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
@@ -263,63 +547,242 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
                     pdfView.document = document
+                    imageStateOverlay.render(.loaded)
+
+                    // autoScales leaves the document scrolled partway down the first page;
+                    // jump to the top of page 1 once the document view has laid out.
+                    DispatchQueue.main.async {
+                        guard let firstPage = document.page(at: 0) else { return }
+                        pdfView.layoutDocumentView()
+                        let pageHeight = firstPage.bounds(for: pdfView.displayBox).height
+                        pdfView.go(to: PDFDestination(page: firstPage, at: CGPoint(x: 0, y: pageHeight)))
+                    }
+                }
+            } else {
+                DispatchQueue.main.async { [self] in
+                    showPreviewLoadFailure()
                 }
             }
         }
     }
         
     func loadVideo(withURL url: URL, contentType: String) {
+        // file.type from the listing is unreliable (often .miscellaneous), so the
+        // blurred placeholder is rendered here, where the record type is authoritative.
+        showVideoLoadingPlaceholder()
+        #if DEBUG
+        // --slowImageLoad also postpones the video player, keeping the blurred
+        // placeholder observable on fast networks.
+        if debugFullResDelay > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + debugFullResDelay) { [weak self] in
+                self?.loadAV(withURL: url, contentType: contentType)
+            }
+            return
+        }
+        #endif
         loadAV(withURL: url, contentType: contentType)
+    }
+
+    private var isLikelyVideoFile: Bool {
+        if file.type == .video { return true }
+        let name = file.uploadFileName.isEmpty ? file.name : file.uploadFileName
+        let videoExtensions = ["mp4", "mov", "m4v", "avi", "mkv", "3gp", "webm", "mts"]
+        return videoExtensions.contains((name as NSString).pathExtension.lowercased())
+    }
+
+    private func showVideoLoadingPlaceholder() {
+        let thumbnail = thumbnailImageView.image ?? imagePreviewVC?.imageView.image
+        previewBlurAvailable = thumbnail != nil
+        imageStateOverlay.setSourceImage(thumbnail)
+        imageStateOverlay.render(.loadingFullRes(hasThumbnail: thumbnail != nil))
+        activityIndicator.stopAnimating()
+    }
+
+    /// Initial play affordance over the embedded player — its own controls stay
+    /// hidden until the first tap, leaving the video looking like a still image.
+    /// Dark circular backdrop matches the state card (black @ 32%) for contrast
+    /// over bright footage.
+    private lazy var videoPlayButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)), for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.32)
+        button.layer.cornerRadius = 36
+        button.accessibilityIdentifier = "videoPlayButton"
+        button.addTarget(self, action: #selector(playVideoTapped(_:)), for: .touchUpInside)
+        return button
+    }()
+
+    private func showVideoPlayButton() {
+        guard videoPlayButton.superview == nil else { return }
+        view.addSubview(videoPlayButton)
+        NSLayoutConstraint.activate([
+            videoPlayButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            videoPlayButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            videoPlayButton.widthAnchor.constraint(equalToConstant: 72),
+            videoPlayButton.heightAnchor.constraint(equalToConstant: 72)
+        ])
+    }
+
+    @objc private func playVideoTapped(_ sender: UIButton) {
+        videoPlayButton.removeFromSuperview()
+        videoPlayer?.player?.play()
     }
     
     func loadAudio(withURL url: URL, contentType: String) {
         loadAV(withURL: url, contentType: contentType)
-        
+        // Audio has no frames for isReadyForDisplay. Its "content" is the player's
+        // built-in QuickTime artwork: keep it hidden behind an opaque cover, snapshot
+        // it through the cover, show the snapshot blurred (same blur-to-sharp story
+        // as photos), then drop the cover as the blur fades out — the artwork is
+        // never visible sharp before the blur.
+        audioRevealStarted = false
+        let cover = UIView()
+        cover.backgroundColor = .black
+        cover.frame = view.bounds
+        cover.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        if let playerView = videoPlayer?.view {
+            view.insertSubview(cover, aboveSubview: playerView)
+        }
+        audioCover = cover
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.startAudioBlurRevealIfPossible()
+        }
+
         let playButton = UIButton(type: .custom)
         playButton.translatesAutoresizingMaskIntoConstraints = false
-        playButton.setImage(UIImage(named: "play.circle"), for: .normal)
+        playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)), for: .normal)
         playButton.tintColor = .white
+        // Lighter circle than the video affordance — the audio backdrop is always black.
+        playButton.backgroundColor = UIColor.white.withAlphaComponent(0.25)
+        playButton.layer.cornerRadius = 36
         playButton.addTarget(self, action: #selector(playAudioFile(_:)), for: .touchUpInside)
-        
+
         overlayView.translatesAutoresizingMaskIntoConstraints = false
-        overlayView.backgroundColor = .black
+        overlayView.backgroundColor = .clear
+        overlayView.isHidden = true   // revealed together with the sharp artwork
         view.addSubview(overlayView)
         overlayView.addSubview(playButton)
-        
+
         NSLayoutConstraint.activate([
             overlayView.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 0),
             overlayView.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: 0),
             overlayView.topAnchor.constraint(equalTo: thumbnailImageView.topAnchor, constant: 0),
             overlayView.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: 0),
             playButton.centerXAnchor.constraint(equalTo: overlayView.centerXAnchor),
-            playButton.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor)
+            playButton.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor),
+            playButton.widthAnchor.constraint(equalToConstant: 72),
+            playButton.heightAnchor.constraint(equalToConstant: 72)
         ])
     }
     
     func loadAV(withURL url: URL, contentType: String) {
         let asset = AVURLAsset(url: url)
         let playerItem = AVPlayerItem(asset: asset)
-        
+
         let player = AVPlayer(playerItem: playerItem)
         videoPlayer = AVPlayerViewController()
         videoPlayer!.player = player
-        
+
         self.playerItem = playerItem
-        
+        startObservingPlayerItem(playerItem)
+
         addChild(videoPlayer!)
         videoPlayer!.view.frame = view.bounds.insetBy(dx: 0, dy: 60)
         videoPlayer!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.insertSubview(videoPlayer!.view, at: 0)
         videoPlayer!.didMove(toParent: self)
-        
+
+        // The blurred placeholder stays up while the player prepares. isReadyForDisplay
+        // tracks the moment the first video frame can render — the same moment the
+        // player's own loading indicator goes away — unlike status/likelyToKeepUp,
+        // which both fire mid-buffering. It never fires for audio-only items.
+        readyForDisplayObservation = videoPlayer!.observe(\.isReadyForDisplay, options: [.initial, .new]) { [weak self] playerVC, _ in
+            guard playerVC.isReadyForDisplay else { return }
+            DispatchQueue.main.async {
+                self?.imageStateOverlay.render(.loaded)
+                // AVPlayerViewController offers no public API to surface its control
+                // overlay without a tap (verified: showsPlaybackControls toggling and
+                // muted play/pause nudges do nothing on iOS 26) — show our own play
+                // affordance instead; the native controls take over once playback starts.
+                self?.showVideoPlayButton()
+            }
+        }
+        // If playback starts through the player's own controls, drop our affordance.
+        timeControlObservation = player.observe(\.timeControlStatus, options: [.new]) { [weak self] player, _ in
+            guard player.timeControlStatus != .paused else { return }
+            DispatchQueue.main.async {
+                self?.videoPlayButton.removeFromSuperview()
+            }
+        }
+
         activityIndicator.stopAnimating()
         thumbnailImageView.isHidden = true
+    }
+
+    private var isObservingPlayerItem = false
+    private var readyForDisplayObservation: NSKeyValueObservation?
+    private var timeControlObservation: NSKeyValueObservation?
+    private var audioCover: UIView?
+    private var pendingAudioReveal = false
+    private var audioRevealStarted = false
+    /// Whether a blurred thumbnail/frame is available to show behind the failure/offline card.
+    private var previewBlurAvailable = false
+    /// A non-image preview is parked in the offline state, awaiting reconnect to auto-retry.
+    private var nonImageAwaitingReconnect = false
+
+    /// Snapshots the player's QuickTime artwork and runs the blur-to-sharp reveal.
+    /// drawHierarchy(afterScreenUpdates: true) moves windowless views into a temporary
+    /// window — forbidden for child VC views and a crash — so for pages the pager
+    /// preloaded offscreen, the reveal waits for viewDidAppear.
+    private func startAudioBlurRevealIfPossible() {
+        // Both the loadAudio timer and the viewDidAppear deferred path can call this;
+        // run the reveal exactly once to avoid a double snapshot / re-blur flicker.
+        guard let playerView = videoPlayer?.view, audioCover != nil, !audioRevealStarted else { return }
+        guard playerView.window != nil else {
+            pendingAudioReveal = true
+            return
+        }
+        pendingAudioReveal = false
+        audioRevealStarted = true
+
+        let snapshot = UIGraphicsImageRenderer(bounds: playerView.bounds).image { _ in
+            playerView.drawHierarchy(in: playerView.bounds, afterScreenUpdates: true)
+        }
+        imageStateOverlay.setSourceImage(snapshot)
+        imageStateOverlay.render(.loadingFullRes(hasThumbnail: true))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
+            guard let self = self else { return }
+            self.audioCover?.removeFromSuperview()
+            self.audioCover = nil
+            self.imageStateOverlay.render(.loaded)
+            self.overlayView.isHidden = false
+        }
+    }
+
+    private func startObservingPlayerItem(_ item: AVPlayerItem) {
+        stopObservingPlayerItem()
+        item.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.new], context: &playerItemContext)
+        isObservingPlayerItem = true
+    }
+
+    private func stopObservingPlayerItem() {
+        readyForDisplayObservation?.invalidate()
+        readyForDisplayObservation = nil
+        timeControlObservation?.invalidate()
+        timeControlObservation = nil
+        guard isObservingPlayerItem, let item = playerItem else { return }
+        item.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
+        isObservingPlayerItem = false
     }
 
     
     @objc func playAudioFile(_ sender: UIButton) {
         overlayView.isHidden = true
-        
+        imageStateOverlay.render(.loaded)
+
         videoPlayer?.entersFullScreenWhenPlaybackBegins = true
         videoPlayer?.player?.play()
     }
@@ -332,11 +795,17 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func removeVideoPlayer() {
+        stopObservingPlayerItem()
+        videoPlayButton.removeFromSuperview()
+        audioCover?.removeFromSuperview()
+        audioCover = nil
         videoPlayer?.player?.replaceCurrentItem(with: nil)
-        
+
         videoPlayer?.willMove(toParent: nil)
         videoPlayer?.view.removeFromSuperview()
         videoPlayer?.removeFromParent()
+        videoPlayer = nil
+        playerItem = nil
     }
     
     // MARK: - Actions
@@ -455,23 +924,29 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
-        
-        activityIndicator.stopAnimating()
-        thumbnailImageView.isHidden = true
-        
+
+        let status: AVPlayerItem.Status?
         if keyPath == #keyPath(AVPlayerItem.status) {
-            let status: AVPlayerItem.Status
             if let statusNumber = change?[.newKey] as? NSNumber {
-                status = AVPlayerItem.Status(rawValue: statusNumber.intValue)!
+                status = AVPlayerItem.Status(rawValue: statusNumber.intValue)
             } else {
                 status = .unknown
             }
-            
+        } else {
+            status = nil
+        }
+
+        // AVPlayerItem.status KVO may be delivered on a background thread; hop to main
+        // before touching any UIKit state.
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.activityIndicator.stopAnimating()
+            self.thumbnailImageView.isHidden = true
+
             if status == .failed {
-                self.errorLabel.isHidden = false
-                self.retryButton.isHidden = false
-                
-                removeVideoPlayer()
+                self.stopObservingPlayerItem()
+                self.removeVideoPlayer()
+                self.showPreviewLoadFailure()
             }
         }
     }
@@ -667,16 +1142,12 @@ extension FilePreviewViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         activityIndicator.stopAnimating()
         thumbnailImageView.isHidden = true
+        imageStateOverlay.render(.loaded)
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        activityIndicator.stopAnimating()
-        thumbnailImageView.isHidden = true
-        
-        self.errorLabel.isHidden = false
-        self.retryButton.isHidden = false
-        
         webView.removeFromSuperview()
+        showPreviewLoadFailure()
     }
 }
 

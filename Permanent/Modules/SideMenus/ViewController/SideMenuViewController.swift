@@ -144,7 +144,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         case .archives:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
                 if let archive = viewModel?.getCurrentArchive(), let archiveName: String = archive.fullName {
-                    let archiveThumbURL: String = archive.thumbURL500 ?? ""
+                    let archiveThumbURL: String = archive.preferredThumbnailURL ?? ""
                     tableViewCell.updateCell(with: archiveThumbURL, archiveName: archiveName)
                     tableViewCell.isEnabled = true
                 } else {

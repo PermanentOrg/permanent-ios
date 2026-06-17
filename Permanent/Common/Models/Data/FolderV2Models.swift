@@ -89,12 +89,14 @@ struct FolderPathsV2: Model {
 }
 
 struct ThumbnailUrlsV2: Model {
+    let url256: String?
     let url200: String?
     let url500: String?
     let url1000: String?
     let url2000: String?
     
     enum CodingKeys: String, CodingKey {
+        case url256 = "256"
         case url200 = "200"
         case url500 = "500"
         case url1000 = "1000"
@@ -128,6 +130,7 @@ struct FolderChildV2Data: Model {
     let description: String?
     let downloadName: String?
     let uploadFileName: String?
+    let thumbnail256: String?
     let thumbUrl200: String?
     let thumbUrl500: String?
     let thumbUrl1000: String?
@@ -151,7 +154,7 @@ struct FolderChildV2Data: Model {
     
     /// Returns the best available thumbnail URL
     var bestThumbnailURL: String? {
-        return thumbUrl500 ?? thumbUrl200 ?? thumbUrl1000
+        thumbnail256 ?? thumbUrl500 ?? thumbUrl200 ?? thumbUrl1000 ?? thumbUrl2000
     }
 }
 

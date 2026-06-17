@@ -16,6 +16,7 @@ import KeychainSwift
 import os.log
 import ActivityKit
 import WidgetKit
+import SDWebImage
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -33,6 +34,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         initFirebase()
         initNotifications()
         configureLogging()
+        configureImageCache()
+        ReachabilityManager.shared.startMonitoring()
+        #if DEBUG
+        if CommandLine.arguments.contains("--forceOffline") {
+            ReachabilityManager.shared.forceOffline = true
+            if let restoreArg = CommandLine.arguments.first(where: { $0.hasPrefix("--restoreConnectivityAfter=") }),
+               let seconds = Double(restoreArg.split(separator: "=").last ?? "") {
+                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                    ReachabilityManager.shared.forceOffline = false
+                }
+            }
+        }
+        #endif
 
         StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
 
@@ -387,6 +401,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #else
              NetworkLogger.enableLogging()
         #endif
+    }
+    
+    fileprivate func configureImageCache() {
+        let cache = SDImageCache.shared
+        cache.config.maxDiskSize = 300 * 1024 * 1024 // 300 MB disk cap
+        cache.config.maxMemoryCost = 50 * 1024 * 1024 // 50 MB memory cap
     }
     
     fileprivate func initNotifications() {

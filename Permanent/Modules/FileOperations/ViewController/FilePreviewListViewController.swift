@@ -23,19 +23,36 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     var nextFile: FileModel?
     var nextTitle: String?
     var hasChanges: Bool = false
-        
+
+    // Info (details) and share/more both lead to network-dependent screens — disabled offline.
+    private weak var infoBarButton: UIBarButtonItem?
+    private weak var shareBarButton: UIBarButtonItem?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         title = currentFile.name
 
         extendedLayoutIncludesOpaqueBars = true
         edgesForExtendedLayout = .all
-        
+
         setupPageVC()
         setupNavigationBar()
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .filePreviewVMDidSaveData, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onReachabilityChanged), name: ReachabilityManager.reachabilityDidChangeNotifName, object: nil)
+    }
+
+    @objc private func onReachabilityChanged() {
+        updateNetworkDependentButtons()
+    }
+
+    /// Details (info) shows record-backed metadata and the share menu performs network
+    /// actions — neither works offline, so disable both when there's no connection.
+    private func updateNetworkDependentButtons() {
+        let connected = ReachabilityManager.shared.isConnected
+        infoBarButton?.isEnabled = connected
+        shareBarButton?.isEnabled = connected
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,6 +117,10 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
         infoButton.accessibilityIdentifier = "filePreviewInfoButton"
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
+
+        infoBarButton = infoButton
+        shareBarButton = shareButton
+        updateNetworkDependentButtons()
         
         let leftButtonImage: UIImage!
         leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
@@ -240,9 +261,17 @@ extension FilePreviewListViewController: FilePreviewNavigationControllerDelegate
         if hasChanges == true {
             self.hasChanges = true
         }
-        
-        dismiss(animated: true) {
-            (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: self.hasChanges)
+
+        // Called when the details screen closes. The details modal is still presented on
+        // top of this preview pager, so dismiss from our presenter (the file list) to tear
+        // down both in a single animation — details slides away straight to the file list,
+        // without the preview flashing in between. (When this pager is closed directly, its
+        // own closeButtonAction handles dismissal instead.)
+        let fileListDelegate = (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate
+        let changes = self.hasChanges
+        let presenter = presentingViewController ?? self
+        presenter.dismiss(animated: true) {
+            fileListDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: changes)
         }
     }
     

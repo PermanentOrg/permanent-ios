@@ -45,7 +45,7 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
         guard let archiveName = archiveVO.fullName,
             let accessLevel = archiveVO.accessRole else { return }
         archiveThumbnailImage.image = nil
-        let thumbURLString = archiveVO.thumbURL200 ?? archiveVO.thumbURL500 ?? archiveVO.thumbURL1000 ?? archiveVO.thumbURL2000
+        let thumbURLString = archiveVO.preferredThumbnailURL
         if let thumbURLString, let thumbURL = URL(string: thumbURLString) {
             let placeholder = UIImage(named: "shareArchivePending")
             archiveThumbnailImage.sd_setImage(with: thumbURL, placeholderImage: placeholder)

@@ -43,7 +43,7 @@ final class ShareItemViewModelTests: XCTestCase {
         )
         
         XCTAssertEqual(vm.fileName, fileModel.name, "File name should match")
-        XCTAssertEqual(vm.thumbnailURL, fileModel.thumbnailURL500, "Thumbnail URL should match")
+        XCTAssertEqual(vm.thumbnailURL, fileModel.preferredThumbnailURL, "Thumbnail URL should match")
         XCTAssertFalse(vm.isFolder, "Mock file should not be folder")
     }
     
@@ -1455,4 +1455,412 @@ extension FileModel {
             permissions: [.read, .edit, .share]
         )
     }
+}
+
+final class ThumbnailSelectionTests: XCTestCase {
+    func testRecordPreferredThumbnailURL_UsesThumbnail256First() throws {
+        let record = try decode(
+            RecordVOData.self,
+            from: """
+            {
+              "thumbnail256": "https://example.com/thumb256.jpg",
+              "thumbURL200": "https://example.com/thumb200.jpg",
+              "thumbURL500": "https://example.com/thumb500.jpg",
+              "thumbURL1000": "https://example.com/thumb1000.jpg",
+              "thumbURL2000": "https://example.com/thumb2000.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+    }
+
+    func testRecordPreferredThumbnailURL_FallsBackWhenThumbnail256Missing() throws {
+        let record = try decode(
+            RecordVOData.self,
+            from: """
+            {
+              "thumbURL200": "https://example.com/thumb200.jpg",
+              "thumbURL500": "https://example.com/thumb500.jpg",
+              "thumbURL1000": "https://example.com/thumb1000.jpg",
+              "thumbURL2000": "https://example.com/thumb2000.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb500.jpg")
+    }
+
+    func testRecordPreferredThumbnailURL_UsesNextAvailableFallback() throws {
+        let record = try decode(
+            RecordVOData.self,
+            from: """
+            {
+              "thumbURL1000": "https://example.com/thumb1000.jpg",
+              "thumbURL2000": "https://example.com/thumb2000.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb1000.jpg")
+    }
+
+    func testItemPreferredThumbnailURL_UsesThumbnail256First() throws {
+        let item = try decode(
+            ItemVO.self,
+            from: """
+            {
+              "thumbnail256": "https://example.com/thumb256.jpg",
+              "thumbURL200": "https://example.com/thumb200.jpg",
+              "thumbURL500": "https://example.com/thumb500.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(item.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+    }
+
+    func testFolderPreferredThumbnailURL_FallsBackTo200When500Missing() throws {
+        let folder = try decode(
+            FolderVOData.self,
+            from: """
+            {
+              "thumbURL200": "https://example.com/thumb200.jpg",
+              "thumbURL1000": "https://example.com/thumb1000.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(folder.preferredThumbnailURL, "https://example.com/thumb200.jpg")
+    }
+
+    func testArchivePreferredThumbnailURL_UsesThumbnail256First() throws {
+        let archive = try decode(
+            ArchiveVOData.self,
+            from: """
+            {
+              "thumbnail256": "https://example.com/thumb256.jpg",
+              "thumbURL500": "https://example.com/thumb500.jpg",
+              "thumbURL2000": "https://example.com/thumb2000.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(archive.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+    }
+
+    func testRecordFileModel_UsesThumbnail256ForPreferredThumbnail() throws {
+        let record = try decode(
+            RecordVOData.self,
+            from: """
+            {
+              "displayName": "IMG_0111",
+              "displayDT": "2026-04-17T11:44:53",
+              "thumbnail256": "https://example.com/thumb256.jpg",
+              "thumbURL200": "https://example.com/thumb200.jpg",
+              "thumbURL500": "https://example.com/thumb500.jpg",
+              "type": "type.record.image",
+              "archiveId": 1,
+              "archiveNbr": "0fsv-009b",
+              "recordId": 2137129,
+              "parentFolderId": 180530,
+              "parentFolder_linkId": 1356908,
+              "folder_linkId": 2144172
+            }
+            """
+        )
+
+        let fileModel = FileModel(model: record, permissions: [.read], accessRole: .viewer)
+
+        XCTAssertEqual(fileModel.thumbnailURL256, "https://example.com/thumb256.jpg")
+        XCTAssertEqual(fileModel.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+        XCTAssertEqual(fileModel.thumbnailURL500, "https://example.com/thumb256.jpg")
+    }
+
+    func testFolderFileModel_UsesThumbnail256ForPreferredThumbnail() throws {
+        let folder = try decode(
+            FolderVOData.self,
+            from: """
+            {
+              "displayName": "Public",
+              "displayDT": "2026-04-17T11:44:53",
+              "thumbnail256": "https://example.com/thumb256.jpg",
+              "thumbURL200": "https://example.com/thumb200.jpg",
+              "thumbURL500": "https://example.com/thumb500.jpg",
+              "archiveId": 1,
+              "archiveNbr": "0fsv-0004",
+              "folderId": 180531,
+              "parentFolderId": 180528,
+              "parentFolder_linkId": 1356906,
+              "folder_linkId": 1356909
+            }
+            """
+        )
+
+        let fileModel = FileModel(model: folder)
+
+        XCTAssertEqual(fileModel.thumbnailURL256, "https://example.com/thumb256.jpg")
+        XCTAssertEqual(fileModel.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+        XCTAssertEqual(fileModel.thumbnailURL500, "https://example.com/thumb256.jpg")
+    }
+
+    func testRecordV2PreferredThumbnailURL_UsesThumbnailUrls256WhenTopLevelThumbnail256Missing() throws {
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbnailUrls": {
+                "256": "https://example.com/thumb256.jpg",
+                "500": "https://example.com/thumb500-from-map.jpg"
+              },
+              "thumbUrl200": "https://example.com/thumb200.jpg",
+              "thumbUrl500": "https://example.com/thumb500.jpg",
+              "thumbUrl1000": "https://example.com/thumb1000.jpg",
+              "thumbUrl2000": "https://example.com/thumb2000.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(record.resolvedThumbnail256, "https://example.com/thumb256.jpg")
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+    }
+
+    func testRecordV2PreferredThumbnailURL_PrefersTopLevelThumbnail256OverThumbnailUrls256() throws {
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbnail256": "https://example.com/top-level-256.jpg",
+              "thumbnailUrls": {
+                "256": "https://example.com/nested-256.jpg"
+              },
+              "thumbUrl500": "https://example.com/thumb500.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(record.resolvedThumbnail256, "https://example.com/top-level-256.jpg")
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/top-level-256.jpg")
+    }
+
+    func testRecordV2PreferredThumbnailURL_FallsBackToThumbUrl500WhenNo256IsAvailable() throws {
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbUrl200": "https://example.com/thumb200.jpg",
+              "thumbUrl500": "https://example.com/thumb500.jpg",
+              "thumbUrl1000": "https://example.com/thumb1000.jpg"
+            }
+            """
+        )
+
+        XCTAssertNil(record.resolvedThumbnail256)
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb500.jpg")
+    }
+
+    func testRecordShareArchiveV2PreferredThumbnailURL_UsesThumbnailUrls256() throws {
+        let archive = try decode(
+            RecordShareArchiveV2.self,
+            from: """
+            {
+              "id": "21588",
+              "thumbnailUrls": {
+                "256": "https://example.com/thumb256.jpg"
+              },
+              "thumbUrl500": "https://example.com/thumb500.jpg",
+              "thumbUrl200": "https://example.com/thumb200.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(archive.resolvedThumbnail256, "https://example.com/thumb256.jpg")
+        XCTAssertEqual(archive.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+    }
+
+    // MARK: - Empty String Handling Tests
+
+    func testRecordV2PreferredThumbnailURL_SkipsEmptyThumbnail256() throws {
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbnail256": "",
+              "thumbUrl500": "https://example.com/thumb500.jpg",
+              "thumbUrl200": "https://example.com/thumb200.jpg"
+            }
+            """
+        )
+
+        XCTAssertNil(record.resolvedThumbnail256, "Empty thumbnail256 should be treated as nil")
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb500.jpg",
+                       "Should fall through to thumbUrl500 when thumbnail256 is empty")
+    }
+
+    func testRecordV2PreferredThumbnailURL_SkipsEmptyThumbnailUrls256() throws {
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbnailUrls": {
+                "256": ""
+              },
+              "thumbUrl500": "https://example.com/thumb500.jpg"
+            }
+            """
+        )
+
+        XCTAssertNil(record.resolvedThumbnail256, "Empty thumbnailUrls.256 should be treated as nil")
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb500.jpg")
+    }
+
+    func testRecordV2PreferredThumbnailURL_SkipsAllEmptyStrings() throws {
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbnail256": "",
+              "thumbUrl500": "",
+              "thumbUrl200": "",
+              "thumbUrl1000": "",
+              "thumbUrl2000": "https://example.com/thumb2000.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb2000.jpg",
+                       "Should skip all empty strings and use the first non-empty URL")
+    }
+
+    func testRecordV2PreferredThumbnailURL_ReturnsNilWhenAllEmpty() throws {
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbnail256": "",
+              "thumbUrl500": "",
+              "thumbUrl200": "",
+              "thumbUrl1000": "",
+              "thumbUrl2000": ""
+            }
+            """
+        )
+
+        XCTAssertNil(record.preferredThumbnailURL,
+                     "Should return nil when all thumbnail URLs are empty strings")
+    }
+
+    func testRecordShareArchiveV2PreferredThumbnailURL_SkipsEmptyStrings() throws {
+        let archive = try decode(
+            RecordShareArchiveV2.self,
+            from: """
+            {
+              "id": "21588",
+              "thumbnail256": "",
+              "thumbUrl500": "",
+              "thumbUrl200": "https://example.com/thumb200.jpg"
+            }
+            """
+        )
+
+        XCTAssertNil(archive.resolvedThumbnail256, "Empty thumbnail256 should be treated as nil")
+        XCTAssertEqual(archive.preferredThumbnailURL, "https://example.com/thumb200.jpg",
+                       "Should skip empty strings and use first valid URL")
+    }
+
+    func testArchiveVOPreferredThumbnailURL_SkipsEmptyStrings() throws {
+        let archive = try decode(
+            ArchiveVOData.self,
+            from: """
+            {
+              "thumbnail256": "",
+              "thumbURL500": "",
+              "thumbURL200": "https://example.com/thumb200.jpg"
+            }
+            """
+        )
+
+        XCTAssertEqual(archive.preferredThumbnailURL, "https://example.com/thumb200.jpg",
+                       "Should skip empty strings and use first valid URL")
+    }
+
+    func testFileModelPreferredThumbnailURL_SkipsEmptyStrings() throws {
+        let record = try decode(
+            RecordVOData.self,
+            from: """
+            {
+              "displayName": "Test.jpg",
+              "thumbnail256": "",
+              "thumbURL500": "",
+              "thumbURL200": "",
+              "thumbURL1000": "",
+              "thumbURL2000": "https://example.com/thumb2000.jpg",
+              "type": "type.record.image",
+              "archiveId": 1,
+              "archiveNbr": "0001-0000",
+              "recordId": 1,
+              "parentFolderId": 1,
+              "parentFolder_linkId": 1,
+              "folder_linkId": 1
+            }
+            """
+        )
+
+        let fileModel = FileModel(model: record, permissions: [.read], accessRole: .viewer)
+
+        XCTAssertEqual(fileModel.preferredThumbnailURL, "https://example.com/thumb2000.jpg",
+                       "Should skip empty strings and use first valid URL")
+    }
+
+    func testFileModelPreferredThumbnailURL_ReturnsNilWhenAllEmpty() throws {
+        let record = try decode(
+            RecordVOData.self,
+            from: """
+            {
+              "displayName": "Test.jpg",
+              "thumbnail256": "",
+              "thumbURL500": "",
+              "thumbURL200": "",
+              "thumbURL1000": "",
+              "thumbURL2000": "",
+              "type": "type.record.image",
+              "archiveId": 1,
+              "archiveNbr": "0001-0000",
+              "recordId": 1,
+              "parentFolderId": 1,
+              "parentFolder_linkId": 1,
+              "folder_linkId": 1
+            }
+            """
+        )
+
+        let fileModel = FileModel(model: record, permissions: [.read], accessRole: .viewer)
+
+        XCTAssertNil(fileModel.preferredThumbnailURL,
+                     "Should return nil when all thumbnail URLs are empty")
+    }
+
+    @MainActor
+    func testShareItemViewModel_ThumbnailURL_WithNoThumbnails() {
+        let fileModel = FileModel(
+            name: "Test.jpg",
+            recordId: 1,
+            folderLinkId: 1,
+            archiveNbr: "0001-0000",
+            type: "type.record.image",
+            permissions: [.read]
+        )
+
+        let vm = ShareItemViewModel(
+            fileModel: fileModel,
+            shareManagementRepository: MockShareManagementRepository()
+        )
+
+        XCTAssertNil(vm.thumbnailURL, "Should return nil when fileModel has no valid thumbnail URLs")
+    }
+}
+
+private func decode<T: Decodable>(_ type: T.Type, from json: String) throws -> T {
+    let data = Data(json.utf8)
+    return try JSONDecoder().decode(T.self, from: data)
 }

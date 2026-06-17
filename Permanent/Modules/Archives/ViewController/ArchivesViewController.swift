@@ -203,7 +203,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
            let archiveName: String = archive.fullName {
             currentArhiveImage.image = nil
             currentArchiveRightButton.isHidden = true
-            let archiveThumbURL = archive.thumbURL200 ?? archive.thumbURL500 ?? archive.thumbURL1000 ?? archive.thumbURL2000
+            let archiveThumbURL = archive.preferredThumbnailURL
             if let archiveThumbURL {
                 currentArhiveImage.load(urlString: archiveThumbURL) { [weak self] success in
                     if !success {
@@ -387,7 +387,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
 
-                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "", archive: archiveVO)
+                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.preferredThumbnailURL ?? "", archive: archiveVO)
                 
                 cell = tableViewCell
             }

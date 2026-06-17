@@ -602,7 +602,7 @@ final class ShareManagementViewRenderingTests: XCTestCase {
             archiveID: 999,
             publicDT: nil, archiveNbr: nil, view: nil, viewProperty: nil,
             archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil,
-            type: nil, thumbStatus: .ok, imageRatio: nil,
+            type: nil, thumbStatus: .ok, imageRatio: nil, thumbnail256: nil,
             thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil,
             thumbDT: nil, createdDT: nil, updatedDT: nil, status: .ok
         )

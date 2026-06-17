@@ -29,6 +29,7 @@ struct RecordV2Data: Model {
     let displayTimeInEDTF: String?
     let fileCreatedAt: String?
     let imageRatio: Double?
+    let thumbnail256: String?
     let thumbUrl200: String?
     let thumbUrl500: String?
     let thumbUrl1000: String?
@@ -51,6 +52,21 @@ struct RecordV2Data: Model {
     let shares: [RecordShareV2]?
     let pendingShares: [PendingShareV2]?
     let archive: RecordArchiveV2?
+}
+
+extension RecordV2Data {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
+    var resolvedThumbnail256: String? {
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbnailUrls?.url256)
+    }
+
+    var preferredThumbnailURL: String? {
+        resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000)
+    }
 }
 
 struct LocationV2: Model {
@@ -89,6 +105,7 @@ struct RecordShareV2: Model {
 
 struct RecordShareArchiveV2: Model {
     let archiveId: String?
+    let thumbnail256: String?
     let thumbUrl200: String?
     let thumbUrl500: String?
     let thumbUrl1000: String?
@@ -98,12 +115,28 @@ struct RecordShareArchiveV2: Model {
     
     enum CodingKeys: String, CodingKey {
         case archiveId = "id"  // Map "id" from JSON to archiveId
+        case thumbnail256
         case thumbUrl200
         case thumbUrl500
         case thumbUrl1000
         case thumbUrl2000
         case thumbnailUrls
         case name
+    }
+}
+
+extension RecordShareArchiveV2 {
+    private func nonEmpty(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
+    }
+
+    var resolvedThumbnail256: String? {
+        nonEmpty(thumbnail256) ?? nonEmpty(thumbnailUrls?.url256)
+    }
+
+    var preferredThumbnailURL: String? {
+        resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000)
     }
 }
 

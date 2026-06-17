@@ -179,7 +179,7 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
             rawName: fullName,
             title: formattedArchiveName(from: fullName),
             initials: initials(for: fullName),
-            thumbnailURL: archive.thumbURL200 ?? archive.thumbURL500
+            thumbnailURL: archive.preferredThumbnailURL
         )
     }
 

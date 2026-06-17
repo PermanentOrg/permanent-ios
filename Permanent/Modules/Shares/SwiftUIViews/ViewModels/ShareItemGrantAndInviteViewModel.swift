@@ -216,6 +216,7 @@ extension ShareItemViewModel {
             type: nil,
             thumbStatus: .ok,
             imageRatio: nil,
+            thumbnail256: nil,
             thumbURL200: nil,
             thumbURL500: nil,
             thumbURL1000: nil,
