@@ -8,10 +8,12 @@
 import UIKit
 import KeychainSwift
 import FirebaseMessaging
+import os.log
 import SDWebImage
 
 class AuthenticationManager {
     static let shared = AuthenticationManager()
+    private let authLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
     
     // Test hook: allows tests to override changeArchive behaviour
     static var changeArchiveOverride: ((ArchiveVOData, @escaping (Result<Bool, Error>) -> Void) -> Void)?
@@ -28,6 +30,11 @@ class AuthenticationManager {
     var session: PermSession? {
         didSet {
             PermSession.currentSession = session
+            if session == nil && oldValue != nil {
+                authLogger.error("🔼 [AUTH] session set to nil — Bearer token will no longer be sent")
+            } else if session != nil && oldValue == nil {
+                authLogger.info("🔼 [AUTH] session restored (was nil)")
+            }
         }
     }
     
@@ -207,6 +214,16 @@ class AuthenticationManager {
     }
     
     func logout() {
+        authLogger.error("🔼 [AUTH] logout() called")
+        // NOTE: Intentionally NOT cancelling in-flight uploads here.
+        // `logout()` fires from multiple paths (biometric lockout, session-restore
+        // failures, app reinstall scenarios) — not just user-initiated sign-out.
+        // If we cancelled uploads here, a transient auth blip or debugger reinstall
+        // would silently destroy hours of upload work.
+        //
+        // Upload cancellation should only happen from the explicit "Sign Out"
+        // button path in SettingsScreenViewModel.
+
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
 
         session = nil

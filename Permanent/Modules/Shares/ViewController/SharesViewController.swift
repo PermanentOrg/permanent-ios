@@ -93,7 +93,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
                 if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
-                    self?.viewModel?.viewModels.insert(FileModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.currentFolder?.accessRole ?? .viewer), at: 0)
+                    let newModel = FileModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.currentFolder?.accessRole ?? .viewer)
+                    let alreadyExists = self?.viewModel?.viewModels.contains(where: {
+                        $0.folderLinkId == newModel.folderLinkId && $0.name == newModel.name
+                    }) ?? false
+                    if !alreadyExists {
+                        self?.viewModel?.viewModels.insert(newModel, at: 0)
+                    }
                     self?.refreshCollectionView()
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
@@ -526,14 +532,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         return hasSavedFolder
     }
     
-    func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
         guard let viewModel = viewModel else { return }
-        
+
         if let currentFolder = viewModel.currentFolder {
             let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, nil)
-            
+
             // Back navigation set to `true` so it's not considered a in-depth navigation.
-            navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
+            navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, silenceErrors: silenceErrors, then: handler)
         } else {
             getShares(shouldShowSpinner: false, completion: handler)
         }
@@ -563,6 +569,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @objc private func pullToRefreshAction() {
         refreshCurrentFolder(
             shouldDisplaySpinner: false,
+            silenceErrors: true,
             then: {
                 self.refreshControl.endRefreshing()
             }
@@ -1386,7 +1393,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         downloadingCell.updateProgress(withValue: value)
     }
 
-    public func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    public func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
 
         let runRequest: (NavigateMinParams, Bool, @escaping ServerResponse) -> Void = navigateMinRequest ?? { [weak self] requestParams, requestBackNavigation, completion in
@@ -1394,13 +1401,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
 
         runRequest(params, backNavigation, { status in
-            self.onFilesFetchCompletion(status)
+            self.onFilesFetchCompletion(status, silenceErrors: silenceErrors)
             handler?()
         })
         viewModel?.timer?.invalidate()
     }
-    
-    private func onFilesFetchCompletion(_ status: RequestStatus) {
+
+    private func onFilesFetchCompletion(_ status: RequestStatus, silenceErrors: Bool = false) {
         DispatchQueue.main.async {
             self.hideSpinner()
         }
@@ -1409,20 +1416,63 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         case .success:
             DispatchQueue.main.async {
                 self.refreshCollectionView()
-                
+
                 self.updateFAB()
                 self.setupBottomActionSheet()
             }
-            
+
         case .error(let message):
-            showErrorAlert(message: message)
+            if !silenceErrors {
+                showErrorAlert(message: message)
+            }
         }
     }
     
-    private func upload(files: [FileInfo]) {
-        viewModel?.uploadFiles(files)
+    private func upload(files: [FileInfo], completion: ((Bool) -> Void)? = nil) {
+        viewModel?.uploadFiles(files, completion: completion)
     }
-    
+
+    /// Guard 0: same semantics as `MainViewController.checkDuplicatesThenUpload`.
+    /// See that doc-comment for full behaviour notes.
+    private func checkDuplicatesThenUpload(
+        files: [FileInfo],
+        in folder: FileModel,
+        completion: @escaping ((Bool) -> Void)
+    ) {
+        let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+        UploadManager.shared.findExistingRecords(
+            archiveNo: archiveNo,
+            folderLinkId: folder.folderLinkId,
+            forFiles: files
+        ) { [weak self] duplicates in
+            guard let self = self else { return }
+            if duplicates.isEmpty {
+                self.upload(files: files, completion: completion)
+                return
+            }
+            self.hideSpinner()
+            let duplicateIds = Set(duplicates.map { $0.file.id })
+            let duplicateNames = duplicates.map { $0.file.name }
+            self.promptDuplicateUploadDecision(
+                total: files.count,
+                duplicateFileNames: duplicateNames
+            ) { [weak self] choice in
+                guard let self = self else { return }
+                switch choice {
+                case .skipDuplicates:
+                    let filtered = files.filter { !duplicateIds.contains($0.id) }
+                    self.showSpinner()
+                    self.upload(files: filtered, completion: completion)
+                case .uploadAll:
+                    self.showSpinner()
+                    self.upload(files: files, completion: completion)
+                case .cancel:
+                    completion(false)
+                }
+            }
+        }
+    }
+
     private func createNewFolder(named name: String) {
         guard
             let viewModel = viewModel,
@@ -1930,8 +1980,17 @@ extension SharesViewController: UIDocumentPickerDelegate {
         guard let currentFolder = viewModel?.currentFolder else {
             return showErrorAlert(message: .cannotUpload)
         }
-        
-        processUpload(toFolder: currentFolder, forURLS: urls)
+
+        showSpinner()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let folderInfo = FolderInfo(folderId: currentFolder.folderId, folderLinkId: currentFolder.folderLinkId)
+            let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: false)
+            DispatchQueue.main.async {
+                self?.checkDuplicatesThenUpload(files: files, in: currentFolder) { _ in
+                    self?.hideSpinner()
+                }
+            }
+        }
     }
 }
 

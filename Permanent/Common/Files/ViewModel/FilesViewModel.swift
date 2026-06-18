@@ -214,14 +214,21 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
+    /// Exponential-backoff schedule for the post-upload thumbnail-ready
+    /// polling. Each value is the wait BEFORE the next fire. Four fires total
+    /// span ~45 s of polling, which covers server-side thumbnail processing
+    /// for typical media without flooding the API with linear-interval polls.
+    /// Empty array → no polling.
+    static let thumbnailPollIntervals: [TimeInterval] = [3, 6, 12, 24]
+
     func updateTimerCount() {
         timerRunCount += 1
-        if timerRunCount == 1 {
+        if timerRunCount >= Self.thumbnailPollIntervals.count {
             timerRunCount = 0
             invalidateTimer()
         }
     }
-    
+
     func invalidateTimer() {
         if timer != nil {
             timer?.invalidate()
@@ -446,8 +453,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     // this method takes care of multiple upload process
     // sets up a queue and calls uploadFileMeta and uploadFileData
-    func uploadFiles(_ files: [FileInfo]) {
-        UploadManager.shared.upload(files: files)
+    func uploadFiles(_ files: [FileInfo], completion: ((Bool) -> Void)? = nil) {
+        UploadManager.shared.upload(files: files, completion: completion)
     }
     
     func cancelUploadsInFolder() {

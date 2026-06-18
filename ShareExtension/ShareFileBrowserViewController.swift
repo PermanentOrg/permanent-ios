@@ -23,11 +23,13 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         super.viewDidLoad()
         
         title = "Choose Destination"
-        
+
         edgesForExtendedLayout = []
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
-        
+
+        // Leave the left bar button to UIKit so it auto-injects the standard
+        // back button (`<`) that pops to SelectWorkspaceViewController, which
+        // keeps its own Cancel (X) for full dismissal of the share extension.
+
         viewModel?.loadRootFolder()
         
         // Add timeout mechanism for loading
@@ -83,11 +85,21 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
     }
     
     func activateConstraints() {
+        // iOS 26's Liquid Glass nav bar floats with its own glass surface
+        // that extends a few points below where `view.topAnchor` lands, so
+        // the topmost child view ends up clipped without a small cushion.
+        let topPadding: CGFloat
+        if #available(iOS 26.0, *) {
+            topPadding = 12
+        } else {
+            topPadding = 0
+        }
+
         if let workspace = viewModel?.workspace, (workspace == Workspace.sharedByMeFiles || workspace == Workspace.shareWithMeFiles) {
             NSLayoutConstraint.activate([
                 segmentedControlView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
                 segmentedControlView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-                segmentedControlView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+                segmentedControlView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding),
                 segmentedControlView.heightAnchor.constraint(equalToConstant: segmentedControlView.intrinsicContentSize.height),
                 folderNavigationView.topAnchor.constraint(equalTo: segmentedControlView.bottomAnchor, constant: 0),
                 folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
@@ -100,7 +112,7 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
             ])
         } else {
             NSLayoutConstraint.activate([
-                folderNavigationView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+                folderNavigationView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding),
                 folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
                 folderNavigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
                 folderNavigationView.heightAnchor.constraint(equalToConstant: folderNavigationView.intrinsicContentSize.height),
@@ -110,10 +122,6 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
                 folderContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
             ])
         }
-    }
-    
-    @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {
-        dismiss(animated: true)
     }
     
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {

@@ -13,18 +13,22 @@ import GoogleMaps
 import StripeApplePay
 import SwiftUI
 import KeychainSwift
+import os.log
+import ActivityKit
+import WidgetKit
 import SDWebImage
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     static let navigateToFolderNotifName = NSNotification.Name("AppDelegate.navigateToFolderNotifName")
+    static let willNavigateToFolderNotifName = NSNotification.Name("AppDelegate.willNavigateToFolderNotifName")
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if CommandLine.arguments.contains("--AddTextClearButton") {
             UITextField.appearance().clearButtonMode = .always
         }
-        
+
         clearShareDeepLinks()
 
         initFirebase()
@@ -43,8 +47,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         #endif
-        
+
         StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
+
+        // Must be called during didFinishLaunching, or iOS won't deliver wakes.
+        BackgroundUploadDrainTask.register()
+
+        // LEGACY DRAIN PATH — remove after one release cycle.
+        // The upload pipeline no longer uses background URLSession; new uploads
+        // run through the foreground session. This call exists to drain any
+        // in-flight background tasks left over from older app versions so
+        // those files don't get orphaned.
+        BackgroundUploadSessionManager.shared.reconnectToExistingSession()
+        
+        // Reattach to in-flight Live Activity or end orphans from a previous session
+        UploadLiveActivityManager.shared.reconcileOnLaunch()
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = RootViewController()
@@ -53,8 +70,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    // LEGACY DRAIN PATH — remove after one release cycle.
+    // The upload pipeline no longer creates background URLSession tasks. iOS
+    // only calls this if an older app version left tasks in flight; this
+    // handler exists to let them complete cleanly before the system suspends
+    // us again.
+    func application(_ application: UIApplication,
+                     handleEventsForBackgroundURLSession identifier: String,
+                     completionHandler: @escaping () -> Void) {
+        if identifier == BackgroundUploadSessionManager.backgroundSessionIdentifier {
+            BackgroundUploadSessionManager.shared.backgroundSessionCompletionHandler = completionHandler
+            BackgroundUploadSessionManager.shared.reconnectToExistingSession()
+        }
+    }
+    
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         clearShareDeepLinks()
+        
+        // Fallback for Live Activity taps that don't have a widgetURL
+        if userActivity.activityType == NSUserActivityTypeLiveActivity {
+            return handleLiveActivityLaunch()
+        }
         
         guard userActivity.activityType == NSUserActivityTypeBrowsingWeb, let url = userActivity.webpageURL, url.pathComponents.count > 1
         else {
@@ -271,10 +307,78 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        // Sends the URL to the current authorization flow (if any) which will
-        // process it if it relates to an authorization response.
+        os_log("AppDelegate open URL: %{public}@", log: .default, type: .info, url.absoluteString)
+        
+        // Handle Live Activity deep link to navigate to the upload folder
+        if url.scheme == "permanent", url.host == "upload-folder" {
+            return handleUploadFolderDeepLink(url: url)
+        }
         
         return false
+    }
+    
+    private func handleUploadFolderDeepLink(url: URL) -> Bool {
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let archiveNo = components?.queryItems?.first(where: { $0.name == "archiveNo" })?.value ?? ""
+        let folderLinkId = Int(components?.queryItems?.first(where: { $0.name == "folderLinkId" })?.value ?? "") ?? 0
+        
+        os_log("Deep link parsed — archiveNo: %{public}@, folderLinkId: %{public}d", log: .default, type: .info, archiveNo, folderLinkId)
+        
+        guard !archiveNo.isEmpty, folderLinkId > 0 else {
+            os_log("Deep link params invalid — skipping navigation", log: .default, type: .error)
+            return false
+        }
+        
+        scheduleUploadFolderNavigation(archiveNo: archiveNo, folderLinkId: folderLinkId)
+        return true
+    }
+    
+    /// Fallback for Live Activity taps when no widgetURL is available.
+    /// Reads folder info from the currently running Live Activity's attributes.
+    private func handleLiveActivityLaunch() -> Bool {
+        if #available(iOS 16.2, *) {
+            let activities = Activity<UploadActivityAttributes>.activities
+            guard let activity = activities.first else { return false }
+            
+            let archiveNo = activity.attributes.archiveNo
+            let folderLinkId = activity.attributes.folderLinkId
+            
+            os_log("Live Activity fallback — archiveNo: %{public}@, folderLinkId: %{public}d", log: .default, type: .info, archiveNo, folderLinkId)
+            
+            guard !archiveNo.isEmpty, folderLinkId > 0 else { return false }
+            
+            scheduleUploadFolderNavigation(archiveNo: archiveNo, folderLinkId: folderLinkId)
+            return true
+        }
+        return false
+    }
+    
+    /// Saves the folder navigation data and schedules a delayed navigation.
+    /// The delay lets the foreground transition and any root content loading complete first.
+    /// MainViewController's onFilesFetchCompletion also calls navigationToShareFolderLink(),
+    /// so if root content reloads, the natural chain handles it. The notification is a fallback
+    /// for cases where no reload happens (e.g., uploads in progress skip foreground refresh).
+    private func scheduleUploadFolderNavigation(archiveNo: String, folderLinkId: Int) {
+        let navData = NavigationDataForShareFolderLink(
+            archiveNo: archiveNo,
+            folderLinkId: folderLinkId,
+            folderName: nil
+        )
+        try? PreferencesManager.shared.setCodableObject(navData, forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
+
+        // Tell MainViewController to show its spinner immediately so the user
+        // gets feedback during the 1.0s settle delay below + the navigateMin
+        // fetch that follows. Without this, an LA tap looks like a 2–3s freeze
+        // before the destination folder loads in.
+        NotificationCenter.default.post(name: AppDelegate.willNavigateToFolderNotifName, object: nil)
+
+        // Give the app time to finish foregrounding and any root content loading,
+        // then trigger navigation. If onFilesFetchCompletion already consumed the
+        // saved data, navigationToShareFolderLink() will be a no-op.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            os_log("Posting navigateToFolderNotifName notification", log: .default, type: .info)
+            NotificationCenter.default.post(name: AppDelegate.navigateToFolderNotifName, object: nil)
+        }
     }
 
     fileprivate func initFirebase() {

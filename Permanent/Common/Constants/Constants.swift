@@ -160,6 +160,15 @@ extension Constants.API.NotificationType {
 
 extension Constants.Keys.StorageKeys {
     static let uploadFilesKey = "uploadFilesKey"
+    static let backgroundUploadMetadataKey = "backgroundUploadMetadataKey"
+    static let uploadLiveActivitySnapshotKey = "uploadLiveActivitySnapshotKey"
+    static let uploadQueueOwnerAccountIdKey = "uploadQueueOwnerAccountIdKey"
+    static let completedUploadFileIdsKey = "completedUploadFileIdsKey"
+    static let inflightPhase3FileIdsKey = "inflightPhase3FileIdsKey"
+    /// JSON-encoded snapshot of `PermSession.selectedArchive`, written by the
+    /// host app on archive change / session load and read by the ShareExtension
+    /// as a fallback when the keychain session lacks a selectedArchive.
+    static let sharedSelectedArchiveKey = "sharedSelectedArchiveKey"
     static let shareURLToken = "shareURLTokenStorageKey"
     static let publicURLToken = "publicURLTokenKey"
     static let navigationToShareFolderLink = "navigationToShareFolderLink"

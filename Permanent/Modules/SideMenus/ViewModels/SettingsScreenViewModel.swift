@@ -225,6 +225,11 @@ class SettingsScreenViewModel: ObservableObject {
     }
     
     func logout(then handler: @escaping ServerResponse) {
+        // User-initiated sign-out: cancel any in-flight uploads and tear down
+        // their Live Activity. Done here (not in AuthenticationManager.logout)
+        // so transient auth flows don't accidentally destroy upload work.
+        UploadManager.shared.cancelAll()
+
         AuthenticationManager.shared.logout()
         
         let logoutOperation = APIOperation(AuthenticationEndpoint.logout)

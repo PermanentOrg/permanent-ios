@@ -1164,7 +1164,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.updateShareLinkV2(shareLinkId: "link-1")
 
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await waitUntil(repo.updateShareLinkV2Called)
 
         XCTAssertTrue(repo.updateShareLinkV2Called)
         XCTAssertEqual(repo.lastUpdateV2ShareLinkId, "link-1")
@@ -1179,7 +1179,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.createShareLinkV2()
 
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await waitUntil(repo.createShareLinkV2Called)
 
         XCTAssertTrue(repo.createShareLinkV2Called)
     }
@@ -1965,7 +1965,7 @@ extension ShareItemViewModelExtendedTests {
     }
 
     /// Polls `condition` every 10 ms until it returns true or `timeout` elapses.
-    /// Replaces fragile fixed-duration `Task.sleep` waits whose short window
+    /// Replaces fragile fixed-duration `Task.sleep` waits whose 100 ms window
     /// was enough locally but flaked on slower CI runners.
     private func waitUntil(
         timeout: TimeInterval = 2.0,

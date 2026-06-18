@@ -139,6 +139,13 @@ platform :ios do
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
+    match(type: "appstore",
+          readonly: true,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive.Widgets",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          keychain_password: ""
+          )
 
     # get the latest release build # from firebase
     latest_release = latest_testflight_build_number(app_identifier: "org.permanent.PermanentArchive")
@@ -168,6 +175,14 @@ platform :ios do
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
         profile_name: "match AppStore org.permanent.PermanentArchive.ShareExtension",
+        code_sign_identity: "Apple Distribution"
+    )
+
+    update_code_signing_settings(
+        targets: ["PermanentWidgetsExtension"],
+        use_automatic_signing: false,
+        path: "Permanent.xcodeproj",
+        profile_name: "match AppStore org.permanent.PermanentArchive.Widgets",
         code_sign_identity: "Apple Distribution"
     )
 

@@ -495,7 +495,7 @@ private final class TestableSharesViewController: SharesViewController {
     var didPresentViewController = false
     var lastPresentedViewController: UIViewController?
 
-    override func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    override func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
         didNavigateToFolder = true
         lastNavigateParams = params
         handler?()

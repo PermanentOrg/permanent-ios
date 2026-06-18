@@ -98,9 +98,9 @@
       allowLocationSimulation = "YES"
       launchAutomaticallySubstyle = "2">
       <RemoteRunnable
-         runnableDebuggingMode = "1"
+         runnableDebuggingMode = "0"
          BundleIdentifier = "com.apple.mobileslideshow"
-         RemotePath = "/Applications/MobileSlideShow.app">
+         RemotePath = "/var/containers/Bundle/Application/E127BFCD-6137-453D-BD40-8C449D33324A/Photos.app">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
@@ -118,6 +118,7 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES"
+      askForAppToLaunch = "Yes"
       launchAutomaticallySubstyle = "2">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
