@@ -550,10 +550,13 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.updateShareLinkV2(shareLinkId: "link-123")
 
-        // Poll for the merge to complete instead of a fixed sleep: the merged
-        // permissionsLevel is the last value set in the async chain (Task →
-        // repo callback → MainActor), so a fixed 500ms window flaked on slow CI.
-        await waitUntil(vm.shareLinkV2Data?.permissionsLevel == "editor")
+        // The merge lands in an async completion (mock 100ms delay → Task → MainActor).
+        // A fixed sleep raced on the loaded CI runner — a sibling test ran for ~2.9s —
+        // so the assertions below fired before the update applied and read the pre-update
+        // values. Poll for the merged result with a generous ceiling: this returns the
+        // instant the update lands (≈immediately locally) and only waits long under
+        // contention; if it never lands it fails as a real regression, not a flake.
+        await waitUntil(timeout: 10, vm.shareLinkV2Data?.permissionsLevel == "editor")
 
         XCTAssertEqual(vm.shareLinkV2Data?.itemId, "folder-1", "Should preserve itemId from previous data")
         XCTAssertEqual(vm.shareLinkV2Data?.itemType, "folder", "Should preserve itemType from previous data")
