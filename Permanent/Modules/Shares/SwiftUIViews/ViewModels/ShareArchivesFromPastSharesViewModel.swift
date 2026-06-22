@@ -76,7 +76,7 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
     }
 
     func fetchArchives(completion: (() -> Void)? = nil) {
-        guard let accountId = PermSession.currentSession?.account.accountID,
+        guard let accountId = PermSession.currentSession?.account?.accountID,
               let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else {
             completion?()
             return

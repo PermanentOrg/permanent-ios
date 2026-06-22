@@ -156,7 +156,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func showMemberChecklist(_ completionBlock: @escaping ((Bool?) -> Void)) {
-        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account?.accountID else {
             completionBlock(nil)
             return
         }

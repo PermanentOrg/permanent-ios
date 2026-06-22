@@ -46,7 +46,7 @@ extension BannerType {
 extension BannerType {
     
     func getKey() -> String? {
-        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account?.accountID else {
             return nil
         }
         return "\(self.rawValue).\(accountId)"
