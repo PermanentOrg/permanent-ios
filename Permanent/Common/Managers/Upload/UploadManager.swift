@@ -189,7 +189,7 @@ class UploadManager {
         logger.debug("Preparing to upload \(files.count, privacy: .public) files with total size: \(filesSize, privacy: .public) bytes")
 
         // Call AccountAPI and figure if there's enough space left
-        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account?.accountID else {
             logger.error("🔼 No active session found")
             DispatchQueue.main.async { completion?(false) }
             return
@@ -308,7 +308,7 @@ class UploadManager {
         // upload User A's files into User B's archive (the server might
         // accept the call with the new bearer token but the folderLinkId
         // belongs to User A).
-        if let currentAccountId = PermSession.currentSession?.account.accountID {
+        if let currentAccountId = PermSession.currentSession?.account?.accountID {
             let ownerKey = Constants.Keys.StorageKeys.uploadQueueOwnerAccountIdKey
             if let ownerAccountId = UserDefaults.standard.object(forKey: ownerKey) as? Int,
                ownerAccountId != currentAccountId,
