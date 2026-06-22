@@ -26,6 +26,35 @@ struct UploadLiveActivitySnapshot: Codable {
 class UploadLiveActivityManager {
     static let shared = UploadLiveActivityManager()
 
+    /// Compile-time kill switch for the upload Live Activity feature.
+    ///
+    /// The feature is **on by default**. To turn it off for a build, add
+    /// `DISABLE_LIVE_ACTIVITIES` to that configuration's Swift flags — e.g.
+    /// `OTHER_SWIFT_FLAGS = "$(inherited) -DDISABLE_LIVE_ACTIVITIES"`, the same
+    /// mechanism used for `STAGING_ENVIRONMENT`.
+    ///
+    /// This switch is intended to be **temporary and trivially removable**. Its
+    /// entire footprint is this property plus three `guard Self.isFeatureEnabled`
+    /// checks — in `startActivity`, `fileCompleted`, and `reconcileOnLaunch`. No
+    /// original logic was modified, so to restore Live Activities permanently:
+    /// `grep isFeatureEnabled` in this file, delete this property and those three
+    /// guards, and drop the `-DDISABLE_LIVE_ACTIVITIES` build flag. Nothing else
+    /// needs reverting.
+    ///
+    /// Why only three guards: `currentActivity` is only ever assigned in
+    /// `startActivity` and `reconcileOnLaunch`, so gating both keeps it `nil`,
+    /// which makes every other lifecycle method a no-op via its own
+    /// `currentActivity != nil` guard. The one exception is `fileCompleted`,
+    /// which has a side effect that runs even with no activity, so it is gated
+    /// explicitly too.
+    static var isFeatureEnabled: Bool {
+        #if DISABLE_LIVE_ACTIVITIES
+        return false
+        #else
+        return true
+        #endif
+    }
+
     private let logger = Logger(subsystem: "com.permanent.ios", category: "LiveActivity")
     private let flowLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
     private var currentActivity: Activity<UploadActivityAttributes>?
@@ -76,6 +105,16 @@ class UploadLiveActivityManager {
     ///    they stay visible until uploads finish or iOS marks them stale.
     /// 3. No snapshot AND no in-flight metadata → truly orphaned, end them.
     func reconcileOnLaunch() {
+        guard Self.isFeatureEnabled else {
+            // Feature compiled out — end any activities left over from a
+            // previously-enabled build so none linger on the Lock Screen.
+            for activity in Activity<UploadActivityAttributes>.activities {
+                Task { await activity.end(nil, dismissalPolicy: .immediate) }
+            }
+            clearSnapshot()
+            return
+        }
+
         let runningActivities = Activity<UploadActivityAttributes>.activities
         let snapshot = loadSnapshot()
 
@@ -201,6 +240,8 @@ class UploadLiveActivityManager {
     // MARK: - Lifecycle
 
     func startActivity(totalFiles: Int, firstFileName: String, archiveNo: String = "", folderLinkId: Int = 0) {
+        guard Self.isFeatureEnabled else { return }
+
         let authInfo = ActivityAuthorizationInfo()
         flowLogger.info("🔼 [LIVE ACTIVITY] startActivity called — areActivitiesEnabled=\(authInfo.areActivitiesEnabled, privacy: .public) totalFiles=\(totalFiles, privacy: .public) currentActivity=\(self.currentActivity != nil, privacy: .public)")
 
@@ -273,6 +314,8 @@ class UploadLiveActivityManager {
     }
 
     func fileCompleted(success: Bool) {
+        guard Self.isFeatureEnabled else { return }
+
         if success {
             completedFiles += 1
         } else {
