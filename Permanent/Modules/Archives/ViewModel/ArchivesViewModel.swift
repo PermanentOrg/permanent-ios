@@ -26,7 +26,7 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void)) {
-        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account?.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
@@ -99,7 +99,7 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
-        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account?.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
