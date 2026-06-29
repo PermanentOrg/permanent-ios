@@ -90,17 +90,19 @@ class StorageViewModel: ObservableObject {
         spaceTotal = (accountData.spaceTotal ?? 0)
         spaceLeft = (accountData.spaceLeft ?? 0)
         spaceUsed = spaceTotal - spaceLeft
-        
-        spaceRatio = Double(spaceUsed) / Double(spaceTotal)
-        
+
+        // Guard the divide: a no-archive account reports 0 storage, and 0/0 = NaN
+        // corrupts the progress bar.
+        spaceRatio = spaceTotal > 0 ? Double(spaceUsed) / Double(spaceTotal) : 0
+
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
         spaceLeftReadable = spaceLeft.bytesToReadableForm(useDecimal: true)
         spaceUsedReadable = spaceUsed.bytesToReadableForm(useDecimal: true)
     }
-    
+
     func addInTotalSpace(spaceToAdd: Int) {
         spaceTotal = spaceTotal + spaceToAdd
-        spaceRatio = Double(spaceUsed) / Double(spaceTotal)
+        spaceRatio = spaceTotal > 0 ? Double(spaceUsed) / Double(spaceTotal) : 0
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
     }
 }

@@ -58,8 +58,9 @@ class GiftStorageViewModel: ObservableObject {
         spaceTotal = (accountData.spaceTotal ?? 0)
         spaceLeft = (accountData.spaceLeft ?? 0)
         spaceUsed = spaceTotal - spaceLeft
-        
-        spaceRatio = Double(spaceUsed) / Double(spaceTotal)
+
+        // Guard the divide (0/0 = NaN corrupts the progress bar for 0-storage accounts).
+        spaceRatio = spaceTotal > 0 ? Double(spaceUsed) / Double(spaceTotal) : 0
         
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
         spaceLeftReadable = spaceLeft.bytesToReadableForm(useDecimal: true)

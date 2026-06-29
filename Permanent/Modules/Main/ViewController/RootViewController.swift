@@ -77,7 +77,15 @@ class RootViewController: UIViewController {
                     let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
                     
                     if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode || !biometricsAuthEnabled {
-                        self?.setDrawerRoot()
+                        // DASHBOARD_REDESIGN: a logged-in user with no default archive
+                        // (relaunch, biometrics off/unavailable) goes to the redesigned
+                        // onboarding dashboard — not the empty file manager.
+                        if AuthenticationManager.shared.session?.account.defaultArchiveID == nil && DashboardRedesign.isEnabled {
+                            let host = RedesignOnboardingEntry.makeDashboardHost()
+                            AppDelegate.shared.rootViewController.present(host, animated: true)
+                        } else {
+                            self?.setDrawerRoot()
+                        }
                     } else {
                         self?.setRoot(named: .biometrics, from: .authentication)
                     }
@@ -141,11 +149,19 @@ class RootViewController: UIViewController {
         var showArchives: Bool = false
         let mainViewController: UIViewController
         let leftSideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main) as! SideMenuViewController
-        
+
+        // Redesign deep-link routing: instead of using `mainViewController` as the
+        // drawer root (which the shell host replaces), route the intent INTO the
+        // shell — shares open the Files tab's Shared section; PA-request /
+        // public-profile present over the shell so the shell survives.
+        var deepLinkSharedSection = false
+        var deepLinkPresentVC: UIViewController?
+
         if let _: PARequestNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestPAAccess) {
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
 
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![1]
+            deepLinkPresentVC = mainViewController
         } else if let _: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
             let sharesVC: SharesViewController
 
@@ -155,6 +171,7 @@ class RootViewController: UIViewController {
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
 
             mainViewController = sharesVC
+            deepLinkSharedSection = true
         } else if let _: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFolderKey) {
             let sharesVC: SharesViewController
 
@@ -163,14 +180,20 @@ class RootViewController: UIViewController {
 
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
             mainViewController = sharesVC
+            deepLinkSharedSection = true
         } else if let deeplinkPayload: PublicProfileDeeplinkPayload = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.publicURLToken) {
             let newRootVC = UIViewController.create(withIdentifier: .publicGallery, from: .main) as! PublicGalleryViewController
             newRootVC.deeplinkPayload = deeplinkPayload
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+            // Legacy swaps the drawer root; the shell instead presents it over the
+            // shell (see deepLinkPresentVC below).
+            if !DashboardRedesign.isEnabled {
+                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            }
+
             leftSideMenuController.selectedMenuOption = .publicGallery
-            
+
             mainViewController = newRootVC
+            deepLinkPresentVC = newRootVC
         } else if let sharedArchiveToken: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.sharedArchiveToken), sharedArchiveToken {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedArchiveToken)
             showArchives = true
@@ -182,8 +205,31 @@ class RootViewController: UIViewController {
             (mainViewController as! MainViewController).viewModel = MyFilesViewModel()
         }
         
-        let navController = RootNavigationController(viewController: mainViewController)
-        return DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, showArchives: showArchives)
+        let navController: RootNavigationController
+        var shellCoordinator: RedesignShellCoordinator?
+        if DashboardRedesign.isEnabled {
+            // Stage 6 SwiftUI shell: host the Dashboard ↔ Files container.
+            // The inner Files nav (RootNavigationController inside the shell)
+            // provides its own bar, so the outer one is hidden. The coordinator
+            // lets the drawer switch the shell's Files section in place instead
+            // of swapping the root out from under it.
+            let coordinator = RedesignShellCoordinator()
+            // Deep link to a shared file/folder → open the Files tab's Shared section.
+            if deepLinkSharedSection { coordinator.filesSection = .shared }
+            shellCoordinator = coordinator
+            navController = RootNavigationController(viewController: RedesignAppShellEntry.makeShellHost(coordinator: coordinator))
+            navController.setNavigationBarHidden(true, animated: false)
+        } else {
+            navController = RootNavigationController(viewController: mainViewController)
+        }
+        let drawerController = DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, showArchives: showArchives)
+        drawerController.shellCoordinator = shellCoordinator
+        // Deep link to PA-request / public-profile → present over the shell once
+        // the drawer is on screen (so the shell isn't torn down).
+        if DashboardRedesign.isEnabled, let presentVC = deepLinkPresentVC {
+            drawerController.pendingDeepLinkViewController = presentVC
+        }
+        return drawerController
     }
     
     func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName, showRegisterView: Bool = false) {

@@ -61,7 +61,7 @@ class SettingsScreenViewModel: ObservableObject {
                     completionBlock(APIError.invalidResponse)
                     return
                 }
-                if let accountDataVO = model.results[0].data?[0].accountVO {
+                if let accountDataVO = model.results.first?.data?.first?.accountVO {
                     self.accountData = accountDataVO
                     completionBlock(nil)
                     return
@@ -156,8 +156,10 @@ class SettingsScreenViewModel: ObservableObject {
         spaceTotal = (accountData.spaceTotal ?? 0)
         spaceLeft = (accountData.spaceLeft ?? 0)
         spaceUsed = spaceTotal - spaceLeft
-        
-        spaceRatio = Double(spaceUsed) / Double(spaceTotal)
+
+        // A no-archive account reports 0 storage; guard the divide so spaceRatio
+        // is 0 (not NaN, which corrupts the progress bar / spams CoreGraphics).
+        spaceRatio = spaceTotal > 0 ? Double(spaceUsed) / Double(spaceTotal) : 0
         
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
         spaceLeftReadable = spaceLeft.bytesToReadableForm(useDecimal: true)

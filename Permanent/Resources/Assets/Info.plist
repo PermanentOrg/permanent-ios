@@ -68,6 +68,8 @@
 		<string>OpenSans-Bold.ttf</string>
 		<string>OpenSans-Regular.ttf</string>
 		<string>OpenSans-SemiBold.ttf</string>
+		<string>GystVariableRoman-Light.otf</string>
+		<string>GystVariableItalic-LightItalic.otf</string>
 	</array>
 	<key>UIDesignRequiresCompatibility</key>
 	<false/>

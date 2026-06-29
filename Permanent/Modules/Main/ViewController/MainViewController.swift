@@ -26,6 +26,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let refreshControl = UIRefreshControl()
     private let screenLockManager = ScreenLockManager()
 
+    /// True when hosted inside the redesign SwiftUI shell
+    /// (`FilesContainerRepresentable`). In that mode the shell owns the top chrome
+    /// (the root nav bar stays hidden; a `UINavigationControllerDelegate` reveals
+    /// it only for pushed screens), and the floating bottom-nav pill overlays the
+    /// bottom (so the grid reserves a consistent inset that clears it).
+    var hostedInShell: Bool = false
+    /// Bottom content inset that clears the shell's floating bottom-nav pill +
+    /// home indicator; used instead of the FAB-era insets when hosted.
+    private let shellFilesBottomInset: CGFloat = 116
+
     private var sortActionSheet: SortActionSheet?
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
@@ -238,8 +248,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
     fileprivate func initUI() {
         view.backgroundColor = .white
-        
-        navigationController?.setNavigationBarHidden(false, animated: false)
+
+        // In the shell, the root nav bar stays hidden (the shell header is the
+        // chrome); the hosting representable's delegate reveals it on push only.
+        if !hostedInShell {
+            navigationController?.setNavigationBarHidden(false, animated: false)
+        }
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.title = viewModel?.rootFolderName
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
@@ -291,7 +305,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         collectionView.refreshControl = refreshControl
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: hostedInShell ? shellFilesBottomInset : (UIScreen.main.bounds.width - 40), right: 6)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
         flowLayout.minimumLineSpacing = 0
@@ -461,7 +475,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.layoutIfNeeded()
         
         // Re-establish content insets to ensure proper scroll behavior
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width, right: 6)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: hostedInShell ? shellFilesBottomInset : UIScreen.main.bounds.width, right: 6)
     }
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
@@ -658,8 +672,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         isGridView.toggle()
         viewModel?.isGridView = isGridView
         
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
-    
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: hostedInShell ? shellFilesBottomInset : 60, right: 6)
+
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.reloadData()
@@ -684,7 +698,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             present(navController, animated: false)
         }
     }
-    
+
     func showBanner() {
         var bannerType = BannerType.noBanner
         if bannerType.shouldShowBanner() {

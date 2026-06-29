@@ -79,10 +79,15 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 let defaultArchive: Int? = AuthenticationManager.shared.session?.account.defaultArchiveID
                 
                 if defaultArchive == nil {
-                    let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: nil, password: nil))
-                    let host = UIHostingController(rootView: screenView)
-                    host.modalPresentationStyle = .fullScreen
-                    AppDelegate.shared.rootViewController.present(host, animated: true)
+                    if DashboardRedesign.isEnabled {
+                        let host = RedesignOnboardingEntry.makeDashboardHost()
+                        AppDelegate.shared.rootViewController.present(host, animated: true)
+                    } else {
+                        let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: nil, password: nil))
+                        let host = UIHostingController(rootView: screenView)
+                        host.modalPresentationStyle = .fullScreen
+                        AppDelegate.shared.rootViewController.present(host, animated: true)
+                    }
                 } else {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 }

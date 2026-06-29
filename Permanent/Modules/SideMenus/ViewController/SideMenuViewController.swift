@@ -253,32 +253,51 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     fileprivate func handleMenuOptionTap(forOption option: DrawerOption) {
+        // When the redesign shell is hosted, route through the shell instead of
+        // `changeDrawerRoot` (which replaces the drawer root and tears the shell
+        // down). File sections switch the Files tab in place; secondary screens
+        // present over the shell. The legacy path (flag off) is unchanged.
+        let drawer = DashboardRedesign.isEnabled
+            ? AppDelegate.shared.rootViewController.current as? DrawerViewController
+            : nil
+
         switch option {
         case .files:
+            if drawer?.routeToShellFiles(.privateFiles) == true { return }
             let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
             newRootVC.viewModel = MyFilesViewModel()
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+
         case .publicFiles:
+            if drawer?.routeToShellFiles(.publicFiles) == true { return }
             let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
             newRootVC.viewModel = PublicFilesViewModel()
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+
         case .shares:
+            if drawer?.routeToShellFiles(.shared) == true { return }
             let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+
         case .archiveSettings:
             viewModel?.archiveSetingsWasPressed.toggle()
-            
+
         case .manageTags:
             let newRootVC = UIViewController.create(withIdentifier: .tagManagement, from: .archiveSettings)
+            if let drawer = drawer {
+                drawer.presentOverShell(newRootVC, title: "Tags".localized())
+                return
+            }
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+
         case .manageMembers:
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+            if let drawer = drawer {
+                drawer.presentOverShell(newRootVC, title: "Members".localized())
+                return
+            }
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+
         case .legacyPlanning:
             // Close the drawer first
             if let drawerVC = AppDelegate.shared.rootViewController.current as? DrawerViewController {
@@ -304,12 +323,20 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
             newRootVC.archiveData = archive
             newRootVC.isViewingPublicProfile = true
+            if let drawer = drawer {
+                drawer.presentOverShell(newRootVC)
+                return
+            }
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+
         case .publicGallery:
             let newRootVC = UIViewController.create(withIdentifier: .publicGallery, from: .main) as! PublicGalleryViewController
+            if let drawer = drawer {
+                drawer.presentOverShell(newRootVC)
+                return
+            }
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
+
         default:
             return
         }

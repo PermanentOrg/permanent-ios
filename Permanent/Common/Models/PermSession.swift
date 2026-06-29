@@ -52,7 +52,11 @@ class PermSession: Codable {
         token = try container.decode(String.self, forKey: .token)
         
         account = try container.decode(AccountVOData.self, forKey: .account)
-        selectedArchive = try container.decode(ArchiveVOData.self, forKey: .selectedArchive)
+        // `selectedArchive` is optional and is encoded as null for a logged-in user
+        // who has not selected an archive yet (e.g. just registered). Use
+        // decodeIfPresent so a no-archive session round-trips instead of throwing —
+        // a throw here makes reloadSession() self-logout and bounce to login.
+        selectedArchive = try container.decodeIfPresent(ArchiveVOData.self, forKey: .selectedArchive)
         
         selectedFiles = try container.decodeIfPresent([FileModel].self, forKey: .selectedFiles)
         fileAction = try container.decodeIfPresent(FileAction.self, forKey: .fileAction)

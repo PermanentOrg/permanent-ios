@@ -11,10 +11,16 @@ struct SettingsScreenView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: SettingsScreenViewModel
     var settingsRouter: SettingsRouter
-    
-    init(viewModel: StateObject<SettingsScreenViewModel>, router: SettingsRouter) {
+    /// The no-archive onboarding account menu hides everything that needs an
+    /// archive or doesn't apply yet: the storage usage bar, and the Storage,
+    /// "My archives", and Legacy Planning rows, plus the "finish setup" affordance
+    /// (its checklist target — MainViewController — doesn't exist during onboarding).
+    var isOnboardingMenu: Bool = false
+
+    init(viewModel: StateObject<SettingsScreenViewModel>, router: SettingsRouter, isOnboardingMenu: Bool = false) {
         self._viewModel = viewModel
         self.settingsRouter = router
+        self.isOnboardingMenu = isOnboardingMenu
     }
     
     var dismissAction: ((Bool) -> Void)?
@@ -106,18 +112,20 @@ struct SettingsScreenView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         if #available(iOS 26.0, *) {
-                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount, showCloseButton: false) {
+                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount && !isOnboardingMenu, showCloseButton: false) {
                                 settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
                             }
                         } else {
-                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount) {
+                            CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount && !isOnboardingMenu) {
                                 settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
                             }
                         }
                     }
 
-                    GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .lightWithGradientBar, fontType: .usual)
-                        .padding(.horizontal, 5)
+                    if !isOnboardingMenu {
+                        GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .lightWithGradientBar, fontType: .usual)
+                            .padding(.horizontal, 5)
+                    }
                     Group {
                         ScrollView(showsIndicators: false) {
                             VStack(alignment: .leading) {
@@ -127,18 +135,22 @@ struct SettingsScreenView: View {
                                     CustomSimpleListItemView(image: Image(.accountSettings), titleText: "Account")
                                 }
                                 .accessibilityIdentifier("settingsAccountOption")
-                                Button {
-                                    settingsRouter.navigate(to: .storage, router: settingsRouter)
-                                } label: {
-                                    CustomSimpleListItemView(image: Image(.storageSettings), titleText: "Storage")
+                                if !isOnboardingMenu {
+                                    Button {
+                                        settingsRouter.navigate(to: .storage, router: settingsRouter)
+                                    } label: {
+                                        CustomSimpleListItemView(image: Image(.storageSettings), titleText: "Storage")
+                                    }
+                                    .accessibilityIdentifier("settingsStorageOption")
                                 }
-                                .accessibilityIdentifier("settingsStorageOption")
-                                Button {
-                                    settingsRouter.navigate(to: .myArchives, router: settingsRouter)
-                                } label: {
-                                    CustomSimpleListItemView(image: Image(.myArchivesSettings), titleText: "My archives")
+                                if !isOnboardingMenu {
+                                    Button {
+                                        settingsRouter.navigate(to: .myArchives, router: settingsRouter)
+                                    } label: {
+                                        CustomSimpleListItemView(image: Image(.myArchivesSettings), titleText: "My archives")
+                                    }
+                                    .accessibilityIdentifier("settingsMyArchivesOption")
                                 }
-                                .accessibilityIdentifier("settingsMyArchivesOption")
                                 Button {
                                     settingsRouter.navigate(to: .invitations, router: settingsRouter)
                                 } label: {
@@ -157,12 +169,14 @@ struct SettingsScreenView: View {
                                     CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Login & Security", notificationIcon: !(viewModel.twoFactorAuthenticationEnabled == true)&&(viewModel.isLoading2FAStatus == false))
                                 }
                                 .accessibilityIdentifier("settingsLoginSecurityOption")
-                                Button {
-                                    settingsRouter.navigate(to: .legacyPlanning, router: settingsRouter)
-                                } label: {
-                                    CustomSimpleListItemView(image: Image(.legacyPlanningSettings), titleText: "Legacy Planning")
+                                if !isOnboardingMenu {
+                                    Button {
+                                        settingsRouter.navigate(to: .legacyPlanning, router: settingsRouter)
+                                    } label: {
+                                        CustomSimpleListItemView(image: Image(.legacyPlanningSettings), titleText: "Legacy Planning")
+                                    }
+                                    .accessibilityIdentifier("settingsLegacyPlanningOption")
                                 }
-                                .accessibilityIdentifier("settingsLegacyPlanningOption")
                                 Spacer()
                             }
                         }

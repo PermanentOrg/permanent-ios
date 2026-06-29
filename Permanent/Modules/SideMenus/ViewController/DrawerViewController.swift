@@ -20,9 +20,24 @@ class DrawerViewController: UIViewController {
     let backgroundView = UIView()
     var settingsRouter: SettingsRouter
     var showArchives: Bool
+    /// Set when the redesign shell is hosted (`DashboardRedesign.isEnabled`).
+    /// Lets the left-menu route file-sections through the shell in place instead
+    /// of `changeRoot`, which would tear the shell down.
+    var shellCoordinator: RedesignShellCoordinator?
+    /// A deep-link target (PA-request / public-profile) to present OVER the shell
+    /// once it's on screen — set by `RootViewController.drawerControllerForDeepLink`.
+    var pendingDeepLinkViewController: UIViewController?
     
-    fileprivate var leftSideMenuOrigin: CGPoint { CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight) }
-    fileprivate var rightSideMenuOrigin: CGPoint { CGPoint(x: view.bounds.width - (view.bounds.width * 0.75), y: view.safeAreaInsets.top + rootViewController.barHeight + 0.5) }
+    /// Where the drawer + dim begin. In the redesign shell the outer nav bar is
+    /// hidden (barHeight ≈ 0), but the SwiftUI `RedesignShellHeader` (64pt) owns
+    /// the top chrome — so start below IT, otherwise the dim overlay is drawn on
+    /// top of the header and grays out its glass action buttons.
+    fileprivate var contentTopHeight: CGFloat {
+        shellCoordinator != nil ? RedesignShellHeaderMetrics.height : rootViewController.barHeight
+    }
+
+    fileprivate var leftSideMenuOrigin: CGPoint { CGPoint(x: 0, y: view.safeAreaInsets.top + contentTopHeight) }
+    fileprivate var rightSideMenuOrigin: CGPoint { CGPoint(x: view.bounds.width - (view.bounds.width * 0.75), y: view.safeAreaInsets.top + contentTopHeight + 0.5) }
     fileprivate var leftSideMenuHeight: CGFloat { view.bounds.height - leftSideMenuOrigin.y }
     fileprivate var rightSideMenuHeight: CGFloat { view.bounds.height - rightSideMenuOrigin.y }
     
@@ -57,6 +72,16 @@ class DrawerViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Present a deferred deep-link target (PA-request / public-profile) over
+        // the shell now that the drawer is on screen.
+        if let pending = pendingDeepLinkViewController {
+            pendingDeepLinkViewController = nil
+            presentOverShell(pending)
+        }
+    }
     
     func toggleMenu(animateBg: Bool = true) {
         let offset: CGFloat = view.safeAreaInsets.top > 47 ? 6 : 0
@@ -67,7 +92,7 @@ class DrawerViewController: UIViewController {
         rootViewController.view.hideKeyboard()
         
         if leftSideMenuController.parent == nil {
-            let bgViewOrigin = CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight - offset)
+            let bgViewOrigin = CGPoint(x: 0, y: view.safeAreaInsets.top + contentTopHeight - offset)
             backgroundView.frame = CGRect(origin: bgViewOrigin, size: CGSize(width: view.bounds.width, height: view.bounds.height - bgViewOrigin.y + offset))
             view.addSubview(backgroundView)
 
@@ -107,6 +132,38 @@ class DrawerViewController: UIViewController {
         rootViewController.display(viewController: viewController)
     }
     
+    /// Redesign: switch the shell's Files-tab section in place (keeps the bottom
+    /// nav, shared header, and Dashboard tab alive and reachable). Closes the
+    /// drawer afterwards. Returns false if there is no shell to drive.
+    @discardableResult
+    func routeToShellFiles(_ section: RedesignFilesSection) -> Bool {
+        guard let shellCoordinator = shellCoordinator else { return false }
+        shellCoordinator.showFiles(section)
+        if isLeftMenuExpanded { toggleMenu() }
+        return true
+    }
+
+    /// Redesign: present a secondary destination (Manage Tags/Members, Public
+    /// Gallery, Public Archive) OVER the shell so the shell survives and stays
+    /// reachable, wrapped in a navigation controller with a Close button.
+    func presentOverShell(_ viewController: UIViewController, title: String? = nil) {
+        if isLeftMenuExpanded { toggleMenu() }
+        if let title = title { viewController.title = title }
+        let navController = NavigationController(rootViewController: viewController)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true) { [weak navController] in
+            // Set the Close button in the completion so a child that configures
+            // its own nav items in viewDidLoad/viewWillAppear can't clobber it.
+            let closeItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(self.dismissPresentedOverShell))
+            navController?.topViewController?.navigationItem.leftBarButtonItem = closeItem
+        }
+    }
+
+    @objc
+    private func dismissPresentedOverShell() {
+        presentedViewController?.dismiss(animated: true)
+    }
+
     func changeRoot(viewController: UIViewController) {
         rootViewController.changeRootController(viewController: viewController)
         

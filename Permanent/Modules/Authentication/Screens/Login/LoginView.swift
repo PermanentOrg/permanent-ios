@@ -119,6 +119,9 @@ struct LoginView: View {
                 case .success:
                     if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
                         AppDelegate.shared.rootViewController.setDrawerRoot()
+                    } else if DashboardRedesign.isEnabled {
+                        let host = RedesignOnboardingEntry.makeDashboardHost()
+                        AppDelegate.shared.rootViewController.present(host, animated: true)
                     } else {
                         let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: viewModel.username, password: viewModel.password))
                         let host = UIHostingController(rootView: screenView)

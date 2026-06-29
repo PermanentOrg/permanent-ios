@@ -188,10 +188,15 @@ struct RegisterView: View {
             if let _ = status {
                 switch status {
                 case .success:
-                    let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: viewModel.email, password: viewModel.password))
-                    let host = UIHostingController(rootView: screenView)
-                    host.modalPresentationStyle = .fullScreen
-                    AppDelegate.shared.rootViewController.present(host, animated: true)
+                    if DashboardRedesign.isEnabled {
+                        let host = RedesignOnboardingEntry.makeDashboardHost()
+                        AppDelegate.shared.rootViewController.present(host, animated: true)
+                    } else {
+                        let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: viewModel.email, password: viewModel.password))
+                        let host = UIHostingController(rootView: screenView)
+                        host.modalPresentationStyle = .fullScreen
+                        AppDelegate.shared.rootViewController.present(host, animated: true)
+                    }
                     viewModel.trackEvents()
                     
                 default:
