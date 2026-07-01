@@ -32,6 +32,258 @@ final class FilesViewModelTests: XCTestCase {
         )
     }
 
+    // MARK: - Stela V2 children decode (PR1 — model extension)
+
+    private func decodeChildren(_ json: String) -> FolderChildrenV2Response? {
+        guard let data = json.data(using: .utf8) else { return nil }
+        return try? FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: data)
+    }
+
+    /// A folder child (nested parentFolder + thumbnailUrls, pretty type, non-numeric
+    /// archiveNumber) and a record child (flat fields, raw type).
+    private let stelaChildrenJSON = """
+    {
+      "items": [
+        {
+          "folderId": "10",
+          "displayName": "Private Folder",
+          "archiveNumber": "0001-test",
+          "type": "private",
+          "status": "ok",
+          "folderLinkId": "11",
+          "parentFolder": { "id": "2", "folderLinkId": "3" },
+          "thumbnailUrls": { "200": "https://t/200", "500": "https://t/500" }
+        },
+        {
+          "recordId": "8",
+          "displayName": "photo.jpg",
+          "archiveNumber": "0001-0008",
+          "type": "type.record.image",
+          "status": "ok",
+          "folderLinkId": "9",
+          "parentFolderId": "10",
+          "parentFolderLinkId": "11",
+          "thumbUrl200": "https://r/200"
+        }
+      ],
+      "pagination": { "nextCursor": "abc" }
+    }
+    """
+
+    func testStelaChildren_Decode_MixedFolderAndRecord() {
+        let resp = decodeChildren(stelaChildrenJSON)
+        XCTAssertEqual(resp?.items?.count, 2)
+        XCTAssertEqual(resp?.pagination?.nextCursor, "abc")
+        XCTAssertEqual(resp?.items?[0].isFolder, true)
+        XCTAssertEqual(resp?.items?[1].isFolder, false)
+    }
+
+    func testStelaChildren_Folder_ResolvesNestedParentAndThumbnail() {
+        let folder = decodeChildren(stelaChildrenJSON)?.items?[0]
+        XCTAssertEqual(folder?.resolvedParentFolderId, "2")
+        XCTAssertEqual(folder?.resolvedParentFolderLinkId, "3") // nested for folders
+        XCTAssertEqual(folder?.bestThumbnailURL, "https://t/500") // 256 absent → falls back to 500
+    }
+
+    func testStelaChildren_Record_ResolvesFlatParentAndThumbnail() {
+        let record = decodeChildren(stelaChildrenJSON)?.items?[1]
+        XCTAssertEqual(record?.resolvedParentFolderLinkId, "11") // flat for records
+        XCTAssertEqual(record?.bestThumbnailURL, "https://r/200")
+    }
+
+    // MARK: - FileModel(model: FolderChildV2Data) mapping (PR2)
+
+    func testFileModelFromV2_Folder_MapsPrettyTypeAndIds() {
+        let folder = decodeChildren(stelaChildrenJSON)!.items![0]
+        let file = FileModel(model: folder, permissions: [.read], accessRole: .viewer)
+        XCTAssertEqual(file.type, .privateFolder)   // pretty "private" → .privateFolder, not .miscellaneous
+        XCTAssertEqual(file.folderId, 10)           // String → Int at the boundary
+        XCTAssertEqual(file.folderLinkId, 11)
+        XCTAssertEqual(file.parentFolderLinkId, 3)  // resolved from nested parentFolder
+        XCTAssertEqual(file.recordId, -1)           // folders carry no record id
+        XCTAssertEqual(file.name, "Private Folder")
+    }
+
+    func testFileModelFromV2_ArchiveNumberStaysStringNeverIntConverted() {
+        let folder = decodeChildren(stelaChildrenJSON)!.items![0]
+        let file = FileModel(model: folder, permissions: [.read], accessRole: .viewer)
+        // "0001-test" is non-numeric — it must pass through as a String, never hit intId().
+        XCTAssertEqual(file.archiveNo, "0001-test")
+    }
+
+    func testFileModelFromV2_Record_MapsRawTypeAndFlatIds() {
+        let record = decodeChildren(stelaChildrenJSON)!.items![1]
+        let file = FileModel(model: record, permissions: [.read], accessRole: .viewer)
+        XCTAssertEqual(file.type, .image)            // raw "type.record.image"
+        XCTAssertEqual(file.recordId, 8)
+        XCTAssertEqual(file.folderId, -1)
+        XCTAssertEqual(file.parentFolderLinkId, 11)  // flat for records
+        XCTAssertEqual(file.archiveNo, "0001-0008")
+    }
+
+    func testFileModelFromV2_CopyingStatus_NotAccessible() {
+        let json = """
+        { "items": [ { "folderId": "5", "displayName": "Busy", "type": "private", "status": "copying" } ] }
+        """
+        let file = FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
+        XCTAssertEqual(file.thumbStatus, .copying)
+        XCTAssertFalse(file.canBeAccessed) // copying/moving items stay non-tappable, as on V1
+    }
+
+    func testFileModelFromV2_PopulatesSharesBadge() {
+        let json = """
+        {
+          "items": [
+            {
+              "folderId": "10", "displayName": "Shared Folder", "type": "private", "status": "ok",
+              "shares": [
+                { "id": "55", "accessRole": "access.role.viewer", "status": "status.generic.ok",
+                  "archive": { "id": "77", "name": "Jane Doe", "thumbUrl200": "https://a/200" } }
+              ]
+            }
+          ]
+        }
+        """
+        let file = FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
+        // The "shared item" badge keys off minArchiveVOS — must survive the V2 mapping.
+        XCTAssertEqual(file.minArchiveVOS.count, 1)
+        XCTAssertEqual(file.minArchiveVOS.first?.name, "Jane Doe")
+        XCTAssertEqual(file.minArchiveVOS.first?.shareId, 55)
+        XCTAssertEqual(file.minArchiveVOS.first?.archiveID, 77)
+    }
+
+    func testFileModelFromV2_NoShares_EmptyBadge() {
+        let folder = decodeChildren(stelaChildrenJSON)!.items![0]
+        XCTAssertTrue(FileModel(model: folder, permissions: [.read], accessRole: .viewer).minArchiveVOS.isEmpty)
+    }
+
+    // MARK: - Client-side sort (PR3 — /children has no sort param)
+
+    func testSort_NameAscending_IsCaseInsensitive() {
+        let vm = FilesViewModel()
+        vm.activeSortOption = .nameAscending
+        let input = [makeRecordFile(name: "banana"), makeRecordFile(name: "Apple"), makeRecordFile(name: "cherry")]
+        XCTAssertEqual(vm.sortedByActiveOption(input).map { $0.name }, ["Apple", "banana", "cherry"])
+    }
+
+    func testSort_NameDescending() {
+        let vm = FilesViewModel()
+        vm.activeSortOption = .nameDescending
+        let input = [makeRecordFile(name: "Apple"), makeRecordFile(name: "cherry"), makeRecordFile(name: "banana")]
+        XCTAssertEqual(vm.sortedByActiveOption(input).map { $0.name }, ["cherry", "banana", "Apple"])
+    }
+
+    func testSort_TypeAscending_FoldersBeforeRecords() {
+        let vm = FilesViewModel()
+        vm.activeSortOption = .typeAscending
+        let input = [makeRecordFile(name: "a"), makeFolderFile(name: "b")]
+        XCTAssertEqual(vm.sortedByActiveOption(input).first?.type.isFolder, true)
+    }
+
+    func testSort_DateAscending_UsesCreatedDate() {
+        let vm = FilesViewModel()
+        vm.activeSortOption = .dateAscending
+        let old = """
+        { "items": [ { "recordId": "1", "displayName": "old", "type": "type.record.image", "displayDate": "2020-01-01T00:00:00" } ] }
+        """
+        let new = """
+        { "items": [ { "recordId": "2", "displayName": "new", "type": "type.record.image", "displayDate": "2024-01-01T00:00:00" } ] }
+        """
+        let oldFile = FileModel(model: decodeChildren(old)!.items![0], permissions: [.read], accessRole: .viewer)
+        let newFile = FileModel(model: decodeChildren(new)!.items![0], permissions: [.read], accessRole: .viewer)
+        XCTAssertEqual(vm.sortedByActiveOption([newFile, oldFile]).map { $0.name }, ["old", "new"])
+    }
+
+    // MARK: - Stela capability guard (PR3) — V2 must NOT leak off the Private Files screen
+
+    func testStelaCapability_BaseStaysV1() {
+        XCTAssertFalse(FilesViewModel().usesStelaNavigation)
+    }
+
+    func testStelaCapability_PublicFilesStaysV1() {
+        // PublicFilesViewModel subclasses MyFilesViewModel; without its explicit override
+        // it would inherit the Stela opt-in and migrate the Public workspace. Guard it.
+        XCTAssertFalse(PublicFilesViewModel().usesStelaNavigation)
+    }
+
+    // MARK: - V2 item DETAIL adapter (record detail / preview / download)
+
+    private func decodeV2Record(_ json: String) -> RecordV2Data? {
+        guard let data = json.data(using: .utf8) else { return nil }
+        return (try? RecordV2Response.decoder.decode(RecordV2Response.self, from: data))?.data
+    }
+
+    func testRecordV2_MimeTypeDerivation() {
+        // V2 carries no contentType — it must be derived from the granular file type.
+        XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.image.jpeg"), "image/jpeg")
+        XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.image.jpg"), "image/jpeg")
+        XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.image.png"), "image/png")
+        XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.image.heic"), "image/heic")
+        XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.video.mp4"), "video/mp4")
+        XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.pdf.pdf"), "application/pdf")
+        XCTAssertNil(FileV2Data.mimeType(forFileType: "type.record.image")) // record type, not a file type
+        XCTAssertNil(FileV2Data.mimeType(forFileType: nil))
+    }
+
+    func testRecordV2_AdaptsToRecordVO_ForDetailAndPreview() {
+        let json = """
+        { "data": {
+            "recordId": "8", "displayName": "photo.jpg", "archiveId": "1", "archiveNumber": "0001-test",
+            "description": "a pic", "uploadFileName": "IMG_1.HEIC", "size": 1234, "type": "type.record.image",
+            "displayDate": "2021-05-01T00:00:00", "createdAt": "2022-01-01T00:00:00", "updatedAt": "2023-01-01T00:00:00",
+            "fileCreatedAt": "2020-01-01T00:00:00", "folderLinkId": "9", "parentFolderLinkId": "11",
+            "files": [
+              { "fileId": "100", "size": 1234, "format": "file.format.converted", "type": "type.file.video.mp4",
+                "downloadUrl": "https://cdn/v.mp4", "fileUrl": "https://cdn/f.mp4" }
+            ],
+            "location": { "latitude": 40.7, "longitude": -74.0, "locality": "NYC", "country": "USA", "streetName": "Main", "streetNumber": "1" },
+            "tags": [ { "tagId": "5", "name": "vacation", "type": "type.generic" } ],
+            "thumbUrl200": "https://t/200"
+        } }
+        """
+        let v2 = decodeV2Record(json)!
+        // The adapter must yield a RecordVO the existing detail/preview/download code consumes unchanged.
+        let recordVO: RecordVO = JSONHelper.decoding(from: v2.toRecordVOPayload(), with: RecordVO.decoder)!
+        let record = recordVO.recordVO!
+        XCTAssertEqual(record.recordID, 8)              // String -> Int at the boundary
+        XCTAssertEqual(record.displayName, "photo.jpg")
+        XCTAssertEqual(record.archiveNbr, "0001-test")  // non-numeric -> String passthrough
+        XCTAssertEqual(record.recordVODescription, "a pic")
+        XCTAssertEqual(record.size, 1234)
+        XCTAssertEqual(record.folderLinkID, 9)
+        XCTAssertEqual(record.parentFolderLinkID, 11)
+        XCTAssertEqual(record.createdDT, "2022-01-01T00:00:00")   // <- createdAt (Uploaded row)
+        XCTAssertEqual(record.updatedDT, "2023-01-01T00:00:00")   // <- updatedAt (Last Modified row)
+        XCTAssertEqual(record.derivedCreatedDT, "2020-01-01T00:00:00") // <- fileCreatedAt (File Created row)
+        XCTAssertNil(record.derivedDT)                  // V2 has no derivedDT -> "Created" row blank (known gap)
+
+        let fileVO = record.fileVOS?.first
+        XCTAssertEqual(fileVO?.downloadURL, "https://cdn/v.mp4")
+        XCTAssertEqual(fileVO?.format, "file.format.converted")
+        XCTAssertEqual(fileVO?.contentType, "video/mp4") // DERIVED from type.file.video.mp4 (V2 omits contentType)
+
+        XCTAssertEqual(record.locnVO?.locality, "NYC")
+        XCTAssertEqual(record.locnVO?.latitude, 40.7)
+        XCTAssertEqual(record.tagVOS?.first?.name, "vacation")
+    }
+
+    func testLocnVO_ToLocationInput_MapsFieldsForV2Patch() {
+        let json = """
+        { "locality": "NYC", "adminOneName": "NY", "country": "USA", "displayName": "Home",
+          "latitude": 40.7128, "longitude": -74.006, "streetNumber": "1", "streetName": "Main St" }
+        """
+        let locn = try! LocnVO.decoder.decode(LocnVO.self, from: json.data(using: .utf8)!)
+        let payload = locn.toLocationInputPayload()
+        // LocnVO → Stela LocationInput field names (city/state, sublocation from street).
+        XCTAssertEqual(payload["city"] as? String, "NYC")
+        XCTAssertEqual(payload["state"] as? String, "NY")
+        XCTAssertEqual(payload["country"] as? String, "USA")
+        XCTAssertEqual(payload["name"] as? String, "Home")
+        XCTAssertEqual(payload["latitude"] as? Double, 40.7128)
+        XCTAssertEqual(payload["longitude"] as? Double, -74.006)
+        XCTAssertEqual(payload["sublocation"] as? String, "1 Main St")
+    }
+
     // MARK: - Initial State
 
     func testInit_ViewModelsEmpty() {

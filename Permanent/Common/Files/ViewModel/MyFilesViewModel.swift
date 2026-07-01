@@ -15,7 +15,14 @@ class MyFilesViewModel: FilesViewModel {
     static let didSelectFilesNotifName = NSNotification.Name("MyFilesViewModel.didSelectFilesNotifName")
     var isPickingImage: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
-    
+
+    /// Private Files is the one screen that opts into Stela V2 navigation, gated by
+    /// the Remote-Config flag. `PublicFilesViewModel` (a subclass) overrides this back
+    /// to `false` so the Public workspace stays on V1.
+    override var usesStelaNavigation: Bool {
+        RCValues.sharedInstance.bool(forKey: .useStelaNavigation)
+    }
+
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     
     override var selectedFiles: [FileModel]? {
@@ -87,6 +94,13 @@ class MyFilesViewModel: FilesViewModel {
             return
         }
         
+        // Stela has no root-discovery route, so the V1 getRoot above stays as the
+        // bootstrap. When V2 is on, seed the navigation target (the My Files root) so
+        // navigateMin descends into it via /folders/{id}/children.
+        if usesStelaNavigation {
+            v2NavigationTarget = FileModel(model: myFilesFolder)
+        }
+
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }

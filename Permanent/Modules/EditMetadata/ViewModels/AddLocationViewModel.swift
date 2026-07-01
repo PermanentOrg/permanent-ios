@@ -125,9 +125,30 @@ class AddLocationViewModel: ObservableObject {
     
     func update(completion: @escaping ((Bool) -> Void)) {
         isLoading = true
+        // Stela V2 (flag-gated): fan out one PATCH /records/{id} {location} per record,
+        // with the V1 batch as an automatic failsafe. Records only. `geomapLatLong` (which
+        // resolves the LocnVO on coordinate selection) stays V1 and is untouched.
+        if RCValues.sharedInstance.bool(forKey: .useStelaNavigation),
+           let locnVO = locnVO,
+           selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
+            let fields: [String: Any] = ["location": locnVO.toLocationInputPayload()]
+            selectedFiles.patchEachRecordToV2(fieldsFor: { _ in fields }) { [weak self] succeeded in
+                if succeeded {
+                    self?.isLoading = false
+                    completion(true)
+                } else {
+                    self?.updateV1(completion: completion) // failsafe (resets isLoading)
+                }
+            }
+            return
+        }
+        updateV1(completion: completion)
+    }
+
+    private func updateV1(completion: @escaping ((Bool) -> Void)) {
         let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: nil, location: locnVO)
         let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) {[weak self] result in
             DispatchQueue.main.async {
                 switch result {

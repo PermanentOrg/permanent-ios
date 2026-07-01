@@ -414,14 +414,9 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
                 return
             }
             
-            // Now relocate (copy) the file to the public folder
-            filesRepository.relocate(
-                files: [self.file],
-                folderLinkId: publicRootFolder.folderLinkId,
-                isCopy: true
-            ) { error in
+            // Publish = copy the item into the public root.
+            let onPublishResult: (Error?) -> Void = { error in
                 self.hideSpinner()
-                
                 if let error = error {
                     self.showErrorAlert(message: error.localizedDescription)
                 } else {
@@ -431,6 +426,14 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
                         self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                     }
                 }
+            }
+
+            // Records on the Stela path publish via POST /records/{id}/copies. Flag-SELECT
+            // (no V1 fallback): copy isn't idempotent. Folders (no V2 route) stay on V1.
+            if self.viewModel?.isStelaEnabled == true, !self.file.type.isFolder, self.file.recordId > 0 {
+                self.viewModel?.copyRecordV2(destinationFolderId: String(publicRootFolder.folderId), completion: onPublishResult)
+            } else {
+                filesRepository.relocate(files: [self.file], folderLinkId: publicRootFolder.folderLinkId, isCopy: true, completion: onPublishResult)
             }
         }
     }

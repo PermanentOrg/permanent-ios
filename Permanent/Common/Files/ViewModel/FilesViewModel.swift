@@ -34,6 +34,16 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var navigationStack: [FileModel] = []
     var uploadQueue: [FileInfo] = []
 
+    /// Whether this screen routes folder navigation through the Stela V2 endpoint.
+    /// Default OFF; overridden to the Remote-Config flag only on the Private Files
+    /// (`MyFilesViewModel`) screen, and explicitly back to `false` on `PublicFilesViewModel`.
+    /// Public Archive / Shared / Search inherit `false` and stay on V1.
+    var usesStelaNavigation: Bool { false }
+
+    /// The folder a forward V2 navigation is heading into (the tapped item / resolved
+    /// root). On back/refresh the target is taken from `navigationStack` instead.
+    var v2NavigationTarget: FileModel?
+
     var downloadQueue: [FileModel] = []
     var activeSortOption: SortOption = .nameAscending
     var uploadInProgress: Bool = false
@@ -491,8 +501,36 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+        // Stela V2 path (Private Files only, gated by `usesStelaNavigation`), with the
+        // legacy V1 call kept as an automatic failsafe on any error or anomaly.
+        // Forward navigation consumes a one-shot target set by the caller (the tapped
+        // item / resolved root). Entries that don't set one — e.g. deep links and
+        // saved universal links — leave it nil and safely fall through to V1.
+        let v2Target = backNavigation ? navigationStack.last : v2NavigationTarget
+        if !backNavigation { v2NavigationTarget = nil }
+        if usesStelaNavigation,
+           let target = v2Target,
+           target.folderId > 0 {
+            let folderId = String(target.folderId)
+            getFolderChildrenV2(folderId: folderId) { [weak self] result in
+                guard let self = self else { handler(.error(message: .errorMessage)); return }
+                switch result {
+                case .success:
+                    if !backNavigation { self.navigationStack.append(target) }
+                    handler(.success)
+                default:
+                    // Failsafe — fall back to the legacy V1 navigation transparently.
+                    self.performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
+                }
+            }
+            return
+        }
+        performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
+    }
+
+    private func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -500,16 +538,93 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     handler(.error(message: .errorMessage))
                     return
                 }
-                
+
                 self.onNavigateMinSuccess(model, backNavigation, handler)
-                
+
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
-                
+
             default:
                 break
             }
         }
+    }
+
+    // MARK: - Stela V2 navigation (Private Files)
+
+    /// Fetches a folder's children via the Stela `/folders/{id}/children` endpoint,
+    /// maps them into `FileModel`s (archive-derived permissions), applies the active
+    /// sort client-side (the endpoint has no sort param), and replaces `viewModels`.
+    /// Reports `.error` on any failure or corruption so the caller can fall back to V1.
+    func getFolderChildrenV2(folderId: String, then handler: @escaping ServerResponse) {
+        // Interim: request a single large page. Real cursor pagination is deferred.
+        let pageSize = 99_999_999
+        let apiOperation = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: pageSize))
+
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { handler(.error(message: .errorMessage)); return }
+            switch result {
+            case .json(let response, _):
+                guard let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                var mapped: [FileModel] = []
+                for item in model.items ?? [] {
+                    let file = FileModel(model: item, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
+                    // Sanity gate on the SOURCE item's kind (the field that actually received
+                    // the id): a write-critical id that resolved to the -1 sentinel is a
+                    // contract break — bail so the caller falls back to V1 rather than render
+                    // items whose move/delete/rename would target id -1.
+                    let hasBadId = item.isFolder ? file.folderId <= 0 : file.recordId <= 0
+                    if hasBadId {
+                        handler(.error(message: .errorMessage))
+                        return
+                    }
+                    mapped.append(file)
+                }
+                self.viewModels = self.sortedByActiveOption(mapped)
+                handler(.success)
+
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+
+            default:
+                handler(.error(message: .errorMessage))
+            }
+        }
+    }
+
+    /// Client-side ordering matching the six server sort options. Stela's `/children`
+    /// sorts by the folder's stored setting and takes no sort param, so the active
+    /// option is applied here. Parity with server collation is verified during the
+    /// staging shadow window.
+    func sortedByActiveOption(_ items: [FileModel]) -> [FileModel] {
+        func dateKey(_ file: FileModel) -> Date { FilesViewModel.parseSortDate(file.createdDT) }
+        func typeKey(_ file: FileModel) -> String { file.type.rawValue + "|" + file.name.lowercased() }
+        switch activeSortOption {
+        case .nameAscending:  return items.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        case .nameDescending: return items.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedDescending }
+        case .dateAscending:  return items.sorted { dateKey($0) < dateKey($1) }
+        case .dateDescending: return items.sorted { dateKey($0) > dateKey($1) }
+        case .typeAscending:  return items.sorted { typeKey($0) < typeKey($1) }
+        case .typeDescending: return items.sorted { typeKey($0) > typeKey($1) }
+        }
+    }
+
+    // Parses a Stela date (records: displayDate, folders: displayTimestamp) into a
+    // comparable Date, so a mixed folder/record listing sorts chronologically regardless
+    // of raw-string format. Missing/unparseable dates sort oldest.
+    private static let sortDateISO = ISO8601DateFormatter()
+    private static let sortDatePlain: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter
+    }()
+    static func parseSortDate(_ raw: String?) -> Date {
+        guard let raw = raw, !raw.isEmpty else { return .distantPast }
+        return sortDateISO.date(from: raw) ?? sortDatePlain.date(from: raw) ?? .distantPast
     }
     
     func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
@@ -587,9 +702,28 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
+        // Record rename → Stela PATCH /records/{id} (My Files only) with V1 as an automatic
+        // failsafe; renaming to the same name is idempotent so re-applying is harmless.
+        // Folder rename has no V2 route and stays on V1.
+        if usesStelaNavigation, !file.type.isFolder, file.recordId > 0, let newName = name, !newName.isEmpty {
+            let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: ["displayName": newName]))
+            apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+                switch result {
+                case .json:
+                    handler(.success)
+                default:
+                    self?.performV1Rename(file: file, name: name, then: handler) // failsafe
+                }
+            }
+            return
+        }
+        performV1Rename(file: file, name: name, then: handler)
+    }
+
+    private func performV1Rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
         var params: UpdateRecordParams
         var apiOperation: APIOperation
-        
+
         if file.type.isFolder {
             params = (name, nil, nil, nil, file.folderId, file.folderLinkId, file.archiveNo)
             apiOperation = APIOperation(FilesEndpoint.renameFolder(params: params))
@@ -597,7 +731,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             params = (name, nil, nil, nil, file.recordId, file.folderLinkId, file.archiveNo)
             apiOperation = APIOperation(FilesEndpoint.update(params: params))
         }
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):

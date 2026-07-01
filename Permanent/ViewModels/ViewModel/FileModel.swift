@@ -300,6 +300,81 @@ struct FileModel: Equatable, Codable {
 
     }
     
+    /// Maps a Stela V2 child item (folder or record) into the UIKit `FileModel`.
+    ///
+    /// Permissions/accessRole are passed in by the caller (archive-derived on the
+    /// Private Files path) — the per-item `shares[]` is intentionally not read here.
+    /// String ids are converted to the legacy `Int` at the `model.intId` boundary;
+    /// `archiveNo` is a String passthrough (Stela `archiveNumber` is non-numeric).
+    init(model: FolderChildV2Data, permissions: [Permission], accessRole: AccessRole) {
+        self.name = model.displayName ?? "-"
+        // Records carry displayDate; folders carry displayTimestamp.
+        let rawDate = model.displayDate ?? model.displayTimestamp ?? model.fileCreatedAt
+        self.date = rawDate != nil ? rawDate!.dateOnly : "-"
+        self.createdDT = rawDate
+        self.uploadedDT = model.createdAt   // parity with V1: uploadedDT <- createdAt
+        self.modifiedDT = model.updatedAt   // parity with V1: modifiedDT <- updatedAt
+
+        self.thumbnailURL256 = model.resolvedThumb256
+        self.thumbnailURL = model.resolvedThumb200
+        self.thumbnailURL500 = model.resolvedThumb500
+        self.thumbnailURL1000 = model.resolvedThumb1000
+        self.thumbnailURL2000 = model.resolvedThumb2000
+        self.thumbStatus = FileModel.thumbStatus(fromV2Status: model.status)
+        self.description = model.description ?? ""
+        self.size = Int64(model.size ?? -1)
+        self.uploadFileName = model.uploadFileName ?? ""
+
+        self.type = FileType.fromV2(typeString: model.type, isFolder: model.isFolder)
+
+        self.archiveThumbnailURL = nil
+        self.archiveId = model.intId(model.archiveId, field: "archiveId")
+        self.archiveNo = model.archiveNumber ?? "" // String passthrough — never intId
+
+        self.recordId = model.intId(model.recordId, field: "recordId")
+        self.folderId = model.intId(model.folderId, field: "folderId")
+        self.parentFolderId = model.intId(model.resolvedParentFolderId, field: "parentFolderId")
+        self.parentFolderLinkId = model.intId(model.resolvedParentFolderLinkId, field: "parentFolderLinkId")
+        self.folderLinkId = model.intId(model.folderLinkId, field: "folderLinkId")
+
+        self.tagVOS = nil
+        self.permissions = permissions
+        self.accessRole = accessRole
+
+        // Map Stela shares[] into minArchiveVOS so the "shared item" badge keeps
+        // showing on the user's own shared items (parity with the V1 ItemVO init).
+        // Opaque ids are numeric-as-string; a non-numeric one simply drops that badge
+        // rather than corrupting state. This is presentation only — item permissions
+        // remain archive-derived.
+        model.shares?.forEach {
+            guard let name = $0.archive?.name,
+                  let shareStatus = $0.status,
+                  let shareIdString = $0.shareId, let shareId = Int(shareIdString),
+                  let archiveIdString = $0.archive?.archiveId, let archiveId = Int(archiveIdString)
+            else { return }
+            let minArchive = MinArchiveVO(
+                name: name,
+                thumbnail: $0.archive?.thumbUrl200 ?? $0.archive?.thumbnailUrls?.url200,
+                shareStatus: shareStatus,
+                shareId: shareId,
+                archiveID: archiveId,
+                folderLinkID: nil,
+                accessRole: $0.accessRole
+            )
+            self.minArchiveVOS.append(minArchive)
+        }
+    }
+
+    /// Maps the Stela folder `status` enum to the legacy `ThumbStatus` used by
+    /// `canBeAccessed`, so copying/moving items stay non-tappable as they did on V1.
+    private static func thumbStatus(fromV2Status status: String?) -> ThumbStatus? {
+        switch status {
+        case "copying": return .copying
+        case "moving":  return .moving
+        default:        return nil
+        }
+    }
+
     var canBeAccessed: Bool {
         return thumbStatus != .copying && thumbStatus != .moving
     }

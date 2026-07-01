@@ -82,10 +82,18 @@ struct FolderArchiveV2: Model {
 
 struct ParentFolderV2: Model {
     let id: String?
+    // Added in stela PR #773 — the parent's folder_link id, needed by the
+    // legacy V1 write payloads (relocate/delete) that still run on V2-fetched items.
+    let folderLinkId: String?
 }
 
 struct FolderPathsV2: Model {
     let names: [String]?
+    // Added in stela PR #773 — the full breadcrumb trail (every ancestor's
+    // folder_link id and archive number), so navigation context is data, not a
+    // hand-maintained stack.
+    let folderLinkIds: [String]?
+    let archiveNumbers: [String]?
 }
 
 struct ThumbnailUrlsV2: Model {
@@ -127,6 +135,8 @@ struct FolderChildV2Data: Model {
     let imageRatio: Double?
     let displayDate: String?
     let fileCreatedAt: String?
+    let createdAt: String?
+    let updatedAt: String?
     let description: String?
     let downloadName: String?
     let uploadFileName: String?
@@ -141,20 +151,68 @@ struct FolderChildV2Data: Model {
     let parentFolderLinkId: String?
     let files: [FileV2Data]?
     let archive: FolderArchiveV2?
-    
+
+    // --- Fields the wire carries NESTED for folders (flat for records) ---
+    // On the wire, a record child sends parentFolderId/parentFolderLinkId and
+    // thumbUrl* FLAT, while a folder child nests them under `parentFolder` and
+    // `thumbnailUrls`. The bare JSONDecoder does not flatten, so we decode both
+    // shapes and resolve flat-then-nested below.
+    let parentFolder: ParentFolderV2?
+    let thumbnailUrls: ThumbnailUrlsV2?
+    // Folders date themselves via displayTimestamp; records use displayDate.
+    let displayTimestamp: String?
+    // Per-item access (folder/record both carry it under Stela). Unused on the
+    // Private Files path (permissions are archive-derived) but decoded for reuse.
+    let shares: [RecordShareV2]?
+
     /// Returns true if this item is a folder (has folderId but no recordId)
     var isFolder: Bool {
         return folderId != nil && recordId == nil
     }
-    
+
     /// Returns the item ID (recordId for files, folderId for folders)
     var itemId: String? {
         return recordId ?? folderId
     }
-    
-    /// Returns the best available thumbnail URL
+
+    // Resolve the flat (record) field first, then the nested (folder) field.
+    var resolvedParentFolderId: String? { parentFolderId ?? parentFolder?.id }
+    var resolvedParentFolderLinkId: String? { parentFolderLinkId ?? parentFolder?.folderLinkId }
+    var resolvedThumb256: String? { thumbnail256 ?? thumbnailUrls?.url256 }
+    var resolvedThumb200: String? { thumbUrl200 ?? thumbnailUrls?.url200 }
+    var resolvedThumb500: String? { thumbUrl500 ?? thumbnailUrls?.url500 }
+    var resolvedThumb1000: String? { thumbUrl1000 ?? thumbnailUrls?.url1000 }
+    var resolvedThumb2000: String? { thumbUrl2000 ?? thumbnailUrls?.url2000 }
+
+    /// Returns the best available thumbnail URL (flat for records, nested for folders)
     var bestThumbnailURL: String? {
-        thumbnail256 ?? thumbUrl500 ?? thumbUrl200 ?? thumbUrl1000 ?? thumbUrl2000
+        resolvedThumb256 ?? resolvedThumb500 ?? resolvedThumb200 ?? resolvedThumb1000 ?? resolvedThumb2000
+    }
+}
+
+// MARK: - String → Int boundary (Stela ids are numeric-as-string; convert here only)
+
+/// The single detection point for the "Stela opaque ids are numeric" assumption.
+/// Apply ONLY to the six opaque ids (folderId/recordId/folderLinkId/archiveId/
+/// parentFolderId/parentFolderLinkId) — never to `archiveNumber`, which is a
+/// dash/alpha string (e.g. "0001-test") and stays a String end to end.
+enum StelaIdBoundary {
+    static func logNonNumeric(value: String, field: String, itemId: String?) {
+        // Non-fatal in production; surfaces loudly in DEBUG/staging via the assertion
+        // at the call site, so a contract break is caught before any user rollout.
+        print("[Stela] non-numeric id '\(value)' for \(field) on item \(itemId ?? "nil") — fell back to -1")
+    }
+}
+
+extension FolderChildV2Data {
+    /// Converts a Stela String id to the legacy `Int` id at the migration boundary.
+    /// Returns -1 (the existing "missing id" sentinel) for nil/empty/non-numeric input.
+    func intId(_ value: String?, field: StaticString) -> Int {
+        guard let value, !value.isEmpty else { return -1 }
+        if let converted = Int(value) { return converted }
+        assertionFailure("Stela V2 id '\(value)' for \(field) (item \(itemId ?? "nil")) is not Int-convertible")
+        StelaIdBoundary.logNonNumeric(value: value, field: "\(field)", itemId: itemId)
+        return -1
     }
 }
 

@@ -94,7 +94,10 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     private func createFilePreviewViewController(for file: FileModel) -> FilePreviewViewController {
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = file
-        filePreviewVC.viewModel = FilePreviewViewModel(file: file)
+        // Record DETAIL read follows the Stela Remote-Config flag on every screen
+        // (Shares/public/notification included) — the V2 fetch auto-falls back to V1,
+        // so it's safe regardless of the folder-nav gate. loadVM() builds the VM.
+        filePreviewVC.usesStelaDetail = RCValues.sharedInstance.bool(forKey: .useStelaNavigation)
         
         // If opened from notification, pass close action to child VC
         if isFromNotification {
@@ -229,6 +232,8 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             }
             let file = filteredFiles[index]
             fileDetailsVC.file = file
+            // Detail read follows the Stela flag on all screens (V1 failsafe covers misses).
+            fileDetailsVC.usesStelaDetail = RCValues.sharedInstance.bool(forKey: .useStelaNavigation)
             fileDetailsVC.view.isHidden = false // preload the view
             fileDetailsVC.loadVM()
             

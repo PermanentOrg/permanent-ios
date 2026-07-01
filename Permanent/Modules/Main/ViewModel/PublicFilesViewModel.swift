@@ -8,6 +8,12 @@
 import Foundation
 
 class PublicFilesViewModel: MyFilesViewModel {
+    /// Public Files opts into Stela V2 folder navigation via the same Remote-Config flag
+    /// as My Files — both are the owner's own workspace, so archive-level permissions
+    /// apply. Root discovery stays V1 (getPublicRoot has no V2 route); the folder drill-in
+    /// runs on /folders/{id}/children behind the flag, with the V1 nav as an auto-failsafe.
+    override var usesStelaNavigation: Bool { RCValues.sharedInstance.bool(forKey: .useStelaNavigation) }
+
     override var rootFolderName: String {
         return "Public Files".localized()
     }

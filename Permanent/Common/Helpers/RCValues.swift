@@ -14,24 +14,36 @@ class RCValues {
     
     enum ValueKey: String {
         case appMinValue
-        
+        /// Master switch for the Stela V2 folder-navigation path (Private Files).
+        /// Default OFF — the app runs the legacy V1 navigation until this is flipped.
+        case useStelaNavigation
+
         var name: String {
             switch self {
             case .appMinValue:
                 return "min_app_version_ios"
+            case .useStelaNavigation:
+                return "use_stela_navigation"
             }
         }
     }
-    
+
     private init() {
         loadDefaultValues()
     }
-    
+
     func loadDefaultValues() {
         let appDefaults: [String: Any?] = [
-            ValueKey.appMinValue.name: "1.0.0"
+            ValueKey.appMinValue.name: "1.0.0",
+            ValueKey.useStelaNavigation.name: false
         ]
         RemoteConfig.remoteConfig().setDefaults(appDefaults as? [String: NSObject])
+    }
+
+    /// Reads a boolean Remote Config flag. Returns `false` when unset, so a missing
+    /// or unreachable config can never accidentally enable a gated feature.
+    func bool(forKey key: ValueKey) -> Bool {
+        RemoteConfig.remoteConfig()[key.name].boolValue
     }
     
     static func activateDebugMode() {

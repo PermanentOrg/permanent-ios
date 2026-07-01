@@ -36,6 +36,73 @@ final class FilesEndpointTests: XCTestCase {
         )
     }
 
+    // MARK: - FolderV2Endpoint (Stela) URLs — PR1
+
+    func testFolderV2_GetChildren_UsesCanonicalPluralPath() {
+        let url = FolderV2Endpoint.getFolderChildren(folderId: "42", shareToken: "", pageSize: 100).customURL ?? ""
+        XCTAssertTrue(url.contains("api/v2/folders/42/children?pageSize=100"), url)
+        XCTAssertFalse(url.contains("api/v2/folder/42/children"), "Should use the canonical plural /folders route, not the deprecated singular alias")
+    }
+
+    func testFolderV2_GetById_UsesCanonicalPluralPath() {
+        let url = FolderV2Endpoint.getFolderById(folderId: "42", shareToken: "").customURL ?? ""
+        XCTAssertTrue(url.contains("api/v2/folders?folderIds[]=42"), url)
+    }
+
+    func testFolderV2_EmptyShareToken_ResolvesToNil() {
+        // Private Files passes no share token → bearer-token auth only.
+        XCTAssertNil(FolderV2Endpoint.getFolderChildren(folderId: "1", shareToken: "", pageSize: 1).shareToken)
+    }
+
+    // MARK: - RecordV2Endpoint (Stela) — detail + PATCH edit
+
+    func testRecordV2_GetById_IsGetOnPluralRecords() {
+        let endpoint = RecordV2Endpoint.getRecordById(recordId: "7", shareToken: nil)
+        XCTAssertEqual(endpoint.method, .get)
+        XCTAssertTrue((endpoint.customURL ?? "").contains("api/v2/records/7"), endpoint.customURL ?? "")
+    }
+
+    func testRecordV2_PatchRecord_UsesPatchAndFlatBody() {
+        let endpoint = RecordV2Endpoint.patchRecord(recordId: "42", fields: ["displayName": "Renamed"])
+        XCTAssertEqual(endpoint.method, .patch)
+        XCTAssertTrue((endpoint.customURL ?? "").contains("api/v2/records/42"), endpoint.customURL ?? "")
+        XCTAssertEqual(endpoint.headers?["Request-Version"], "2")
+        XCTAssertNil(endpoint.shareToken)
+
+        // Body is a FLAT object with ONLY the edited fields (the server rejects unknown keys).
+        let body = try! JSONSerialization.jsonObject(with: endpoint.bodyData!) as! [String: Any]
+        XCTAssertEqual(body["displayName"] as? String, "Renamed")
+        XCTAssertEqual(body.keys.count, 1) // no recordId / archiveNbr / RequestVO envelope
+    }
+
+    func testRecordV2_PatchRecord_DescriptionBody() {
+        let endpoint = RecordV2Endpoint.patchRecord(recordId: "5", fields: ["description": "notes"])
+        let body = try! JSONSerialization.jsonObject(with: endpoint.bodyData!) as! [String: Any]
+        XCTAssertEqual(body["description"] as? String, "notes")
+        XCTAssertEqual(body.keys.count, 1)
+    }
+
+    func testRecordV2_PatchRecord_LocationBody_NeverSendsLocationId() {
+        // Location edit sends the inline `location` object only — never `locationId` (server .oxor).
+        let endpoint = RecordV2Endpoint.patchRecord(recordId: "5", fields: ["location": ["city": "NYC", "latitude": 40.7]])
+        let body = try! JSONSerialization.jsonObject(with: endpoint.bodyData!) as! [String: Any]
+        let location = body["location"] as? [String: Any]
+        XCTAssertEqual(location?["city"] as? String, "NYC")
+        XCTAssertNil(body["locationId"])
+        XCTAssertEqual(body.keys.count, 1)
+    }
+
+    func testRecordV2_CopyRecord_PostsToCopiesWithDestinationOnly() {
+        let endpoint = RecordV2Endpoint.copyRecord(recordId: "8", destinationFolderId: "42")
+        XCTAssertEqual(endpoint.method, .post)
+        XCTAssertTrue((endpoint.customURL ?? "").contains("api/v2/records/8/copies"), endpoint.customURL ?? "")
+        XCTAssertNil(endpoint.shareToken)
+        // Body carries ONLY destinationFolderId — ip + auth are injected server-side.
+        let body = try! JSONSerialization.jsonObject(with: endpoint.bodyData!) as! [String: Any]
+        XCTAssertEqual(body["destinationFolderId"] as? String, "42")
+        XCTAssertEqual(body.keys.count, 1)
+    }
+
     // MARK: - Paths
 
     func testGetRoot_Path() {

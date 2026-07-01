@@ -25,7 +25,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     let fileHelper = FileHelper()
     
     var file: FileModel!
-    
+
+    /// Gates the record DETAIL read to Stela V2 getRecordById (with a V1 failsafe).
+    /// Decoupled from folder navigation: the read is safe everywhere because it
+    /// auto-falls back to V1 on any error/thin payload, so it follows the Remote-Config
+    /// flag directly (all preview presenters, not just My Files). The presenting list
+    /// may still override this.
+    var usesStelaDetail: Bool = RCValues.sharedInstance.bool(forKey: .useStelaNavigation)
+
     var playerItem: AVPlayerItem?
     var videoPlayer: AVPlayerViewController?
     var playerItemContext = 0
@@ -131,7 +138,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
 
         if viewModel == nil || viewModel?.recordVO == nil {
-            viewModel = FilePreviewViewModel(file: file)
+            viewModel = FilePreviewViewModel(file: file, usesStelaDetail: usesStelaDetail)
             bindImagePreviewState()
 
             if file.type == .image {
@@ -1114,14 +1121,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 return
             }
             
-            // Now relocate (copy) the file to the public folder
-            filesRepository.relocate(
-                files: [self.file],
-                folderLinkId: publicRootFolder.folderLinkId,
-                isCopy: true
-            ) { error in
+            // Publish = copy the item into the public root.
+            let onPublishResult: (Error?) -> Void = { error in
                 self.hideSpinner()
-                
                 if let error = error {
                     self.showErrorAlert(message: error.localizedDescription)
                 } else {
@@ -1131,6 +1133,15 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                         self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                     }
                 }
+            }
+
+            // Records on the Stela path publish via POST /records/{id}/copies. This is
+            // flag-SELECT (no V1 fallback): copy isn't idempotent, so a mis-read success
+            // must never trigger a second copy. Folders (no V2 route) stay on V1 relocate.
+            if self.viewModel?.isStelaEnabled == true, !self.file.type.isFolder, self.file.recordId > 0 {
+                self.viewModel?.copyRecordV2(destinationFolderId: String(publicRootFolder.folderId), completion: onPublishResult)
+            } else {
+                filesRepository.relocate(files: [self.file], folderLinkId: publicRootFolder.folderLinkId, isCopy: true, completion: onPublishResult)
             }
         }
     }

@@ -263,6 +263,9 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
         guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
         
         if file.type.isFolder {
+            // Seed the V2 navigation target (no-op when Stela nav is off): V2 needs the
+            // String folderId, which lives on the tapped FileModel.
+            viewModel.v2NavigationTarget = file
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                 self.backButton.isHidden = false

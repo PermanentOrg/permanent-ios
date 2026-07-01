@@ -34,9 +34,11 @@ extension FolderV2Endpoint: RequestProtocol {
         let baseURL = APIEnvironment.defaultEnv.apiServer
         switch self {
         case .getFolderById(let folderId, _):
-            return "\(baseURL)api/v2/folder?folderIds[]=\(folderId)"
+            // Canonical plural route. The singular `/folder` form is a deprecated
+            // backend alias that hits the same handler; we use the documented one.
+            return "\(baseURL)api/v2/folders?folderIds[]=\(folderId)"
         case .getFolderChildren(let folderId, _, let pageSize):
-            return "\(baseURL)api/v2/folder/\(folderId)/children?pageSize=\(pageSize)"
+            return "\(baseURL)api/v2/folders/\(folderId)/children?pageSize=\(pageSize)"
         }
     }
     
