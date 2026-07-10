@@ -90,8 +90,12 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 (self?.viewModel as? AuthViewModel)?.trackLoginEvent()
             }
         }, onFailure: { error in
-            self.isCheckingBiometrics = false
-            self.handleBiometricsFailure(error)
+            // The LAContext reply fires on a background queue; handleBiometricsFailure ->
+            // logout() -> showSpinner touches UIKit, so hop to main before any of it runs.
+            DispatchQueue.main.async {
+                self.isCheckingBiometrics = false
+                self.handleBiometricsFailure(error)
+            }
         })
     }
     

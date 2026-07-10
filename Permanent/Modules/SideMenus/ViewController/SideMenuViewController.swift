@@ -20,7 +20,13 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet weak var footerBackgroundView: UIView!
     
     var selectedMenuOption: DrawerOption = .files
-    
+
+    /// Block-based observer tokens — must be removed explicitly or NotificationCenter
+    /// keeps both the block (and anything it captures) and the subscription alive
+    /// forever, so every drawer rebuilt on logout/login would leak and keep mutating
+    /// its dead table view.
+    private var observerTokens: [NSObjectProtocol] = []
+
     private var tableViewData: [LeftDrawerSection: [DrawerOption]] = [
         LeftDrawerSection.header: [
             DrawerOption.archives
@@ -73,15 +79,19 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         tableView.register(UINib(nibName: String(describing: LeftSideHeaderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: LeftSideHeaderTableViewCell.self))
         
         tableView.tableFooterView = UIView()
-        NotificationCenter.default.addObserver(forName: AuthViewModel.updateArchiveSettingsChevron, object: nil, queue: nil) { [self] notification in
-            updateLeftSideMenu()
-        }
-        
-        NotificationCenter.default.addObserver(forName: ArchivesViewModel.closeArchiveSettings, object: nil, queue: nil) { [self] notification in
-            if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed, archiveSetingsWasPressed {
-                viewModel?.archiveSetingsWasPressed = false
+        observerTokens.append(NotificationCenter.default.addObserver(forName: AuthViewModel.updateArchiveSettingsChevron, object: nil, queue: nil) { [weak self] _ in
+            self?.updateLeftSideMenu()
+        })
+
+        observerTokens.append(NotificationCenter.default.addObserver(forName: ArchivesViewModel.closeArchiveSettings, object: nil, queue: nil) { [weak self] _ in
+            if let archiveSetingsWasPressed = self?.viewModel?.archiveSetingsWasPressed, archiveSetingsWasPressed {
+                self?.viewModel?.archiveSetingsWasPressed = false
             }
-        }
+        })
+    }
+
+    deinit {
+        observerTokens.forEach { NotificationCenter.default.removeObserver($0) }
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
@@ -98,22 +108,24 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            var menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)]
             var menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers]
             if let hasLegacyPermissions = self.viewModel?.hasLegacyPermissions(), hasLegacyPermissions {
-                menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2), IndexPath(item: 3, section: 2)]
-                menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers, DrawerOption.legacyPlanning]
+                menuTitles.append(DrawerOption.legacyPlanning)
             }
 
             guard let archiveSetingsWasPressed = self.viewModel?.archiveSetingsWasPressed else { return }
 
+            // Rebuild the section idempotently and reload it as a whole. The previous
+            // hardcoded insertRows/deleteRows threw NSInternalInconsistencyException
+            // whenever the data was already in the target state (double notification,
+            // stale instance) — reloadSections recomputes counts from the data source.
+            var section = self.tableViewData[LeftDrawerSection.archiveSettings] ?? []
+            section.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags || $0 == DrawerOption.legacyPlanning })
             if archiveSetingsWasPressed {
-                self.tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: menuTitles)
-                self.tableView.insertRows(at: menuIndexPaths, with: .fade)
-            } else {
-                self.tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags || $0 == DrawerOption.legacyPlanning })
-                self.tableView.deleteRows(at: menuIndexPaths, with: .fade)
+                section.append(contentsOf: menuTitles)
             }
+            self.tableViewData[LeftDrawerSection.archiveSettings] = section
+            self.tableView.reloadSections(IndexSet(integer: LeftDrawerSection.archiveSettings.rawValue), with: .fade)
         }
     }
 }

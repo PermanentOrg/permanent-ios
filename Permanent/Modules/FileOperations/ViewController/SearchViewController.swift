@@ -18,6 +18,11 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
+
+    /// Token for the block-based `didSearch` observer. Held so it can be removed in
+    /// `deinit` — a block observer that captures `self` otherwise keeps this controller
+    /// alive for the app's lifetime (NotificationCenter retains the block).
+    private var didSearchObserver: NSObjectProtocol?
     
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
@@ -32,12 +37,18 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
         
         searchBar.delegate = self
         
-        NotificationCenter.default.addObserver(forName: NSNotification.Name("SearchFilesViewModel.didSearch"), object: viewModel, queue: nil) { notification in
-            self.searchBar.text = ""
-            self.refreshCollectionView()
+        didSearchObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name("SearchFilesViewModel.didSearch"), object: viewModel, queue: nil) { [weak self] _ in
+            self?.searchBar.text = ""
+            self?.refreshCollectionView()
         }
     }
-    
+
+    deinit {
+        if let didSearchObserver {
+            NotificationCenter.default.removeObserver(didSearchObserver)
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         

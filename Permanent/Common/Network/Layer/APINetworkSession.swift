@@ -27,10 +27,13 @@ class APINetworkSession: NSObject {
 
 extension APINetworkSession: NetworkSessionProtocol {
     func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask? {
+        // Deliver the raw response on URLSession's background delegate queue — do NOT hop to
+        // main here. The dispatcher's JSON parse (JSONSerialization) then runs off the main
+        // thread, so a large folder/record listing no longer blocks the UI while it's decoded.
+        // APIRequestDispatcher re-dispatches the finished OperationResult to main, so callers
+        // still receive their completion on the main thread.
         let dataTask = session.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                completionHandler(data, response, error)
-            }
+            completionHandler(data, response, error)
         }
 
         return dataTask

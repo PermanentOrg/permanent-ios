@@ -13,7 +13,7 @@ class SearchFilesViewModel: FilesViewModel {
     /// use Stela V2 `/folders/{id}/children` (behind the flag, with the V1 nav failsafe).
     /// The controller seeds `v2NavigationTarget` on a folder tap; back/refresh use the
     /// navigationStack, which stays consistent with `currentFolder`.
-    override var usesStelaNavigation: Bool { RCValues.sharedInstance.bool(forKey: .useStelaNavigation) }
+    override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
 
     override var currentFolderIsRoot: Bool { return navigationStack.count == 0 }
     

@@ -151,8 +151,13 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     }
     
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
-        guard let archiveId = shareVO.archiveID else { return }
-        
+        guard let archiveId = shareVO.archiveID else {
+            // Don't abandon the handler on a malformed shareVO — the caller's loading state
+            // (denyingShareIDs) would otherwise spin forever with no error shown.
+            handler(.error(message: nil))
+            return
+        }
+
         shareManagementRepository.denyButtonAction(shareVO: shareVO) { result in
             if result == .success {
                 if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == archiveId }) {

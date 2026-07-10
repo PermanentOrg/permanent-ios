@@ -40,9 +40,11 @@ class NetworkLogger {
         
         /// Whether to log request/response bodies
         var logBodies: Bool = true
-        
-        /// Maximum length for logged bodies before truncation
-       // var maxBodyLength: Int = 500
+
+        /// Maximum number of body bytes rendered per log line. Bodies are stringified on
+        /// the dispatcher's completion thread (currently main), so an uncapped multi-
+        /// megabyte listing would stall the UI just to be logged.
+        var maxBodyLength: Int = 10_000
     }
     
     /// Current logger configuration
@@ -67,11 +69,22 @@ class NetworkLogger {
         configuration.isEnabled = false
     }
     
-    /// Enable network logging with default settings
+    /// Enable verbose network logging (all levels, request/response bodies included).
+    /// For internal/staging builds only — bodies are stringified on the dispatcher's
+    /// completion thread and may contain user data, so production must not use this.
     static func enableLogging() {
         NetworkLogger.configuration.logLevel = .debug
         NetworkLogger.configuration.environmentRestriction = nil // Log in all environments
         NetworkLogger.configuration.logBodies = true
+        configuration.isEnabled = true
+    }
+
+    /// Production logging: errors only, never bodies. Keeps os_log diagnostics for
+    /// failed requests without paying any per-response body-stringify cost.
+    static func enableErrorLogging() {
+        NetworkLogger.configuration.logLevel = .error
+        NetworkLogger.configuration.environmentRestriction = nil
+        NetworkLogger.configuration.logBodies = false
         configuration.isEnabled = true
     }
     
@@ -107,12 +120,19 @@ class NetworkLogger {
         }
         
         // Log body if present and enabled
-        if configuration.logBodies, configuration.logLevel == .debug,
-            let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
-            // Split long body strings into multiple log entries if needed
-            logger.debug("Body: \(bodyString, privacy: .public)")
-            
+        if configuration.logBodies, configuration.logLevel == .debug, let body = request.httpBody {
+            logger.debug("Body: \(loggableBody(body), privacy: .public)")
         }
+    }
+
+    /// Renders a body for logging, capped at `maxBodyLength` bytes so a large payload
+    /// never pays a full stringify (this runs on the dispatcher's completion thread —
+    /// currently main). A truncated or non-UTF-8 body degrades to replacement
+    /// characters instead of silently dropping the log line.
+    static func loggableBody(_ body: Data) -> String {
+        let cap = configuration.maxBodyLength
+        guard body.count > cap else { return String(decoding: body, as: UTF8.self) }
+        return String(decoding: body.prefix(cap), as: UTF8.self) + " … [truncated \(body.count - cap) of \(body.count) bytes]"
     }
     
     /// Log a network response
@@ -146,10 +166,8 @@ class NetworkLogger {
         }
         
         // Log body if present and enabled
-        if configuration.logBodies, configuration.logLevel == .debug,
-           let body = data, let bodyString = String(data: body, encoding: .utf8) {
-            // Split long body strings into multiple log entries if needed
-            logger.debug("Body: \(bodyString, privacy: .public)")
+        if configuration.logBodies, configuration.logLevel == .debug, let body = data {
+            logger.debug("Body: \(loggableBody(body), privacy: .public)")
         }
     }
 }

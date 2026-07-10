@@ -321,7 +321,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         let fileExtension = (file.uploadFileName as NSString).pathExtension
         let fileName = !fileExtension.isEmpty ? "\(file.name).\(fileExtension)" : file.name
         
-        if let localURL = fileHelper.url(forFileNamed: fileName) {
+        if let localURL = fileHelper.url(forFileNamed: FileHelper.recordScopedName(fileName, recordId: file.recordId)) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
@@ -428,9 +428,13 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
                 }
             }
 
-            // Records on the Stela path publish via POST /records/{id}/copies. Flag-SELECT
-            // (no V1 fallback): copy isn't idempotent. Folders (no V2 route) stay on V1.
-            if self.viewModel?.isStelaEnabled == true, !self.file.type.isFolder, self.file.recordId > 0 {
+            // Own-archive records on the Stela path publish via POST /records/{id}/copies.
+            // Flag-SELECT (no V1 fallback): copy isn't idempotent. Folders (no V2 route)
+            // and foreign/shared records (bearer-only copy would be rejected) stay on V1
+            // relocate — see FilePreviewViewModel.canPublishViaStelaCopy. Also require a
+            // valid destination folderId: FileModel(model: FolderVOData) defaults it to -1
+            // when getPublicRoot omits folderID, and posting "-1" would fail every time.
+            if self.viewModel?.canPublishViaStelaCopy == true, publicRootFolder.folderId > 0 {
                 self.viewModel?.copyRecordV2(destinationFolderId: String(publicRootFolder.folderId), completion: onPublishResult)
             } else {
                 filesRepository.relocate(files: [self.file], folderLinkId: publicRootFolder.folderLinkId, isCopy: true, completion: onPublishResult)

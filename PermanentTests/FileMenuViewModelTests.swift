@@ -110,9 +110,9 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertEqual(FileMenuViewModel.formatDate("-"), "")
     }
 
-    func testFormatDate_InvalidFormat_ReturnsSameString() {
-        let input = "not-a-date"
-        XCTAssertEqual(FileMenuViewModel.formatDate(input), input)
+    func testFormatDate_InvalidFormat_ReturnsEmpty() {
+        // Unparseable input now yields "" instead of echoing the raw string into the UI.
+        XCTAssertEqual(FileMenuViewModel.formatDate("not-a-date"), "")
     }
 
     func testFormatDate_DifferentValidDate_ReturnsFormatted() {

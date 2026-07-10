@@ -119,6 +119,12 @@ class ShareItemViewModel: ObservableObject {
     // MARK: - Link Settings State
 
     @Published var selectedExpiration: ShareExpirationOption = .none
+    /// The link's ACTUAL expiry parsed from the API (`expiresDT`), independent of the preset
+    /// picker category. `expirationDisplayText` shows this for a loaded/saved link so the date
+    /// reflects the real server expiry — not a now()-relative recomputation from the preset
+    /// (which drifts, and reads "never" when the real expiry falls outside the preset ranges).
+    /// nil = no expiry (or unparseable).
+    @Published var actualExpiryDate: Date?
     @Published var selectedAccessLevel: ShareViewAccessLevel = .anyoneCanView
     @Published var showGeneralAccess = false
     @Published var showRoleSelection = false
@@ -204,6 +210,11 @@ class ShareItemViewModel: ObservableObject {
     var hasLoadedArchivesOnce = false
     var cachedV2ItemId: String?
     var cachedV2ItemType: String?
+    /// One-shot guard for the V1→V2 folderLinkId recovery bridge. Without it, a V1 error
+    /// bridges to fetchRecordV2 and fetchRecordV2 bridges back to V1, so when both endpoints
+    /// fail persistently the two mutually recurse forever (network hammer + stuck overlay).
+    /// Reset at the start of each fetchSharedArchives() so a fresh open/retry can recover once.
+    var attemptedV2FolderLinkRecovery = false
 
     // Tracks original values to detect unsaved changes
     var originalExpiration: ShareExpirationOption = .none
@@ -235,7 +246,7 @@ class ShareItemViewModel: ObservableObject {
     }
 
     var fileDate: String {
-        formatFileDate(fileModel.createdDT)
+        DateUtils.displayDate(from: fileModel.createdDT)
     }
 
     var thumbnailURL: String? {
@@ -258,7 +269,7 @@ class ShareItemViewModel: ObservableObject {
     }
 
     var shareDisplayData: String {
-        ShareItemViewModel.formatDate(fileModel.createdDT ?? "")
+        DateUtils.displayDate(from: fileModel.createdDT)
     }
 
     // MARK: - Init
@@ -288,38 +299,15 @@ class ShareItemViewModel: ObservableObject {
 
     // MARK: - Date & Size Formatters
 
+    /// Formats a record date for display. Delegates to the single shared formatter so the
+    /// Share sheet, actions sheet, and detail view render dates identically ("Sept. 16,
+    /// 2023") and all handle full ISO timestamps (incl. milliseconds + timezone). Invalid
+    /// input yields "" rather than echoing the raw string back into the UI.
     static func formatDate(_ dateString: String) -> String {
-        guard !dateString.isEmpty && dateString != "-" else { return "" }
-
-        let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "MMM. d, yyyy"
-
-        if let date = inputFormatter.date(from: dateString) {
-            return outputFormatter.string(from: date)
-        } else {
-            return dateString
-        }
+        DateUtils.displayDate(from: dateString)
     }
 
     private func formatFileSize(_ size: Int64) -> String {
-        guard size > 0 else { return "" }
-        return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
-    }
-
-    private func formatFileDate(_ dateString: String?) -> String {
-        guard let dateString = dateString else { return "" }
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-
-        if let date = formatter.date(from: dateString) {
-            let displayFormatter = DateFormatter()
-            displayFormatter.dateFormat = "MMM. dd, yyyy"
-            return displayFormatter.string(from: date)
-        }
-
-        return ""
+        size.readableFileSize
     }
 }

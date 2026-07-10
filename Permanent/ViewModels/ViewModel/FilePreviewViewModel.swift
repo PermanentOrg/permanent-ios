@@ -129,8 +129,10 @@ class FilePreviewViewModel: ViewModelInterface {
         }
         #endif
 
-        // Stela V2 detail (My Files only) with the legacy V1 fetch as an automatic failsafe.
-        if usesStelaDetail, file.recordId > 0 {
+        // Stela V2 detail (own-archive records on ANY screen) with the legacy V1 fetch as
+        // an automatic failsafe. Foreign/shared records stay on V1: they're authorized
+        // server-side via share membership, which the bearer-only V2 read can't carry.
+        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file) {
             getRecordV2(file: file, then: handler)
             return
         }
@@ -153,7 +155,8 @@ class FilePreviewViewModel: ViewModelInterface {
     /// Fetches the record via Stela GET /api/v2/records/{id}, maps it into the legacy
     /// `RecordVO` (so all detail/preview/download consumers are unchanged), and falls
     /// back to the V1 fetch on any error, decode failure, or a payload that lacks a
-    /// usable file download URL — so a thin V2 response never degrades the preview.
+    /// usable file (download URL + contentType — `loadRecord()` requires BOTH, so a
+    /// thin V2 response never degrades the preview to a blank screen).
     private func getRecordV2(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
         let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: String(file.recordId), shareToken: ""))
         operation.execute(in: APIRequestDispatcher()) { [weak self] result in
@@ -164,7 +167,7 @@ class FilePreviewViewModel: ViewModelInterface {
                     let model: RecordV2Response = JSONHelper.decoding(from: response, with: RecordV2Response.decoder),
                     let data = model.data,
                     let recordVO: RecordVO = JSONHelper.decoding(from: data.toRecordVOPayload(), with: RecordVO.decoder),
-                    recordVO.recordVO?.fileVOS?.contains(where: { ($0.downloadURL?.isEmpty == false) }) == true
+                    recordVO.recordVO?.fileVOS?.contains(where: { ($0.downloadURL?.isEmpty == false) && ($0.contentType?.isEmpty == false) }) == true
                 else {
                     self.getRecordV1(file: file, then: handler) // failsafe
                     return
@@ -196,8 +199,26 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
-    /// Whether this preview opted into the Stela V2 path (My Files + flag on).
+    /// Whether this preview opted into the Stela V2 path (the in-app flag; set on every
+    /// preview presenter — per-record ownership is checked separately, see below).
     var isStelaEnabled: Bool { usesStelaDetail }
+
+    /// True when the record belongs to the user's currently selected archive. Foreign/
+    /// shared records (Shares, public archive, share-link) carry a different or absent
+    /// (-1) archiveId and must stay on V1, whose bearer-token + server-side share
+    /// membership authorizes them; indeterminate ownership falls to V1.
+    private func isInCurrentArchive(_ file: FileModel) -> Bool {
+        guard let currentArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return false }
+        return file.archiveId > 0 && file.archiveId == currentArchiveId
+    }
+
+    /// Publish eligibility for the V2 copy route: flag on, a saved record (not a folder),
+    /// and owned by the current archive — foreign/shared records must publish via the V1
+    /// relocate, since the bearer-only V2 copy would be rejected and copy has NO V1
+    /// fallback (it is not idempotent).
+    var canPublishViaStelaCopy: Bool {
+        isStelaEnabled && !file.type.isFolder && file.recordId > 0 && isInCurrentArchive(file)
+    }
 
     /// Publishes/copies the record into `destinationFolderId` via Stela
     /// POST /records/{id}/copies. Copy is NOT idempotent, so this is flag-SELECT:
@@ -239,19 +260,16 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func fileVO() -> FileVO? {
-        var fileVO: FileVO? = recordVO?.recordVO?.fileVOS?.first
-
-        if file.type == .video || file.type == .audio {
-            if let uwFileVO = recordVO?.recordVO?.fileVOS?.first,
-               let url = URL(string: uwFileVO.downloadURL),
-               AVAsset(url: url).isPlayable {
-                fileVO = uwFileVO
-            } else if let uwFileVO = recordVO?.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
-                fileVO = uwFileVO
-            }
+        // For A/V, prefer the app-friendly converted rendition, else the first file — matching
+        // DownloadManagerGCD.fileVO. Previously this probed `AVAsset(url:).isPlayable`
+        // synchronously on a REMOTE url, which blocks the main thread (fileVO() is called on
+        // main from loadRecord); AVPlayer already surfaces unplayable assets at play time.
+        if file.type == .video || file.type == .audio,
+           let converted = recordVO?.recordVO?.fileVOS?.first(where: { $0.format == "file.format.converted" }) {
+            return converted
         }
-        
-        return fileVO
+
+        return recordVO?.recordVO?.fileVOS?.first
     }
     
     func fileThumbnailURL() -> String? {
@@ -283,8 +301,10 @@ class FilePreviewViewModel: ViewModelInterface {
         // (the server updates the record's fields, and its existing location row in place).
         // DATE stays on V1: the record PATCH exposes only the EDTF `displayTime` column,
         // not the `displaydt` timestamp the "Date" row displays, so a V2 date edit would
-        // not reflect. The V1 failsafe covers any V2 miss. Gated to My Files via usesStelaDetail.
-        if usesStelaDetail, file.recordId > 0, date == nil, (name != nil || description != nil || location != nil) {
+        // not reflect. The V1 failsafe covers any V2 miss. Own-archive records only —
+        // same scoping as the read path: a foreign/shared record's bearer-only PATCH
+        // would just burn a doomed round-trip before the V1 failsafe re-applies.
+        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
             updateV2(file: file, name: name, description: description, location: location, completion: completion)
             return
         }

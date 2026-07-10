@@ -52,7 +52,11 @@ class PermSession: Codable {
         token = try container.decode(String.self, forKey: .token)
         
         account = try container.decode(AccountVOData.self, forKey: .account)
-        selectedArchive = try container.decode(ArchiveVOData.self, forKey: .selectedArchive)
+        // decodeIfPresent: `encode(to:)` writes null when no archive is selected
+        // (no-archive accounts, fresh signup before the default archive lands) —
+        // a non-optional decode here threw on restore and force-logged those
+        // users out on every launch.
+        selectedArchive = try container.decodeIfPresent(ArchiveVOData.self, forKey: .selectedArchive)
         
         selectedFiles = try container.decodeIfPresent([FileModel].self, forKey: .selectedFiles)
         fileAction = try container.decodeIfPresent(FileAction.self, forKey: .fileAction)

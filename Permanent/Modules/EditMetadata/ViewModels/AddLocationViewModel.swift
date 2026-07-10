@@ -45,8 +45,12 @@ class AddLocationViewModel: ObservableObject {
     var token = GMSAutocompleteSessionToken.init()
     
     @Published var showConfirmation: Bool = false
-    
+
     @Published var changesConfirmed: Bool = false
+
+    /// Set when a location save fails so the sheet can surface an error instead of a silent
+    /// dead-end (the sheet now stays open on failure, so it needs a retry cue).
+    @Published var showError: Bool = false
 
     @Published var commonLocation: LocnVO? {
         didSet {
@@ -128,7 +132,7 @@ class AddLocationViewModel: ObservableObject {
         // Stela V2 (flag-gated): fan out one PATCH /records/{id} {location} per record,
         // with the V1 batch as an automatic failsafe. Records only. `geomapLatLong` (which
         // resolves the LocnVO on coordinate selection) stays V1 and is untouched.
-        if RCValues.sharedInstance.bool(forKey: .useStelaNavigation),
+        if FeatureFlags.useStelaNavigation,
            let locnVO = locnVO,
            selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
             let fields: [String: Any] = ["location": locnVO.toLocationInputPayload()]

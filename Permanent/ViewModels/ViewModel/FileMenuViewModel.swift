@@ -143,26 +143,14 @@ class FileMenuViewModel: ObservableObject {
     // MARK: - File Formatting Logic
     static func formatFileSize(_ size: Int64) -> String? {
         guard size > 0 else { return nil }
-        
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useBytes, .useKB, .useMB, .useGB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: size)
+        // Canonical period-style size (Figma + Storage), locale-stable — see Int64.readableFileSize.
+        return size.readableFileSize
     }
-    
+
     static func formatDate(_ dateString: String) -> String {
-        guard !dateString.isEmpty && dateString != "-" else { return "" }
-        
-        let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "yyyy-MM-dd"
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "MMM. d, yyyy"
-        
-        if let date = inputFormatter.date(from: dateString) {
-            return outputFormatter.string(from: date)
-        } else {
-            return dateString
-        }
+        // Single shared formatter so every file surface renders dates identically
+        // ("Sept. 16, 2023") and tolerates full ISO timestamps — see DateUtils.displayDate.
+        DateUtils.displayDate(from: dateString)
     }
     
     // MARK: - Layout Calculations
@@ -778,13 +766,13 @@ class FileMenuViewModel: ObservableObject {
         let fileExtension = (fileViewModel.uploadFileName as NSString).pathExtension
         let fileName = !fileExtension.isEmpty ? "\(fileViewModel.name).\(fileExtension)" : fileViewModel.name
         
-        if let url = fileHelper.url(forFileNamed: fileName) {
+        if let url = fileHelper.url(forFileNamed: FileHelper.recordScopedName(fileName, recordId: fileViewModel.recordId)) {
             return url
         }
-        
+
         if fileExtension.uppercased() == "HEIC" {
             let convertedFileName = "\(fileViewModel.name).JPG"
-            if let url = fileHelper.url(forFileNamed: convertedFileName) {
+            if let url = fileHelper.url(forFileNamed: FileHelper.recordScopedName(convertedFileName, recordId: fileViewModel.recordId)) {
                 return url
             }
         }

@@ -15,6 +15,56 @@ class MainFileOperationsUITests: BaseUITestCase {
     override func tearDownWithError() throws {
     }
 
+    /// The navigation path this run should exercise. Default DEV-Debug is Stela V2;
+    /// `TEST_RUNNER_STELA_NAV=0` forces the V1 failsafe (see BaseUITestCase).
+    private var expectedNavSource: String {
+        ProcessInfo.processInfo.environment["STELA_NAV"] == "0" ? "v1" : "v2"
+    }
+
+    /// Stela V2 ⇄ V1 parity: folder drill-in must produce the same outcome on both
+    /// paths. Runs under both flag states (TEST_RUNNER_STELA_NAV = 1 / 0). The
+    /// `files-nav-source-*` accessibility id (DEBUG) proves which path actually ran,
+    /// so a V2 run can't silently pass on the V1 failsafe. Root listing stays V1, so
+    /// a freshly-created empty folder is the deterministic drill-in target.
+    func testFolderNavigationParity() throws {
+        let accountEmail = uiTestCredentials.username
+        let accountPassword = uiTestCredentials.password
+
+        let loginPage = LoginPage(app: app, testCase: self)
+        loginPage.login(username: accountEmail, password: accountPassword)
+
+        let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
+        privateFilesPage.waitForExistence()
+
+        let folderName = "aaae2e_nav_\(UUID().uuidString.prefix(6))"
+        privateFilesPage.createNewFolder(name: folderName)
+        privateFilesPage.assertElementExists(named: folderName)
+
+        // Drill in — this is the Stela V2 (or V1 failsafe) navigateMin path.
+        privateFilesPage.enterFolder(named: folderName)
+        privateFilesPage.emptyFolderTest()
+
+        // Confirm the children loaded via the path this run is meant to exercise.
+        let navSource = app.collectionViews["files-nav-source-\(expectedNavSource)"]
+        XCTAssertTrue(navSource.waitForExistence(timeout: 15),
+                      "folder drill-in should have loaded via \(expectedNavSource)")
+
+        privateFilesPage.goBack()
+        privateFilesPage.waitForExistence()
+
+        // Cleanup by name so no real archive item is touched.
+        privateFilesPage.deleteElement(named: folderName)
+
+        // Sign out.
+        privateFilesPage.toggleRightSideMenu()
+        let rightSideMenu = RightSideMenuPage(app: app, testCase: self, accountEmail: accountEmail)
+        rightSideMenu.waitForExistence()
+        rightSideMenu.logOut()
+        sleep(2)
+
+        loginPage.waitForExistence()
+    }
+
     func testSearchInPrivateFiles() throws {
         let accountEmail = uiTestCredentials.username
         let accountPassword = uiTestCredentials.password

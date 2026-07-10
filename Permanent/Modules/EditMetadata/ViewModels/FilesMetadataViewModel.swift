@@ -110,7 +110,7 @@ class FilesMetadataViewModel: ObservableObject {
     func getRecord(file: FileModel) async throws -> RecordVO? {
         // Stela V2 read (flag-gated) for records, with the legacy V1 fetch as an
         // automatic failsafe. Folders (recordId <= 0) always use V1.
-        if RCValues.sharedInstance.bool(forKey: .useStelaNavigation), file.recordId > 0, !file.type.isFolder {
+        if FeatureFlags.useStelaNavigation, file.recordId > 0, !file.type.isFolder {
             if let v2Record = await getRecordV2(file: file) {
                 return v2Record
             }
@@ -168,7 +168,7 @@ class FilesMetadataViewModel: ObservableObject {
         // Stela V2 (flag-gated): fan out one PATCH /records/{id} {description} per record,
         // with the V1 batch as an automatic failsafe. Records only — if the selection has
         // any folder or unsaved record, the whole batch takes V1 (records-only V2 route).
-        if RCValues.sharedInstance.bool(forKey: .useStelaNavigation),
+        if FeatureFlags.useStelaNavigation,
            selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
             selectedFiles.patchEachRecordToV2(fieldsFor: { _ in ["description": description] }) { [weak self] succeeded in
                 if succeeded {
@@ -337,13 +337,20 @@ class FilesMetadataViewModel: ObservableObject {
     
     func getCommonDate() -> String {
         let dateFormatter = DateFormatter()
+        // en_US_POSIX so parsing this Gregorian ISO string doesn't fail on a device set to a
+        // non-Gregorian calendar (Buddhist/Persian), which would drop to `?? Date()` (today).
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
+
         let date = dateFormatter.date(from: selectedFiles.first?.createdDT ?? "") ?? Date()
-        
+
         let dateFormatterChanged = DateFormatter()
-        dateFormatterChanged.dateFormat = "yyyy-dd-MM hh:mm a"
+        // Was "yyyy-dd-MM" — day and month were swapped, so e.g. Oct 9 displayed as
+        // Sep 10. Display-only (the metadata "date" row title). en_US_POSIX keeps the year
+        // Gregorian on non-Gregorian-calendar devices.
+        dateFormatterChanged.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatterChanged.dateFormat = "yyyy-MM-dd hh:mm a"
 
         let commonDate = dateFormatterChanged.string(from: date)
         

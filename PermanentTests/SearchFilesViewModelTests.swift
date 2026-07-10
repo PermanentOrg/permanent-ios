@@ -32,6 +32,39 @@ final class SearchFilesViewModelTests: XCTestCase {
         )
     }
 
+    // MARK: - Tag filter invariant (H1: tag tap during search must not crash the tag cell)
+    // The cell's inner collection view is driven by `filteredTags`. Selecting a tag resets
+    // `searchQuery` (its didSet), which changes `filteredTags.count`; the cell must full-reload,
+    // not reloadItems(at:), against that changed count. These pin the view-model side of the invariant.
+
+    private func makeTag(_ name: String, id: Int) -> TagVOData {
+        TagVOData(name: name, status: nil, tagId: id, type: nil, createdDT: nil, updatedDT: nil)
+    }
+
+    func testFilteredTags_SelectingTagResetsQueryAndChangesCount() {
+        let vm = SearchFilesViewModel()
+        vm.tagVOs = [makeTag("Alpha", id: 1), makeTag("Beta", id: 2), makeTag("Gamma", id: 3)]
+
+        vm.searchQuery = "al"
+        XCTAssertEqual(vm.filteredTags.map { $0.name }, ["Alpha"], "query should narrow the tag row")
+
+        vm.selectedTagVOs.append(makeTag("Alpha", id: 1))
+        XCTAssertEqual(vm.searchQuery, "", "selecting a tag clears the query in didSet")
+        XCTAssertEqual(vm.filteredTags.count, 3, "count changes 1 -> 3, which a partial reload could not survive")
+        // Mutating selectedTagVOs arms a 0.1s search Timer that fires a live network request;
+        // cancel it so it can't linger on the run loop and fire during a later test.
+        vm.searchTimer?.invalidate()
+    }
+
+    func testFilteredTags_SelectedTagStaysVisibleUnderQuery() {
+        let vm = SearchFilesViewModel()
+        vm.tagVOs = [makeTag("Alpha", id: 1), makeTag("Beta", id: 2)]
+        vm.selectedTagVOs = [makeTag("Beta", id: 2)]
+        vm.searchQuery = "al" // matches Alpha; Beta is force-included because it is selected
+        XCTAssertEqual(Set(vm.filteredTags.map { $0.name }), Set(["Alpha", "Beta"]))
+        vm.searchTimer?.invalidate() // cancel the armed live-network search timer (see above)
+    }
+
     // MARK: - currentFolderIsRoot
 
     func testCurrentFolderIsRoot_EmptyStack_True() {

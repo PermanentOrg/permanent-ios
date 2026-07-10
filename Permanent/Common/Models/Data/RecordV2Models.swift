@@ -105,7 +105,19 @@ extension RecordV2Data {
         if let value = intOf(parentFolderLinkId) { record["parentFolder_linkId"] = value }
         record["FileVOs"] = (files ?? []).map { $0.toFileVOPayload() }
         if let location = location { record["LocnVO"] = location.toLocnVOPayload() }
-        if let tags = tags { record["TagVOs"] = tags.compactMap { $0.name.map { ["name": $0] } } }
+        if let tags = tags {
+            // name + tagId + type — tagId is load-bearing downstream: the batch-metadata
+            // screen derives its whole tag state from these VOs and the V1 unlink body
+            // sends `tagVO.tagId` (a nil here became `tagId: 0` → unassign silently
+            // no-oped server-side while the UI removed the chip).
+            record["TagVOs"] = tags.compactMap { tag -> [String: Any]? in
+                guard let name = tag.name else { return nil }
+                var vo: [String: Any] = ["name": name]
+                if let id = intOf(tag.tagId) { vo["tagId"] = id }
+                if let type = tag.type { vo["type"] = type }
+                return vo
+            }
+        }
 
         return ["RecordVO": record]
     }
@@ -140,17 +152,24 @@ extension FileV2Data {
         switch cls {
         case "image":
             if sub == "jpg" { sub = "jpeg" }
-            return sub.isEmpty ? nil : "image/\(sub)"
+            return sub.isEmpty ? genericMimeType : "image/\(sub)"
         case "video":
-            return sub.isEmpty ? nil : "video/\(sub)"
+            return sub.isEmpty ? genericMimeType : "video/\(sub)"
         case "audio":
-            return sub.isEmpty ? nil : "audio/\(sub)"
+            return sub.isEmpty ? genericMimeType : "audio/\(sub)"
         case "pdf":
             return "application/pdf"
         default:
-            return nil
+            // Docs, text, archives, spreadsheets… V1 always ships a contentType and the
+            // preview's loadRecord() requires a non-nil one in both of its branches
+            // (loadMisc only needs presence, not accuracy) — so a generic MIME keeps
+            // misc records previewable on the V2 path instead of rendering blank.
+            return genericMimeType
         }
     }
+
+    /// Fallback MIME for `type.file.*` classes with no specific mapping.
+    private static let genericMimeType = "application/octet-stream"
 }
 
 extension LocnVO {
@@ -206,6 +225,28 @@ struct TagV2: Model {
     let tagId: String?
     let name: String?
     let type: String?
+
+    enum CodingKeys: String, CodingKey {
+        case tagId = "id"  // Stela sends the tag id under "id" (as a JSON number)
+        case name, type
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        // The live API sends "id" as a JSON NUMBER (e.g. 1235); tolerate a string
+        // too. E2E-verified 2026-07-03: decoding this as `tagId: String?` (old key,
+        // string-only) silently yielded nil, which made tag unassign after a V2
+        // record read send `tagId: 0` to /tag/DeleteTagLink → error.api.invalid_request.
+        if let intId = try? container.decode(Int.self, forKey: .tagId) {
+            tagId = String(intId)
+        } else if let stringId = try? container.decode(String.self, forKey: .tagId) {
+            tagId = stringId
+        } else {
+            tagId = nil
+        }
+        name = try? container.decode(String.self, forKey: .name)
+        type = try? container.decode(String.self, forKey: .type)
+    }
 }
 
 struct RecordShareV2: Model {

@@ -182,8 +182,20 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
                 self.navigationItem.rightBarButtonItem?.isEnabled = true
                 
                 if let error = error {
-                    if error is StorageQuotaError {
-                        self.showStorageQuotaExceededAlert()
+                    if let quotaError = error as? StorageQuotaError {
+                        switch quotaError {
+                        case .insufficientSpace:
+                            self.showStorageQuotaExceededAlert()
+                        case .apiError:
+                            // The quota check itself failed (offline / transient / expired token).
+                            // Don't claim "Storage Full" or cancel the share — show a retryable
+                            // message; the upload button is already re-enabled above.
+                            let alert = UIAlertController(title: "Couldn’t check storage".localized(),
+                                                          message: quotaError.localizedDescription,
+                                                          preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
+                        }
                     } else {
                         let alert = UIAlertController(title: "Upload Error", message: error.localizedDescription, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

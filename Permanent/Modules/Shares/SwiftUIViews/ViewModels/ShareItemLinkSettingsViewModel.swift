@@ -57,14 +57,22 @@ extension ShareItemViewModel {
     }
 
     var expirationDisplayText: String {
+        let displayFormatter = DateFormatter()
+        displayFormatter.dateFormat = "MMMM d, yyyy"
+
+        // For a loaded / already-saved link (no unsaved change), show the ACTUAL server expiry
+        // so the date is real — not a now()-relative recomputation from the preset, and not
+        // "never" when the true expiry falls outside the preset ranges.
+        if selectedExpiration == originalExpiration, let actualExpiryDate {
+            return "The link will expire on \(displayFormatter.string(from: actualExpiryDate))."
+        }
+
+        // Otherwise the user has picked a preset that isn't saved yet — preview what it becomes.
         if selectedExpiration != .never && selectedExpiration != .none,
            let expirationDateString = selectedExpiration.expirationDate,
-           !expirationDateString.isEmpty {
-            if let date = parseExpirationDate(expirationDateString) {
-                let displayFormatter = DateFormatter()
-                displayFormatter.dateFormat = "MMMM d, yyyy"
-                return "The link will expire on \(displayFormatter.string(from: date))."
-            }
+           !expirationDateString.isEmpty,
+           let date = parseExpirationDate(expirationDateString) {
+            return "The link will expire on \(displayFormatter.string(from: date))."
         }
         return "The link will never expire."
     }
@@ -77,6 +85,7 @@ extension ShareItemViewModel {
             // No expiration date means "never" - select the never option
             selectedExpiration = .never
             originalExpiration = .never
+            actualExpiryDate = nil
             setInitialAccessLevel(shareVO)
             return
         }
@@ -85,9 +94,14 @@ extension ShareItemViewModel {
             // If we can't parse the date, don't select any option
             selectedExpiration = .none
             originalExpiration = .none
+            actualExpiryDate = nil
             setInitialAccessLevel(shareVO)
             return
         }
+
+        // Store the real server expiry for display, independent of the preset mapping below
+        // (so an expiry outside the preset ranges still shows its true date, not "never").
+        actualExpiryDate = expirationDate
 
         let now = Date()
         let timeInterval = expirationDate.timeIntervalSince(now)
@@ -269,6 +283,8 @@ extension ShareItemViewModel {
 
                             if self.hasUnsavedChanges {
                                 self.originalExpiration = self.selectedExpiration
+                                // Keep the displayed expiry in sync after saving (nil for never/none).
+                                self.actualExpiryDate = self.selectedExpiration.expirationDate.flatMap(self.parseExpirationDate)
                                 self.originalAccessLevel = self.selectedAccessLevel
                                 self.originalItemPreview = self.itemPreviewEnabled
                                 self.originalAutoApprove = self.autoApproveEnabled
@@ -354,6 +370,8 @@ extension ShareItemViewModel {
                                 }
 
                                 self.originalExpiration = self.selectedExpiration
+                                // Keep the displayed expiry in sync after saving (nil for never/none).
+                                self.actualExpiryDate = self.selectedExpiration.expirationDate.flatMap(self.parseExpirationDate)
                                 self.originalAccessLevel = self.selectedAccessLevel
                                 self.originalItemPreview = self.itemPreviewEnabled
                                 self.originalAutoApprove = self.autoApproveEnabled

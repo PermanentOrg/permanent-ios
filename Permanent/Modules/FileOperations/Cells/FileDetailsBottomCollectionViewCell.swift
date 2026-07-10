@@ -54,7 +54,7 @@ class FileDetailsBottomCollectionViewCell: FileDetailsBaseCollectionViewCell {
         case .tags:
             details = recordVO.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ",") ?? ""
         case .size:
-            details = ByteCountFormatter.string(fromByteCount: Int64(recordVO.size ?? 0), countStyle: .file)
+            details = Int64(recordVO.size ?? 0).readableFileSize
         case .fileType:
             details = URL(string: recordVO.type)?.pathExtension ?? ""
         case .originalFileName:

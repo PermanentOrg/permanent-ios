@@ -16,11 +16,12 @@ class MyFilesViewModel: FilesViewModel {
     var isPickingImage: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
 
-    /// Private Files is the one screen that opts into Stela V2 navigation, gated by
-    /// the Remote-Config flag. `PublicFilesViewModel` (a subclass) overrides this back
-    /// to `false` so the Public workspace stays on V1.
+    /// Private Files opts into Stela V2 navigation via the in-app
+    /// `FeatureFlags.useStelaNavigation` constant. `PublicFilesViewModel` inherits this
+    /// (same owner workspace), and `SearchFilesViewModel` opts in with its own override —
+    /// so flipping the flag switches My Files, Public Files, AND Search drill-in to V2.
     override var usesStelaNavigation: Bool {
-        RCValues.sharedInstance.bool(forKey: .useStelaNavigation)
+        FeatureFlags.useStelaNavigation
     }
 
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }

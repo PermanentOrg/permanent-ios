@@ -12,6 +12,25 @@ typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
+/// In-app feature flags — compile-time switches with no server-side Remote Config.
+/// Flip the value here and ship a build to change behavior. In Release these are
+/// immutable `let`s (truly no runtime toggle); in DEBUG they are `var`s solely so
+/// unit tests can pin a flag deterministically (each test must defer-restore it).
+enum FeatureFlags {
+    /// Master switch for the Stela V2 path: folder navigation on My Files, Public Files,
+    /// and Search drill-in, plus record detail read/edit/publish (own-archive records on
+    /// every screen) and the upload dedupe listing. V1 remains an automatic failsafe on
+    /// every gated path except publish (owned-records-only by gate), so OFF is always
+    /// safe. Changing it requires an app release (no Remote Config).
+    // Enabled for DEBUG/dev builds (staging via Permanent-DEV) so the Stela V2 path is exercised
+    // there; production/Release stays on V1 until the release `let` is flipped for rollout.
+    #if DEBUG
+    static var useStelaNavigation = true
+    #else
+    static let useStelaNavigation = false
+    #endif
+}
+
 struct Font { }
 
 struct TextFontStyle {

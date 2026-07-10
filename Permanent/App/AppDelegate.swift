@@ -29,6 +29,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UITextField.appearance().clearButtonMode = .always
         }
 
+        #if DEBUG
+        // UI tests flip the Stela V2 navigation flag at launch (see BaseUITestCase /
+        // TEST_RUNNER_STELA_NAV) so the SAME suite can prove parity against both the V2
+        // path and the V1 failsafe without a rebuild. Parsed here, before anything reads
+        // the flag. No effect in Release, where the flag is an immutable `let`.
+        if CommandLine.arguments.contains("--forceStelaNavigation") {
+            FeatureFlags.useStelaNavigation = true
+        } else if CommandLine.arguments.contains("--forceLegacyNavigation") {
+            FeatureFlags.useStelaNavigation = false
+        }
+        #endif
+
         clearShareDeepLinks()
 
         initFirebase()
@@ -130,7 +142,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                             let toArchiveId: Int = shareVO.archiveID else {
                             return
                         }
-                        let accessRole: String = AccessRole.roleForValue(shareVO.accessRole ?? "").groupName
+                        // Store the API value (access.role.*), NOT the localized groupName
+                        // ("Owner"/"Editor"): the consumer (ArchiveVOData.permissions(forAccessRole:)
+                        // → AccessRole.roleForValue) only parses api values, so a groupName fell
+                        // through to .viewer and the share opened read-only.
+                        let accessRole: String = AccessRole.roleForValue(shareVO.accessRole ?? "").apiValue
                         let toArchiveNbr: String = targetArchiveNbrOpt ?? ""
                         let toArchiveName: String = ""
 
@@ -215,6 +231,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
         case "p":
+            // Guard the only unguarded subscript in this handler: a truncated /p link
+            // (e.g. "permanent.org/p" shared by hand) would crash on [3].
+            guard url.pathComponents.count > 3 else { return false }
             let archiveNbr: String = url.pathComponents[3]
             
             var folderArchiveNbr: String?
@@ -286,8 +305,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         let storageView = StorageView(viewModel: storageViewModel)
                         
                         let host = UIHostingController(rootView: storageView)
-                        self.window?.rootViewController?.present(host, animated: true, completion: nil)
-                        
+                        // Present from the topmost VC, not the root: if a modal (a sheet,
+                        // file preview, etc.) is already up, presenting on the root silently
+                        // fails ("presentation is in progress") and the promo never appears.
+                        (self.getTopMostViewController() ?? self.window?.rootViewController)?.present(host, animated: true, completion: nil)
+
                         return true
                     }
                 }
@@ -338,8 +360,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func handleLiveActivityLaunch() -> Bool {
         if #available(iOS 16.2, *) {
             let activities = Activity<UploadActivityAttributes>.activities
-            guard let activity = activities.first else { return false }
-            
+            // Skip ended/dismissed activities that iOS hasn't cleaned up yet — navigating
+            // from a stale (completed-upload) activity would drop the user into the wrong
+            // folder. Only a still-live activity reflects the current upload's destination.
+            guard let activity = activities.first(where: { $0.activityState != .ended }) else { return false }
+
             let archiveNo = activity.attributes.archiveNo
             let folderLinkId = activity.attributes.folderLinkId
             
@@ -397,9 +422,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     fileprivate func configureLogging() {
         #if STAGING_ENVIRONMENT
+            // Staging: verbose logging incl. capped request/response bodies.
             NetworkLogger.enableLogging()
         #else
-             NetworkLogger.enableLogging()
+            // Production: errors only, never bodies — the previous enableLogging() here
+            // stringified every full response body on the main thread in App Store builds.
+            NetworkLogger.enableErrorLogging()
         #endif
     }
     

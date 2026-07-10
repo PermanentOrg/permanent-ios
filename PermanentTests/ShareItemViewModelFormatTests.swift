@@ -29,8 +29,9 @@ final class ShareItemViewModelFormatTests: XCTestCase {
     }
 
     func testFormatDate_InvalidFormat() {
+        // Unparseable input now yields "" instead of echoing the raw string into the UI.
         let result = ShareItemViewModel.formatDate("not-a-date")
-        XCTAssertEqual(result, "not-a-date")
+        XCTAssertEqual(result, "")
     }
 
     func testFormatDate_JanuaryFirst() {
@@ -140,5 +141,99 @@ final class ShareItemViewModelFormatTests: XCTestCase {
         let vm = ShareItemViewModel(fileModel: FileModel.mockFile())
         vm.navigationDirection = .backward
         XCTAssertNotNil(vm.insertionViewTransition)
+    }
+
+    // MARK: - expirationDisplayText shows the real stored expiry (not a now-relative preset)
+
+    private var expiryDisplayFormatter: DateFormatter {
+        let f = DateFormatter(); f.dateFormat = "MMMM d, yyyy"; return f
+    }
+
+    func testExpirationDisplayText_ShowsStoredExpiry_WhenPresetMatchesButDateDiffers() {
+        let vm = ShareItemViewModel(fileModel: FileModel.mockFile())
+        // Loaded link mapped to the "1 month" preset, but whose real server expiry is 45 days
+        // out (e.g. set on the web). The display must show the REAL date, not now()+30d.
+        let realExpiry = Date().addingTimeInterval(45 * 24 * 60 * 60)
+        vm.selectedExpiration = .oneMonth
+        vm.originalExpiration = .oneMonth
+        vm.actualExpiryDate = realExpiry
+        XCTAssertEqual(vm.expirationDisplayText,
+                       "The link will expire on \(expiryDisplayFormatter.string(from: realExpiry)).")
+    }
+
+    func testExpirationDisplayText_ShowsStoredExpiry_WhenOutsidePresetRanges_NotNever() {
+        let vm = ShareItemViewModel(fileModel: FileModel.mockFile())
+        // Real expiry outside any preset range → mapped to .none, but the true date still exists
+        // and must be shown (previously this read "never expire").
+        let realExpiry = Date(timeIntervalSince1970: 1_760_000_000)
+        vm.selectedExpiration = .none
+        vm.originalExpiration = .none
+        vm.actualExpiryDate = realExpiry
+        XCTAssertEqual(vm.expirationDisplayText,
+                       "The link will expire on \(expiryDisplayFormatter.string(from: realExpiry)).")
+    }
+
+    func testExpirationDisplayText_NeverWhenNoStoredExpiryAndNoPreset() {
+        let vm = ShareItemViewModel(fileModel: FileModel.mockFile())
+        vm.selectedExpiration = .none
+        vm.originalExpiration = .none
+        vm.actualExpiryDate = nil
+        XCTAssertEqual(vm.expirationDisplayText, "The link will never expire.")
+    }
+
+    // MARK: - DateUtils.displayDate (shared record-date formatter — Figma "MMM. d, yyyy")
+
+    func testDisplayDate_FullISOWithMillisAndZone_Formats() {
+        // The exact F2 bug: a full ISO timestamp used to fail parsing and render raw.
+        XCTAssertEqual(DateUtils.displayDate(from: "2018-03-30T19:14:18.000Z"), "Mar. 30, 2018")
+    }
+
+    func testDisplayDate_DateOnlyInput_Formats() {
+        XCTAssertEqual(DateUtils.displayDate(from: "2023-08-15"), "Aug. 15, 2023")
+    }
+
+    func testDisplayDate_September_UsesAbbreviatedMonthAndYear() {
+        // Figma shows "Sept. 16, 2023"; asserted loosely so it stays stable across the OS's
+        // month abbreviation ("Sep." vs "Sept.").
+        let result = DateUtils.displayDate(from: "2023-09-16T00:00:00.000Z")
+        XCTAssertTrue(result.hasPrefix("Sep"), "Expected abbreviated September, got: \(result)")
+        XCTAssertTrue(result.hasSuffix("16, 2023"), "Expected '16, 2023', got: \(result)")
+    }
+
+    func testDisplayDate_NilEmptyDash_ReturnEmpty() {
+        XCTAssertEqual(DateUtils.displayDate(from: nil), "")
+        XCTAssertEqual(DateUtils.displayDate(from: ""), "")
+        XCTAssertEqual(DateUtils.displayDate(from: "-"), "")
+    }
+
+    func testDisplayDate_Unparseable_ReturnsEmpty() {
+        XCTAssertEqual(DateUtils.displayDate(from: "not-a-date"), "")
+    }
+
+    func testDisplayDate_PostgresTimestamptz_Formats() {
+        // Stela also emits the Postgres space-separated shape on some endpoints.
+        XCTAssertEqual(DateUtils.displayDate(from: "2023-08-15 12:34:56+00"), "Aug. 15, 2023")
+    }
+
+    // MARK: - DateUtils.date(fromISO:) (metadata Date field parse)
+
+    func testDateFromISO_WithMillisAndZone_Parses() {
+        XCTAssertNotNil(DateUtils.date(fromISO: "2018-03-30T19:14:18.000Z"))
+    }
+
+    func testDateFromISO_WithoutMillis_Parses() {
+        XCTAssertNotNil(DateUtils.date(fromISO: "2018-03-30T19:14:18Z"))
+    }
+
+    func testDateFromISO_PostgresTimestamptz_Parses() {
+        // Postgres timestamptz shape ("…+00") — the metadata Date cell must not go blank.
+        XCTAssertNotNil(DateUtils.date(fromISO: "2023-01-01 00:00:00+00"))
+    }
+
+    func testDateFromISO_InvalidInputs_ReturnNil() {
+        XCTAssertNil(DateUtils.date(fromISO: nil))
+        XCTAssertNil(DateUtils.date(fromISO: ""))
+        XCTAssertNil(DateUtils.date(fromISO: "-"))
+        XCTAssertNil(DateUtils.date(fromISO: "not-a-date"))
     }
 }

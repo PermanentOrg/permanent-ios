@@ -23,6 +23,8 @@ extension ShareItemViewModel {
 
     /// Fetches all archives that have access to this item.
     func fetchSharedArchives() {
+        // Fresh cycle: allow exactly one V1→V2 folderLinkId recovery attempt (see VH4 guard).
+        attemptedV2FolderLinkRecovery = false
         // Check V2 data first - it's more reliable than initial fileModel type
         if let v2Data = shareLinkV2Data,
            let itemId = v2Data.itemId,
@@ -225,10 +227,14 @@ extension ShareItemViewModel {
                         self.isLoadingArchives = false
 
                         if error != nil {
-                            // If folder API fails, it might actually be a record - try V2 record API
-                            if let v2Data = self.shareLinkV2Data,
+                            // If folder API fails, it might actually be a record - try V2 record API,
+                            // but only ONCE per cycle (fetchRecordV2 bridges back here, so an
+                            // unguarded bridge would loop forever when both endpoints fail).
+                            if !self.attemptedV2FolderLinkRecovery,
+                               let v2Data = self.shareLinkV2Data,
                                let itemId = v2Data.itemId,
                                let token = v2Data.token {
+                                self.attemptedV2FolderLinkRecovery = true
                                 self.fetchRecordV2(recordId: itemId, shareToken: token)
                             }
                             return
@@ -278,10 +284,14 @@ extension ShareItemViewModel {
                         self.isLoadingArchives = false
 
                         if error != nil {
-                            // If V1 record API fails, try V2 record API
-                            if let v2Data = self.shareLinkV2Data,
+                            // If V1 record API fails, try V2 record API — but only ONCE per
+                            // cycle (fetchRecordV2 bridges back here; an unguarded bridge loops
+                            // forever when both endpoints keep failing).
+                            if !self.attemptedV2FolderLinkRecovery,
+                               let v2Data = self.shareLinkV2Data,
                                let itemId = v2Data.itemId,
                                let token = v2Data.token {
+                                self.attemptedV2FolderLinkRecovery = true
                                 self.fetchRecordV2(recordId: itemId, shareToken: token)
                             }
                             return

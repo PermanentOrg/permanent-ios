@@ -13,7 +13,10 @@ class JSONHelper {
         guard let json = object else { return nil }
         
         do {
-            let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            // Compact (not .prettyPrinted): this Data is an internal intermediate handed
+            // straight to JSONDecoder, so whitespace is pure waste — smaller + faster to
+            // produce and decode, which matters for large listings decoded on the main thread.
+            let data = try JSONSerialization.data(withJSONObject: json, options: [])
             let decodedModel = try decoder.decode(M.self, from: data)
             return decodedModel
         } catch {
@@ -26,7 +29,10 @@ class JSONHelper {
         guard let json = object else { return nil }
 
         do {
-            let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            // Compact (not .prettyPrinted): this Data is an internal intermediate handed
+            // straight to JSONDecoder, so whitespace is pure waste — smaller + faster to
+            // produce and decode, which matters for large listings decoded on the main thread.
+            let data = try JSONSerialization.data(withJSONObject: json, options: [])
             let decodedModel = try JSONDecoder().decode(T.self, from: data)
             return (decodedModel)
         } catch {

@@ -103,6 +103,46 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertEqual(body.keys.count, 1)
     }
 
+    // MARK: - 401 force-logout exemption contract (ignoreErrors)
+    // Reads are exempt: a bearer-only fetch of a foreign/shared item legitimately 401s,
+    // and the V1 failsafe still surfaces a genuine session expiry. Writes must KEEP the
+    // expiry signal — a regression to `true` on patch/copy would let an expired session
+    // fail silently with no re-login prompt (copy has no V1 fallback at all).
+
+    func testV2AuthExemption_ReadsExempt_WritesKeepExpirySignal() {
+        XCTAssertTrue(RecordV2Endpoint.getRecordById(recordId: "1", shareToken: nil).ignoreErrors)
+        XCTAssertFalse(RecordV2Endpoint.patchRecord(recordId: "1", fields: ["displayName": "x"]).ignoreErrors)
+        XCTAssertFalse(RecordV2Endpoint.copyRecord(recordId: "1", destinationFolderId: "2").ignoreErrors)
+        XCTAssertTrue(FolderV2Endpoint.getFolderChildren(folderId: "1", shareToken: "", pageSize: 10).ignoreErrors)
+        XCTAssertTrue(FolderV2Endpoint.getFolderById(folderId: "1", shareToken: "").ignoreErrors)
+    }
+
+    // MARK: - NetworkLogger body capping
+    // Bodies are stringified on the dispatcher's completion thread (currently main), so
+    // the logger must never render more than maxBodyLength bytes of a payload, and a
+    // truncated/non-UTF-8 body must degrade gracefully rather than drop the log line.
+
+    func testNetworkLoggerBody_UnderCap_RendersFullString() {
+        let body = #"{"ok":true}"#.data(using: .utf8)!
+        XCTAssertEqual(NetworkLogger.loggableBody(body), #"{"ok":true}"#)
+    }
+
+    func testNetworkLoggerBody_OverCap_TruncatesWithMarker() {
+        let cap = NetworkLogger.configuration.maxBodyLength
+        let body = Data(repeating: UInt8(ascii: "a"), count: cap + 500)
+        let rendered = NetworkLogger.loggableBody(body)
+        XCTAssertTrue(rendered.hasPrefix(String(repeating: "a", count: 64)))
+        XCTAssertTrue(rendered.contains("truncated 500 of \(cap + 500) bytes"))
+        XCTAssertLessThan(rendered.utf8.count, body.count)
+    }
+
+    func testNetworkLoggerBody_InvalidUTF8_DoesNotDropTheLine() {
+        // Truncation can split a multi-byte character; String(decoding:) must yield
+        // replacement characters, never nil/empty.
+        let body = Data([0xFF, 0xFE, 0xFA])
+        XCTAssertFalse(NetworkLogger.loggableBody(body).isEmpty)
+    }
+
     // MARK: - Paths
 
     func testGetRoot_Path() {
@@ -422,5 +462,75 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertEqual(folderVO?["displayName"] as? String, "Renamed")
         XCTAssertEqual(folderVO?["folderId"] as? Int, 5)
         XCTAssertEqual(folderVO?["archiveNbr"] as? String, "0001-xyz")
+    }
+
+    // MARK: - VH2: single-file date edit serializes displayDT in UTC
+    // Was formatted in the device timezone while readers parse UTC, shifting the saved time.
+
+    func testUpdateRecordRequest_DateSerializedInUTC() {
+        // Epoch 0 is 1970-01-01T00:00:00Z — a UTC-anchored formatter must emit exactly that,
+        // regardless of the machine's timezone (a device-local formatter would shift it).
+        let params: UpdateRecordParams = (nil, nil, Date(timeIntervalSince1970: 0), nil, 1, 2, "0001-0000")
+        let payload = FilesEndpointPayloads.updateRecordRequest(params: params) as? [String: Any]
+        let data = (payload?["RequestVO"] as? [String: Any])?["data"] as? [[String: Any]]
+        let recordVO = data?.first?["RecordVO"] as? [String: Any]
+        XCTAssertEqual(recordVO?["displayDT"] as? String, "1970-01-01T00:00:00")
+    }
+
+    // MARK: - VH1: ShareNotificationPayload preserves accessRole across the NSCoding round-trip
+    // encode(with:) previously dropped accessRole, so a notification-opened share lost its role.
+
+    func testShareNotificationPayload_AccessRoleSurvivesArchiving() throws {
+        let payload = ShareNotificationPayload(
+            name: "photo.jpg", recordId: 7, folderLinkId: 9, archiveNbr: "0001-0007",
+            type: FileType.image.rawValue, toArchiveId: 3, toArchiveNbr: "0003-0000",
+            toArchiveName: "Fam", accessRole: AccessRole.editor.apiValue
+        )
+        let data = try NSKeyedArchiver.archivedData(withRootObject: payload, requiringSecureCoding: false)
+        let decoded = try XCTUnwrap(
+            NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? ShareNotificationPayload
+        )
+        XCTAssertEqual(decoded.accessRole, AccessRole.editor.apiValue)
+        // And it maps to an editable permission set (not the read-only viewer fallback).
+        XCTAssertTrue(ArchiveVOData.permissions(forAccessRole: decoded.accessRole).contains(.edit))
+    }
+
+    // MARK: - Off-main decode: dispatcher still delivers completions on main
+
+    /// A session whose dataTask fires its completion on a BACKGROUND queue — mimicking
+    /// APINetworkSession after the off-main-decode change (it no longer hops to main).
+    private final class BackgroundFiringSession: NetworkSessionProtocol {
+        let cannedData: Data
+        init(cannedData: Data) { self.cannedData = cannedData }
+
+        func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask? {
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)
+            DispatchQueue.global(qos: .userInitiated).async {
+                completionHandler(self.cannedData, response, nil)
+            }
+            return nil
+        }
+        func uploadTask(with request: URLRequest, progressHandler: ProgressHandler?, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionUploadTask? { nil }
+        func downloadTask(with request: URLRequest, fileName: String, progressHandler: ProgressHandler?, completion: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? { nil }
+    }
+
+    /// Pins the "callbacks arrive on main" guarantee at the dispatcher layer: even though the
+    /// URLSession completion (and therefore the JSON parse) now runs on a background queue, the
+    /// dispatcher must re-deliver the OperationResult on the main thread. Fails if the `deliver`
+    /// main-hop in APIRequestDispatcher.handleJsonTaskResponse is removed.
+    func testDispatcher_DeliversResultOnMain_EvenWhenSessionFiresOffMain() {
+        let session = BackgroundFiringSession(cannedData: Data(#"{"isSuccessful":true}"#.utf8))
+        let dispatcher = APIRequestDispatcher(networkSession: session)
+        let request = RecordV2Endpoint.getRecordById(recordId: "1", shareToken: nil)
+
+        let exp = expectation(description: "completion delivered")
+        var deliveredOnMain = false
+        dispatcher.execute(request: request, createdTask: { _ in }) { _ in
+            deliveredOnMain = Thread.isMainThread
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 3)
+        XCTAssertTrue(deliveredOnMain,
+                      "APIRequestDispatcher must deliver on main even though the URLSession completion fires on a background queue (off-main decode).")
     }
 }

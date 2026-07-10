@@ -76,8 +76,18 @@ extension RecordV2Endpoint: RequestProtocol {
     var headers: RequestHeaders? {
         return ["Content-Type": "application/json", "Request-Version": "2"]
     }
-    
-    var ignoreErrors: Bool { false }
+
+    /// `true` suppresses the dispatcher's 401 → sessionExpired force-logout for that call.
+    /// Reads are exempt: a foreign/shared record legitimately 401s on a bearer-only fetch,
+    /// and the V1 read failsafe still surfaces a genuine expiry. Writes are NOT exempt —
+    /// patch falls back to (non-exempt) V1, and copy is owned-records-only with no
+    /// fallback, so a 401 there really is an expired session and must trigger re-auth.
+    var ignoreErrors: Bool {
+        switch self {
+        case .getRecordById: return true
+        case .patchRecord, .copyRecord: return false
+        }
+    }
 }
 
 extension Array where Element == FileModel {
@@ -90,18 +100,33 @@ extension Array where Element == FileModel {
     /// target values rather than double-applying.
     func patchEachRecordToV2(fieldsFor: @escaping (FileModel) -> [String: Any],
                              completion: @escaping (Bool) -> Void) {
+        Array<FileModel>.patchSequentially(files: self, fieldsFor: fieldsFor, patchOne: { file, fields, done in
+            let operation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: fields))
+            operation.execute(in: APIRequestDispatcher()) { result in
+                if case .json = result {
+                    done(true)
+                } else {
+                    done(false)
+                }
+            }
+        }, completion: completion)
+    }
+
+    /// Aggregation core of `patchEachRecordToV2` with the network call injectable, so unit
+    /// tests can pin the contract without a dispatcher: strictly serial and in order,
+    /// `true` ONLY when every record succeeded, short-circuit on the first failure
+    /// (remaining records are never attempted), completion delivered on the main actor.
+    /// A regression to any of those (e.g. `true` on partial success) would skip the
+    /// caller's V1 batch failsafe and silently drop edits for the remaining files.
+    static func patchSequentially(files: [FileModel],
+                                  fieldsFor: @escaping (FileModel) -> [String: Any],
+                                  patchOne: @escaping (FileModel, [String: Any], @escaping (Bool) -> Void) -> Void,
+                                  completion: @escaping (Bool) -> Void) {
         Task {
             var allSucceeded = true
-            for file in self {
+            for file in files {
                 let succeeded: Bool = await withCheckedContinuation { continuation in
-                    let operation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: fieldsFor(file)))
-                    operation.execute(in: APIRequestDispatcher()) { result in
-                        if case .json = result {
-                            continuation.resume(returning: true)
-                        } else {
-                            continuation.resume(returning: false)
-                        }
-                    }
+                    patchOne(file, fieldsFor(file)) { continuation.resume(returning: $0) }
                 }
                 if !succeeded {
                     allSucceeded = false

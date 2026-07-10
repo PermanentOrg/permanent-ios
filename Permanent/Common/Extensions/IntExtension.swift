@@ -35,6 +35,36 @@ extension Int {
 }
 
 extension Int64 {
+    /// File size in the app's canonical style — a period decimal separator regardless of
+    /// device locale, matching the Figma spec ("4 MB", "2.8 MB") and the Storage screen.
+    /// Mirrors `ByteCountFormatter`'s `.file` style (1000-based units; whole numbers show
+    /// no decimal, fractional show one) but pins number formatting to en_US_POSIX so a
+    /// comma-locale device can no longer render "2,8 MB". Returns "" for non-positive sizes.
+    var readableFileSize: String {
+        guard self > 0 else { return "" }
+
+        let units = ["bytes", "KB", "MB", "GB", "TB", "PB"]
+        var value = Double(self)
+        var unitIndex = 0
+        while value >= 1000 && unitIndex < units.count - 1 {
+            value /= 1000
+            unitIndex += 1
+        }
+
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = false
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = unitIndex == 0 ? 0 : 1
+        let number = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
+        // ByteCountFormatter emits the singular "1 byte"; preserve that grammar.
+        let unit = (unitIndex == 0 && value == 1) ? "byte" : units[unitIndex]
+        return "\(number) \(unit)"
+    }
+}
+
+extension Int64 {
     func bytesToReadableForm(useDecimal: Bool = true) -> String {
         var unit = "B"
         var exp = 0
