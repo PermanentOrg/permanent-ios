@@ -61,7 +61,11 @@ extension RecordV2Data {
     }
 
     var resolvedThumbnail256: String? {
-        nonEmpty(thumbnail256) ?? nonEmpty(thumbnailUrls?.url256)
+        // `thumbnailUrls.256` is the Archivematica access-copy thumbnail — a tiny 48x48 that is
+        // blank for HEIC — so it is NOT used as the 256 source (it would paint a white blur in
+        // the preview). Only a real flat `thumbnail256` counts; callers otherwise fall back to
+        // the Permanent `.thumb.wNNN` renditions. See FolderChildV2Data.resolvedThumb256.
+        nonEmpty(thumbnail256)
     }
 
     var preferredThumbnailURL: String? {

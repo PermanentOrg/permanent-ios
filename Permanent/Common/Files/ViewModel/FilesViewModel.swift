@@ -47,8 +47,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var v2NavigationTarget: FileModel?
 
     /// Monotonic id of the newest V2 children fetch. Superseded fetches compare against
-    /// it on the main thread and drop their result (see `getFolderChildrenV2`).
+    /// it on the main thread and report `.superseded` (see `getFolderChildrenV2`).
     private var childrenFetchGeneration = 0
+
+    /// Injection seam for the V2 children fetch used by navigation (same idiom as
+    /// SharesViewController.getSharesRequest). Tests inject outcomes to pin the
+    /// supersede/retry policy in `navigateV2` without network.
+    var childrenFetchV2Request: ((String, @escaping (ChildrenFetchOutcome) -> Void) -> Void)?
 
     var downloadQueue: [FileModel] = []
     var activeSortOption: SortOption = .nameAscending
@@ -529,24 +534,47 @@ class FilesViewModel: NSObject, ViewModelInterface {
         if usesStelaNavigation,
            let target = v2Target,
            target.folderId > 0 {
-            let folderId = String(target.folderId)
-            getFolderChildrenV2(folderId: folderId) { [weak self] result in
-                guard let self = self else { handler(.error(message: .errorMessage)); return }
-                switch result {
-                case .success:
-                    if !backNavigation { self.navigationStack.append(target) }
-                    #if DEBUG
-                    FilesViewModel.lastNavigationSource = "v2"
-                    #endif
-                    handler(.success)
-                default:
-                    // Failsafe — fall back to the legacy V1 navigation transparently.
-                    self.performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
-                }
-            }
+            navigateV2(target: target, params: params, backNavigation: backNavigation, retriesLeft: 1, then: handler)
             return
         }
         performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
+    }
+
+    /// One V2 navigation attempt, with the supersede policy applied:
+    /// - committed → done (append the target on forward navigation).
+    /// - failed    → V1 failsafe (this fetch was the NEWEST, so no ordering hazard).
+    /// - superseded, forward → retry once: a background refresh that raced the user's
+    ///   tap must not eat the navigation ("tap does nothing"); the retry claims the
+    ///   newest generation and wins. If superseded twice, give up quietly.
+    /// - superseded, back/refresh → complete `.success` WITHOUT touching data: the
+    ///   superseding fetch repaints this folder anyway; the caller just needs its
+    ///   completion (hide spinner / endRefreshing). Never V1-failsafe a superseded
+    ///   fetch — its out-of-order V1 response could overwrite the newer listing.
+    private func navigateV2(target: FileModel, params: NavigateMinParams, backNavigation: Bool, retriesLeft: Int, then handler: @escaping ServerResponse) {
+        let fetch: (String, @escaping (ChildrenFetchOutcome) -> Void) -> Void = childrenFetchV2Request ?? { [weak self] folderId, completion in
+            guard let self = self else { completion(.failed(message: .errorMessage)); return }
+            self.getFolderChildrenV2(folderId: folderId, completion: completion)
+        }
+        fetch(String(target.folderId)) { [weak self] outcome in
+            guard let self = self else { handler(.error(message: .errorMessage)); return }
+            switch outcome {
+            case .committed:
+                if !backNavigation { self.navigationStack.append(target) }
+                #if DEBUG
+                FilesViewModel.lastNavigationSource = "v2"
+                #endif
+                handler(.success)
+            case .superseded:
+                if !backNavigation, retriesLeft > 0 {
+                    self.navigateV2(target: target, params: params, backNavigation: backNavigation, retriesLeft: retriesLeft - 1, then: handler)
+                } else {
+                    handler(.success)
+                }
+            case .failed:
+                // Failsafe — fall back to the legacy V1 navigation transparently.
+                self.performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
+            }
+        }
     }
 
     private func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
@@ -577,11 +605,24 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     // MARK: - Stela V2 navigation (Private Files)
 
+    /// Outcome of a single V2 children fetch. `superseded` is distinct from `failed`
+    /// on purpose: a superseded fetch committed nothing (a newer fetch owns the final
+    /// state) and must be completed QUIETLY — running the V1 failsafe for it would
+    /// reintroduce the exact out-of-order overwrite the generation guard prevents.
+    enum ChildrenFetchOutcome {
+        case committed
+        case superseded
+        case failed(message: String?)
+    }
+
     /// Fetches a folder's children via the Stela `/folders/{id}/children` endpoint,
     /// maps them into `FileModel`s (archive-derived permissions), applies the active
     /// sort client-side (the endpoint has no sort param), and replaces `viewModels`.
-    /// Reports `.error` on any failure or corruption so the caller can fall back to V1.
-    func getFolderChildrenV2(folderId: String, then handler: @escaping ServerResponse) {
+    /// Reports `.failed` on any failure or corruption so the caller can fall back to
+    /// V1, and `.superseded` when a newer fetch took over. The completion is ALWAYS
+    /// called exactly once — a dropped completion leaves the caller's spinner/refresh
+    /// control waiting forever (the "tap does nothing" bug this replaces).
+    func getFolderChildrenV2(folderId: String, completion: @escaping (ChildrenFetchOutcome) -> Void) {
         // Request the whole folder in a single page (see FolderV2Endpoint.maxChildrenPageSize).
         let apiOperation = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize))
 
@@ -594,13 +635,25 @@ class FilesViewModel: NSObject, ViewModelInterface {
         // Staleness guard: decodes run on a CONCURRENT queue, so two in-flight fetches
         // (e.g. a silent refresh overlapping a folder tap, or a sort change mid-flight)
         // could land out of order and a stale result would overwrite the newer listing.
-        // Only the newest request may commit; superseded ones are dropped silently
-        // (their superseder delivers the final state). Touched on main only.
+        // Only the newest request may commit. Superseded fetches commit NOTHING but do
+        // report `.superseded` — dropping their completion entirely (the old behavior)
+        // left the superseded caller's spinner/refresh control waiting forever.
+        // Touched on main only.
         childrenFetchGeneration += 1
         let generation = childrenFetchGeneration
 
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
-            guard let self = self else { handler(.error(message: .errorMessage)); return }
+            guard let self = self else { completion(.failed(message: .errorMessage)); return }
+            // Resolves this fetch on main exactly once, downgrading any outcome to
+            // `.superseded` when a newer fetch has claimed the generation meanwhile.
+            let resolve: (ChildrenFetchOutcome, (() -> Void)?) -> Void = { outcome, commit in
+                guard generation == self.childrenFetchGeneration else {
+                    completion(.superseded)
+                    return
+                }
+                commit?()
+                completion(outcome)
+            }
             switch result {
             case .json(let response, _):
                 // Re-decode (JSONSerialization + Codable) over the unbounded page, plus the
@@ -617,10 +670,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                         // array means "verified empty". Anything else → V1 failsafe.
                         let items = model.items
                     else {
-                        DispatchQueue.main.async {
-                            guard generation == self.childrenFetchGeneration else { return } // superseded
-                            handler(.error(message: .errorMessage))
-                        }
+                        DispatchQueue.main.async { resolve(.failed(message: .errorMessage), nil) }
                         return
                     }
                     var mapped: [FileModel] = []
@@ -636,29 +686,22 @@ class FilesViewModel: NSObject, ViewModelInterface {
                         // send it, and a missing `archiveNumber` silently becomes archiveNbr "".
                         let hasBadId = (item.isFolder ? file.folderId <= 0 : file.recordId <= 0) || file.folderLinkId <= 0 || file.archiveNo.isEmpty
                         if hasBadId {
-                            DispatchQueue.main.async {
-                                guard generation == self.childrenFetchGeneration else { return } // superseded
-                                handler(.error(message: .errorMessage))
-                            }
+                            DispatchQueue.main.async { resolve(.failed(message: .errorMessage), nil) }
                             return
                         }
                         mapped.append(file)
                     }
                     let sorted = FilesViewModel.sorted(mapped, by: sortOption)
                     DispatchQueue.main.async {
-                        guard generation == self.childrenFetchGeneration else { return } // superseded
-                        self.viewModels = sorted
-                        handler(.success)
+                        resolve(.committed, { self.viewModels = sorted })
                     }
                 }
 
             case .error(let error, _):
-                guard generation == self.childrenFetchGeneration else { return } // superseded
-                handler(.error(message: error?.localizedDescription))
+                resolve(.failed(message: error?.localizedDescription), nil)
 
             default:
-                guard generation == self.childrenFetchGeneration else { return } // superseded
-                handler(.error(message: .errorMessage))
+                resolve(.failed(message: .errorMessage), nil)
             }
         }
     }

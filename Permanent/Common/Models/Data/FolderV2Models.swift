@@ -178,7 +178,12 @@ struct FolderChildV2Data: Model {
     // Resolve the flat (record) field first, then the nested (folder) field.
     var resolvedParentFolderId: String? { parentFolderId ?? parentFolder?.id }
     var resolvedParentFolderLinkId: String? { parentFolderLinkId ?? parentFolder?.folderLinkId }
-    var resolvedThumb256: String? { thumbnail256 ?? thumbnailUrls?.url256 }
+    // `thumbnailUrls.256` is the Archivematica access-copy thumbnail — a tiny 48x48 that comes
+    // back BLANK for HEIC (its HEIC→JPEG thumbnail generation produces nothing). It must NOT be
+    // used as the 256 source, or the preview blurs a blank image into a white loading square for
+    // every HEIC. Only a real flat `thumbnail256` counts; otherwise callers fall through to the
+    // Permanent `.thumb.wNNN` renditions (resolvedThumb200/500/…).
+    var resolvedThumb256: String? { thumbnail256 }
     var resolvedThumb200: String? { thumbUrl200 ?? thumbnailUrls?.url200 }
     var resolvedThumb500: String? { thumbUrl500 ?? thumbnailUrls?.url500 }
     var resolvedThumb1000: String? { thumbUrl1000 ?? thumbnailUrls?.url1000 }

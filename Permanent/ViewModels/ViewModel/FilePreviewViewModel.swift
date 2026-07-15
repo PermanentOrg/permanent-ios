@@ -100,6 +100,21 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
+    /// The 256px THUMBNAIL failed. Unlike a full-res failure this is not terminal: the
+    /// record fetch → full-res load runs in parallel and can still succeed, so while it
+    /// is pending we downgrade to the no-thumbnail loading state (S5) instead of painting
+    /// the failure card — otherwise a transient thumbnail blip flashes "Couldn't load
+    /// image." for the second it takes the full-res to land. The genuine failure/offline
+    /// outcome is still reported by the full-res or record-fetch callbacks.
+    func thumbnailLoadDidFail(error: Error?) {
+        guard imagePreviewState == .loadingThumbnail else { return }
+        if reachability.isConnected {
+            imagePreviewState = .loadingFullRes(hasThumbnail: false)
+        } else {
+            imagePreviewState = .offline(hasThumbnail: false)
+        }
+    }
+
     /// Returns true when the caller should restart the failed load (S8). While still offline it keeps the offline state and returns false (S7).
     func retryRequested() -> Bool {
         guard reachability.isConnected else {

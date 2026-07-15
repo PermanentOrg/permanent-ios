@@ -69,15 +69,26 @@ class ImagePreviewViewController: UIViewController {
     }
     
     func setZoomScale() {
-        if initialZoomScale == nil {
-            let widthScale = scrollView.frame.size.width / imageView.bounds.width
-            let heightScale = scrollView.frame.size.height / imageView.bounds.height
-            let minScale = min(widthScale, heightScale)
-            scrollView.minimumZoomScale = minScale
-            scrollView.zoomScale = minScale
-            
-            initialZoomScale = minScale
-        }
+        // Skip until both the image and the scroll view have a real size. Computing the scale
+        // from a zero/partial layout would divide by zero (or fit to a stale frame) and the bogus
+        // initialZoomScale would stick — viewDidLayoutSubviews only recomputes while it is nil.
+        guard initialZoomScale == nil,
+              imageView.bounds.width > 0, imageView.bounds.height > 0,
+              scrollView.frame.width > 0, scrollView.frame.height > 0 else { return }
+
+        let widthScale = scrollView.frame.size.width / imageView.bounds.width
+        let heightScale = scrollView.frame.size.height / imageView.bounds.height
+        let minScale = min(widthScale, heightScale)
+        scrollView.minimumZoomScale = minScale
+        // Fit-to-screen is the resting scale. For originals SMALLER than the screen minScale is
+        // > 1, so raise the maximum to match — otherwise the default maximumZoomScale of 1.0
+        // clamps the image to its native size, so it renders narrower than the full-width blur
+        // placeholder and appears to shrink when the blur fades out. Large images (minScale < 1)
+        // keep the maximum at 1.0, so fit-to-screen resting + pinch-zoom up to 100% is unchanged.
+        scrollView.maximumZoomScale = max(1.0, minScale)
+        scrollView.zoomScale = minScale
+
+        initialZoomScale = minScale
     }
     
     func resetZoomScale() {

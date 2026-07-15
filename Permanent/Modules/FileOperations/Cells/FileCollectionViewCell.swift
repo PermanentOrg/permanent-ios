@@ -233,7 +233,10 @@ class FileCollectionViewCell: UICollectionViewCell {
             case .synced:
                 fileImageView.contentMode = .scaleAspectFill
                 if let fileURL = URL(string: model.thumbnailURL) {
-                    fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
+                    // .retryFailed: a single transient CDN failure would otherwise put the
+                    // URL on SDWebImage's session-wide blacklist, leaving this item's
+                    // thumbnail permanently blank until app restart.
+                    fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder, options: [.retryFailed])
                 } else {
                     activityIndicator.startAnimating()
                 }
@@ -314,7 +317,7 @@ class FileCollectionViewCell: UICollectionViewCell {
                 
                 let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
                 imageView.constraintToSquare(20)
-                imageView.sd_setImage(with: thumbnailUrl)
+                imageView.sd_setImage(with: thumbnailUrl, placeholderImage: nil, options: [.retryFailed])
                 sharingInfoStackView.addArrangedSubview(imageView)
             }
             

@@ -146,7 +146,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 thumbnailImageView.isHidden = true
             } else {
                 if let url = URL(string: file.preferredThumbnailURL) {
-                    thumbnailImageView.sd_setImage(with: url) { [weak self] image, _, _, _ in
+                    thumbnailImageView.sd_setImage(with: url, placeholderImage: nil, options: [.retryFailed]) { [weak self] image, _, _, _ in
                         guard let self = self, self.file.type != .image else { return }
                         self.previewBlurAvailable = image != nil
                         self.imageStateOverlay.setSourceImage(image)
@@ -420,14 +420,18 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         view.insertSubview(previewVC.view, at: 0)
         previewVC.didMove(toParent: self)
 
-        previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: cacheOnly ? [.fromCacheOnly] : []) { [weak self] _, error, _, _ in
+        // .retryFailed: without it, one transient failure puts the URL on SDWebImage's
+        // session-wide failed-URL blacklist and every later attempt fails instantly.
+        previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: cacheOnly ? [.fromCacheOnly] : [.retryFailed]) { [weak self] _, error, _, _ in
             guard let self = self else { return }
             self.activityIndicator.stopAnimating()
             self.thumbnailImageView.isHidden = true
 
             if error != nil {
                 if !cacheOnly {
-                    self.viewModel?.imageLoadDidFail(error: error)
+                    // Thumbnail-specific failure: the full-res pipeline may still deliver,
+                    // so this keeps the loading state rather than painting the failed card.
+                    self.viewModel?.thumbnailLoadDidFail(error: error)
                 }
             } else {
                 previewVC.newImageLoaded()
@@ -444,34 +448,35 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     private func upgradeToFullResolution(urlString: String) {
         guard let url = URL(string: urlString),
               let previewVC = self.imagePreviewVC else { return }
-        
-        // Check if SDWebImage already has this URL cached (from a previous open)
-        let cachedFromMemory = SDImageCache.shared.imageFromMemoryCache(forKey: urlString) != nil
-        
+
         previewVC.imageView.sd_setImage(
             with: url,
             placeholderImage: previewVC.imageView.image,
             options: [.avoidAutoSetImage, .retryFailed],
             progress: nil
-        ) { [weak self, weak previewVC] image, error, cacheType, _ in
+        ) { [weak self, weak previewVC] image, error, _, _ in
             guard let previewVC = previewVC, let image = image, error == nil else {
                 // Full-res failed (S6) — keep the thumbnail beneath the blur so retry can reuse it.
                 self?.viewModel?.imageLoadDidFail(error: error)
                 return
             }
 
-            if cachedFromMemory || cacheType == .memory {
-                // Cached in memory — swap immediately, no animation needed
-                previewVC.imageView.image = image
-                previewVC.newImageLoaded()
-            } else {
-                // Downloaded or loaded from disk — crossfade for smooth transition
-                UIView.transition(with: previewVC.imageView, duration: 0.3, options: .transitionCrossDissolve) {
-                    previewVC.imageView.image = image
-                } completion: { _ in
-                    previewVC.newImageLoaded()
-                }
-            }
+            // Swap the full-res image AND recompute its fitted geometry atomically, THEN start
+            // the blur fade. This ordering matters: previously the full-res was cross-dissolved
+            // into the image view (setting `imageView.image`) while `newImageLoaded()` — which
+            // runs sizeToFit()/setZoomScale() — was deferred to the 0.3s transition completion,
+            // and `fullResDidLoad()` fired immediately at the crossfade start. So for 0.3s the
+            // sharp image rendered in the STALE thumbnail geometry (which, for the first page,
+            // was computed against a not-yet-final scrollView frame during preload) while the
+            // blur was already fading and revealing it — the image appeared smaller than full
+            // width and then "zoomed" up when the geometry finally corrected. Applying the
+            // geometry instantly here, beneath the still-opaque overlay, and only then calling
+            // fullResDidLoad() (which fades the blur), removes the intermediate small render:
+            // the blur only lifts once the image is already at its final fitted size. The
+            // overlay's own 0.5s fade provides the blur→sharp transition, so the image-view
+            // crossfade it used to do is redundant here (it happened behind the opaque blur).
+            previewVC.imageView.image = image
+            previewVC.newImageLoaded()
             self?.viewModel?.fullResDidLoad()
         }
     }

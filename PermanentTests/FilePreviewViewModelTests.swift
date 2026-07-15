@@ -334,6 +334,78 @@ extension FilePreviewViewModelTests {
         XCTAssertEqual(observedStates, [.loadingThumbnail, .loadingFullRes(hasThumbnail: true), .loaded])
     }
 
+    // MARK: - Thumbnail failure while full-res is pending (VSP-1777 follow-up)
+
+    /// A transient THUMBNAIL failure must not paint the failure card while the
+    /// record fetch → full-res pipeline can still deliver: it downgrades to the
+    /// no-thumbnail loading state (S5) instead.
+    func testThumbnailLoadDidFail_WhileLoadingThumbnail_KeepsLoadingState() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+
+        vm.thumbnailLoadDidFail(error: NSError(domain: "test", code: -1))
+
+        XCTAssertEqual(vm.imagePreviewState, .loadingFullRes(hasThumbnail: false))
+    }
+
+    /// The reported bug: thumbnail fails, full-res lands ~1s later. The user must see
+    /// loading → loaded, with the failed card NEVER flashing in between.
+    func testThumbnailLoadDidFail_ThenFullResLoads_NeverShowsFailedState() {
+        let (vm, _) = makeImageVM()
+        var observedStates: [ImagePreviewState] = []
+        vm.onImagePreviewStateChanged = { observedStates.append($0) }
+
+        vm.startImageLoad(hasThumbnail: true)
+        vm.thumbnailLoadDidFail(error: NSError(domain: "test", code: -1))
+        vm.fullResDidLoad()
+
+        XCTAssertEqual(observedStates, [.loadingThumbnail, .loadingFullRes(hasThumbnail: false), .loaded])
+    }
+
+    /// When the full-res load genuinely fails after the thumbnail already failed,
+    /// the terminal failed state still surfaces (with no thumbnail under the card).
+    func testThumbnailLoadDidFail_ThenFullResFails_EndsFailedWithoutThumbnail() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+
+        vm.thumbnailLoadDidFail(error: NSError(domain: "test", code: -1))
+        vm.imageLoadDidFail(error: NSError(domain: "test", code: -2))
+
+        XCTAssertEqual(vm.imagePreviewState, .failed(hasThumbnail: false))
+    }
+
+    func testThumbnailLoadDidFail_AfterLoaded_IsIgnored() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.fullResDidLoad()
+
+        vm.thumbnailLoadDidFail(error: NSError(domain: "test", code: -1))
+
+        XCTAssertEqual(vm.imagePreviewState, .loaded)
+    }
+
+    /// A record-fetch failure that already painted the failure card wins over a
+    /// late-arriving thumbnail failure — the card must keep its hasThumbnail flag.
+    func testThumbnailLoadDidFail_WhenAlreadyFailed_IsIgnored() {
+        let (vm, _) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        vm.imageLoadDidFail(error: nil) // record fetch failed first → .failed(hasThumbnail: true)
+
+        vm.thumbnailLoadDidFail(error: NSError(domain: "test", code: -1))
+
+        XCTAssertEqual(vm.imagePreviewState, .failed(hasThumbnail: true))
+    }
+
+    func testThumbnailLoadDidFail_Offline_EntersOfflineState() {
+        let (vm, reachability) = makeImageVM()
+        vm.startImageLoad(hasThumbnail: true)
+        reachability.isConnected = false
+
+        vm.thumbnailLoadDidFail(error: NSError(domain: "test", code: -1))
+
+        XCTAssertEqual(vm.imagePreviewState, .offline(hasThumbnail: false))
+    }
+
     /// Regression test for the former infinite retry loop: repeated record-fetch
     /// failures must stop after maxRecordFetchAttempts and report nil to the caller.
     func testOnRecordCallback_RepeatedErrors_StopsAfterCapAndCallsHandlerWithNil() {
@@ -381,5 +453,108 @@ extension FilePreviewViewModelTests {
 
         XCTAssertTrue(handlerCalled)
         XCTAssertNil(handlerRecord)
+    }
+}
+
+// MARK: - ImagePreviewViewController fitted-geometry invariant (VSP-1777: "small then zoom" glitch)
+//
+// The full-res "small then grows" glitch came from the image being made visible (blur fading)
+// BEFORE newImageLoaded() ran sizeToFit()/setZoomScale(). These tests pin the invariant the fix
+// relies on: newImageLoaded() always fits the CURRENT image to the CURRENT scrollView frame, so
+// applying it atomically at swap time (before the blur lifts) yields the correct size immediately.
+
+final class ImagePreviewViewControllerGeometryTests: XCTestCase {
+
+    /// A loaded controller with a known, fixed scrollView frame (no window / layout passes,
+    /// so `setZoomScale()` reads exactly the frame we set — matching how newImageLoaded()
+    /// computes geometry at full-res-arrival time).
+    private func makeVC(width: CGFloat = 400, height: CGFloat = 800) -> ImagePreviewViewController {
+        let vc = ImagePreviewViewController()
+        vc.view.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        vc.loadViewIfNeeded()
+        vc.scrollView.frame = vc.view.bounds
+        return vc
+    }
+
+    /// A solid image whose point `size` equals the given dimensions (what `sizeToFit()` reads).
+    /// Forced to scale = 1 so a large "full-res" size does not allocate a screen-scale (~@3x)
+    /// bitmap — only the point size matters to the geometry under test, never the pixels.
+    private func image(_ width: CGFloat, _ height: CGFloat) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.preferred()
+        format.scale = 1
+        format.opaque = true
+        return UIGraphicsImageRenderer(size: CGSize(width: width, height: height), format: format).image { ctx in
+            UIColor.red.setFill()
+            ctx.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        }
+    }
+
+    /// The on-screen width of the image = its (point) bounds width scaled by the scroll zoom.
+    private func displayedWidth(_ vc: ImagePreviewViewController) -> CGFloat {
+        vc.imageView.bounds.width * vc.scrollView.zoomScale
+    }
+
+    func testNewImageLoaded_LandscapeImage_FitsToScreenWidth() {
+        let vc = makeVC(width: 400, height: 800)
+        vc.imageView.image = image(4309, 2527) // the reported bear photo aspect
+        vc.newImageLoaded()
+
+        XCTAssertEqual(displayedWidth(vc), 400, accuracy: 0.5)
+        // Zoom must rest exactly at the fitted minimum — no residual zoom-in.
+        XCTAssertEqual(vc.scrollView.zoomScale, vc.scrollView.minimumZoomScale, accuracy: 0.0001)
+        // No-regression guard: for images larger than the screen (minScale < 1) the maximum stays
+        // at the native 1.0, so pinch-to-zoom up to 100% is unchanged by the sub-screen fix.
+        XCTAssertEqual(vc.scrollView.maximumZoomScale, 1.0, accuracy: 0.0001)
+    }
+
+    /// Regression test for the sub-screen shrink surfaced in review. An original SMALLER than the
+    /// screen needs a fit scale > 1 (here 256px on a 400pt screen ≈ 1.57). The scroll view's
+    /// default maximumZoomScale of 1.0 used to clamp it, so the image rendered at its native 256pt
+    /// — narrower than the full-width blur placeholder — and appeared to shrink when the blur
+    /// lifted. Raising maximumZoomScale to the fit scale makes it fill the width (400pt), matching
+    /// the blur, so there is no shrink. (This also removes the thumbnail/full-res size gap that
+    /// the crossfade used to flash, on top of the atomic-swap ordering fix.)
+    func testNewImageLoaded_SubScreenImage_FillsToScreenWidth_NotClampedToNative() {
+        let vc = makeVC(width: 400, height: 800)
+
+        vc.imageView.image = image(256, 150) // sub-screen original (also the 256px thumbnail case)
+        vc.newImageLoaded()
+
+        XCTAssertEqual(displayedWidth(vc), 400, accuracy: 0.5,
+                       "a sub-screen image fills the width instead of clamping to its 256pt native size")
+        XCTAssertEqual(vc.scrollView.maximumZoomScale, vc.scrollView.minimumZoomScale, accuracy: 0.0001,
+                       "maximumZoomScale is raised to the fit scale so zoomScale is not clamped below fit")
+        XCTAssertEqual(vc.scrollView.zoomScale, vc.scrollView.minimumZoomScale, accuracy: 0.0001)
+    }
+
+    /// newImageLoaded() must fit the CURRENT image to the CURRENT scrollView frame. Geometry can
+    /// first be computed against a smaller frame (the preview view not yet laid out to device
+    /// size during pager preload); when the full-res lands after the view reaches its real size,
+    /// newImageLoaded() recomputes to the correct width — which is why the fix applies it at
+    /// full-res-arrival, before the blur lifts.
+    func testNewImageLoaded_RecomputesForCurrentFrame_AfterFrameGrows() {
+        let vc = makeVC(width: 200, height: 400) // stale, smaller frame
+
+        vc.imageView.image = image(4309, 2527)
+        vc.newImageLoaded()
+        XCTAssertEqual(displayedWidth(vc), 200, accuracy: 0.5) // fitted to the stale frame
+
+        // Full-res arrives after the view reached its real device width.
+        vc.scrollView.frame = CGRect(x: 0, y: 0, width: 400, height: 800)
+        vc.newImageLoaded()
+        XCTAssertEqual(displayedWidth(vc), 400, accuracy: 0.5) // corrected to the real frame
+    }
+
+    /// A portrait image (taller than the screen aspect) is height-constrained and must fit to
+    /// height, never overflow width.
+    func testNewImageLoaded_PortraitImage_FitsToHeight() {
+        let vc = makeVC(width: 400, height: 800)
+        vc.imageView.image = image(1000, 4000) // very tall
+
+        vc.newImageLoaded()
+
+        let displayedHeight = vc.imageView.bounds.height * vc.scrollView.zoomScale
+        XCTAssertEqual(displayedHeight, 800, accuracy: 0.5)
+        XCTAssertLessThanOrEqual(displayedWidth(vc), 400 + 0.5)
     }
 }

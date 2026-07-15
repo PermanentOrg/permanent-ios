@@ -1014,4 +1014,95 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(FileHelper.recordScopedName("photo.jpg", recordId: 0), "photo.jpg")
         XCTAssertEqual(FileHelper.recordScopedName("photo.jpg", recordId: -1), "photo.jpg")
     }
+
+    // MARK: - V2 navigation supersede policy (childrenFetchV2Request seam)
+    // A superseded children fetch must ALWAYS complete its caller (a dropped completion
+    // left the tap's spinner hanging — "content doesn't load"), a superseded forward
+    // navigation retries exactly once so a racing background refresh can't eat the
+    // user's tap, and a superseded fetch must NEVER run the V1 failsafe (its
+    // out-of-order response could overwrite the newer listing).
+
+    /// Folder target built via the V2 decode path (folderId > 0 — the convenience
+    /// init(name:recordId:...) can't set folderId).
+    private func makeV2FolderTarget(folderId: Int = 10) -> FileModel {
+        let json = """
+        { "items": [ { "folderId": "\(folderId)", "displayName": "Folder \(folderId)", "type": "private",
+          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test" } ] }
+        """
+        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
+    }
+
+    /// MyFilesViewModel with the flag pinned ON and the fetch seam scripted to return
+    /// `outcomes` in order. Returns the VM and a counter box for fetch invocations.
+    private func makeNavVM(outcomes: [FilesViewModel.ChildrenFetchOutcome]) -> (MyFilesViewModel, () -> Int) {
+        let vm = MyFilesViewModel()
+        var remaining = outcomes
+        var fetchCount = 0
+        vm.childrenFetchV2Request = { _, completion in
+            fetchCount += 1
+            completion(remaining.isEmpty ? .failed(message: "unscripted fetch") : remaining.removeFirst())
+        }
+        return (vm, { fetchCount })
+    }
+
+    private var navParams: NavigateMinParams { ("0001-test", 11, nil) }
+
+    func testNavigateV2_Committed_AppendsTargetAndSucceeds() {
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = false }
+        let (vm, fetchCount) = makeNavVM(outcomes: [.committed])
+        let target = makeV2FolderTarget()
+        vm.v2NavigationTarget = target
+
+        var status: RequestStatus?
+        vm.navigateMin(params: navParams, backNavigation: false) { status = $0 }
+
+        XCTAssertEqual(status, .success)
+        XCTAssertEqual(vm.navigationStack.last, target)
+        XCTAssertEqual(fetchCount(), 1)
+    }
+
+    func testNavigateV2_ForwardSupersededOnce_RetriesAndWins() {
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = false }
+        let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .committed])
+        let target = makeV2FolderTarget()
+        vm.v2NavigationTarget = target
+
+        var status: RequestStatus?
+        vm.navigateMin(params: navParams, backNavigation: false) { status = $0 }
+
+        XCTAssertEqual(status, .success)
+        XCTAssertEqual(fetchCount(), 2, "a superseded tap retries exactly once")
+        XCTAssertEqual(vm.navigationStack.map { $0.folderId }, [target.folderId], "target appended once, by the winning retry")
+    }
+
+    func testNavigateV2_ForwardSupersededTwice_CompletesQuietlyWithoutNavigating() {
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = false }
+        let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .superseded])
+        vm.v2NavigationTarget = makeV2FolderTarget()
+
+        var completions = 0
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in completions += 1 }
+
+        XCTAssertEqual(completions, 1, "the caller's completion must fire — a drop leaves its spinner hanging")
+        XCTAssertEqual(fetchCount(), 2, "retry is bounded to one")
+        XCTAssertTrue(vm.navigationStack.isEmpty, "nothing committed → no navigation")
+    }
+
+    func testNavigateV2_BackOrRefreshSuperseded_CompletesQuietlyWithoutRetry() {
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = false }
+        let (vm, fetchCount) = makeNavVM(outcomes: [.superseded])
+        let current = makeV2FolderTarget()
+        vm.navigationStack.append(current)
+
+        var completions = 0
+        vm.navigateMin(params: navParams, backNavigation: true) { _ in completions += 1 }
+
+        XCTAssertEqual(completions, 1, "endRefreshing/hideSpinner depend on this completion")
+        XCTAssertEqual(fetchCount(), 1, "back/refresh never retries — the superseding fetch repaints this folder")
+        XCTAssertEqual(vm.navigationStack.map { $0.folderId }, [current.folderId], "stack untouched")
+    }
 }
