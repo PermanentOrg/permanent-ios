@@ -305,6 +305,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func refreshCollectionView() {
         handleTableBackgroundView()
         collectionView.reloadData()
+        #if DEBUG
+        // Surface which navigation path served the current listing so UI parity tests can
+        // confirm a "V2" run actually used Stela (not the silent V1 failsafe). DEBUG-only.
+        collectionView.accessibilityIdentifier = "files-nav-source-\(FilesViewModel.lastNavigationSource)"
+        #endif
     }
     
     func handleTableBackgroundView() {
@@ -1017,14 +1022,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 
                 switch status {
                 case .success:
-                    self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
-                    
+                    // Refetch instead of inserting the SOURCE models: a copy creates a
+                    // NEW record server-side, so the inserted row would carry the
+                    // ORIGINAL's ids — deleting/renaming "the copy" would hit the
+                    // original record (data loss). A move can change link ids too.
                     self.floatingActionIsland?.showDoneCheckmark() {
                         self.dismissFloatingActionIsland({ [weak self] in
                             self?.fabView?.isHidden = false
                             self?.viewModel?.isSelectingDestination = false
-                            
-                            self?.refreshCollectionView()
+
+                            self?.refreshCurrentFolder(shouldDisplaySpinner: false)
                         })
                     }
 
@@ -1133,6 +1140,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 
                 if !isFolderSelected || viewModel.fileAction.action.isEmpty {
                     viewModel.isSelecting = false
+                    // Seed the V2 navigation target (no-op when Stela nav is off): V2 needs
+                    // the String folderId, which lives on the tapped FileModel.
+                    viewModel.v2NavigationTarget = file
                     let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
                     navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                         self.backButton.isHidden = false
@@ -1942,7 +1952,7 @@ extension MainViewController: MediaRecorderDelegate {
 // MARK: - FileActionSheetDelegate
 extension MainViewController {
     func shareWithOtherApps(file: FileModel) {
-        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
+        if let localURL = fileHelper.url(forFileNamed: FileHelper.recordScopedName(file.uploadFileName, recordId: file.recordId)) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
@@ -2075,10 +2085,7 @@ extension MainViewController {
     
     // MARK: - Helper Methods
     private func formatFileSize(_ size: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useKB, .useMB, .useGB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: size)
+        size.readableFileSize
     }
 }
 

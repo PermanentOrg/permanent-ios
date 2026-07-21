@@ -1604,13 +1604,17 @@ final class ThumbnailSelectionTests: XCTestCase {
         XCTAssertEqual(fileModel.thumbnailURL500, "https://example.com/thumb256.jpg")
     }
 
-    func testRecordV2PreferredThumbnailURL_UsesThumbnailUrls256WhenTopLevelThumbnail256Missing() throws {
+    func testRecordV2PreferredThumbnailURL_IgnoresAccessCopyThumbnailUrls256() throws {
+        // `thumbnailUrls.256` is the Archivematica access-copy thumbnail (a tiny 48x48 that is
+        // blank for HEIC), so it must NOT be used as the 256 source — the preview would blur a
+        // blank image into a white loading square. With no real flat `thumbnail256`, selection
+        // falls through to the Permanent `.thumb.wNNN` renditions (thumbUrl500 here).
         let record = try decode(
             RecordV2Data.self,
             from: """
             {
               "thumbnailUrls": {
-                "256": "https://example.com/thumb256.jpg",
+                "256": "https://example.com/access-copy-256.jpg",
                 "500": "https://example.com/thumb500-from-map.jpg"
               },
               "thumbUrl200": "https://example.com/thumb200.jpg",
@@ -1621,8 +1625,8 @@ final class ThumbnailSelectionTests: XCTestCase {
             """
         )
 
-        XCTAssertEqual(record.resolvedThumbnail256, "https://example.com/thumb256.jpg")
-        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb256.jpg")
+        XCTAssertNil(record.resolvedThumbnail256, "the access-copy thumbnailUrls.256 must not be used")
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb500.jpg")
     }
 
     func testRecordV2PreferredThumbnailURL_PrefersTopLevelThumbnail256OverThumbnailUrls256() throws {

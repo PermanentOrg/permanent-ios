@@ -65,7 +65,28 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
     }
 
     private func handleArchiveChange(success: Bool, completionBlock: @escaping ServerResponse) {
-        if success {
+        guard success else {
+            self.handleError(completionBlock)
+            return
+        }
+        // Re-authenticating is only possible when onboarding was entered with typed
+        // credentials (fresh signup). Entering with a RESTORED session (biometric
+        // unlock, no-archive account) leaves these empty — and login() destroys the
+        // current session via logout() before attempting, so an empty-credential
+        // login would strip a valid session and strand the user. In that case
+        // refresh the existing session instead.
+        if containerViewModel.username.isEmpty || containerViewModel.password.isEmpty {
+            AuthenticationManager.shared.syncSession { status in
+                if status == .success {
+                    AuthenticationManager.shared.saveSession()
+                    self.addTags { error in
+                        self.handleTagsAdded(error: error, completionBlock: completionBlock)
+                    }
+                } else {
+                    self.handleError(completionBlock)
+                }
+            }
+        } else {
             AuthenticationManager.shared.login(withUsername: self.containerViewModel.username, password: self.containerViewModel.password) { status in
                 if status == .success {
                     self.addTags { error in
@@ -75,8 +96,6 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
                     self.handleError(completionBlock)
                 }
             }
-        } else {
-            self.handleError(completionBlock)
         }
     }
     

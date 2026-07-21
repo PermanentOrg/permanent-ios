@@ -151,13 +151,16 @@ class AuthenticationManager {
                     handler(.error(message: .errorMessage))
                     return
                 }
-                mfaSession = nil
-
                 session = PermSession(token: token)
                 session?.account = account
 
                 syncSession { [self] status in
                     if status == .success {
+                        // Clear the MFA session only after the whole flow succeeds. Clearing it
+                        // up front (before syncSession) bricked the 2FA screen on a transient
+                        // syncSession failure: the correct code was consumed, mfaSession was gone,
+                        // and any retry/"Resend code" then failed with a misleading error.
+                        mfaSession = nil
                         saveSession()
 
                         handler(.success)

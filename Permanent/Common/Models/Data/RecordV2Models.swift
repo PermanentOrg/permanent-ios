@@ -61,11 +61,153 @@ extension RecordV2Data {
     }
 
     var resolvedThumbnail256: String? {
-        nonEmpty(thumbnail256) ?? nonEmpty(thumbnailUrls?.url256)
+        // `thumbnailUrls.256` is the Archivematica access-copy thumbnail — a tiny 48x48 that is
+        // blank for HEIC — so it is NOT used as the 256 source (it would paint a white blur in
+        // the preview). Only a real flat `thumbnail256` counts; callers otherwise fall back to
+        // the Permanent `.thumb.wNNN` renditions. See FolderChildV2Data.resolvedThumb256.
+        nonEmpty(thumbnail256)
     }
 
     var preferredThumbnailURL: String? {
         resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000)
+    }
+}
+
+// MARK: - V2 record → legacy RecordVO adapter (item detail / preview / download)
+
+extension RecordV2Data {
+    /// Builds a legacy `RecordVO` JSON payload from this Stela V2 record so the existing
+    /// RecordVO-based detail / preview / download code (FilePreviewViewModel,
+    /// DownloadManagerGCD, the detail cells) consumes it unchanged. Opaque ids are
+    /// numeric-as-string → Int; `archiveNumber` stays a String. The one V2 gap —
+    /// `contentType` — is derived from each file's granular `type`.
+    func toRecordVOPayload() -> [String: Any] {
+        func intOf(_ value: String?) -> Int? {
+            guard let value = value, let converted = Int(value) else { return nil }
+            return converted
+        }
+
+        var record: [String: Any] = [:]
+        if let value = intOf(recordId) { record["recordId"] = value }
+        if let value = intOf(archiveId) { record["archiveId"] = value }
+        if let value = archiveNumber { record["archiveNbr"] = value }
+        if let value = displayName { record["displayName"] = value }
+        if let value = description { record["description"] = value }
+        if let value = uploadFileName { record["uploadFileName"] = value }
+        if let value = size { record["size"] = value }
+        if let value = type { record["type"] = value }
+        if let value = displayDate { record["displayDT"] = value }
+        if let value = createdAt { record["createdDT"] = value }
+        if let value = updatedAt { record["updatedDT"] = value }
+        if let value = fileCreatedAt { record["derivedCreatedDT"] = value } // note: V2 has no derivedDT ("Created" row blank)
+        if let value = resolvedThumbnail256 { record["thumbnail256"] = value }
+        if let value = thumbUrl200 ?? thumbnailUrls?.url200 { record["thumbURL200"] = value }
+        if let value = thumbUrl500 ?? thumbnailUrls?.url500 { record["thumbURL500"] = value }
+        if let value = thumbUrl1000 ?? thumbnailUrls?.url1000 { record["thumbURL1000"] = value }
+        if let value = thumbUrl2000 ?? thumbnailUrls?.url2000 { record["thumbURL2000"] = value }
+        if let value = intOf(folderLinkId) { record["folder_linkId"] = value }
+        if let value = intOf(parentFolderLinkId) { record["parentFolder_linkId"] = value }
+        record["FileVOs"] = (files ?? []).map { $0.toFileVOPayload() }
+        if let location = location { record["LocnVO"] = location.toLocnVOPayload() }
+        if let tags = tags {
+            // name + tagId + type — tagId is load-bearing downstream: the batch-metadata
+            // screen derives its whole tag state from these VOs and the V1 unlink body
+            // sends `tagVO.tagId` (a nil here became `tagId: 0` → unassign silently
+            // no-oped server-side while the UI removed the chip).
+            record["TagVOs"] = tags.compactMap { tag -> [String: Any]? in
+                guard let name = tag.name else { return nil }
+                var vo: [String: Any] = ["name": name]
+                if let id = intOf(tag.tagId) { vo["tagId"] = id }
+                if let type = tag.type { vo["type"] = type }
+                return vo
+            }
+        }
+
+        return ["RecordVO": record]
+    }
+}
+
+extension FileV2Data {
+    func toFileVOPayload() -> [String: Any] {
+        func intOf(_ value: String?) -> Int? {
+            guard let value = value, let converted = Int(value) else { return nil }
+            return converted
+        }
+        var file: [String: Any] = [:]
+        if let value = intOf(fileId) { file["fileId"] = value }
+        if let value = size { file["size"] = value }
+        if let value = format { file["format"] = value }
+        if let value = type { file["type"] = value }
+        if let value = fileUrl { file["fileURL"] = value }
+        if let value = downloadUrl { file["downloadURL"] = value }
+        if let value = FileV2Data.mimeType(forFileType: type) { file["contentType"] = value }
+        return file
+    }
+
+    /// Stela carries no `contentType`; the preview guards and download-extension logic
+    /// need a MIME string. Derive it from the granular file type, e.g.
+    /// `type.file.image.jpeg` → `image/jpeg`, `type.file.video.mp4` → `video/mp4`,
+    /// `type.file.pdf.pdf` → `application/pdf`.
+    static func mimeType(forFileType type: String?) -> String? {
+        guard let type = type, type.hasPrefix("type.file.") else { return nil }
+        let parts = type.split(separator: ".").map(String.init) // ["type","file","<class>","<subtype>"]
+        let cls = parts.count > 2 ? parts[2] : ""
+        var sub = parts.count > 3 ? parts[3] : ""
+        switch cls {
+        case "image":
+            if sub == "jpg" { sub = "jpeg" }
+            return sub.isEmpty ? genericMimeType : "image/\(sub)"
+        case "video":
+            return sub.isEmpty ? genericMimeType : "video/\(sub)"
+        case "audio":
+            return sub.isEmpty ? genericMimeType : "audio/\(sub)"
+        case "pdf":
+            return "application/pdf"
+        default:
+            // Docs, text, archives, spreadsheets… V1 always ships a contentType and the
+            // preview's loadRecord() requires a non-nil one in both of its branches
+            // (loadMisc only needs presence, not accuracy) — so a generic MIME keeps
+            // misc records previewable on the V2 path instead of rendering blank.
+            return genericMimeType
+        }
+    }
+
+    /// Fallback MIME for `type.file.*` classes with no specific mapping.
+    private static let genericMimeType = "application/octet-stream"
+}
+
+extension LocnVO {
+    /// Maps the picked V1 location into the Stela V2 `location` (LocationInput) body for
+    /// PATCH /records/{id}. The server updates the record's existing location row in place
+    /// (idempotent), so re-applying is safe. Only the fields LocationInput accepts are sent.
+    func toLocationInputPayload() -> [String: Any] {
+        var location: [String: Any] = [:]
+        if let value = displayName, !value.isEmpty { location["name"] = value }
+        if let value = locality, !value.isEmpty { location["city"] = value }
+        if let value = adminOneName, !value.isEmpty { location["state"] = value }
+        if let value = country, !value.isEmpty { location["country"] = value }
+        if let value = latitude { location["latitude"] = value }
+        if let value = longitude { location["longitude"] = value }
+        let street = [streetNumber, streetName].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        if !street.isEmpty { location["sublocation"] = street }
+        return location
+    }
+}
+
+extension LocationV2 {
+    /// Maps to the subset of LocnVO JSON keys the detail map cell reads
+    /// (streetNumber/streetName/locality/country + latitude/longitude).
+    func toLocnVOPayload() -> [String: Any] {
+        var locn: [String: Any] = [:]
+        if let value = streetNumber { locn["streetNumber"] = value }
+        if let value = streetName { locn["streetName"] = value }
+        if let value = locality { locn["locality"] = value }
+        if let value = country { locn["country"] = value }
+        if let value = countryCode { locn["countryCode"] = value }
+        if let value = displayName { locn["displayName"] = value }
+        if let value = latitude { locn["latitude"] = value }
+        if let value = longitude { locn["longitude"] = value }
+        return locn
     }
 }
 
@@ -87,6 +229,28 @@ struct TagV2: Model {
     let tagId: String?
     let name: String?
     let type: String?
+
+    enum CodingKeys: String, CodingKey {
+        case tagId = "id"  // Stela sends the tag id under "id" (as a JSON number)
+        case name, type
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        // The live API sends "id" as a JSON NUMBER (e.g. 1235); tolerate a string
+        // too. E2E-verified 2026-07-03: decoding this as `tagId: String?` (old key,
+        // string-only) silently yielded nil, which made tag unassign after a V2
+        // record read send `tagId: 0` to /tag/DeleteTagLink → error.api.invalid_request.
+        if let intId = try? container.decode(Int.self, forKey: .tagId) {
+            tagId = String(intId)
+        } else if let stringId = try? container.decode(String.self, forKey: .tagId) {
+            tagId = stringId
+        } else {
+            tagId = nil
+        }
+        name = try? container.decode(String.self, forKey: .name)
+        type = try? container.decode(String.self, forKey: .type)
+    }
 }
 
 struct RecordShareV2: Model {

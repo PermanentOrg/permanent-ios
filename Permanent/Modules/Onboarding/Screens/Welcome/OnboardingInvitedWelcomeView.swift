@@ -18,13 +18,23 @@ struct OnboardingInvitedWelcomeView: View {
             iPhoneBody
                 .onAppear {
                     viewModel.trackEvents()
+                    viewModel.activateExistingAcceptedArchiveIfNeeded()
                 }
+                .alert(isPresented: $viewModel.showAlert) { errorAlert }
         } else {
             iPadBody
                 .onAppear {
                     viewModel.trackEvents()
+                    viewModel.activateExistingAcceptedArchiveIfNeeded()
                 }
+                .alert(isPresented: $viewModel.showAlert) { errorAlert }
         }
+    }
+
+    private var errorAlert: Alert {
+        Alert(title: Text("Error"),
+              message: Text("Couldn’t accept the invitation. Please try again."),
+              dismissButton: .default(Text(String.ok)) { viewModel.showAlert = false })
     }
     
     var iPhoneBody: some View {

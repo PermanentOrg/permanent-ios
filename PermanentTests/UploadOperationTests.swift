@@ -10,6 +10,21 @@ import XCTest
 
 final class UploadOperationTests: XCTestCase {
 
+    // MARK: - Stale-call restart heuristic (H3: don't cancel healthy foreground uploads)
+    // The restart on foreground must target only calls iOS may have suspended during a long
+    // background stint — never a healthy upload that is merely slow while in the foreground.
+
+    func testShouldRestartStaleCall_OnlyAfterLongBackgroundWithActiveTask() {
+        // No active task → nothing to restart.
+        XCTAssertFalse(UploadOperation.shouldRestartStaleCall(backgroundedFor: 999, hasActiveTask: false))
+        // Never backgrounded (nil) → a long-running FOREGROUND upload must be left alone.
+        XCTAssertFalse(UploadOperation.shouldRestartStaleCall(backgroundedFor: nil, hasActiveTask: true))
+        // Brief background, under the suspend budget → keep the healthy task.
+        XCTAssertFalse(UploadOperation.shouldRestartStaleCall(backgroundedFor: 5, hasActiveTask: true))
+        // Backgrounded past the threshold with an active task → restart.
+        XCTAssertTrue(UploadOperation.shouldRestartStaleCall(backgroundedFor: UploadOperation.staleBackgroundThreshold + 1, hasActiveTask: true))
+    }
+
     // MARK: - UploadError
 
     func testUploadError_ConformsToError() {

@@ -182,18 +182,18 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         readMoreIsEnabled[.onlinePresenceEmail] = false
     }
     
-    func getAllByArchiveNbr(_ archive: ArchiveVOData) {
+    func getAllByArchiveNbr(_ archive: ArchiveVOData, isRetry: Bool = false) {
         showSpinner()
-        
+
         // Clear existing data to prevent race conditions
         profileViewData.removeAll()
-        
+
         viewModel?.getAllByArchiveNbr(archive, { [self] error in
             hideSpinner()
-            
+
             if error == nil {
                 refreshProfileViewData()
-                
+
                 // Update title after data is refreshed
                 DispatchQueue.main.async { [weak self] in
                     if let archiveName = self?.viewModel?.basicProfileItem?.archiveName {
@@ -201,10 +201,16 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                         self?.title = newTitle
                     }
                 }
-                
+
                 DispatchQueue.main.async { [weak self] in
                     self?.collectionView.reloadData()
                 }
+            } else if !isRetry {
+                // Opening a foreign public archive fires this concurrently with the file-tab
+                // and banner fetches on a cold connection; a transient first-attempt failure
+                // clears on retry. Retry exactly once (scoped to THIS load, so later loads get
+                // their own retry) before surfacing the (non-actionable) alert.
+                getAllByArchiveNbr(archive, isRetry: true)
             } else {
                 showAlert(title: .error, message: .errorMessage)
             }

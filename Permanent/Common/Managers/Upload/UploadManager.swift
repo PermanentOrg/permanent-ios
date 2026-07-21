@@ -54,7 +54,13 @@ class UploadManager {
     init() {
         uploadQueue.maxConcurrentOperationCount = defaultConcurrentUploads
 
-        timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(refreshQueue), userInfo: nil, repeats: true)
+        // Add to the MAIN runloop in .common mode explicitly. `scheduledTimer` uses
+        // RunLoop.current — if UploadManager.shared is first accessed on a background thread,
+        // the 30s fallback timer would be scheduled on a runloop that never runs and never fire.
+        // .common also keeps it firing during scroll tracking.
+        let refreshTimer = Timer(timeInterval: 30, target: self, selector: #selector(refreshQueue), userInfo: nil, repeats: true)
+        RunLoop.main.add(refreshTimer, forMode: .common)
+        timer = refreshTimer
 
         // Listen for upload completion notifications
         NotificationCenter.default.addObserver(self,
@@ -327,14 +333,38 @@ class UploadManager {
 
         do {
             let selectedArchive = PermSession.currentSession?.selectedArchive
+            // Coordinated (cross-process) read, deliberately on the calling thread:
+            // it must complete before the enqueue below and stays ordered ahead of
+            // the main-queue block at the end of refreshQueue that touches the app's
+            // own persisted queue. The read is a small metadata decode and, in the
+            // common no-pending-shares case, hits an absent file with no contention.
             let extensionUploads = try ExtensionUploadManager.shared.savedFiles()
             let selectedArchiveUploads = extensionUploads.filter({ $0.archiveId == selectedArchive?.archiveID })
             
             if selectedArchiveUploads.isEmpty == false {
                 logger.info("🔼 Found \(selectedArchiveUploads.count, privacy: .public) files from extension to upload")
 
-                upload(files: selectedArchiveUploads)
-                try ExtensionUploadManager.shared.clearSavedFiles(selectedArchiveUploads)
+                // Clear the shared App-Group store only AFTER upload(files:) has durably
+                // persisted the queue (it persists asynchronously, deep in a dispatch).
+                // Clearing synchronously here lost the files if the app was killed in the
+                // gap — removed from the extension store but never enqueued. Clear on
+                // success only: on failure the files stay put and re-upload next launch.
+                upload(files: selectedArchiveUploads) { [weak self] success in
+                    guard success else { return }
+                    // Run the coordinated (cross-process) clear off the main thread:
+                    // this completion is delivered on main and the write barrier can
+                    // briefly block on the extension's own coordination. The clear has
+                    // no ordering dependency — it just drops the now-enqueued files
+                    // from the shared store; if the app dies first they stay put and
+                    // are re-enqueued (and deduped) next launch.
+                    DispatchQueue.global(qos: .utility).async {
+                        do {
+                            try ExtensionUploadManager.shared.clearSavedFiles(selectedArchiveUploads)
+                        } catch {
+                            self?.logger.error("🔼 Failed to clear extension files after enqueue: \(error.localizedDescription, privacy: .public)")
+                        }
+                    }
+                }
             } else if !extensionUploads.isEmpty {
                 logger.info("🔼 Found \(extensionUploads.count, privacy: .public) extension files but none match current archive ID: \(selectedArchive?.archiveID ?? -1, privacy: .public)")
             }
@@ -419,6 +449,11 @@ class UploadManager {
             // on `file.id`. Also skip files still being drained from a legacy
             // background URLSession session (one-time migration after the bg
             // pipeline was removed).
+            // INVARIANT: exactly one live UploadOperation per file.id. This dedup is what
+            // makes the UNLOCKED Guard A/B check-then-act in UploadOperation safe
+            // (isFileAlreadyCompleted / wasPhase3Attempted → markPhase3InFlight): with a single
+            // live op per id, those per-id checks have no concurrent writer for the same id.
+            // Do not remove this dedup, and do not introduce a second concurrent op for one id.
             let uploadNames = uploadQueue.operations.filter { !$0.isFinished }.compactMap(\.name)
             let drainingBackgroundFileIds = Set(BackgroundUploadMetadata.loadAll().map(\.fileInfoId))
             for file in savedFiles ?? [] where uploadNames.contains(file.id) == false && !drainingBackgroundFileIds.contains(file.id) {
@@ -427,7 +462,13 @@ class UploadManager {
                         var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                         savedFiles?.removeAll(where: { $0.id == file.id })
 
-                        if error == nil {
+                        if (error as? UploadError) == .cancelled {
+                            // User cancel: cancelUpload / cancelAll already removed the file and
+                            // updated the Live Activity (fileCancelled / cancelActivity). Skip the
+                            // completed-accounting so the cancel isn't ALSO counted as a success
+                            // (double-count). Fall through to the didUploadFile notification so the
+                            // UI still refreshes.
+                        } else if error == nil {
                             FileHelper().deleteFile(at: file.url)
 
                             try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
@@ -597,10 +638,18 @@ class UploadManager {
     }
     
     // MARK: - Duplicate Upload Prevention
-    
+
+    /// Serializes the read-modify-write of the completed / in-flight marker sets. These are
+    /// mutated from concurrent upload-operation threads (markPhase3InFlight runs on the
+    /// OperationQueue) and from main-dispatched API completions; without this lock two threads
+    /// can interleave read→append→write and lose an update.
+    private static let markerLock = NSLock()
+
     /// Marks a file as completed immediately when registerRecord succeeds.
     /// Uses UserDefaults.synchronize() so the write survives a force-quit.
     static func markFileAsCompleted(fileId: String) {
+        markerLock.lock()
+        defer { markerLock.unlock() }
         let defaults = UserDefaults.standard
         var completedIds = defaults.stringArray(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey) ?? []
         guard !completedIds.contains(fileId) else { return }
@@ -620,6 +669,8 @@ class UploadManager {
     
     /// Removes a file ID from the completed set (called during cleanup).
     private static func removeCompletedFileId(_ fileId: String) {
+        markerLock.lock()
+        defer { markerLock.unlock() }
         let defaults = UserDefaults.standard
         var completedIds = defaults.stringArray(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey) ?? []
         completedIds.removeAll(where: { $0 == fileId })
@@ -629,7 +680,13 @@ class UploadManager {
     
     /// Clears the entire completed set (called when the persisted queue is empty).
     private static func clearCompletedFileIds() {
-        UserDefaults.standard.removeObject(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey)
+        // Take markerLock like every other mutator so a clear can't interleave a concurrent
+        // markFileAsCompleted's read→write and resurrect or wipe an id.
+        markerLock.lock()
+        defer { markerLock.unlock() }
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey)
+        defaults.synchronize()
     }
 
     // MARK: - Phase 3 in-flight tracking
@@ -658,6 +715,10 @@ class UploadManager {
         let fileSize: Int64
         let folderLinkId: Int
         let archiveNo: String
+        /// Stela numeric folder id for the V2 dedupe listing. Optional for Codable
+        /// back-compat: entries persisted by an older app version decode this as nil,
+        /// and the verifier then falls back to the V1 listing (folderId ≤ 0 → V1).
+        let folderId: Int?
     }
 
     static func phase3InFlightEntries() -> [Phase3InFlightEntry] {
@@ -676,6 +737,8 @@ class UploadManager {
     }
 
     static func markPhase3InFlight(entry: Phase3InFlightEntry) {
+        markerLock.lock()
+        defer { markerLock.unlock() }
         var entries = phase3InFlightEntries()
         guard !entries.contains(where: { $0.fileId == entry.fileId }) else { return }
         entries.append(entry)
@@ -687,13 +750,20 @@ class UploadManager {
     }
 
     static func removePhase3InFlight(fileId: String) {
+        markerLock.lock()
+        defer { markerLock.unlock() }
         var entries = phase3InFlightEntries()
         entries.removeAll { $0.fileId == fileId }
         writePhase3InFlightEntries(entries)
     }
 
     private static func clearPhase3InFlightIds() {
-        UserDefaults.standard.removeObject(forKey: Constants.Keys.StorageKeys.inflightPhase3FileIdsKey)
+        // markerLock like every other mutator (see clearCompletedFileIds).
+        markerLock.lock()
+        defer { markerLock.unlock() }
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: Constants.Keys.StorageKeys.inflightPhase3FileIdsKey)
+        defaults.synchronize()
     }
 
     // MARK: - End-of-batch verification
@@ -726,7 +796,8 @@ class UploadManager {
         for (folderLinkId, groupEntries) in grouped {
             group.enter()
             let archiveNo = groupEntries.first?.archiveNo ?? ""
-            fetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId) { [weak self] items in
+            let folderId = groupEntries.first?.folderId ?? -1
+            fetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, folderId: folderId) { [weak self] items in
                 guard let self = self else { group.leave(); return }
                 guard let items = items else {
                     // navigateMin failed for this folder — leave entries
@@ -793,7 +864,7 @@ class UploadManager {
     /// - `[…]`  → folder contains these items.
     ///
     /// The cache is only populated on a non-nil response.
-    func fetchFolderContents(archiveNo: String, folderLinkId: Int, completion: @escaping ([ItemVO]?) -> Void) {
+    func fetchFolderContents(archiveNo: String, folderLinkId: Int, folderId: Int, completion: @escaping ([ItemVO]?) -> Void) {
         folderCacheLock.lock()
         if let cached = folderListingCache[folderLinkId],
            Date().timeIntervalSince(cached.timestamp) < folderCacheTTL {
@@ -804,6 +875,60 @@ class UploadManager {
         }
         folderCacheLock.unlock()
 
+        #if !APP_EXTENSION
+        // Stela V2 listing (flag-gated): one GET /folders/{id}/children instead of the
+        // two-step V1 chain, adapted into the same [ItemVO] currency so the matcher and
+        // all callers are unchanged. CRITICAL: on ANY error/decode failure fall back to
+        // V1 — a V2 miss must NEVER surface as `[]` (empty = "verified no duplicate" would
+        // green-light a duplicate upload). Only a V1 failure yields `nil` (→ re-queue).
+        // Owned-archive only: a destination shared from a foreign archive stays on V1 —
+        // the V2 read is bearer-only (no share token) and a foreign 401 would otherwise
+        // risk a forced logout mid-upload (same scoping as the record detail read).
+        let currentArchiveNbr = PermSession.currentSession?.selectedArchive?.archiveNbr
+        if FeatureFlags.useStelaNavigation, folderId > 0,
+           !archiveNo.isEmpty, archiveNo == currentArchiveNbr {
+            let op = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: String(folderId), shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize))
+            op.execute(in: APIRequestDispatcher()) { [weak self] result in
+                guard let self = self else { completion(nil); return }
+                switch result {
+                case .json(let response, _):
+                    // Decode + per-item adaptation over an unbounded page is heavy — run it
+                    // off-main (the dispatcher delivers this completion on the main thread),
+                    // mirroring FilesViewModel.getFolderChildrenV2. Completion hops back to
+                    // main to match the V1 path's delivery queue.
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        // `items == nil` (missing/renamed key on an otherwise-decodable 2xx
+                        // body) is a contract failure, NOT an empty folder — every field of
+                        // FolderChildrenV2Response is optional, so only a PRESENT-but-empty
+                        // array may mean "verified empty". Anything else → V1 failsafe.
+                        guard let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder),
+                              let children = model.items else {
+                            DispatchQueue.main.async {
+                                self.performV1FetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, completion: completion) // failsafe
+                            }
+                            return
+                        }
+                        // Records only — dedupe matches files, never subfolders.
+                        let items = children.toMatchableItemVOs()
+                        self.folderCacheLock.lock()
+                        self.folderListingCache[folderLinkId] = (Date(), items)
+                        self.folderCacheLock.unlock()
+                        DispatchQueue.main.async { completion(items) }
+                    }
+                default:
+                    self.performV1FetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, completion: completion) // failsafe
+                }
+            }
+            return
+        }
+        #endif
+        performV1FetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, completion: completion)
+    }
+
+    /// Legacy V1 two-step listing (navigateMin → getLeanItems). Retained as the automatic
+    /// failsafe behind the V2 path above, and used directly when the flag is off or in the
+    /// ShareExtension (which has no V2 path). Same completion contract as the caller.
+    private func performV1FetchFolderContents(archiveNo: String, folderLinkId: Int, completion: @escaping ([ItemVO]?) -> Void) {
         // Two-step chain — same pattern the file browser uses.
         //
         // Step 1 — `navigateMin` returns the folder skeleton + a list of child

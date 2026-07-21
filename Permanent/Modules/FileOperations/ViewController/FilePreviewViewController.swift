@@ -25,7 +25,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     let fileHelper = FileHelper()
     
     var file: FileModel!
-    
+
+    /// Gates the record DETAIL read to Stela V2 getRecordById (with a V1 failsafe).
+    /// Follows the in-app flag on every preview presenter — the view model further
+    /// restricts V2 to records in the user's own archive and auto-falls back to V1 on
+    /// any error/thin payload, so no presenter needs to override this default.
+    var usesStelaDetail: Bool = FeatureFlags.useStelaNavigation
+
     var playerItem: AVPlayerItem?
     var videoPlayer: AVPlayerViewController?
     var playerItemContext = 0
@@ -48,6 +54,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 
     var recordLoadedCB: ((FilePreviewViewController) -> Void)?
     var closeAction: (() -> Void)?
+    /// Set when the user cancels an in-progress download so the (still-firing) download
+    /// completion doesn't surface a spurious error after the cancel.
+    private var didCancelDownload = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,10 +65,32 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareLinkViewModel.didUpdateSharesNotifName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareItemViewModel.didUpdateSharesNotifName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onReachabilityChanged(_:)), name: ReachabilityManager.reachabilityDidChangeNotifName, object: nil)
-        
+        // NOTE: the .playback audio session is activated lazily in activatePlaybackAudioSession()
+        // only when actually presenting audio/video — previewing an image or PDF must not
+        // interrupt the user's background music.
+    }
+
+    /// True once this preview activated the shared .playback session (A/V or misc-webview).
+    /// Gates the deinit deactivation so image/PDF previews — which never touched the session —
+    /// don't poke it on teardown.
+    private var didActivatePlaybackAudioSession = false
+
+    /// Set by a coordinating pager (FilePreviewListViewController) that owns the shared audio
+    /// session across its cached pages. When non-nil, this controller does NOT deactivate the
+    /// session in deinit — the pager deactivates once on its own teardown. Otherwise a cached
+    /// page evicted under memory pressure would silence the page that's actually playing.
+    /// Standalone previews (no pager) leave this nil and self-deactivate as before.
+    var onDidActivatePlaybackAudioSession: (() -> Void)?
+
+    /// Switch the shared audio session to playback, for previews that can play media (A/V and
+    /// misc/webview). Called from the video/audio/misc load paths; released in deinit (standalone)
+    /// or by the coordinating pager, so other apps' audio resumes afterward.
+    private func activatePlaybackAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
+            didActivatePlaybackAudioSession = true
+            onDidActivatePlaybackAudioSession?()
         } catch {
             print("Setting category to AVAudioSessionCategoryPlayback failed.")
         }
@@ -68,6 +99,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     deinit {
         NotificationCenter.default.removeObserver(self)
         stopObservingPlayerItem()
+        // Only SELF-deactivate for a standalone preview. When a pager coordinates the session
+        // (onDidActivatePlaybackAudioSession set), the pager deactivates once on its own teardown
+        // — a cached page's deinit must NOT deactivate here, or it would silence another page
+        // that's still playing (NSCache eviction while swiping mixed media). Also only if we
+        // actually activated it (image/PDF previews never did).
+        if didActivatePlaybackAudioSession, onDidActivatePlaybackAudioSession == nil {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -107,7 +146,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 thumbnailImageView.isHidden = true
             } else {
                 if let url = URL(string: file.preferredThumbnailURL) {
-                    thumbnailImageView.sd_setImage(with: url) { [weak self] image, _, _, _ in
+                    thumbnailImageView.sd_setImage(with: url, placeholderImage: nil, options: [.retryFailed]) { [weak self] image, _, _, _ in
                         guard let self = self, self.file.type != .image else { return }
                         self.previewBlurAvailable = image != nil
                         self.imageStateOverlay.setSourceImage(image)
@@ -131,7 +170,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
 
         if viewModel == nil || viewModel?.recordVO == nil {
-            viewModel = FilePreviewViewModel(file: file)
+            viewModel = FilePreviewViewModel(file: file, usesStelaDetail: usesStelaDetail)
             bindImagePreviewState()
 
             if file.type == .image {
@@ -313,7 +352,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
         let fileType = FileType(rawValue: self.viewModel?.recordVO?.recordVO?.type ?? "") ?? .miscellaneous
         
-        if let localURL = self.fileHelper.url(forFileNamed: fileName),
+        if let localURL = self.fileHelper.url(forFileNamed: FileHelper.recordScopedName(fileName, recordId: file.recordId)),
             let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
@@ -381,14 +420,18 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         view.insertSubview(previewVC.view, at: 0)
         previewVC.didMove(toParent: self)
 
-        previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: cacheOnly ? [.fromCacheOnly] : []) { [weak self] _, error, _, _ in
+        // .retryFailed: without it, one transient failure puts the URL on SDWebImage's
+        // session-wide failed-URL blacklist and every later attempt fails instantly.
+        previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: cacheOnly ? [.fromCacheOnly] : [.retryFailed]) { [weak self] _, error, _, _ in
             guard let self = self else { return }
             self.activityIndicator.stopAnimating()
             self.thumbnailImageView.isHidden = true
 
             if error != nil {
                 if !cacheOnly {
-                    self.viewModel?.imageLoadDidFail(error: error)
+                    // Thumbnail-specific failure: the full-res pipeline may still deliver,
+                    // so this keeps the loading state rather than painting the failed card.
+                    self.viewModel?.thumbnailLoadDidFail(error: error)
                 }
             } else {
                 previewVC.newImageLoaded()
@@ -405,34 +448,35 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     private func upgradeToFullResolution(urlString: String) {
         guard let url = URL(string: urlString),
               let previewVC = self.imagePreviewVC else { return }
-        
-        // Check if SDWebImage already has this URL cached (from a previous open)
-        let cachedFromMemory = SDImageCache.shared.imageFromMemoryCache(forKey: urlString) != nil
-        
+
         previewVC.imageView.sd_setImage(
             with: url,
             placeholderImage: previewVC.imageView.image,
             options: [.avoidAutoSetImage, .retryFailed],
             progress: nil
-        ) { [weak self, weak previewVC] image, error, cacheType, _ in
+        ) { [weak self, weak previewVC] image, error, _, _ in
             guard let previewVC = previewVC, let image = image, error == nil else {
                 // Full-res failed (S6) — keep the thumbnail beneath the blur so retry can reuse it.
                 self?.viewModel?.imageLoadDidFail(error: error)
                 return
             }
 
-            if cachedFromMemory || cacheType == .memory {
-                // Cached in memory — swap immediately, no animation needed
-                previewVC.imageView.image = image
-                previewVC.newImageLoaded()
-            } else {
-                // Downloaded or loaded from disk — crossfade for smooth transition
-                UIView.transition(with: previewVC.imageView, duration: 0.3, options: .transitionCrossDissolve) {
-                    previewVC.imageView.image = image
-                } completion: { _ in
-                    previewVC.newImageLoaded()
-                }
-            }
+            // Swap the full-res image AND recompute its fitted geometry atomically, THEN start
+            // the blur fade. This ordering matters: previously the full-res was cross-dissolved
+            // into the image view (setting `imageView.image`) while `newImageLoaded()` — which
+            // runs sizeToFit()/setZoomScale() — was deferred to the 0.3s transition completion,
+            // and `fullResDidLoad()` fired immediately at the crossfade start. So for 0.3s the
+            // sharp image rendered in the STALE thumbnail geometry (which, for the first page,
+            // was computed against a not-yet-final scrollView frame during preload) while the
+            // blur was already fading and revealing it — the image appeared smaller than full
+            // width and then "zoomed" up when the geometry finally corrected. Applying the
+            // geometry instantly here, beneath the still-opaque overlay, and only then calling
+            // fullResDidLoad() (which fades the blur), removes the intermediate small render:
+            // the blur only lifts once the image is already at its final fitted size. The
+            // overlay's own 0.5s fade provides the blur→sharp transition, so the image-view
+            // crossfade it used to do is redundant here (it happened behind the opaque blur).
+            previewVC.imageView.image = image
+            previewVC.newImageLoaded()
             self?.viewModel?.fullResDidLoad()
         }
     }
@@ -567,6 +611,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
         
     func loadVideo(withURL url: URL, contentType: String) {
+        activatePlaybackAudioSession()
         // file.type from the listing is unreliable (often .miscellaneous), so the
         // blurred placeholder is rendered here, where the record type is authoritative.
         showVideoLoadingPlaceholder()
@@ -631,6 +676,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func loadAudio(withURL url: URL, contentType: String) {
+        activatePlaybackAudioSession()
         loadAV(withURL: url, contentType: contentType)
         // Audio has no frames for isReadyForDisplay. Its "content" is the player's
         // built-in QuickTime artwork: keep it hidden behind an opaque cover, snapshot
@@ -788,10 +834,21 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func loadMisc(withURL url: URL) {
+        // Misc files render in a WKWebView that may hold playable media (audio/video elements,
+        // or a media file the server mis-typed as miscellaneous). Activate the playback session
+        // so that media is audible and ignores the ring/silent switch — matching the behaviour
+        // every preview had before activation became A/V-scoped.
+        activatePlaybackAudioSession()
         let webView = setupWebView()
-        
-        let request = URLRequest(url: url)
-        webView.load(request)
+
+        // WKWebView.load(URLRequest) cannot render file:// URLs (it silently shows a blank
+        // loading state) — a downloaded local misc file must go through loadFileURL. Remote
+        // URLs still use a normal request.
+        if url.isFileURL {
+            webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+        } else {
+            webView.load(URLRequest(url: url))
+        }
     }
     
     func removeVideoPlayer() {
@@ -973,7 +1030,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         let fileExtension = (file.uploadFileName as NSString).pathExtension
         let fileName = !fileExtension.isEmpty ? "\(file.name).\(fileExtension)" : file.name
         
-        if let localURL = fileHelper.url(forFileNamed: fileName) {
+        if let localURL = fileHelper.url(forFileNamed: FileHelper.recordScopedName(fileName, recordId: file.recordId)) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
@@ -1015,16 +1072,24 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     private func startDownload(record: RecordVO) {
+        didCancelDownload = false
         let preparingAlert = UIAlertController(title: "Downloading...".localized(), message: nil, preferredStyle: .alert)
         preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { [weak self] _ in
+            self?.didCancelDownload = true
             self?.viewModel?.cancelDownload()
         }))
-        
+
         present(preparingAlert, animated: true) {
             self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { [weak self] url, error in
                 guard let self = self else { return }
-                
-                self.dismiss(animated: true) {
+
+                // Dismiss the "Downloading…" ALERT specifically — the previous `self.dismiss`
+                // tore down the whole preview screen when the cancel tap had already dismissed
+                // the alert (self.dismiss then targeted the preview's own presentation).
+                preparingAlert.dismiss(animated: true) {
+                    if self.didCancelDownload {
+                        return
+                    }
                     if url != nil {
                         let successAlert = UIAlertController(
                             title: "Download complete".localized(),
@@ -1114,14 +1179,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 return
             }
             
-            // Now relocate (copy) the file to the public folder
-            filesRepository.relocate(
-                files: [self.file],
-                folderLinkId: publicRootFolder.folderLinkId,
-                isCopy: true
-            ) { error in
+            // Publish = copy the item into the public root.
+            let onPublishResult: (Error?) -> Void = { error in
                 self.hideSpinner()
-                
                 if let error = error {
                     self.showErrorAlert(message: error.localizedDescription)
                 } else {
@@ -1131,6 +1191,19 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                         self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                     }
                 }
+            }
+
+            // Own-archive records on the Stela path publish via POST /records/{id}/copies.
+            // This is flag-SELECT (no V1 fallback): copy isn't idempotent, so a mis-read
+            // success must never trigger a second copy. Folders (no V2 route) and foreign/
+            // shared records (bearer-only copy would be rejected) stay on V1 relocate —
+            // see FilePreviewViewModel.canPublishViaStelaCopy. Also require a valid
+            // destination folderId: FileModel(model: FolderVOData) defaults it to -1 when
+            // getPublicRoot omits folderID, and posting "-1" would fail every time.
+            if self.viewModel?.canPublishViaStelaCopy == true, publicRootFolder.folderId > 0 {
+                self.viewModel?.copyRecordV2(destinationFolderId: String(publicRootFolder.folderId), completion: onPublishResult)
+            } else {
+                filesRepository.relocate(files: [self.file], folderLinkId: publicRootFolder.folderLinkId, isCopy: true, completion: onPublishResult)
             }
         }
     }

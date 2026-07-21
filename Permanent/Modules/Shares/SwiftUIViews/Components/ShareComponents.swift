@@ -374,7 +374,8 @@ struct ApproveAllNotificationView: View {
 
 struct AnimatedTextWithDotsView: View {
     @State private var dotCount = 0
-    
+    @State private var animationTimer: Timer?
+
     var body: some View {
         Text("Creating link" + String(repeating: ".", count: dotCount))
             .font(.custom("Usual-Regular", size: 14))
@@ -382,14 +383,25 @@ struct AnimatedTextWithDotsView: View {
             .onAppear {
                 startAnimation()
             }
+            .onDisappear {
+                stopAnimation()
+            }
     }
-    
+
     private func startAnimation() {
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+        // Store + invalidate the timer: previously each appearance scheduled a new repeating
+        // Timer that was never invalidated, so they accumulated and fired forever.
+        animationTimer?.invalidate()
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
             withAnimation(.easeInOut(duration: 0.3)) {
                 dotCount = (dotCount + 1) % 4
             }
         }
+    }
+
+    private func stopAnimation() {
+        animationTimer?.invalidate()
+        animationTimer = nil
     }
 }
 

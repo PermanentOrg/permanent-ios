@@ -45,8 +45,28 @@ class MetadataEditFileNamesViewModel: ObservableObject {
             return
         }
         isLoading = true
+        // Stela V2 (flag-gated): fan out one PATCH /records/{id} {displayName} per record,
+        // with the V1 batch as an automatic failsafe. Records only. Only the display name is
+        // sent on the V2 path (the V1 date-passthrough is irrelevant to a name edit).
+        if FeatureFlags.useStelaNavigation,
+           updatedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
+            updatedFiles.patchEachRecordToV2(fieldsFor: { ["displayName": $0.name] }) { [weak self] succeeded in
+                if succeeded {
+                    self?.isLoading = false
+                    self?.hasUpdates.wrappedValue = true
+                    self?.changesWereSaved = true
+                } else {
+                    self?.applyChangesV1(updatedFiles) // failsafe
+                }
+            }
+            return
+        }
+        applyChangesV1(updatedFiles)
+    }
+
+    private func applyChangesV1(_ updatedFiles: [FileModel]) {
         let apiOperation = APIOperation(FilesEndpoint.multipleFilesUpdate(files: updatedFiles))
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false

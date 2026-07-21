@@ -43,7 +43,10 @@ class ShareNotificationPayload: BaseNotificationPayload {
         coder.encode(folderLinkId, forKey: "folderLinkId")
         coder.encode(archiveNbr, forKey: "archiveNbr")
         coder.encode(type, forKey: "type")
-        
+        // Was omitted, so the NSCoding round-trip through UserDefaults lost the granted
+        // role — every notification/deep-link-opened share fell back to viewer (read-only).
+        coder.encode(accessRole, forKey: "accessRole")
+
         super.encode(with: coder)
     }
 }

@@ -40,7 +40,14 @@ class CDNSession: NSObject {
     }
 
     private func setHandlers(_ handlers: ProgressAndCompletionHandlers?, for task: URLSessionTask) {
-        taskToHandlersMap[task] = handlers
+        // The value type is a double optional ([task: handlers?]); assigning nil would leave a
+        // `.some(nil)` entry rather than removing the key. Remove explicitly so the map doesn't
+        // retain finished tasks.
+        if let handlers = handlers {
+            taskToHandlersMap[task] = handlers
+        } else {
+            taskToHandlersMap.removeValue(forKey: task)
+        }
     }
 
     private func getHandlers(for task: URLSessionTask) -> ProgressAndCompletionHandlers? {
@@ -74,13 +81,21 @@ extension CDNSession: URLSessionTaskDelegate {
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        // A URLSession strongly retains its delegate (self) until invalidated, and this
+        // CDNSession is created per-download (DownloadManagerGCD) for exactly one task —
+        // so deinit could never run and the session + delegate queue leaked on every
+        // download. didCompleteWithError is the guaranteed final callback for the task
+        // (fires after didFinishDownloadingTo on success, or alone on failure), so invalidate
+        // here to release the delegate and let the CDNSession deallocate.
+        defer { session.finishTasksAndInvalidate() }
+
         guard
             let downloadTask = task as? URLSessionDownloadTask,
             let handlers = getHandlers(for: downloadTask)
         else {
             return
         }
-        
+
         DispatchQueue.main.async {
             handlers.completion?(nil, downloadTask.response, downloadTask.error)
         }

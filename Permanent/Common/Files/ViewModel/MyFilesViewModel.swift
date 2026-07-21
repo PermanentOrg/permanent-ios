@@ -15,7 +15,15 @@ class MyFilesViewModel: FilesViewModel {
     static let didSelectFilesNotifName = NSNotification.Name("MyFilesViewModel.didSelectFilesNotifName")
     var isPickingImage: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
-    
+
+    /// Private Files opts into Stela V2 navigation via the in-app
+    /// `FeatureFlags.useStelaNavigation` constant. `PublicFilesViewModel` inherits this
+    /// (same owner workspace), and `SearchFilesViewModel` opts in with its own override —
+    /// so flipping the flag switches My Files, Public Files, AND Search drill-in to V2.
+    override var usesStelaNavigation: Bool {
+        FeatureFlags.useStelaNavigation
+    }
+
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     
     override var selectedFiles: [FileModel]? {
@@ -87,6 +95,13 @@ class MyFilesViewModel: FilesViewModel {
             return
         }
         
+        // Stela has no root-discovery route, so the V1 getRoot above stays as the
+        // bootstrap. When V2 is on, seed the navigation target (the My Files root) so
+        // navigateMin descends into it via /folders/{id}/children.
+        if usesStelaNavigation {
+            v2NavigationTarget = FileModel(model: myFilesFolder)
+        }
+
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }

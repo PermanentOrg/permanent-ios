@@ -124,9 +124,14 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
                 collectionViewSections.append(.searchResultArchives)
             }
         } else {
-            collectionViewSections.removeAll()
-            collectionViewSections = collectionViewSectionsBeforeSearch
-            collectionViewSectionsBeforeSearch.removeAll()
+            // Only restore the pre-search sections when we actually have a saved snapshot.
+            // A search response that lands AFTER the user tapped back would otherwise hit
+            // this branch with an already-emptied backup and blank the whole gallery
+            // (there's no re-fetch path, so it stayed blank until the screen was recreated).
+            if !collectionViewSectionsBeforeSearch.isEmpty {
+                collectionViewSections = collectionViewSectionsBeforeSearch
+                collectionViewSectionsBeforeSearch.removeAll()
+            }
             viewModel?.searchPublicArchives.removeAll()
         }
         collectionView.reloadData()

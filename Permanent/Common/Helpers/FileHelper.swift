@@ -10,6 +10,15 @@ import Foundation
 class FileHelper {
     var defaultDirectoryURL: URL?
     var uploadDirectoryURL: URL?
+
+    /// Record-scoped download-cache name: prefixes a per-record subdirectory so two records
+    /// that share a display name can no longer collide in the flat Documents cache (which
+    /// previously let one record's downloaded bytes be previewed/shared as another's).
+    /// `recordId <= 0` falls back to the flat name, preserving prior behavior for folders /
+    /// identity-less callers. Writers and readers must both route through this.
+    static func recordScopedName(_ name: String, recordId: Int) -> String {
+        recordId > 0 ? "\(recordId)/\(name)" : name
+    }
     
     init() {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
@@ -66,10 +75,14 @@ class FileHelper {
         do {
             let fileURL = self.defaultDirectoryURL!
                 .appendingPathComponent(name ?? UUID().uuidString)
-          
+
+            // `name` may be a record-scoped relative path ("<recordId>/file.ext"); ensure the
+            // parent directory exists (no-op for a flat name, since Documents already exists).
+            try? FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+
             // If we already have an item stored at this path, we remove it first.
             try? FileManager.default.removeItem(at: fileURL)
-            
+
             try FileManager.default.copyItem(at: url, to: fileURL)
             return fileURL
         } catch {

@@ -47,7 +47,12 @@ class FilePreviewViewModel: ViewModelInterface {
 
     private var recordFetchAttempts = 0
 
-    init(file: FileModel, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
+    /// When true (My Files with the Stela flag on), record detail is fetched via the
+    /// Stela V2 getRecordById, with the legacy V1 getRecord as an automatic failsafe.
+    private let usesStelaDetail: Bool
+
+    init(file: FileModel, usesStelaDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
+        self.usesStelaDetail = usesStelaDetail
         self.tagsRepository = tagsRepository
         self.reachability = reachability
         self.file = file
@@ -95,6 +100,21 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
+    /// The 256px THUMBNAIL failed. Unlike a full-res failure this is not terminal: the
+    /// record fetch → full-res load runs in parallel and can still succeed, so while it
+    /// is pending we downgrade to the no-thumbnail loading state (S5) instead of painting
+    /// the failure card — otherwise a transient thumbnail blip flashes "Couldn't load
+    /// image." for the second it takes the full-res to land. The genuine failure/offline
+    /// outcome is still reported by the full-res or record-fetch callbacks.
+    func thumbnailLoadDidFail(error: Error?) {
+        guard imagePreviewState == .loadingThumbnail else { return }
+        if reachability.isConnected {
+            imagePreviewState = .loadingFullRes(hasThumbnail: false)
+        } else {
+            imagePreviewState = .offline(hasThumbnail: false)
+        }
+    }
+
     /// Returns true when the caller should restart the failed load (S8). While still offline it keeps the offline state and returns false (S7).
     func retryRequested() -> Bool {
         guard reachability.isConnected else {
@@ -123,6 +143,18 @@ class FilePreviewViewModel: ViewModelInterface {
             return
         }
         #endif
+
+        // Stela V2 detail (own-archive records on ANY screen) with the legacy V1 fetch as
+        // an automatic failsafe. Foreign/shared records stay on V1: they're authorized
+        // server-side via share membership, which the bearer-only V2 read can't carry.
+        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file) {
+            getRecordV2(file: file, then: handler)
+            return
+        }
+        getRecordV1(file: file, then: handler)
+    }
+
+    private func getRecordV1(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
         let downloadInfo = FileDownloadInfoVM(
             fileType: file.type,
             folderLinkId: file.folderLinkId,
@@ -132,6 +164,36 @@ class FilePreviewViewModel: ViewModelInterface {
         downloader = DownloadManagerGCD()
         downloader?.getRecord(downloadInfo) { [weak self] (record, error) in
             self?.onRecordCallback(file: file, record: record, error: error, then: handler)
+        }
+    }
+
+    /// Fetches the record via Stela GET /api/v2/records/{id}, maps it into the legacy
+    /// `RecordVO` (so all detail/preview/download consumers are unchanged), and falls
+    /// back to the V1 fetch on any error, decode failure, or a payload that lacks a
+    /// usable file (download URL + contentType — `loadRecord()` requires BOTH, so a
+    /// thin V2 response never degrades the preview to a blank screen).
+    private func getRecordV2(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
+        let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: String(file.recordId), shareToken: ""))
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard let self = self else { handler(nil); return }
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: RecordV2Response = JSONHelper.decoding(from: response, with: RecordV2Response.decoder),
+                    let data = model.data,
+                    let recordVO: RecordVO = JSONHelper.decoding(from: data.toRecordVOPayload(), with: RecordVO.decoder),
+                    recordVO.recordVO?.fileVOS?.contains(where: { ($0.downloadURL?.isEmpty == false) && ($0.contentType?.isEmpty == false) }) == true
+                else {
+                    self.getRecordV1(file: file, then: handler) // failsafe
+                    return
+                }
+                self.recordFetchAttempts = 0
+                self.recordVO = recordVO
+                handler(recordVO)
+
+            default:
+                self.getRecordV1(file: file, then: handler) // failsafe
+            }
         }
     }
 
@@ -152,6 +214,47 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
+    /// Whether this preview opted into the Stela V2 path (the in-app flag; set on every
+    /// preview presenter — per-record ownership is checked separately, see below).
+    var isStelaEnabled: Bool { usesStelaDetail }
+
+    /// True when the record belongs to the user's currently selected archive. Foreign/
+    /// shared records (Shares, public archive, share-link) carry a different or absent
+    /// (-1) archiveId and must stay on V1, whose bearer-token + server-side share
+    /// membership authorizes them; indeterminate ownership falls to V1.
+    private func isInCurrentArchive(_ file: FileModel) -> Bool {
+        guard let currentArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return false }
+        return file.archiveId > 0 && file.archiveId == currentArchiveId
+    }
+
+    /// Publish eligibility for the V2 copy route: flag on, a saved record (not a folder),
+    /// and owned by the current archive — foreign/shared records must publish via the V1
+    /// relocate, since the bearer-only V2 copy would be rejected and copy has NO V1
+    /// fallback (it is not idempotent).
+    var canPublishViaStelaCopy: Bool {
+        isStelaEnabled && !file.type.isFolder && file.recordId > 0 && isInCurrentArchive(file)
+    }
+
+    /// Publishes/copies the record into `destinationFolderId` via Stela
+    /// POST /records/{id}/copies. Copy is NOT idempotent, so this is flag-SELECT:
+    /// callers invoke it only when `isStelaEnabled`, and must NOT fall back to V1 on
+    /// error (a mis-read success would otherwise create a duplicate copy).
+    func copyRecordV2(destinationFolderId: String, completion: @escaping (Error?) -> Void) {
+        let apiOperation = APIOperation(RecordV2Endpoint.copyRecord(recordId: String(file.recordId), destinationFolderId: destinationFolderId))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .json:
+                    completion(nil)
+                case .error(let error, _):
+                    completion(error ?? APIError.unknown)
+                default:
+                    completion(APIError.unknown)
+                }
+            }
+        }
+    }
+
     func download(_ record: RecordVO, fileType: FileType, onFileDownloaded: @escaping DownloadResponse) {
         downloader = DownloadManagerGCD()
         downloader?.downloadFileData(record: record, fileType: fileType, progressHandler: nil, then: onFileDownloaded)
@@ -172,19 +275,16 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func fileVO() -> FileVO? {
-        var fileVO: FileVO? = recordVO?.recordVO?.fileVOS?.first
-
-        if file.type == .video || file.type == .audio {
-            if let uwFileVO = recordVO?.recordVO?.fileVOS?.first,
-               let url = URL(string: uwFileVO.downloadURL),
-               AVAsset(url: url).isPlayable {
-                fileVO = uwFileVO
-            } else if let uwFileVO = recordVO?.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
-                fileVO = uwFileVO
-            }
+        // For A/V, prefer the app-friendly converted rendition, else the first file — matching
+        // DownloadManagerGCD.fileVO. Previously this probed `AVAsset(url:).isPlayable`
+        // synchronously on a REMOTE url, which blocks the main thread (fileVO() is called on
+        // main from loadRecord); AVPlayer already surfaces unplayable assets at play time.
+        if file.type == .video || file.type == .audio,
+           let converted = recordVO?.recordVO?.fileVOS?.first(where: { $0.format == "file.format.converted" }) {
+            return converted
         }
-        
-        return fileVO
+
+        return recordVO?.recordVO?.fileVOS?.first
     }
     
     func fileThumbnailURL() -> String? {
@@ -212,9 +312,54 @@ class FilePreviewViewModel: ViewModelInterface {
     } 
     
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+        // Stela V2 PATCH handles name / description / location edits — all idempotent
+        // (the server updates the record's fields, and its existing location row in place).
+        // DATE stays on V1: the record PATCH exposes only the EDTF `displayTime` column,
+        // not the `displaydt` timestamp the "Date" row displays, so a V2 date edit would
+        // not reflect. The V1 failsafe covers any V2 miss. Own-archive records only —
+        // same scoping as the read path: a foreign/shared record's bearer-only PATCH
+        // would just burn a doomed round-trip before the V1 failsafe re-applies.
+        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
+            updateV2(file: file, name: name, description: description, location: location, completion: completion)
+            return
+        }
+        updateV1(file: file, name: name, description: description, date: date, location: location, completion: completion)
+    }
+
+    private func updateV2(file: FileModel, name: String?, description: String?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+        var fields: [String: Any] = [:]
+        if let name = name { fields["displayName"] = name }
+        if let description = description { fields["description"] = description }
+        if let location = location {
+            let payload = location.toLocationInputPayload()
+            if !payload.isEmpty { fields["location"] = payload }
+        }
+        guard !fields.isEmpty else {
+            updateV1(file: file, name: name, description: description, date: nil, location: location, completion: completion)
+            return
+        }
+        let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: fields))
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { completion(false); return }
+                switch result {
+                case .json:
+                    self.getRecord(file: file) { _ in
+                        NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
+                        completion(true)
+                    }
+                default:
+                    // Failsafe — re-apply the edit via V1 (idempotent).
+                    self.updateV1(file: file, name: name, description: description, date: nil, location: location, completion: completion)
+                }
+            }
+        }
+    }
+
+    private func updateV1(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
         let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo)
         let apiOperation = APIOperation(FilesEndpoint.update(params: params))
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -223,11 +368,11 @@ class FilePreviewViewModel: ViewModelInterface {
                         NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
                         completion(true)
                     }
-                    
+
                 case .error(_, _):
                     NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
                     completion(false)
-                    
+
                 default:
                     NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
                     completion(false)

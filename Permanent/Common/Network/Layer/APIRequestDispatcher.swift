@@ -122,9 +122,17 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - ignoreErrors: If true, errors will be silently ignored without triggering session expiration
     ///   - completion: Completion handler.
     private func handleJsonTaskResponse(data: Data?, urlResponse: URLResponse?, error: Error?, ignoreErrors: Bool, completion: @escaping (OperationResult) -> Void) {
+        // This runs on URLSession's background delegate queue (APINetworkSession no longer hops
+        // to main), so the JSON `parse` below is OFF the main thread — a large listing no longer
+        // blocks the UI while it's serialized. Deliver every result back on main via this shim so
+        // callers keep their completion-on-main guarantee no matter who invoked the dispatcher.
+        let deliver: (OperationResult) -> Void = { result in
+            DispatchQueue.main.async { completion(result) }
+        }
+
         // Check for errors
         if let apiError = APIError.error(withCode: (error as NSError?)?.code) {
-            return completion(.error(apiError, nil))
+            return deliver(.error(apiError, nil))
         }
 
         // Preserve URLError so callers can detect transient connectivity issues
@@ -134,23 +142,23 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         // apart from real server-side bugs.
         if let urlError = error as? URLError {
             authLogger.debug("🔼 [NETWORK] URLError code=\(urlError.code.rawValue, privacy: .public) for \(urlResponse?.url?.path ?? "<no path>", privacy: .public)")
-            return completion(.error(urlError, urlResponse as? HTTPURLResponse))
+            return deliver(.error(urlError, urlResponse as? HTTPURLResponse))
         }
 
         // Check if the response is valid.
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
-            completion(OperationResult.error(APIError.invalidResponse, nil))
+            deliver(OperationResult.error(APIError.invalidResponse, nil))
             return
         }
         NetworkLogger.log(response: urlResponse, data: data, error: error)
-        
+
         let shouldIgnoreAuthErrors = ignoreErrors || isNonCriticalEndpoint(urlResponse)
-        
+
         // Verify the HTTP status code.
         let result = verify(data: data, urlResponse: urlResponse, error: error)
         switch result {
         case .success(let data):
-            // Parse the JSON data
+            // Parse the JSON data (off the main thread — see the note above).
             let parseResult = parse(data: data as? Data)
             switch parseResult {
             case .success(let json):
@@ -161,25 +169,29 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: Self.sessionExpiredNotificationName, object: self)
                     }
+                    // The caller's completion must still fire: dropping it left
+                    // spinners waiting forever and leaked any continuation bridged
+                    // to this callback. Deliver it as an auth error.
+                    deliver(OperationResult.error(APIError.unauthorized, urlResponse))
                 } else {
-                    completion(OperationResult.json(json, urlResponse))
+                    deliver(OperationResult.json(json, urlResponse))
                 }
-                
+
             case .failure(let error):
-                completion(OperationResult.error(error, urlResponse))
+                deliver(OperationResult.error(error, urlResponse))
             }
-            
+
         case .failure(let error):
             if error as? APIError == APIError.unauthorized && !shouldIgnoreAuthErrors {
                 let failPath = urlResponse.url?.path ?? "<no path>"
                 authLogger.error("🔼 [AUTH] 401 from \(failPath, privacy: .public) — posting sessionExpired (will trigger logout)")
-                completion(OperationResult.error(error, urlResponse))
-                
+                deliver(OperationResult.error(error, urlResponse))
+
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: Self.sessionExpiredNotificationName, object: self)
                 }
             } else {
-                completion(OperationResult.error(error, urlResponse))
+                deliver(OperationResult.error(error, urlResponse))
             }
         }
     }
@@ -287,7 +299,11 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         if url.contains("/api/v2/share-links") {
             return true
         }
-        
+
+        // Stela V2 endpoints opt out of the 401 force-logout per-case via
+        // `RequestProtocol.ignoreErrors` (see RecordV2Endpoint/FolderV2Endpoint) rather
+        // than growing this URL list: reads are exempt (foreign-item 401s are expected,
+        // V1 failsafes surface genuine expiry), writes keep the expiry signal.
         return false
     }
 }

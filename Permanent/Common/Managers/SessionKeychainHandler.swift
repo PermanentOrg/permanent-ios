@@ -11,6 +11,11 @@ import KeychainSwift
 class SessionKeychainHandler {
     static let keychainAuthDataKey = "org.permanent.authData"
 
+    enum SessionKeychainError: Error {
+        /// The keychain write returned failure (e.g. an access-group/entitlement mismatch).
+        case writeFailed
+    }
+
     let keychain: KeychainSwift = {
         let kc = KeychainSwift()
         if let group = KeychainAccessGroupResolver.sharedSessionGroup {
@@ -28,7 +33,12 @@ class SessionKeychainHandler {
 
     func saveSession(_ session: PermSession) throws {
         let authData = try JSONEncoder().encode(session)
-        keychain.set(authData, forKey: Self.keychainAuthDataKey)
+        // KeychainSwift.set deletes-then-adds internally, but returns false on a failed
+        // write. Ignoring that silently drops the session (user looks logged in this run,
+        // but is logged out on next launch) — surface it so callers can react.
+        guard keychain.set(authData, forKey: Self.keychainAuthDataKey) else {
+            throw SessionKeychainError.writeFailed
+        }
     }
 
     func clearSession() {

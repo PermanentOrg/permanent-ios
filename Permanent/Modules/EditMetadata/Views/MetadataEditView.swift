@@ -17,6 +17,9 @@ struct MetadataEditView: View {
     @State var showEditDataTime: Bool = false
     @State var removeTagName: String? = nil
     @State var reloadFiles: Bool = false
+    /// onAppear fires on every re-appearance (e.g. returning from a pushed screen); gate the
+    /// initial fetch so it runs once and a re-appear can't clobber an in-progress edit.
+    @State private var didInitialLoad: Bool = false
     var dismissAction: ((Bool) -> Void)?
     let dataAndTimeSheetHeight: CGFloat = 560
     
@@ -163,6 +166,8 @@ struct MetadataEditView: View {
                 EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
             }
             .onAppear {
+                guard !didInitialLoad else { return }
+                didInitialLoad = true
                 viewModel.refreshFiles()
             }
             .onChange(of: showAddNewTag) { newValue in

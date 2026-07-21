@@ -582,8 +582,10 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
     
     func testButtonState_RestrictedShareNoAccess_ShowsRequestAccess() async {
         let repo = RestrictedShareNoAccessRepo()
-        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: repo)
-        
+        // Inject the mock share-link repo so start()'s getShareLinkV2ByToken doesn't hit
+        // live staging — its latency (not any code path) is what made isLoading flaky here.
+        let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: repo, shareManagementRepository: MockShareMgmtRepoForPreview())
+
         vm.start()
         var attempts = 0
         while vm.isLoading && attempts < 100 {

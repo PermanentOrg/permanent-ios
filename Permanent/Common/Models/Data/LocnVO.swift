@@ -33,15 +33,21 @@ struct LocnVO: Model {
     var latitude: Double? {
         if let latitude = anyLatitude?.value as? Double {
             return latitude
+        } else if let latitude = anyLatitude?.value as? Int {
+            // A whole-number coordinate (e.g. 40) decodes from JSONAny as Int, which the
+            // Double cast above rejects — bridge it so the coordinate isn't silently dropped.
+            return Double(latitude)
         } else if let latitude = anyLatitude?.value as? String {
             return Double(latitude)
         }
         return nil
     }
-    
+
     var longitude: Double? {
         if let longitude = anyLongitude?.value as? Double {
             return longitude
+        } else if let longitude = anyLongitude?.value as? Int {
+            return Double(longitude)
         } else if let longitude = anyLongitude?.value as? String {
             return Double(longitude)
         }

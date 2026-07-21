@@ -80,32 +80,22 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     }
     
     func detailsDate() -> Date? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        
-        let date: Date?
+        // Shared ISO parser tolerates the ".000Z" suffix the backend sends; the previous
+        // "yyyy-MM-dd'T'HH:mm:ss" pattern failed on it, leaving this field blank.
         switch cellType {
         case .uploaded:
-            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.createdDT ?? "")
-            
+            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.createdDT)
         case .lastModified:
-            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.updatedDT ?? "")
-            
+            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.updatedDT)
         case .date:
-            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.displayDT ?? "")
-            
+            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.displayDT)
         case .created:
-            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedDT ?? "")
-            
+            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedDT)
         case .fileCreated:
-            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedCreatedDT ?? "")
-            
+            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedCreatedDT)
         default:
-            date = nil
+            return nil
         }
-        
-        return date
     }
     
     @objc func datePickerDoneButtonPressed(_ sender: Any) {
@@ -126,15 +116,13 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
 extension FileDetailsDateCollectionViewCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        let initialDate = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.displayDT ?? "") ?? Date()
+        let initialDate = DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.displayDT) ?? Date()
         if date == nil || Calendar.autoupdatingCurrent.isDate(date!, equalTo: initialDate, toGranularity: .minute) {
             return
         } else if let file = viewModel?.file {
             let initialValue = viewModel?.recordVO?.recordVO?.displayDT ?? ""
             viewModel?.update(file: file, name: nil, description: nil, date: date, location: nil, completion: { (success) in
-                if !success, let date = dateFormatter.date(from: initialValue) {
+                if !success, let date = DateUtils.date(fromISO: initialValue) {
                     textField.text = FileDetailsDateCollectionViewCell.dateFormatter.string(from: date)
                 }
             })

@@ -14,7 +14,7 @@ class RCValues {
     
     enum ValueKey: String {
         case appMinValue
-        
+
         var name: String {
             switch self {
             case .appMinValue:
@@ -22,18 +22,18 @@ class RCValues {
             }
         }
     }
-    
+
     private init() {
         loadDefaultValues()
     }
-    
+
     func loadDefaultValues() {
         let appDefaults: [String: Any?] = [
             ValueKey.appMinValue.name: "1.0.0"
         ]
         RemoteConfig.remoteConfig().setDefaults(appDefaults as? [String: NSObject])
     }
-    
+
     static func activateDebugMode() {
         let settings = RemoteConfigSettings()
         /// WARNING: Don't actually do this in production!

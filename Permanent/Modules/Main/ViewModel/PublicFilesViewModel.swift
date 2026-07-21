@@ -8,6 +8,11 @@
 import Foundation
 
 class PublicFilesViewModel: MyFilesViewModel {
+    // Public Files follows Stela V2 folder navigation via the inherited
+    // MyFilesViewModel.usesStelaNavigation (same owner workspace, archive-level
+    // permissions apply). Root discovery stays V1 (getPublicRoot has no V2 route);
+    // folder drill-in runs on /folders/{id}/children with the V1 nav as auto-failsafe.
+
     override var rootFolderName: String {
         return "Public Files".localized()
     }

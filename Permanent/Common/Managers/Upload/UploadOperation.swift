@@ -23,6 +23,9 @@ enum UploadError: Error {
     case s3
     case registerRecord
     case authenticationRequired
+    /// The operation was cancelled by the user (via `cancelUpload`/`cancelAll`). Signals the
+    /// completion handler to skip success/failure accounting — the cancel path owns cleanup.
+    case cancelled
 }
 
 class UploadOperation: BaseOperation, @unchecked Sendable {
@@ -87,8 +90,22 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     var backgroundTaskId: UIBackgroundTaskIdentifier = .invalid
 
     private var foregroundObserver: NSObjectProtocol?
+    private var backgroundObserver: NSObjectProtocol?
+    private var backgroundedAt: Date?
     private var operationStartTime: Date?
     private var phaseStartTime: Date?
+
+    /// iOS keeps giving the app foreground execution for ~30s after backgrounding, then
+    /// suspends it; a suspended URLSession task can end up stalled. We only want to
+    /// restart a call that was actually at risk of that — i.e. the app was backgrounded
+    /// long enough to be suspended — NOT a healthy upload that is merely slow while the
+    /// app stayed in the foreground. Threshold sits just under the background-execution
+    /// budget. Pure/static so it is unit-testable without app-lifecycle plumbing.
+    static let staleBackgroundThreshold: TimeInterval = 25
+    static func shouldRestartStaleCall(backgroundedFor duration: TimeInterval?, hasActiveTask: Bool) -> Bool {
+        guard hasActiveTask, let duration = duration else { return false }
+        return duration >= staleBackgroundThreshold
+    }
 
     private var elapsed: String {
         guard let start = operationStartTime else { return "0.0" }
@@ -125,6 +142,14 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
 
         operationStartTime = Date()
 
+        backgroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.backgroundedAt = Date()
+        }
+
         foregroundObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.willEnterForegroundNotification,
             object: nil,
@@ -143,8 +168,14 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     }
 
     private func restartStaleAPICallIfNeeded() {
-        guard let startTime = operationStartTime,
-              Date().timeIntervalSince(startTime) > 10 else { return }
+        // Only restart a call that iOS may have suspended during a long background
+        // stint. Previously this fired for ANY operation older than 10s of TOTAL
+        // wall-clock, so a legitimately slow foreground upload got cancelled and
+        // its progress thrown away on every app resume.
+        let backgroundDuration = backgroundedAt.map { Date().timeIntervalSince($0) }
+        backgroundedAt = nil
+        let hasActiveTask = getPresignedURLOperation != nil || foregroundUploadTask != nil || registerRecordOperation != nil
+        guard Self.shouldRestartStaleCall(backgroundedFor: backgroundDuration, hasActiveTask: hasActiveTask) else { return }
 
         if foregroundUploadTask == nil, let op = getPresignedURLOperation {
             logger.info("🔼 Cancelling stale presignedUrl after foreground resume for: \(self.file.name, privacy: .public)")
@@ -173,6 +204,10 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         if let observer = foregroundObserver {
             NotificationCenter.default.removeObserver(observer)
             foregroundObserver = nil
+        }
+        if let observer = backgroundObserver {
+            NotificationCenter.default.removeObserver(observer)
+            backgroundObserver = nil
         }
 
         super.finish()
@@ -204,7 +239,16 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         getPresignedURLOperation?.cancel()
         registerRecordOperation?.cancel()
         foregroundUploadTask?.cancel()
-        
+
+        // The multipart body temp file (app-group container) is normally removed in the
+        // upload completion, but that handler early-returns on `isCancelled` before its
+        // cleanup runs — so remove it here too, otherwise every cancelled upload leaks its
+        // temp body file until the container is purged.
+        if let tempPath = foregroundTempFileURL {
+            try? FileManager.default.removeItem(at: tempPath)
+            foregroundTempFileURL = nil
+        }
+
         DispatchQueue.main.async {
             let userInfo: [String: Any]?
             if let error = self.error {
@@ -215,10 +259,12 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
             }
             
             NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
-            
-            self.handler(nil)
+
+            // Signal a cancel (not a success) so the completion handler doesn't count this as a
+            // completed upload — the Live Activity is already decremented by fileCancelled().
+            self.handler(UploadError.cancelled)
         }
-        
+
         didSentFinishNotification = true
         
         finish()
@@ -354,37 +400,65 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
 
         var buffer = [UInt8](repeating: 0, count: 1024 * 64)
 
-        let prefixStream = InputStream(data: prefixData)
-        prefixStream.open()
-        while prefixStream.hasBytesAvailable {
-            let bytesRead = prefixStream.read(&buffer, maxLength: buffer.count)
-            if bytesRead > 0 { outputStream.write(buffer, maxLength: bytesRead) } else { break }
+        // Copies a whole input stream into the output, returning false on ANY read
+        // or write error. `read` returning -1 (I/O error — e.g. an iCloud-evicted
+        // source file) must NOT be treated as EOF, and short/failed writes (disk
+        // full) must not be ignored: either would silently upload a truncated body
+        // that then gets REGISTERED as a healthy record.
+        func copyStream(_ input: InputStream, into output: OutputStream) -> Bool {
+            while input.hasBytesAvailable {
+                let bytesRead = input.read(&buffer, maxLength: buffer.count)
+                if bytesRead < 0 { return false }
+                if bytesRead == 0 { break }
+                var offset = 0
+                while offset < bytesRead {
+                    let written = buffer.withUnsafeBufferPointer { ptr -> Int in
+                        output.write(ptr.baseAddress! + offset, maxLength: bytesRead - offset)
+                    }
+                    if written <= 0 { return false }
+                    offset += written
+                }
+            }
+            return true
         }
-        prefixStream.close()
-
-        guard let fileStream = InputStream(url: file.url) else {
+        func failBodyBuild(_ reason: String) {
             outputStream.close()
             try? FileManager.default.removeItem(at: tempURL)
-            flowLogger.error("🔼 [PHASE 2 FAILED] file=\(self.file.name, privacy: .public) — could not open input stream for source file")
+            flowLogger.error("🔼 [PHASE 2 FAILED] file=\(self.file.name, privacy: .public) — \(reason, privacy: .public)")
             self.error = UploadError.s3
             handler(UploadError.s3)
             finish()
+        }
+
+        let prefixStream = InputStream(data: prefixData)
+        prefixStream.open()
+        let prefixOK = copyStream(prefixStream, into: outputStream)
+        prefixStream.close()
+        guard prefixOK else {
+            failBodyBuild("stream error while writing multipart prefix")
+            return
+        }
+
+        guard let fileStream = InputStream(url: file.url) else {
+            failBodyBuild("could not open input stream for source file")
             return
         }
         fileStream.open()
-        while fileStream.hasBytesAvailable {
-            let bytesRead = fileStream.read(&buffer, maxLength: buffer.count)
-            if bytesRead > 0 { outputStream.write(buffer, maxLength: bytesRead) } else { break }
-        }
+        let fileOK = copyStream(fileStream, into: outputStream)
         fileStream.close()
+        guard fileOK else {
+            failBodyBuild("stream error while copying source file (read error or disk full) — refusing to upload a truncated body")
+            return
+        }
 
         let postfixStream = InputStream(data: boundaryClose)
         postfixStream.open()
-        while postfixStream.hasBytesAvailable {
-            let bytesRead = postfixStream.read(&buffer, maxLength: buffer.count)
-            if bytesRead > 0 { outputStream.write(buffer, maxLength: bytesRead) } else { break }
-        }
+        let postfixOK = copyStream(postfixStream, into: outputStream)
         postfixStream.close()
+        guard postfixOK else {
+            failBodyBuild("stream error while writing multipart boundary close")
+            return
+        }
         outputStream.close()
 
         // All uploads run through the foreground URLSession. iOS gives the app
@@ -471,7 +545,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         // and a fresh call would create a duplicate.
         if UploadManager.wasPhase3Attempted(fileId: file.id) {
             let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
-            UploadManager.shared.fetchFolderContents(archiveNo: archiveNo, folderLinkId: file.folder.folderLinkId) { [self] items in
+            UploadManager.shared.fetchFolderContents(archiveNo: archiveNo, folderLinkId: file.folder.folderLinkId, folderId: file.folder.folderId) { [self] items in
                 guard !isCancelled else { return }
 
                 // Fix 2: if navigateMin itself failed, we have NO idea whether
@@ -543,7 +617,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
             createdDT: createdDT,
             fileSize: fileSizeBytes,
             folderLinkId: file.folder.folderLinkId,
-            archiveNo: archiveNo
+            archiveNo: archiveNo,
+            folderId: file.folder.folderId
         ))
 
         let registerStartTime = Date()

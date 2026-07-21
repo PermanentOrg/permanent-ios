@@ -230,11 +230,16 @@ class SettingsScreenViewModel: ObservableObject {
         // so transient auth flows don't accidentally destroy upload work.
         UploadManager.shared.cancelAll()
 
-        AuthenticationManager.shared.logout()
-        
+        // Revoke the token server-side FIRST — the request needs the still-valid
+        // bearer (destroying the session before this call sent /auth/logout
+        // unauthenticated, so the token was never actually revoked). Local
+        // teardown then happens in the completion on EVERY path, so the user is
+        // always signed out locally even when the network call fails.
         let logoutOperation = APIOperation(AuthenticationEndpoint.logout)
 
         logoutOperation.execute(in: APIRequestDispatcher()) { result in
+            AuthenticationManager.shared.logout()
+
             switch result {
             case .json(let response, _):
                 guard let model: AuthResponse = JSONHelper.convertToModel(from: response) else {
@@ -253,7 +258,7 @@ class SettingsScreenViewModel: ObservableObject {
                 handler(.error(message: .errorMessage))
 
             default:
-                break
+                handler(.error(message: .errorMessage))
             }
         }
     }

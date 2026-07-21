@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 @testable import Permanent
 import XCTest
 import KeychainSwift
@@ -47,13 +48,54 @@ class SessionTests: XCTestCase {
         sut.clearSession()
     }
     
+    func testSaveSession_NoSelectedArchive_RestoresInsteadOfThrowing() throws {
+        // A session can legitimately have no selected archive (no-archive accounts,
+        // fresh signup before the default archive is assigned). Restore must not
+        // throw: `encode(to:)` writes null for a nil archive, and a non-optional
+        // decode used to fail here — force-logging those users out on every launch.
+        let session = PermSession(token: token)
+        session.account = accountVO
+        session.selectedArchive = nil
+
+        try sut.saveSession(session)
+
+        let savedSession = try XCTUnwrap(try sut.savedSession())
+        XCTAssertEqual(savedSession.token, token)
+        XCTAssertNil(savedSession.selectedArchive)
+
+        sut.clearSession()
+    }
+
     func testClearSession() throws {
         let session = PermSession(token: token)
-        
+
         try sut.saveSession(session)
-        
+
         sut.clearSession()
-        
+
         XCTAssertNil(try sut.savedSession())
+    }
+
+    // MARK: - Session-expiry presentation guard (H4)
+    // The old `current is AuthenticationViewController` guard could never trip (`current` is
+    // always the NavigationController wrapper), so repeated 401s re-ran dismiss + setRoot +
+    // alert. These pin the corrected predicate: dedupe while in flight, suppress when already
+    // on login, present otherwise.
+
+    @MainActor
+    func testShouldPresentSessionExpiry_AlreadyPresenting_Suppresses() {
+        XCTAssertFalse(RootViewController.shouldPresentSessionExpiry(current: nil, alreadyPresenting: true))
+    }
+
+    @MainActor
+    func testShouldPresentSessionExpiry_InMainApp_Presents() {
+        let nav = UINavigationController(rootViewController: UIViewController())
+        XCTAssertTrue(RootViewController.shouldPresentSessionExpiry(current: nav, alreadyPresenting: false))
+    }
+
+    @MainActor
+    func testShouldPresentSessionExpiry_AlreadyOnLogin_Suppresses() {
+        let nav = UINavigationController(rootViewController: AuthenticationViewController())
+        XCTAssertFalse(RootViewController.shouldPresentSessionExpiry(current: nav, alreadyPresenting: false))
     }
 }

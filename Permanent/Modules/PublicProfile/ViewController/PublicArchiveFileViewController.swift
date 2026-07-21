@@ -188,10 +188,21 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     
     // MARK: - Network Related
     
-    private func getRootFolder() {
+    private func getRootFolder(isRetry: Bool = false) {
         showSpinner()
-        
-        viewModel?.getRoot(then: { status in
+
+        viewModel?.getRoot(then: { [weak self] status in
+            guard let self = self else { return }
+            // Opening a foreign public archive fires several authenticated fetches at once
+            // on a cold connection; the first attempt can fail transiently (cold TLS or a
+            // momentary token/CSRF gap) yet succeed on retry. Retry the root load exactly
+            // once before surfacing a non-actionable error alert. Passing the one-shot as a
+            // parameter (rather than stored state) scopes it to THIS load, so a later load
+            // still gets its own retry.
+            if case .error = status, !isRetry {
+                self.getRootFolder(isRetry: true)
+                return
+            }
             self.onFilesFetchCompletion(status)
         })
     }
@@ -394,7 +405,7 @@ extension PublicArchiveFileViewController {
     }
     
     func shareWithOtherApps(file: FileModel) {
-        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
+        if let localURL = fileHelper.url(forFileNamed: FileHelper.recordScopedName(file.uploadFileName, recordId: file.recordId)) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)

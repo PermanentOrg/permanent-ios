@@ -6,11 +6,18 @@
 //
 
 import UIKit
+import AVFoundation
 
 class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     var pageVC: UIPageViewController!
 
     let controllersCache: NSCache<NSNumber, FilePreviewViewController> = NSCache<NSNumber, FilePreviewViewController>()
+
+    /// The preview pager owns the shared AVAudioSession for its whole session: any child page
+    /// that plays media flips this on (via `onDidActivatePlaybackAudioSession`), and the pager
+    /// deactivates once in `deinit`. Child pages never deactivate the session themselves while
+    /// coordinated, so a cached page evicted mid-session can't silence the page that's playing.
+    private var didActivatePreviewAudioSession = false
     
     var filteredFiles: [FileModel] {
         viewModel?.viewModels.filter({ $0.type.isFolder == false }) ?? []
@@ -27,6 +34,16 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     // Info (details) and share/more both lead to network-dependent screens — disabled offline.
     private weak var infoBarButton: UIBarButtonItem?
     private weak var shareBarButton: UIBarButtonItem?
+
+    deinit {
+        // The pager owns the shared audio session for the whole preview flow; release it once
+        // here so background audio resumes on close. Child pages don't deactivate while
+        // coordinated (see onDidActivatePlaybackAudioSession), which avoids an evicted cached
+        // page silencing the page that's actually playing.
+        if didActivatePreviewAudioSession {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -94,8 +111,9 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     private func createFilePreviewViewController(for file: FileModel) -> FilePreviewViewController {
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = file
-        filePreviewVC.viewModel = FilePreviewViewModel(file: file)
-        
+        // usesStelaDetail keeps its property default (the in-app flag); the VM scopes V2
+        // to own-archive records and auto-falls back to V1. loadVM() builds the VM.
+
         // If opened from notification, pass close action to child VC
         if isFromNotification {
             filePreviewVC.closeAction = { [weak self] in
@@ -103,10 +121,17 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
             }
         }
         
+        // Coordinate the shared audio session BEFORE loadVM(), so ownership is established
+        // even if a media page were ever to activate synchronously during load (today loading
+        // is async, but this keeps correctness independent of that timing).
+        filePreviewVC.onDidActivatePlaybackAudioSession = { [weak self] in
+            self?.didActivatePreviewAudioSession = true
+        }
+
         // Load the file content
         filePreviewVC.view.isHidden = false // preload the view
         filePreviewVC.loadVM()
-        
+
         return filePreviewVC
     }
     
@@ -202,7 +227,13 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
     
     @discardableResult
     func dequeueViewController(atIndex index: Int, preloadLeftRightLevel: Int = 0) -> FilePreviewViewController? {
-        if let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)) {
+        // The cache is keyed by index, but `filteredFiles` is computed and can shift (a
+        // delete/refresh reorders it), leaving the cached controller at `index` bound to a
+        // different file than filteredFiles[index] — which showed the WRONG file on swipe.
+        // Only reuse a cached controller when it still matches the file now at that index.
+        if index >= 0, index < filteredFiles.count,
+           let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)),
+           fileDetailsVC.file == filteredFiles[index] {
             // Preload left and right controllers after the current one is loaded
             if preloadLeftRightLevel <= 2 {
                 if fileDetailsVC.recordLoaded {
@@ -229,6 +260,13 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             }
             let file = filteredFiles[index]
             fileDetailsVC.file = file
+            // Coordinate the shared audio session BEFORE loadVM() (see createFilePreviewViewController):
+            // establishes ownership regardless of whether a media page ever activates synchronously.
+            fileDetailsVC.onDidActivatePlaybackAudioSession = { [weak self] in
+                self?.didActivatePreviewAudioSession = true
+            }
+            // usesStelaDetail keeps its property default (the in-app flag); the VM scopes
+            // V2 to own-archive records with a V1 failsafe.
             fileDetailsVC.view.isHidden = false // preload the view
             fileDetailsVC.loadVM()
             
@@ -248,7 +286,7 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             }
             
             controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: index))
-            
+
             return fileDetailsVC
         }
         

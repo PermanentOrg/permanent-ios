@@ -1120,7 +1120,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     func shareWithOtherApps(file: FileModel) {
-        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
+        if let localURL = fileHelper.url(forFileNamed: FileHelper.recordScopedName(file.uploadFileName, recordId: file.recordId)) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
@@ -1259,17 +1259,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             floatingActionIsland?.showActivityIndicator()
             viewModel?.relocate(files: files, to: destination, then: { status in
                 self.floatingActionIsland?.hideActivityIndicator()
-                
+
                 switch status {
                 case .success:
-                    self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
-                    
+                    // Refetch instead of inserting the SOURCE models: a copy creates a
+                    // NEW record server-side, so the inserted row would carry the
+                    // ORIGINAL's ids — deleting/renaming "the copy" would hit the
+                    // original record (data loss). A move can change link ids too.
                     self.floatingActionIsland?.showDoneCheckmark() {
                         self.dismissFloatingActionIsland({ [weak self] in
                             self?.fabView?.isHidden = false
                             self?.viewModel?.isSelectingDestination = false
-                            
-                            self?.refreshCollectionView()
+
+                            self?.refreshCurrentFolder(shouldDisplaySpinner: false)
                         })
                     }
                     
@@ -1384,12 +1386,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     private func handleProgress(forFile file: FileModel, withValue value: Float) {
-        guard let index = viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }),
-            let downloadingCell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? FileCollectionViewCell
+        // Downloads are a serial FIFO in the downloads section (0), so the active item is always
+        // at row 0. The previous lookup used the file's index in `viewModels` (the synced
+        // section), which pointed at the wrong cell — or none. Mirror MainViewController.
+        guard let downloadingCell = collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? FileCollectionViewCell
         else {
             return
         }
-        
+
         downloadingCell.updateProgress(withValue: value)
     }
 
@@ -1717,10 +1721,7 @@ extension SharesViewController: SharedFileActionSheetDelegate {
     
     // MARK: - Helper Methods
     private func formatFileSize(_ size: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useKB, .useMB, .useGB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: size)
+        size.readableFileSize
     }
     
     // MARK: - Metadata Edit

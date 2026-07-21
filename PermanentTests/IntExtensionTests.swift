@@ -122,4 +122,46 @@ final class IntExtensionTests: XCTestCase {
     func testInt64_1023Bytes() {
         XCTAssertEqual(Int64(1023).bytesToReadableForm(), "1023 B")
     }
+
+    // MARK: - Int64.readableFileSize (period-style, locale-stable — Figma spec)
+
+    func testReadableFileSize_WholeMegabytes_NoDecimal() {
+        XCTAssertEqual(Int64(4_000_000).readableFileSize, "4 MB")
+    }
+
+    func testReadableFileSize_FractionalMegabytes_OneDecimal() {
+        XCTAssertEqual(Int64(2_800_000).readableFileSize, "2.8 MB")
+    }
+
+    /// The reason this helper exists: always a period, never a comma, even though the
+    /// device locale would otherwise render "2,8 MB".
+    func testReadableFileSize_UsesPeriodNeverComma() {
+        let result = Int64(2_800_000).readableFileSize
+        XCTAssertTrue(result.contains("."), "Expected a period, got: \(result)")
+        XCTAssertFalse(result.contains(","), "Expected no comma, got: \(result)")
+    }
+
+    func testReadableFileSize_Zero_ReturnsEmpty() {
+        XCTAssertEqual(Int64(0).readableFileSize, "")
+    }
+
+    func testReadableFileSize_Negative_ReturnsEmpty() {
+        XCTAssertEqual(Int64(-10).readableFileSize, "")
+    }
+
+    func testReadableFileSize_SubKilobyte_ShowsBytes() {
+        XCTAssertEqual(Int64(500).readableFileSize, "500 bytes")
+    }
+
+    func testReadableFileSize_OneByte_IsSingular() {
+        XCTAssertEqual(Int64(1).readableFileSize, "1 byte")
+    }
+
+    func testReadableFileSize_ExactlyOneKB() {
+        XCTAssertEqual(Int64(1000).readableFileSize, "1 KB")
+    }
+
+    func testReadableFileSize_Gigabytes() {
+        XCTAssertEqual(Int64(3_500_000_000).readableFileSize, "3.5 GB")
+    }
 }

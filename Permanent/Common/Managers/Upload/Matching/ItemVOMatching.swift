@@ -45,6 +45,34 @@ extension Array where Element == ItemVO {
     }
 }
 
+#if !APP_EXTENSION
+extension FolderChildV2Data {
+    /// Adapts a Stela V2 child record into the minimal `ItemVO` the dedupe matcher
+    /// reads (uploadFileName / displayName / size) so a V2 folder listing flows through
+    /// the existing `ItemVO` matcher unchanged. All ItemVO fields are optional, so the
+    /// partial decode always succeeds for a well-formed child; returns nil otherwise and
+    /// callers drop nils. Fenced out of the ShareExtension target (which has no V2 path).
+    func toMatchableItemVO() -> ItemVO? {
+        var payload: [String: Any] = [:]
+        if let uploadFileName = uploadFileName { payload["uploadFileName"] = uploadFileName }
+        if let displayName = displayName { payload["displayName"] = displayName }
+        if let size = size { payload["size"] = size }
+        return JSONHelper.decoding(from: payload, with: ItemVO.decoder)
+    }
+}
+
+extension Array where Element == FolderChildV2Data {
+    /// The production dedupe pipeline over a V2 children listing: records only
+    /// (dedupe matches files, never subfolders), adapted into the matcher's
+    /// `[ItemVO]` currency. Lives here so `UploadManager.fetchFolderContents`
+    /// and the unit tests exercise the SAME pipeline instead of each
+    /// re-implementing the filter + adapt expression.
+    func toMatchableItemVOs() -> [ItemVO] {
+        filter { !$0.isFolder }.compactMap { $0.toMatchableItemVO() }
+    }
+}
+#endif
+
 extension UploadManager {
     /// Identifies which of the picked files already have a record in the
     /// destination folder. Drives the Guard 0 pre-upload prompt so the user
@@ -72,7 +100,10 @@ extension UploadManager {
                 acc[file.id] = Int64(bytes)
             }
         }
-        fetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId) { items in
+        // Destination folderId (Stela numeric id) for the V2 listing; all picked files
+        // in a batch target the same folder. Missing/≤0 → fetchFolderContents uses V1.
+        let folderId = files.first?.folder.folderId ?? -1
+        fetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, folderId: folderId) { items in
             guard let items = items else {
                 // Fetch failed — proceed as if no duplicates exist.
                 completion([])

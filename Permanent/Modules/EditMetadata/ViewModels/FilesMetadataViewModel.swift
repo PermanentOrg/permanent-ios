@@ -108,13 +108,25 @@ class FilesMetadataViewModel: ObservableObject {
     }
     
     func getRecord(file: FileModel) async throws -> RecordVO? {
+        // Stela V2 read (flag-gated) for records, with the legacy V1 fetch as an
+        // automatic failsafe. Folders (recordId <= 0) always use V1.
+        if FeatureFlags.useStelaNavigation, file.recordId > 0, !file.type.isFolder {
+            if let v2Record = await getRecordV2(file: file) {
+                return v2Record
+            }
+            // any V2 miss (error / decode failure) → fall through to the V1 fetch
+        }
+        return try await getRecordV1(file: file)
+    }
+
+    private func getRecordV1(file: FileModel) async throws -> RecordVO? {
         return try await withCheckedThrowingContinuation {[weak self] continuation in
             let downloadInfo = FileDownloadInfoVM(
                 fileType: file.type,
                 folderLinkId: file.folderLinkId,
                 parentFolderLinkId: file.parentFolderLinkId
             )
-            
+
             self?.downloader = DownloadManagerGCD()
             self?.downloader?.getRecord(downloadInfo) { (record, error) in
                 if let error = error {
@@ -125,21 +137,66 @@ class FilesMetadataViewModel: ObservableObject {
             }
         }
     }
+
+    /// Fetches the record via Stela GET /api/v2/records/{id} and maps it into the legacy
+    /// `RecordVO` so the metadata editor is unchanged. Returns nil on any error/decode
+    /// failure so the caller falls back to the V1 fetch.
+    private func getRecordV2(file: FileModel) async -> RecordVO? {
+        return await withCheckedContinuation { continuation in
+            let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: String(file.recordId), shareToken: ""))
+            operation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    guard
+                        let model: RecordV2Response = JSONHelper.decoding(from: response, with: RecordV2Response.decoder),
+                        let data = model.data,
+                        let recordVO: RecordVO = JSONHelper.decoding(from: data.toRecordVOPayload(), with: RecordVO.decoder)
+                    else {
+                        continuation.resume(returning: nil)
+                        return
+                    }
+                    continuation.resume(returning: recordVO)
+
+                default:
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
     
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
+        // Stela V2 (flag-gated): fan out one PATCH /records/{id} {description} per record,
+        // with the V1 batch as an automatic failsafe. Records only — if the selection has
+        // any folder or unsaved record, the whole batch takes V1 (records-only V2 route).
+        if FeatureFlags.useStelaNavigation,
+           selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
+            selectedFiles.patchEachRecordToV2(fieldsFor: { _ in ["description": description] }) { [weak self] succeeded in
+                if succeeded {
+                    self?.hasUpdates = true
+                    completion(true)
+                } else {
+                    self?.updateV1(description: description, completion: completion) // failsafe
+                }
+            }
+            return
+        }
+        updateV1(description: description, completion: completion)
+    }
+
+    private func updateV1(description: String, completion: @escaping ((Bool) -> Void)) {
         let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description, location: nil)
         let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .json( _, _):
                     self.hasUpdates = true
                     completion(true)
-                    
+
                 case .error(_, _):
                     completion(false)
-                    
+
                 default:
                     completion(false)
                 }
@@ -280,13 +337,20 @@ class FilesMetadataViewModel: ObservableObject {
     
     func getCommonDate() -> String {
         let dateFormatter = DateFormatter()
+        // en_US_POSIX so parsing this Gregorian ISO string doesn't fail on a device set to a
+        // non-Gregorian calendar (Buddhist/Persian), which would drop to `?? Date()` (today).
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
+
         let date = dateFormatter.date(from: selectedFiles.first?.createdDT ?? "") ?? Date()
-        
+
         let dateFormatterChanged = DateFormatter()
-        dateFormatterChanged.dateFormat = "yyyy-dd-MM hh:mm a"
+        // Was "yyyy-dd-MM" — day and month were swapped, so e.g. Oct 9 displayed as
+        // Sep 10. Display-only (the metadata "date" row title). en_US_POSIX keeps the year
+        // Gregorian on non-Gregorian-calendar devices.
+        dateFormatterChanged.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatterChanged.dateFormat = "yyyy-MM-dd hh:mm a"
 
         let commonDate = dateFormatterChanged.string(from: date)
         

@@ -1292,9 +1292,10 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
         XCTAssertEqual(result, "")
     }
 
-    func testFormatDate_InvalidDate_ReturnsSameString() {
+    func testFormatDate_InvalidDate_ReturnsEmpty() {
+        // Unparseable input now yields "" instead of echoing the raw string into the UI.
         let result = ShareItemViewModel.formatDate("not-a-date")
-        XCTAssertEqual(result, "not-a-date")
+        XCTAssertEqual(result, "")
     }
 
     // MARK: - Has Share Link Tests

@@ -21,6 +21,23 @@ class RootViewController: UIViewController {
     
     var current: UIViewController?
     var sessionExpiredObserver: NSObjectProtocol?
+    /// Guards the async dismiss→setRoot→alert sequence so a burst of 401s (each posting
+    /// sessionExpired) doesn't stack alerts or reset the root repeatedly.
+    private var isPresentingSessionExpired = false
+
+    /// Whether a session-expired notification should drive the user to login. Returns
+    /// false if that flow is already in flight, or if we're already on the login screen
+    /// (`current` is the NavigationController wrapping an AuthenticationViewController).
+    /// Static + hierarchy-based so it is unit-testable. Note: `current` is NEVER itself an
+    /// AuthenticationViewController — the old `current is AuthenticationViewController`
+    /// guard could never trip, so every repeated 401 re-ran the whole flow.
+    static func shouldPresentSessionExpiry(current: UIViewController?, alreadyPresenting: Bool) -> Bool {
+        guard !alreadyPresenting else { return false }
+        if (current as? UINavigationController)?.viewControllers.first is AuthenticationViewController {
+            return false
+        }
+        return true
+    }
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -98,15 +115,21 @@ class RootViewController: UIViewController {
                 }
             }
             
-            self?.sessionExpiredObserver = NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [weak self] notification in
-                guard self?.current is AuthenticationViewController == false else { return }
-                
-                self?.dismiss(animated: false) {
-                    self?.setRoot(named: .signUp, from: .authentication)
-                    
+            self?.sessionExpiredObserver = NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: .main) { [weak self] _ in
+                guard let self = self,
+                      RootViewController.shouldPresentSessionExpiry(current: self.current, alreadyPresenting: self.isPresentingSessionExpired)
+                else { return }
+
+                self.isPresentingSessionExpired = true
+                self.dismiss(animated: false) {
+                    self.setRoot(named: .signUp, from: .authentication)
+
                     let alert = UIAlertController(title: "Session expired".localized(), message: "Your session has expired, please login again.".localized(), preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: nil))
-                    self?.present(alert, animated: true, completion: nil)
+                    // Clear the guard once the flow has landed: `current` now wraps the
+                    // login screen, so shouldPresentSessionExpiry blocks further 401s until
+                    // the user re-authenticates and the root changes away from login.
+                    self.present(alert, animated: true) { self.isPresentingSessionExpired = false }
                 }
             }
         }

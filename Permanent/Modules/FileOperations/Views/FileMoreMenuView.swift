@@ -509,10 +509,7 @@ struct FileMoreMenuView: View {
     
     // MARK: - Helper Methods
     private func formatFileSize(_ size: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useKB, .useMB, .useGB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: size)
+        size.readableFileSize
     }
     
     private func showInfoAlert(title: String, message: String) {
