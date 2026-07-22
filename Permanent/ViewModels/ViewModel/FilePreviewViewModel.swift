@@ -255,6 +255,102 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
+    // Test seams for resolvePublicRootFolderIdV2 (mirror MyFilesViewModel's archives/children
+    // seams). NOTE: the two fetch wrappers below duplicate MyFilesViewModel's — a candidate
+    // for consolidation into a shared Stela-root resolver once both paths are committed.
+    var archivesFetchV2Request: ((@escaping (Result<[ArchiveV2Data], Error>) -> Void) -> Void)?
+    var rootChildrenFetchV2Request: ((String, @escaping (Result<[FolderChildV2Data], Error>) -> Void) -> Void)?
+
+    /// Resolves the current archive's PUBLIC-root folder id via the Stela archives search —
+    /// the VSP-1787 sibling of My Files root discovery: GET /api/v2/archives → match by
+    /// `archiveNbr` → `rootFolderId` → its `type.folder.root.public` child. Returns nil on
+    /// ANY failure (no archive, network error, archive not listed, missing/empty rootFolderId,
+    /// no public-root child, bad id) so publish falls back to the V1 `getPublicRoot`
+    /// destination lookup. The returned id feeds `copyRecordV2`'s `destinationFolderId`.
+    func resolvePublicRootFolderIdV2(completion: @escaping (String?) -> Void) {
+        guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr, !archiveNbr.isEmpty else {
+            completion(nil)
+            return
+        }
+        fetchArchivesV2 { [weak self] result in
+            guard let self = self else { completion(nil); return }
+            guard
+                case .success(let archives) = result,
+                let rootFolderId = archives.first(where: { $0.archiveNbr == archiveNbr })?.rootFolderId,
+                !rootFolderId.isEmpty
+            else {
+                completion(nil)
+                return
+            }
+            self.fetchRootChildrenV2(folderId: rootFolderId) { childrenResult in
+                guard
+                    case .success(let children) = childrenResult,
+                    let publicChild = children.first(where: {
+                        $0.isFolder && FileType.fromV2(typeString: $0.type, isFolder: true) == .publicRootFolder
+                    }),
+                    let folderId = publicChild.folderId, !folderId.isEmpty, (Int(folderId) ?? -1) > 0
+                else {
+                    completion(nil)
+                    return
+                }
+                completion(folderId)
+            }
+        }
+    }
+
+    private func fetchArchivesV2(completion: @escaping (Result<[ArchiveV2Data], Error>) -> Void) {
+        if let injected = archivesFetchV2Request {
+            injected(completion)
+            return
+        }
+        let endpoint = ArchiveV2Endpoint.searchArchives(
+            callerMembershipRoles: ArchiveV2Endpoint.allMembershipRoles,
+            pageSize: ArchiveV2Endpoint.defaultPageSize
+        )
+        APIOperation(endpoint).execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: ArchivesV2Response = JSONHelper.decoding(from: response, with: ArchivesV2Response.decoder),
+                    let items = model.items
+                else {
+                    completion(.failure(APIError.parseError))
+                    return
+                }
+                completion(.success(items))
+            case .error(let error, _):
+                completion(.failure(error ?? APIError.unknown))
+            default:
+                completion(.failure(APIError.unknown))
+            }
+        }
+    }
+
+    private func fetchRootChildrenV2(folderId: String, completion: @escaping (Result<[FolderChildV2Data], Error>) -> Void) {
+        if let injected = rootChildrenFetchV2Request {
+            injected(folderId, completion)
+            return
+        }
+        let endpoint = FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize)
+        APIOperation(endpoint).execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder),
+                    let items = model.items
+                else {
+                    completion(.failure(APIError.parseError))
+                    return
+                }
+                completion(.success(items))
+            case .error(let error, _):
+                completion(.failure(error ?? APIError.unknown))
+            default:
+                completion(.failure(APIError.unknown))
+            }
+        }
+    }
+
     func download(_ record: RecordVO, fileType: FileType, onFileDownloaded: @escaping DownloadResponse) {
         downloader = DownloadManagerGCD()
         downloader?.downloadFileData(record: record, fileType: fileType, progressHandler: nil, then: onFileDownloaded)

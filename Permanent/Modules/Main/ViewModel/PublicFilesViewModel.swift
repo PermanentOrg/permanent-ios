@@ -8,18 +8,30 @@
 import Foundation
 
 class PublicFilesViewModel: MyFilesViewModel {
-    // Public Files follows Stela V2 folder navigation via the inherited
-    // MyFilesViewModel.usesStelaNavigation (same owner workspace, archive-level
-    // permissions apply). Root discovery stays V1 (getPublicRoot has no V2 route);
-    // folder drill-in runs on /folders/{id}/children with the V1 nav as auto-failsafe.
+    // Public Files reuses the inherited MyFilesViewModel V2 root discovery (VSP-1787 follow-up):
+    // it lands in the archive's PUBLIC root via GET /api/v2/archives → rootFolderId → the
+    // public-root child → /children, gated by useStelaNavigation, with V1 getPublicRoot as the
+    // automatic failsafe. Same owner workspace, archive-level permissions apply.
 
     override var rootFolderName: String {
         return "Public Files".localized()
     }
-    
-    override func getRoot(then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: currentArchive!.archiveNbr!))
-        
+
+    // Land in the archive's public root instead of My Files; the rest of getRoot is inherited.
+    override var rootSectionType: FileType { .publicRootFolder }
+    override var rootSectionFallbackDisplayName: String { "Public" }
+
+    /// V1 failsafe for Public Files root discovery — the legacy getPublicRoot bootstrap,
+    /// reached only when the V2 public-root resolution fails. Unlike the V2 path it does NOT
+    /// seed `v2NavigationTarget`, so it lists the root via V1 navigateMin, preserving today's
+    /// behavior.
+    override func performV1GetRoot(then handler: @escaping ServerResponse) {
+        guard let archiveNbr = currentArchive?.archiveNbr else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: archiveNbr))
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -27,18 +39,18 @@ class PublicFilesViewModel: MyFilesViewModel {
                     handler(.error(message: .errorMessage))
                     return
                 }
-                
+
                 if model.isSuccessful == true {
                     self.onGetRootSuccess(model, handler)
                 } else {
                     handler(.error(message: .errorMessage))
                 }
-                
+
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
-                
+
             default:
-                break
+                handler(.error(message: .errorMessage))
             }
         }
     }

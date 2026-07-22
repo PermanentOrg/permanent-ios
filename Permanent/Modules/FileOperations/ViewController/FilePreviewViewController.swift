@@ -1154,52 +1154,60 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     private func publish() {
         showSpinner()
-        
-        // Get the current archive number
+
+        // Publish = copy the item into the public workspace root.
+        let onPublishResult: (Error?) -> Void = { [weak self] error in
+            guard let self = self else { return }
+            self.hideSpinner()
+            if let error = error {
+                self.showErrorAlert(message: error.localizedDescription)
+            } else {
+                let title = self.file.type.isFolder ? "Folder published successfully".localized() : "File published successfully".localized()
+                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: title)
+            }
+        }
+
+        // VSP-1787 sibling: an own-archive record that publishes via the V2 copy resolves its
+        // public-workspace destination through the Stela archives search (no V1 getPublicRoot).
+        // On ANY resolution failure, fall back to the V1 getPublicRoot destination lookup.
+        if viewModel?.canPublishViaStelaCopy == true {
+            viewModel?.resolvePublicRootFolderIdV2 { [weak self] publicRootFolderId in
+                guard let self = self else { return }
+                if let publicRootFolderId = publicRootFolderId {
+                    self.viewModel?.copyRecordV2(destinationFolderId: publicRootFolderId, completion: onPublishResult)
+                } else {
+                    self.publishViaV1PublicRoot(onPublishResult: onPublishResult)
+                }
+            }
+            return
+        }
+
+        publishViaV1PublicRoot(onPublishResult: onPublishResult)
+    }
+
+    /// Legacy destination lookup, kept as the failsafe for the V2 public-root path: V1
+    /// getPublicRoot → V2 copyRecordV2 (own-archive records) or V1 relocate (folders /
+    /// foreign records). A -1 destination folderId (getPublicRoot omitted folderID) routes
+    /// to relocate rather than posting "-1".
+    private func publishViaV1PublicRoot(onPublishResult: @escaping (Error?) -> Void) {
         guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr else {
             hideSpinner()
             showErrorAlert(message: "Unable to publish file")
             return
         }
-        
-        // First, get the public root folder
         let filesRepository = FilesRepository()
         filesRepository.getPublicRoot(archiveNbr: archiveNbr) { [weak self] (folder, error) in
             guard let self = self else { return }
-            
             if let error = error {
                 self.hideSpinner()
                 self.showErrorAlert(message: error.localizedDescription)
                 return
             }
-            
             guard let publicRootFolder = folder else {
                 self.hideSpinner()
                 self.showErrorAlert(message: "Unable to get public folder")
                 return
             }
-            
-            // Publish = copy the item into the public root.
-            let onPublishResult: (Error?) -> Void = { error in
-                self.hideSpinner()
-                if let error = error {
-                    self.showErrorAlert(message: error.localizedDescription)
-                } else {
-                    if self.file.type.isFolder {
-                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder published successfully".localized())
-                    } else {
-                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
-                    }
-                }
-            }
-
-            // Own-archive records on the Stela path publish via POST /records/{id}/copies.
-            // This is flag-SELECT (no V1 fallback): copy isn't idempotent, so a mis-read
-            // success must never trigger a second copy. Folders (no V2 route) and foreign/
-            // shared records (bearer-only copy would be rejected) stay on V1 relocate —
-            // see FilePreviewViewModel.canPublishViaStelaCopy. Also require a valid
-            // destination folderId: FileModel(model: FolderVOData) defaults it to -1 when
-            // getPublicRoot omits folderID, and posting "-1" would fail every time.
             if self.viewModel?.canPublishViaStelaCopy == true, publicRootFolder.folderId > 0 {
                 self.viewModel?.copyRecordV2(destinationFolderId: String(publicRootFolder.folderId), completion: onPublishResult)
             } else {
@@ -1207,7 +1215,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
     }
-    
+
 }
 
 // MARK: - WKNavigationDelegate
