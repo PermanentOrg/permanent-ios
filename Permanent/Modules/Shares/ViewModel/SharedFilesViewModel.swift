@@ -10,7 +10,29 @@ import Foundation
 class SharedFilesViewModel: FilesViewModel {
     static let didSelectFilesNotifName = NSNotification.Name("SharedFilesViewModel.didSelectFilesNotifName")
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
-    
+
+    /// Enable Stela V2 folder drill-in for the Shared workspace (same switch the other
+    /// file screens use), with the V1 two-step navigation kept as the automatic failsafe.
+    /// The Shared ROOT still loads via V1 `getShares` — there is no V2 aggregate route yet.
+    override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
+
+    /// V2 `/folders/{id}/children` carries no per-child accessRole, and a shared folder's
+    /// contents inherit the folder's grant (confirmed 2026-07-22: a shared folder's own
+    /// `shares[]` holds the role, but every child comes back with `shares: []`). So stamp
+    /// each child with the ENTERED folder's role ∩ archive permissions — identical to the
+    /// V1 `onGetLeanItemsSuccess` path this replaces. Fails CLOSED: with no entered folder
+    /// the role falls back to `.viewer` (read-only), never the broader archive role, so a
+    /// missing role can only ever under-grant. (A child shared at a *different* level than
+    /// its folder inherits the folder's role here; realistically such overrides only raise
+    /// access, so inheriting under-grants — safe — and any fetch failure falls back to V1,
+    /// which carries the true per-item roles.)
+    override func v2ChildContext(enteredFolder: FileModel?) -> (permissions: [Permission], accessRole: AccessRole) {
+        let inheritedRole = enteredFolder?.accessRole ?? .viewer
+        let inheritedPermissions = Set(ArchiveVOData.permissions(forAccessRole: inheritedRole.apiValue))
+        let intersection = Array(Set(archivePermissions).intersection(inheritedPermissions))
+        return (intersection, inheritedRole)
+    }
+
     var shareListType: ShareListType = .sharedByMe {
         didSet {
             viewModels = shareListType == .sharedByMe ? sharedByMeViewModels : sharedWithMeViewModels

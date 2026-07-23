@@ -314,6 +314,8 @@
 		5E63944E29702F830043D952 /* ForgotPasswordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */; };
 		5E63B3E528A3EC3300067FAF /* SharedFilesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63B3E428A3EC3300067FAF /* SharedFilesUITests.swift */; };
 		5E63B3E728A43EC400067FAF /* LeftSideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */; };
+		5E63C8F0300FD2A00094665D /* ArchiveV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */; };
+		5E63C8F2300FD2B10094665D /* ArchiveV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8F1300FD2B10094665D /* ArchiveV2Models.swift */; };
 		5E647334263C22F900E6566D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E647333263C22F900E6566D /* NotificationName.swift */; };
 		5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */; };
 		5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */; };
@@ -1445,6 +1447,8 @@
 		5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordResponse.swift; sourceTree = "<group>"; };
 		5E63B3E428A3EC3300067FAF /* SharedFilesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesUITests.swift; sourceTree = "<group>"; };
 		5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftSideMenu.swift; sourceTree = "<group>"; };
+		5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveV2Endpoint.swift; sourceTree = "<group>"; };
+		5E63C8F1300FD2B10094665D /* ArchiveV2Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveV2Models.swift; sourceTree = "<group>"; };
 		5E647333263C22F900E6566D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileMilestonesViewController.swift; sourceTree = "<group>"; };
 		5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileAddMilestonesViewController.swift; sourceTree = "<group>"; };
@@ -4287,6 +4291,7 @@
 		BC1BDF18251355ED00F2D239 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */,
 				5E0913392F3E1BD400425568 /* RecordV2Endpoint.swift */,
 				5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */,
 				BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */,
@@ -4402,6 +4407,7 @@
 		BC4526E3251CACAB00E24A51 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				5E63C8F1300FD2B10094665D /* ArchiveV2Models.swift */,
 				5E09133C2F3E1BEF00425568 /* RecordV2Models.swift */,
 				5EA522D82F23CE16003072FB /* FolderV2Models.swift */,
 				5E7141432AFD25B2003952CD /* Billing */,
@@ -5458,6 +5464,7 @@
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
+				5E63C8F0300FD2A00094665D /* ArchiveV2Endpoint.swift in Sources */,
 				F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */,
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				5E317C6A2E7C273800DE5A77 /* CreatorAccountForShare.swift in Sources */,
@@ -5863,6 +5870,7 @@
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
 				5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */,
 				5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */,
+				5E63C8F2300FD2B10094665D /* ArchiveV2Models.swift in Sources */,
 				5E0CFF4E2F51E7BE004151CE /* ShareInviteAndGrantAccessView.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				5E0AB9E72CB026D800C80A94 /* ForgotPasswordConfimationView.swift in Sources */,

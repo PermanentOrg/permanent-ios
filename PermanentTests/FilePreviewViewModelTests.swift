@@ -454,6 +454,151 @@ extension FilePreviewViewModelTests {
         XCTAssertTrue(handlerCalled)
         XCTAssertNil(handlerRecord)
     }
+
+    // MARK: - VSP-1787 sibling: V2 public-root resolution for the publish destination
+    // resolvePublicRootFolderIdV2 = archives → match archiveNbr → rootFolderId → the
+    // public-root child of that root. Any failure returns nil so publish falls back to V1
+    // getPublicRoot.
+
+    private func decodeArchivesV2(_ json: String) -> [ArchiveV2Data] {
+        guard let data = json.data(using: .utf8) else { return [] }
+        return (try? ArchivesV2Response.decoder.decode(ArchivesV2Response.self, from: data))?.items ?? []
+    }
+
+    private func decodeChildrenV2(_ json: String) -> [FolderChildV2Data] {
+        guard let data = json.data(using: .utf8) else { return [] }
+        return (try? FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: data))?.items ?? []
+    }
+
+    /// Archive-root children mirroring the live staging shape, with a parameterized public-root.
+    private func archiveRootChildrenJSON(publicFolderId: String = "700", publicType: String = "public-root") -> String {
+        return """
+        { "items": [
+          { "folderId": "598", "displayName": "Apps", "type": "app-root", "status": "ok", "folderLinkId": "701", "archiveNumber": "0001-0002" },
+          { "folderId": "599", "displayName": "My Files", "type": "private-root", "status": "ok", "folderLinkId": "702", "archiveNumber": "0001-0003" },
+          { "folderId": "\(publicFolderId)", "displayName": "Public", "type": "\(publicType)", "status": "ok", "folderLinkId": "703", "archiveNumber": "0001-0004" }
+        ] }
+        """
+    }
+
+    /// FilePreviewViewModel with the session archive pinned (archiveNbr "1001" = ArchiveVOData.mock()).
+    private func withPublishVM(_ body: (FilePreviewViewModel) -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock() // archiveNbr "1001"
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        body(FilePreviewViewModel(file: FileModel.mockFile()))
+    }
+
+    func testResolvePublicRootV2_HappyPath_ReturnsPublicRootFolderId() {
+        withPublishVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchivesV2(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            var requestedFolderId: String?
+            vm.rootChildrenFetchV2Request = { folderId, completion in
+                requestedFolderId = folderId
+                completion(.success(self.decodeChildrenV2(self.archiveRootChildrenJSON())))
+            }
+            var result: String?; var done = false
+            vm.resolvePublicRootFolderIdV2 { result = $0; done = true }
+            XCTAssertTrue(done)
+            XCTAssertEqual(requestedFolderId, "500", "children fetched for the matched archive's rootFolderId")
+            XCTAssertEqual(result, "700", "resolves the public-root child's folderId")
+        }
+    }
+
+    func testResolvePublicRootV2_MultiArchive_SelectsByArchiveNbr() {
+        withPublishVM { vm in
+            // Decoy first (different rootFolderId); the session archive "1001" is second.
+            vm.archivesFetchV2Request = {
+                $0(.success(self.decodeArchivesV2(#"{"items":[{"archiveNbr":"2002","rootFolderId":"999"},{"archiveNbr":"1001","rootFolderId":"500"}]}"#)))
+            }
+            var requestedFolderId: String?
+            vm.rootChildrenFetchV2Request = { folderId, completion in
+                requestedFolderId = folderId
+                completion(.success(self.decodeChildrenV2(self.archiveRootChildrenJSON())))
+            }
+            var result: String?
+            vm.resolvePublicRootFolderIdV2 { result = $0 }
+            XCTAssertEqual(requestedFolderId, "500", "selection is by archiveNbr, not list position")
+            XCTAssertEqual(result, "700")
+        }
+    }
+
+    func testResolvePublicRootV2_NoSelectedArchive_ReturnsNilWithoutFetch() {
+        let previous = AuthenticationManager.shared.session
+        AuthenticationManager.shared.session = nil
+        defer { AuthenticationManager.shared.session = previous }
+        let vm = FilePreviewViewModel(file: FileModel.mockFile())
+        var archivesFetched = false
+        vm.archivesFetchV2Request = { _ in archivesFetched = true }
+        var result: String?; var done = false
+        vm.resolvePublicRootFolderIdV2 { result = $0; done = true }
+        XCTAssertTrue(done)
+        XCTAssertNil(result)
+        XCTAssertFalse(archivesFetched, "no current archive → never hits the network")
+    }
+
+    func testResolvePublicRootV2_ArchiveNotListed_ReturnsNilWithoutChildrenFetch() {
+        withPublishVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchivesV2(#"{"items":[{"archiveNbr":"9999","rootFolderId":"500"}]}"#))) }
+            var childrenFetched = false
+            vm.rootChildrenFetchV2Request = { _, _ in childrenFetched = true }
+            var result: String?; var done = false
+            vm.resolvePublicRootFolderIdV2 { result = $0; done = true }
+            XCTAssertTrue(done)
+            XCTAssertNil(result)
+            XCTAssertFalse(childrenFetched, "no rootFolderId resolved → no children call")
+        }
+    }
+
+    func testResolvePublicRootV2_ArchivesFetchFails_ReturnsNil() {
+        withPublishVM { vm in
+            vm.archivesFetchV2Request = { $0(.failure(APIError.serverError)) }
+            var result: String?; var done = false
+            vm.resolvePublicRootFolderIdV2 { result = $0; done = true }
+            XCTAssertTrue(done)
+            XCTAssertNil(result)
+        }
+    }
+
+    func testResolvePublicRootV2_RootChildrenFails_ReturnsNil() {
+        withPublishVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchivesV2(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in completion(.failure(APIError.serverError)) }
+            var result: String?; var done = false
+            vm.resolvePublicRootFolderIdV2 { result = $0; done = true }
+            XCTAssertTrue(done)
+            XCTAssertNil(result)
+        }
+    }
+
+    func testResolvePublicRootV2_NoPublicRootChild_ReturnsNil() {
+        withPublishVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchivesV2(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            // "Public" present by name but typed "public" (not "public-root"); no public-root child.
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildrenV2(self.archiveRootChildrenJSON(publicType: "public"))))
+            }
+            var result: String?; var done = false
+            vm.resolvePublicRootFolderIdV2 { result = $0; done = true }
+            XCTAssertTrue(done)
+            XCTAssertNil(result, "no public-root type child → nil (publish falls back to V1)")
+        }
+    }
+
+    func testResolvePublicRootV2_BadFolderId_ReturnsNil() {
+        withPublishVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchivesV2(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildrenV2(self.archiveRootChildrenJSON(publicFolderId: "0"))))
+            }
+            var result: String?; var done = false
+            vm.resolvePublicRootFolderIdV2 { result = $0; done = true }
+            XCTAssertTrue(done)
+            XCTAssertNil(result, "a non-positive folderId is a contract break → nil")
+        }
+    }
 }
 
 // MARK: - ImagePreviewViewController fitted-geometry invariant (VSP-1777: "small then zoom" glitch)

@@ -1578,6 +1578,10 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         } else {
             
             if file.type.isFolder {
+                // Seed the V2 forward-nav target so Stela drill-in engages and its children
+                // inherit this folder's accessRole (see SharedFilesViewModel.v2ChildContext).
+                // Nil when the flag is off / no V2 → navigateMin falls through to V1 safely.
+                viewModel.v2NavigationTarget = file
                 let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
                 navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                     self.backButton.isHidden = false

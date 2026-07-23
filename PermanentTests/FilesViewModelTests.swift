@@ -314,21 +314,22 @@ final class FilesViewModelTests: XCTestCase {
     // each test restores it in a defer so it can't leak into other tests.
 
     func testStelaCapability_BaseStaysV1() {
-        // The base class hardcodes false: even with the flag forced ON, generic
-        // listings (Shared workspace etc.) must NOT migrate.
+        // The base class hardcodes false: even with the flag forced ON, a bare
+        // FilesViewModel (and any subclass that doesn't opt in) must NOT migrate.
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = false }
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
     func testStelaCapability_FlagOn_OptedInWorkspacesFollowIt() {
-        // My Files, Public Files, and Search drill-in deliberately opt in;
+        // My Files, Public Files, Search, and Shared drill-in deliberately opt in;
         // the base (and everything inheriting it) stays V1.
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = false }
         XCTAssertTrue(MyFilesViewModel().usesStelaNavigation)
         XCTAssertTrue(PublicFilesViewModel().usesStelaNavigation)
         XCTAssertTrue(SearchFilesViewModel().usesStelaNavigation)
+        XCTAssertTrue(SharedFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
@@ -337,7 +338,42 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertFalse(MyFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(PublicFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(SearchFilesViewModel().usesStelaNavigation)
+        XCTAssertFalse(SharedFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
+    }
+
+    // MARK: - Shared-workspace V2 per-child role inheritance (v2ChildContext)
+    // The V2 /children payload carries no per-child accessRole, so Shared inherits the
+    // ENTERED folder's role onto its children (confirmed 2026-07-22: a shared folder's own
+    // shares[] holds the role, but every child returns shares:[]). Base workspaces keep the
+    // archive-level role. Inheritance must fail CLOSED (→ .viewer) so it can never over-grant.
+
+    private func makeV2Folder(role: AccessRole) -> FileModel {
+        let json = """
+        { "items": [ { "folderId": "10", "displayName": "Shared folder", "type": "private",
+          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test" } ] }
+        """
+        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: role)
+    }
+
+    func testV2ChildContext_SharedInheritsEnteredFolderRole_BaseDoesNot() {
+        let editorFolder = makeV2Folder(role: .editor)
+
+        // Base (My Files / Public / Search semantics): archive-level role, folder ignored.
+        let base = FilesViewModel()
+        XCTAssertEqual(base.v2ChildContext(enteredFolder: editorFolder).accessRole, base.archiveAccessRole)
+        XCTAssertNotEqual(base.v2ChildContext(enteredFolder: editorFolder).accessRole, .editor,
+                          "base must not inherit the folder's role")
+
+        // Shared: children inherit the entered folder's role.
+        let shared = SharedFilesViewModel()
+        XCTAssertEqual(shared.v2ChildContext(enteredFolder: editorFolder).accessRole, .editor,
+                       "shared-folder contents inherit the folder's grant")
+    }
+
+    func testV2ChildContext_SharedFailsClosedToViewerWithoutFolder() {
+        XCTAssertEqual(SharedFilesViewModel().v2ChildContext(enteredFolder: nil).accessRole, .viewer,
+                       "a missing role must fail closed to read-only, never the broader archive role")
     }
 
     // MARK: - Batch PATCH fan-out aggregation (patchSequentially seam)
@@ -1104,5 +1140,373 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(completions, 1, "endRefreshing/hideSpinner depend on this completion")
         XCTAssertEqual(fetchCount(), 1, "back/refresh never retries — the superseding fetch repaints this folder")
         XCTAssertEqual(vm.navigationStack.map { $0.folderId }, [current.folderId], "stack untouched")
+    }
+
+    // MARK: - VSP-1787: Stela root discovery (archives.rootFolderId → children)
+    // Replaces the V1 /folder/getRoot bootstrap. resolveMyFilesTargetV2 is the
+    // side-effect-free core (archives → archive-root children → private-root child);
+    // any failure returns nil so getRoot falls back to the V1 bootstrap.
+
+    private func decodeArchives(_ json: String) -> [ArchiveV2Data] {
+        guard let data = json.data(using: .utf8) else { return [] }
+        return (try? ArchivesV2Response.decoder.decode(ArchivesV2Response.self, from: data))?.items ?? []
+    }
+
+    /// Archive-root children mirroring the live staging shape: Apps (app-root),
+    /// My Files (private-root), Public (public-root). `myFilesFolderId`/`myFilesType`
+    /// are parameterized to exercise the id guard and the type/displayName selection.
+    private func archiveRootChildrenJSON(myFilesFolderId: String = "600",
+                                         myFilesType: String = "private-root",
+                                         myFilesDisplayName: String = "My Files") -> String {
+        return """
+        { "items": [
+          { "folderId": "598", "displayName": "Apps", "type": "app-root",
+            "status": "ok", "folderLinkId": "701", "archiveNumber": "0001-0002" },
+          { "folderId": "\(myFilesFolderId)", "displayName": "\(myFilesDisplayName)", "type": "\(myFilesType)",
+            "status": "ok", "folderLinkId": "702", "archiveNumber": "0001-0003" },
+          { "folderId": "599", "displayName": "Public", "type": "public-root",
+            "status": "ok", "folderLinkId": "703", "archiveNumber": "0001-0004" }
+        ] }
+        """
+    }
+
+    /// MyFilesViewModel with the session's selected archive pinned (archiveNbr "1001",
+    /// matching ArchiveVOData.mock()) so `currentArchive` resolves. Restores the previous
+    /// session when `body` returns; the injected fetch seams complete synchronously.
+    private func withMyFilesVM(_ body: (MyFilesViewModel) -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock() // archiveNbr "1001"
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        body(MyFilesViewModel())
+    }
+
+    // --- privateRootChild selection ---
+
+    func testPrivateRootChild_MatchesByType() {
+        let children = decodeChildren(archiveRootChildrenJSON())!.items!
+        let picked = MyFilesViewModel.privateRootChild(in: children)
+        XCTAssertEqual(picked?.folderId, "600", "the private-root child is selected by Stela type")
+    }
+
+    func testPrivateRootChild_FallsBackToDisplayName() {
+        // type "private" does NOT map to .privateRootFolder, but displayName does match.
+        let children = decodeChildren(archiveRootChildrenJSON(myFilesType: "private"))!.items!
+        let picked = MyFilesViewModel.privateRootChild(in: children)
+        XCTAssertEqual(picked?.folderId, "600", "display-name fallback selects My Files when type doesn't match")
+    }
+
+    func testPrivateRootChild_NoneWhenNeitherMatches() {
+        let children = decodeChildren(archiveRootChildrenJSON(myFilesType: "private", myFilesDisplayName: "Documents"))!.items!
+        XCTAssertNil(MyFilesViewModel.privateRootChild(in: children), "no private-root type and no 'My Files' name → nil")
+    }
+
+    // --- resolveMyFilesTargetV2 ---
+
+    func testResolveMyFilesTargetV2_HappyPath_ReturnsMyFilesModel() {
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500","archiveId":"1"}]}"#))) }
+            var requestedFolderId: String?
+            vm.rootChildrenFetchV2Request = { folderId, completion in
+                requestedFolderId = folderId
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+
+            var didComplete = false
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { didComplete = true; model = $0 }
+
+            XCTAssertTrue(didComplete)
+            XCTAssertEqual(requestedFolderId, "500", "children are fetched for the matched archive's rootFolderId")
+            XCTAssertEqual(model?.folderId, 600, "resolves the private-root My Files folder")
+            XCTAssertEqual(model?.type, .privateRootFolder)
+            XCTAssertEqual(model?.folderLinkId, 702)
+            XCTAssertEqual(model?.archiveNo, "0001-0003", "archiveNo passes through for the V1 navigateMin failsafe")
+        }
+    }
+
+    func testResolveMyFilesTargetV2_NoSelectedArchive_ReturnsNilWithoutFetching() {
+        let previous = AuthenticationManager.shared.session
+        AuthenticationManager.shared.session = nil
+        defer { AuthenticationManager.shared.session = previous }
+
+        let vm = MyFilesViewModel()
+        var archivesFetched = false
+        vm.archivesFetchV2Request = { _ in archivesFetched = true }
+
+        var didComplete = false
+        var model: FileModel?
+        vm.resolveMyFilesTargetV2 { didComplete = true; model = $0 }
+
+        XCTAssertTrue(didComplete, "completion must fire even on the no-archive short-circuit")
+        XCTAssertNil(model)
+        XCTAssertFalse(archivesFetched, "no current archive → never hits the network")
+    }
+
+    func testResolveMyFilesTargetV2_ArchiveNotListed_ReturnsNilWithoutChildrenFetch() {
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"9999","rootFolderId":"500"}]}"#))) }
+            var childrenFetched = false
+            vm.rootChildrenFetchV2Request = { _, _ in childrenFetched = true }
+
+            var didComplete = false
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { didComplete = true; model = $0 }
+
+            XCTAssertTrue(didComplete)
+            XCTAssertNil(model, "the selected archive isn't in the list → nil (caller falls back to V1)")
+            XCTAssertFalse(childrenFetched, "no rootFolderId resolved → no children call")
+        }
+    }
+
+    func testResolveMyFilesTargetV2_ArchivesFetchFails_ReturnsNil() {
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.failure(APIError.serverError)) }
+            var didComplete = false
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { didComplete = true; model = $0 }
+            XCTAssertTrue(didComplete)
+            XCTAssertNil(model)
+        }
+    }
+
+    func testResolveMyFilesTargetV2_RootChildrenFails_ReturnsNil() {
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in completion(.failure(APIError.serverError)) }
+            var didComplete = false
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { didComplete = true; model = $0 }
+            XCTAssertTrue(didComplete)
+            XCTAssertNil(model)
+        }
+    }
+
+    func testResolveMyFilesTargetV2_BadFolderId_ReturnsNil() {
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            // A private-root child whose folderId resolves to the non-positive sentinel.
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON(myFilesFolderId: "0"))!.items!))
+            }
+            var didComplete = false
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { didComplete = true; model = $0 }
+            XCTAssertTrue(didComplete)
+            XCTAssertNil(model, "a bad folderId is a contract break → nil, so the caller uses V1")
+        }
+    }
+
+    // --- getRoot end-to-end (flag ON): resolve → seed → V2 navigate ---
+
+    func testGetRoot_StelaOn_SeedsMyFilesAndNavigatesV2() {
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            // The final listing (children of My Files) commits via the existing nav seam.
+            vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(vm.navigationStack.last?.folderId, 600, "landed inside the My Files folder via V2")
+            XCTAssertNil(vm.v2NavigationTarget, "forward navigation consumes the one-shot target")
+        }
+    }
+
+    func testGetRoot_StelaOff_RoutesToV1WithoutV2Discovery() {
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = false
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+        withMyFilesVM { vm in
+            var archivesFetched = false
+            var childrenFetched = false
+            vm.archivesFetchV2Request = { _ in archivesFetched = true }
+            vm.rootChildrenFetchV2Request = { _, _ in childrenFetched = true }
+
+            // Router decision is synchronous; the V1 branch's network call is fire-and-forget
+            // and not awaited (we only assert the routing, so this stays non-flaky).
+            vm.getRoot { _ in }
+
+            XCTAssertFalse(archivesFetched, "flag OFF must not enter V2 root discovery")
+            XCTAssertFalse(childrenFetched, "flag OFF must not enter V2 root discovery")
+        }
+    }
+
+    // --- Endpoint wire shape (the one request no seam-based test exercises) ---
+
+    func testArchiveV2Endpoint_SearchArchives_URLHeadersAndErrorPolicy() {
+        let ep = ArchiveV2Endpoint.searchArchives(
+            callerMembershipRoles: ArchiveV2Endpoint.allMembershipRoles,
+            pageSize: ArchiveV2Endpoint.defaultPageSize
+        )
+        let url = ep.customURL ?? ""
+
+        XCTAssertTrue(url.contains("api/v2/archives"), "hits the Stela archives path")
+        XCTAssertTrue(url.contains("pageSize=100"))
+        // Repeated `callerMembershipRole=<role>` params (NOT a bracketed array or comma-joined),
+        // one per role — the form the server's own paginated nextPage emits.
+        XCTAssertEqual(url.components(separatedBy: "callerMembershipRole=").count - 1, 6, "one param per role")
+        for role in ["owner", "manager", "curator", "editor", "contributor", "viewer"] {
+            XCTAssertTrue(url.contains("callerMembershipRole=\(role)"), "missing role \(role)")
+        }
+        XCTAssertFalse(url.contains("callerMembershipRole[]"), "must not use the bracketed-array form")
+        XCTAssertFalse(url.contains("callerMembershipRole%5B%5D"), "must not use the encoded bracketed-array form")
+
+        XCTAssertEqual(ep.method, .get)
+        XCTAssertEqual(ep.headers?["Request-Version"], "2")
+        XCTAssertTrue(ep.ignoreErrors, "a foreign-archive 401 must fall through to V1, not force-logout")
+    }
+
+    func testArchivesV2Response_DecodesVerbatimStagingShape() {
+        // Field names + string-typed ids exactly as captured from staging.
+        let json = #"""
+        {"items":[{"archiveId":"2977","archiveNbr":"01it-0000","name":"test 10115","rootFolderId":"48584","status":"status.generic.ok","type":"type.archive.person","callerMembershipRole":"owner"}],"pagination":{"nextCursor":"2977","nextPage":"...","totalPages":1}}
+        """#
+        let items = decodeArchives(json)
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items.first?.archiveNbr, "01it-0000")
+        XCTAssertEqual(items.first?.rootFolderId, "48584", "rootFolderId decodes as a String")
+        XCTAssertEqual(items.first?.archiveId, "2977")
+    }
+
+    // --- selection / resolver gaps flagged by review ---
+
+    func testPrivateRootChild_IgnoresRecordNamedMyFiles() {
+        // A RECORD (recordId set, folderId absent) named "My Files" must NOT be selected —
+        // it has no folderId and would poison navigateMin with a -1 id.
+        let json = #"""
+        { "items": [ { "recordId":"700", "displayName":"My Files", "type":"private-root",
+          "status":"ok", "folderLinkId":"9", "archiveNumber":"0001-x" } ] }
+        """#
+        let children = decodeChildren(json)!.items!
+        XCTAssertNil(MyFilesViewModel.privateRootChild(in: children), "a record must fail the isFolder guard")
+    }
+
+    func testResolveMyFilesTargetV2_MultiArchive_SelectsByArchiveNbrNotPosition() {
+        withMyFilesVM { vm in
+            // Decoy first (different rootFolderId); the session archive "1001" is second.
+            vm.archivesFetchV2Request = {
+                $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"2002","rootFolderId":"999"},{"archiveNbr":"1001","rootFolderId":"500"}]}"#)))
+            }
+            var requestedFolderId: String?
+            vm.rootChildrenFetchV2Request = { folderId, completion in
+                requestedFolderId = folderId
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { model = $0 }
+            XCTAssertEqual(requestedFolderId, "500", "selection is by archiveNbr, not list position")
+            XCTAssertEqual(model?.folderId, 600)
+        }
+    }
+
+    func testResolveMyFilesTargetV2_MatchedArchiveMissingRootFolderId_ReturnsNilWithoutChildrenFetch() {
+        withMyFilesVM { vm in
+            // Archive matches the session but carries no rootFolderId.
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001"}]}"#))) }
+            var childrenFetched = false
+            vm.rootChildrenFetchV2Request = { _, _ in childrenFetched = true }
+            var didComplete = false
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { didComplete = true; model = $0 }
+            XCTAssertTrue(didComplete)
+            XCTAssertNil(model, "no rootFolderId → nil (the keystone field the ticket depends on)")
+            XCTAssertFalse(childrenFetched, "no rootFolderId resolved → no children call")
+        }
+    }
+
+    func testResolveMyFilesTargetV2_BadFolderLinkId_ReturnsNil() {
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            // Valid folderId but folderLinkId omitted → resolves to the -1 sentinel.
+            let json = #"""
+            { "items": [ { "folderId":"600", "displayName":"My Files", "type":"private-root",
+              "status":"ok", "archiveNumber":"0001-0003" } ] }
+            """#
+            vm.rootChildrenFetchV2Request = { _, completion in completion(.success(self.decodeChildren(json)!.items!)) }
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { model = $0 }
+            XCTAssertNil(model, "a My Files child with a bad folderLinkId (every retained V1 write keys on it) → nil")
+        }
+    }
+
+    func testResolveMyFilesTargetV2_EmptyArchiveNumber_ReturnsNil() {
+        withMyFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            // Valid ids but archiveNumber omitted → archiveNo == "" fails the guard.
+            let json = #"""
+            { "items": [ { "folderId":"600", "displayName":"My Files", "type":"private-root",
+              "status":"ok", "folderLinkId":"702" } ] }
+            """#
+            vm.rootChildrenFetchV2Request = { _, completion in completion(.success(self.decodeChildren(json)!.items!)) }
+            var model: FileModel?
+            vm.resolveMyFilesTargetV2 { model = $0 }
+            XCTAssertNil(model, "empty archiveNo would break the V1 navigateMin failsafe → nil")
+        }
+    }
+
+    // MARK: - VSP-1787 follow-up: Public Files root discovery (public-root section)
+    // PublicFilesViewModel reuses the same V2 discovery, overriding only the section type
+    // (public-root) and the V1 failsafe (getPublicRoot).
+
+    private func withPublicFilesVM(_ body: (PublicFilesViewModel) -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock() // archiveNbr "1001"
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        body(PublicFilesViewModel())
+    }
+
+    func testPublicFilesViewModel_RootSectionType_IsPublic() {
+        XCTAssertEqual(PublicFilesViewModel().rootSectionType, .publicRootFolder, "Public Files lands in the public root")
+        XCTAssertEqual(MyFilesViewModel().rootSectionType, .privateRootFolder, "My Files stays on the private root")
+    }
+
+    func testSectionRootChild_SelectsPublicRootByType() {
+        let children = decodeChildren(archiveRootChildrenJSON())!.items!
+        let picked = MyFilesViewModel.sectionRootChild(in: children, sectionType: .publicRootFolder, fallbackDisplayName: "Public")
+        XCTAssertEqual(picked?.folderId, "599", "the public-root child is selected by Stela type")
+    }
+
+    func testPublicFilesResolveSectionRootV2_ResolvesPublicRoot() {
+        withPublicFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            var model: FileModel?
+            vm.resolveSectionRootTargetV2(sectionType: vm.rootSectionType, fallbackDisplayName: vm.rootSectionFallbackDisplayName) { model = $0 }
+            XCTAssertEqual(model?.folderId, 599, "Public Files resolves the public-root child, not My Files")
+            XCTAssertEqual(model?.type, .publicRootFolder)
+        }
+    }
+
+    func testPublicFiles_getRoot_StelaOn_SeedsPublicRootAndNavigatesV2() {
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+        withPublicFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(vm.navigationStack.last?.folderId, 599, "landed inside the public root via V2")
+            XCTAssertNil(vm.v2NavigationTarget, "forward navigation consumes the one-shot target")
+        }
     }
 }
