@@ -55,6 +55,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// supersede/retry policy in `navigateV2` without network.
     var childrenFetchV2Request: ((String, @escaping (ChildrenFetchOutcome) -> Void) -> Void)?
 
+    /// The folder whose children the in-flight V2 fetch is listing, captured by
+    /// `navigateV2`. Lets `getFolderChildrenV2` derive per-child context via
+    /// `v2ChildContext(enteredFolder:)` — Shared inherits this folder's accessRole
+    /// onto its children (the V2 `/children` payload carries no per-child role).
+    private var v2EnteredFolder: FileModel?
+
     var downloadQueue: [FileModel] = []
     var activeSortOption: SortOption = .nameAscending
     var uploadInProgress: Bool = false
@@ -80,7 +86,17 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var archiveAccessRole: AccessRole {
         return AccessRole.roleForValue(currentArchive?.accessRole)
     }
-    
+
+    /// The `(permissions, accessRole)` to stamp on each child produced by the V2
+    /// `/folders/{id}/children` listing. Base uses the archive-level role — correct for
+    /// My Files / Public / Search, where a single archive role governs every item in the
+    /// (owned) workspace. Shared overrides this to INHERIT the entered folder's role,
+    /// because a shared folder's contents come back with no per-child role of their own.
+    /// Called on the main thread by `getFolderChildrenV2` (reads main-only session state).
+    func v2ChildContext(enteredFolder: FileModel?) -> (permissions: [Permission], accessRole: AccessRole) {
+        return (archivePermissions, archiveAccessRole)
+    }
+
     var timer: Timer?
     var timerRunCount: Int = 0
     
@@ -551,6 +567,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
     ///   completion (hide spinner / endRefreshing). Never V1-failsafe a superseded
     ///   fetch — its out-of-order V1 response could overwrite the newer listing.
     private func navigateV2(target: FileModel, params: NavigateMinParams, backNavigation: Bool, retriesLeft: Int, then handler: @escaping ServerResponse) {
+        // Record the folder being entered so `getFolderChildrenV2` can derive per-child
+        // context from it (Shared inherits this folder's role onto its children).
+        v2EnteredFolder = target
         let fetch: (String, @escaping (ChildrenFetchOutcome) -> Void) -> Void = childrenFetchV2Request ?? { [weak self] folderId, completion in
             guard let self = self else { completion(.failed(message: .errorMessage)); return }
             self.getFolderChildrenV2(folderId: folderId, completion: completion)
@@ -626,10 +645,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
         // Request the whole folder in a single page (see FolderV2Endpoint.maxChildrenPageSize).
         let apiOperation = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize))
 
-        // Snapshot the archive-derived context and sort on the calling (main) thread so the
+        // Snapshot the per-child context and sort on the calling (main) thread so the
         // decode/map/sort can run off-main without touching main-only view-model state.
-        let permissions = archivePermissions
-        let accessRole = archiveAccessRole
+        // Base context is archive-derived; Shared overrides it to inherit the entered
+        // folder's role (the V2 payload has no per-child accessRole).
+        let context = v2ChildContext(enteredFolder: v2EnteredFolder)
+        let permissions = context.permissions
+        let accessRole = context.accessRole
         let sortOption = activeSortOption
 
         // Staleness guard: decodes run on a CONCURRENT queue, so two in-flight fetches

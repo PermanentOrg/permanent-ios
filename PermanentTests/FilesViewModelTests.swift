@@ -314,21 +314,22 @@ final class FilesViewModelTests: XCTestCase {
     // each test restores it in a defer so it can't leak into other tests.
 
     func testStelaCapability_BaseStaysV1() {
-        // The base class hardcodes false: even with the flag forced ON, generic
-        // listings (Shared workspace etc.) must NOT migrate.
+        // The base class hardcodes false: even with the flag forced ON, a bare
+        // FilesViewModel (and any subclass that doesn't opt in) must NOT migrate.
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = false }
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
     func testStelaCapability_FlagOn_OptedInWorkspacesFollowIt() {
-        // My Files, Public Files, and Search drill-in deliberately opt in;
+        // My Files, Public Files, Search, and Shared drill-in deliberately opt in;
         // the base (and everything inheriting it) stays V1.
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = false }
         XCTAssertTrue(MyFilesViewModel().usesStelaNavigation)
         XCTAssertTrue(PublicFilesViewModel().usesStelaNavigation)
         XCTAssertTrue(SearchFilesViewModel().usesStelaNavigation)
+        XCTAssertTrue(SharedFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
@@ -337,7 +338,42 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertFalse(MyFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(PublicFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(SearchFilesViewModel().usesStelaNavigation)
+        XCTAssertFalse(SharedFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
+    }
+
+    // MARK: - Shared-workspace V2 per-child role inheritance (v2ChildContext)
+    // The V2 /children payload carries no per-child accessRole, so Shared inherits the
+    // ENTERED folder's role onto its children (confirmed 2026-07-22: a shared folder's own
+    // shares[] holds the role, but every child returns shares:[]). Base workspaces keep the
+    // archive-level role. Inheritance must fail CLOSED (→ .viewer) so it can never over-grant.
+
+    private func makeV2Folder(role: AccessRole) -> FileModel {
+        let json = """
+        { "items": [ { "folderId": "10", "displayName": "Shared folder", "type": "private",
+          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test" } ] }
+        """
+        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: role)
+    }
+
+    func testV2ChildContext_SharedInheritsEnteredFolderRole_BaseDoesNot() {
+        let editorFolder = makeV2Folder(role: .editor)
+
+        // Base (My Files / Public / Search semantics): archive-level role, folder ignored.
+        let base = FilesViewModel()
+        XCTAssertEqual(base.v2ChildContext(enteredFolder: editorFolder).accessRole, base.archiveAccessRole)
+        XCTAssertNotEqual(base.v2ChildContext(enteredFolder: editorFolder).accessRole, .editor,
+                          "base must not inherit the folder's role")
+
+        // Shared: children inherit the entered folder's role.
+        let shared = SharedFilesViewModel()
+        XCTAssertEqual(shared.v2ChildContext(enteredFolder: editorFolder).accessRole, .editor,
+                       "shared-folder contents inherit the folder's grant")
+    }
+
+    func testV2ChildContext_SharedFailsClosedToViewerWithoutFolder() {
+        XCTAssertEqual(SharedFilesViewModel().v2ChildContext(enteredFolder: nil).accessRole, .viewer,
+                       "a missing role must fail closed to read-only, never the broader archive role")
     }
 
     // MARK: - Batch PATCH fan-out aggregation (patchSequentially seam)
