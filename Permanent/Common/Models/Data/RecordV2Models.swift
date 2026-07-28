@@ -69,7 +69,25 @@ extension RecordV2Data {
     }
 
     var preferredThumbnailURL: String? {
-        resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000)
+        // Access copy LAST: a Stela copy (POST /records/{id}/copies) gets no `.thumb.wNNN`
+        // renditions (backend gap), so the HEIC-guarded access-copy thumbnail is the only
+        // one it has. Real renditions always win when present.
+        resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000) ?? accessCopyThumb256
+    }
+
+    /// The Archivematica access-copy thumbnail, HEIC-guarded (blank for HEIC originals).
+    /// Mirrors FolderChildV2Data.accessCopyThumb256.
+    private var accessCopyThumb256: String? {
+        guard !isHEICOriginal, let url = nonEmpty(thumbnailUrls?.url256) else { return nil }
+        return url
+    }
+
+    /// True when the ORIGINAL file is HEIC/HEIF — `files[]` granular type first, filename
+    /// extension fallback. Mirrors FolderChildV2Data.isHEICOriginal.
+    var isHEICOriginal: Bool {
+        if files?.originalFileIsHEIC == true { return true }
+        let name = (uploadFileName ?? downloadName ?? "").lowercased()
+        return name.hasSuffix(".heic") || name.hasSuffix(".heif")
     }
 }
 

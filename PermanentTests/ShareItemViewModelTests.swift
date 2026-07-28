@@ -1629,6 +1629,57 @@ final class ThumbnailSelectionTests: XCTestCase {
         XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/thumb500.jpg")
     }
 
+    func testRecordV2PreferredThumbnailURL_AccessCopyIsLastResortWhenNoRenditions() throws {
+        // A Stela COPY (POST /records/{id}/copies) gets NO .thumb.wNNN renditions (backend
+        // gap, captured on staging 2026-07-24): thumbUrl200/500/1000/2000 all null and the
+        // ONLY thumb is the access-copy thumbnailUrls.256. For non-HEIC that access copy is
+        // a real image and must be used — otherwise copies render as permanent placeholders.
+        let record = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "uploadFileName": "a-long-frog-3840x2160-green-10125.jpg",
+              "thumbUrl200": null,
+              "thumbUrl500": null,
+              "thumbnailUrls": { "256": "https://example.com/access-copy-256.jpg", "200": null },
+              "files": [ { "fileId": "1", "type": "type.file.image.jpg", "format": "file.format.original" } ]
+            }
+            """
+        )
+
+        XCTAssertNil(record.resolvedThumbnail256, "the 256 slot keeps flat thumbnail256 only")
+        XCTAssertEqual(record.preferredThumbnailURL, "https://example.com/access-copy-256.jpg",
+                       "with no renditions, the HEIC-guarded access copy is the last resort")
+    }
+
+    func testRecordV2PreferredThumbnailURL_NeverAccessCopyForHEIC() throws {
+        // HEIC access copies are BLANK (the July white-square bug) — even as a last resort
+        // they must not be used. Detected via files[] granular type or filename extension.
+        let byFilesType = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "thumbnailUrls": { "256": "https://example.com/access-copy-256.jpg" },
+              "files": [ { "fileId": "1", "type": "type.file.image.heic", "format": "file.format.original" } ]
+            }
+            """
+        )
+        XCTAssertTrue(byFilesType.isHEICOriginal)
+        XCTAssertNil(byFilesType.preferredThumbnailURL, "a blank HEIC access copy must never be served")
+
+        let byFilename = try decode(
+            RecordV2Data.self,
+            from: """
+            {
+              "uploadFileName": "IMG_0042.HEIC",
+              "thumbnailUrls": { "256": "https://example.com/access-copy-256.jpg" }
+            }
+            """
+        )
+        XCTAssertTrue(byFilename.isHEICOriginal, "filename extension is the fallback signal when files[] is absent")
+        XCTAssertNil(byFilename.preferredThumbnailURL)
+    }
+
     func testRecordV2PreferredThumbnailURL_PrefersTopLevelThumbnail256OverThumbnailUrls256() throws {
         let record = try decode(
             RecordV2Data.self,

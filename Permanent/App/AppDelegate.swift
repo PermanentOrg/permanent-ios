@@ -424,6 +424,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #if STAGING_ENVIRONMENT
             // Staging: verbose logging incl. capped request/response bodies.
             NetworkLogger.enableLogging()
+        #elseif DEBUG
+            // TEMP(VSP-1770 · Stela migration): verbose logging for DEBUG builds that point
+            // at PRODUCTION, so a prod-scheme Xcode run shows whether a call went V1 or V2
+            // while the migration is being verified. Deliberately DEBUG-only: Release
+            // (TestFlight / App Store) still takes the errors-only branch below, so real
+            // users never pay the body-stringify cost and no user data reaches their logs.
+            // REMOVE this branch once the epic ships — grep TEMP(VSP-1770).
+            NetworkLogger.enableLogging()
         #else
             // Production: errors only, never bodies — the previous enableLogging() here
             // stringified every full response body on the main thread in App Store builds.

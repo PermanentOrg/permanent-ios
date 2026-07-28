@@ -102,10 +102,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
                         queueUploadCount == 0 {
-                        // Kick the exponential-backoff thumbnail poll chain.
-                        // Server-side thumbnail processing typically completes
-                        // within ~45 s; we re-fetch the folder at 3 / 6 / 12 / 24
-                        // s offsets to surface thumbURL fields as they land.
+                        // Kick the thumbnail poll chain: refetch the folder every 10s
+                        // until the new upload's server-side thumbnails land (the chain
+                        // stops on its own once the items settle — see
+                        // scheduleNextThumbnailPoll).
                         self?.viewModel?.timerRunCount = 0
                         self?.scheduleNextThumbnailPoll()
                     }
@@ -332,7 +332,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             return
         }
 
-        fabView.isHidden = true
+        fabView.setVisibility(hidden: true)
 
         guard floatingActionIsland == nil else { return }
 
@@ -400,7 +400,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
             self?.dismissFloatingActionIsland()
-            self?.fabView.isHidden = false
+            self?.fabView.setVisibility(hidden: false)
 
             self?.viewModel?.selectedFiles = []
             self?.viewModel?.fileAction = .none
@@ -432,12 +432,19 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func updateFABViewVisibility() {
         // Update FAB view visibility based on current archive permissions
         guard let viewModel = viewModel else { return }
-        
+
         let hasCreatePermission = viewModel.archivePermissions.contains(.create)
         let hasUploadPermission = viewModel.archivePermissions.contains(.upload)
+        // Hide the create/upload FAB (and its checklist sub-button) while picking a copy/move
+        // destination — you're choosing where to paste, not adding new files here. Otherwise
+        // the FAB reappears on every navigation during paste mode.
         let shouldShowFAB = hasCreatePermission && hasUploadPermission && !viewModel.isPickingImage
-        
-        fabView.isHidden = !shouldShowFAB
+            && !viewModel.isSelectingDestination
+
+        // setVisibility fades the buttons back in (see FABView). Hiding them for paste mode
+        // created a real hide→show transition that previously never happened — the FAB used
+        // to stay on screen throughout, so an instant reveal now reads as a pop-in.
+        fabView.setVisibility(hidden: !shouldShowFAB)
     }
     
     func resetCollectionViewState() {
@@ -483,8 +490,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
-                    
-                    self?.fabView.isHidden = false
+
+                    // FAB stays hidden in paste-destination mode (see updateFABViewVisibility).
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -500,12 +507,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
 
-                    self?.fabView.isHidden = false
+                    // FAB stays hidden in paste-destination mode (see updateFABViewVisibility).
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
                     }
-                    
+
                     self?.viewModel?.isSelecting = false
                     self?.setupBottomActionSheet()
                 })
@@ -625,7 +632,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
-        fabView.isHidden = true
+        // Can't (re)enter multi-select while choosing a paste destination — that mode owns
+        // the fixed relocate selection. Belt-and-suspenders with hiding the button below.
+        guard !viewModel.isSelectingDestination else { return }
+        fabView.setVisibility(hidden: true)
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = false
             backButton.layer.opacity = 0.3
@@ -648,7 +658,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func clearButtonWasPressed(_ sender: UIButton) {
-        fabView.isHidden = false
+        fabView.setVisibility(hidden: false)
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = true
             backButton.layer.opacity = 1
@@ -980,7 +990,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 DispatchQueue.main.async {
                     self.showErrorAlert(message: .deleteError) {
                         self.refreshCurrentFolder()
-                        self.fabView.isHidden = false
+                        self.fabView.setVisibility(hidden: false)
                     }
                 }
             }
@@ -1018,33 +1028,80 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         if !isInvalidDestination || viewModel?.fileAction != .move {
             floatingActionIsland?.showActivityIndicator()
             viewModel?.relocate(files: files, to: destination, then: { status in
-                self.floatingActionIsland?.hideActivityIndicator()
-                
                 switch status {
                 case .success:
                     // Refetch instead of inserting the SOURCE models: a copy creates a
                     // NEW record server-side, so the inserted row would carry the
                     // ORIGINAL's ids — deleting/renaming "the copy" would hit the
                     // original record (data loss). A move can change link ids too.
-                    self.floatingActionIsland?.showDoneCheckmark() {
-                        self.dismissFloatingActionIsland({ [weak self] in
-                            self?.fabView?.isHidden = false
-                            self?.viewModel?.isSelectingDestination = false
+                    //
+                    // The paste is committed ASYNCHRONOUSLY, so the first refetch can come
+                    // back without the new rows. Keep the island's SPINNER up until they are
+                    // actually on screen and only then show the ✓ — flashing "done" over a
+                    // list that still looks unchanged reads as "nothing happened".
+                    self.viewModel?.expectPastedItems(files, destination: destination)
+                    self.settlePastedItems(attemptsLeft: MainViewController.pastedItemsSettleAttempts) { [weak self] in
+                        self?.floatingActionIsland?.hideActivityIndicator()
+                        self?.floatingActionIsland?.showDoneCheckmark() {
+                            self?.dismissFloatingActionIsland({ [weak self] in
+                                self?.fabView?.setVisibility(hidden: false)
+                                self?.viewModel?.isSelectingDestination = false
+                                // Fully exit selection mode: the single-file "⋯ → Copy" entry
+                                // keeps isSelecting on through the paste, and without this
+                                // reset the list re-renders with checkboxes after pasting.
+                                self?.viewModel?.isSelecting = false
 
-                            self?.refreshCurrentFolder(shouldDisplaySpinner: false)
-                        })
+                                // Hand any remaining wait (a copy's thumbnails, or rows that
+                                // still haven't surfaced) to the background poll.
+                                self?.viewModel?.timerRunCount = 0
+                                self?.scheduleNextThumbnailPoll()
+                            })
+                        }
                     }
 
                 case .error(_):
+                    self.floatingActionIsland?.hideActivityIndicator()
                     self.dismissFloatingActionIsland()
                     self.showErrorAlert(message: .relocateError) {
                         self.refreshCurrentFolder()
-                        self.fabView?.isHidden = false
+                        self.fabView?.setVisibility(hidden: false)
                         self.viewModel?.isSelectingDestination = false
                     }
                 }
             })
         }
+    }
+
+    /// How many times a successful paste re-fetches the destination, waiting for the pasted
+    /// rows to surface, before it gives up and completes anyway (the background poll keeps
+    /// looking). At `pastedItemsPollInterval` apiece this bounds the spinner to ~10s: record
+    /// copies land on the first attempt, but a V1 FOLDER copy is far slower — staging-measured
+    /// at 9s before its row even appeared, which a shorter ceiling gave up on, showing ✓ over
+    /// a destination that didn't contain the folder yet.
+    private static let pastedItemsSettleAttempts = 10
+
+    /// Refetches the destination folder until the rows a paste added are listed, then calls
+    /// `completion`. The server commits a relocate asynchronously, so attempt 1 often comes
+    /// back without them. Always completes — on success, on giving up, or if the user
+    /// navigated away (the expectation is keyed to its folder, so it reads as settled).
+    private func settlePastedItems(attemptsLeft: Int, then completion: @escaping () -> Void) {
+        refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true, then: { [weak self] in
+            guard let self = self, let viewModel = self.viewModel else {
+                completion()
+                return
+            }
+            guard viewModel.isAwaitingPastedItems, attemptsLeft > 0 else {
+                completion() // rows are on screen (or we've waited long enough)
+                return
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + FilesViewModel.pastedItemsPollInterval) { [weak self] in
+                guard let self = self else {
+                    completion()
+                    return
+                }
+                self.settlePastedItems(attemptsLeft: attemptsLeft - 1, then: completion)
+            }
+        })
     }
 
     func publish(file: FileModel) {
@@ -1124,9 +1181,24 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         guard let viewModel = viewModel else { return }
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        
+
         guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
-        
+
+        // While picking a copy/move destination the list is navigation-only: tap a folder to
+        // enter it (to choose where to paste). Items cannot be (re)selected here — the
+        // selection set is fixed to the items being relocated until the user pastes/cancels,
+        // so a tap only drills into an eligible folder and does nothing on anything else.
+        if viewModel.isSelectingDestination {
+            guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
+            viewModel.v2NavigationTarget = file
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                self.backButton.isHidden = false
+                self.directoryLabel.text = file.name
+            })
+            return
+        }
+
         if viewModel.isSelecting {
             if let index = viewModel.selectedFiles?.firstIndex(of: file) {
                 viewModel.selectedFiles?.remove(at: index)
@@ -1197,6 +1269,10 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 headerView.leftButtonAction = nil
             }
             
+            // Reset the reused header's Select button to visible; a previous dequeue may
+            // have hidden it for a paste-destination section (see below).
+            headerView.rightButton.isHidden = false
+
             if viewModel?.hasCancelButton(forSection: section) == true {
                 headerView.rightButtonTitle = "Cancel All".localized()
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
@@ -1206,7 +1282,11 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 } else {
                     headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
                 }
-                
+                // A title-less button still occupies a tappable area, so in paste-destination
+                // mode hide it outright — otherwise tapping where "Select" used to be silently
+                // re-enters multi-select and lets items be reselected instead of navigating.
+                headerView.rightButton.isHidden = viewModel?.isSelectingDestination ?? false
+
                 headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton())}
                 headerView.clearButtonAction = { [weak self] header in self?.clearButtonWasPressed(UIButton())}
             }
@@ -1224,21 +1304,56 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     
     @objc
     private func timerActions() {
-        pullToRefreshAction()
-        viewModel?.updateTimerCount()
-        // If we still have steps in the backoff chain, schedule the next one.
-        scheduleNextThumbnailPoll()
+        // Re-arm only AFTER the refetch commits: the gate reads `viewModels`, so scheduling
+        // before the response lands tests the PREVIOUS generation of the list and can end the
+        // chain a poll early. Calls refreshCurrentFolder directly rather than
+        // pullToRefreshAction, whose invalidateTimer() exists so a MANUAL pull cancels the
+        // chain — a chain-driven refresh must not cancel itself.
+        refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true, then: { [weak self] in
+            self?.scheduleNextThumbnailPoll()
+        })
     }
 
-    /// Schedules the next thumbnail-poll fire using the backoff interval at
-    /// `timerRunCount`. No-op once the chain is exhausted (the previous
-    /// `updateTimerCount` call already invalidated the timer in that case).
+    /// Polls the current folder every `thumbnailPollInterval` (10s — the server processes
+    /// pasted copies slowly; staging thumbnails can take minutes) while any listed item is
+    /// still awaiting server-side processing. The chain stops on its own when the folder
+    /// settles or the run cap (~5 min) is hit; navigation invalidates the pending fire,
+    /// and a manual pull-to-refresh cancels the chain via invalidateTimer.
     private func scheduleNextThumbnailPoll() {
         guard let viewModel = viewModel else { return }
-        let step = viewModel.timerRunCount
-        guard step < FilesViewModel.thumbnailPollIntervals.count else { return }
-        let interval = FilesViewModel.thumbnailPollIntervals[step]
+        guard viewModel.hasItemsAwaitingProcessing || viewModel.isAwaitingPastedItems else {
+            viewModel.timerRunCount = 0 // settled — leave the counter fresh for the next kick
+            viewModel.clearPastedItemsExpectation()
+            return
+        }
+        guard viewModel.timerRunCount < FilesViewModel.thumbnailPollMaxRuns else {
+            viewModel.clearPastedItemsExpectation() // gave up waiting; don't re-arm on the next kick
+            return
+        }
+        viewModel.timerRunCount += 1
+        // Three different waits, three cadences — matched to how long each actually takes:
+        //   • rows still MISSING: a read-after-write race against the server's commit,
+        //     usually gone in ~1s (bounded, so a row that never arrives stops hammering);
+        //   • item mid copy/move: not tappable until the server finishes, seconds to tens
+        //     of seconds for a folder copy;
+        //   • everything else: the thumbnail settle, which genuinely takes minutes.
+        let isRaceForMissingRows = viewModel.isAwaitingPastedItems
+            && viewModel.timerRunCount <= FilesViewModel.pastedItemsFastRuns
+        let interval: TimeInterval
+        if isRaceForMissingRows {
+            interval = FilesViewModel.pastedItemsPollInterval
+        } else if viewModel.hasItemsInTransientState {
+            interval = FilesViewModel.transientStatePollInterval
+        } else {
+            interval = FilesViewModel.thumbnailPollInterval
+        }
+        // Never stack chains: kill any pending fire before scheduling the next one.
+        viewModel.timer?.invalidate()
         viewModel.timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
+            // Clear BEFORE refetching: the fired timer must read as "no pending chain",
+            // or pullToRefreshAction→invalidateTimer would zero the run count on every
+            // fire and the chain could never terminate (confirmed review finding).
+            self?.viewModel?.timer = nil
             self?.timerActions()
         }
     }
@@ -1604,7 +1719,7 @@ extension MainViewController: FABActionSheetDelegate {
                             DispatchQueue.main.async {
                                 self?.showErrorAlert(message: .deleteError) {
                                     self?.refreshCurrentFolder()
-                                    self?.fabView.isHidden = false
+                                    self?.fabView.setVisibility(hidden: false)
                                 }
                             }
                         }
@@ -1651,7 +1766,7 @@ extension MainViewController: FABActionSheetDelegate {
                         self?.deleteFile(self?.viewModel?.selectedFiles)
                         
                         self?.dismissFloatingActionIsland()
-                        self?.fabView.isHidden = false
+                        self?.fabView.setVisibility(hidden: false)
                         self?.clearButtonWasPressed(UIButton())
                     }, positiveButtonColor: .brightRed,
                     cancelButtonColor: .primary,
@@ -1678,8 +1793,8 @@ extension MainViewController: FABActionSheetDelegate {
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
-                    
-                    self?.fabView.isHidden = false
+
+                    // FAB stays hidden in paste-destination mode (see updateFABViewVisibility).
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -1696,9 +1811,13 @@ extension MainViewController: FABActionSheetDelegate {
             menuItems.append(FileMenuViewModel.MenuItem(type: .copy, action: { [weak self] in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
+                    // Leave selection mode BEFORE building the paste island (parity with
+                    // the Move item below) — otherwise checkboxes stay up through paste
+                    // mode and reappear after the paste completes.
+                    self?.viewModel?.isSelecting = false
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
-                    
-                    self?.fabView.isHidden = false
+
+                    // FAB stays hidden in paste-destination mode (see updateFABViewVisibility).
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -1736,7 +1855,7 @@ extension MainViewController: FABActionSheetDelegate {
                                 self?.viewModel?.removeSyncedFiles(files)
                                 self?.refreshCollectionView()
                                 self?.dismissFloatingActionIsland()
-                                self?.fabView.isHidden = false
+                                self?.fabView.setVisibility(hidden: false)
                                 self?.clearButtonWasPressed(UIButton())
                             }
 
@@ -1745,7 +1864,7 @@ extension MainViewController: FABActionSheetDelegate {
                                 self?.showErrorAlert(message: .deleteError) {
                                     self?.refreshCurrentFolder()
                                     self?.dismissFloatingActionIsland()
-                                    self?.fabView.isHidden = false
+                                    self?.fabView.setVisibility(hidden: false)
                                     self?.clearButtonWasPressed(UIButton())
                                 }
                             }
@@ -1890,7 +2009,7 @@ extension MainViewController: FABActionSheetDelegate {
         self.present(hostingController, animated: true, completion: nil)
         
         self.dismissFloatingActionIsland()
-        self.fabView.isHidden = false
+        self.fabView.setVisibility(hidden: false)
         self.clearButtonWasPressed(UIButton())
         
         // Add a way to call the completion block when the view is dismissed.
