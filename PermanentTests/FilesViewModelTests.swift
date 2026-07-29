@@ -1136,6 +1136,28 @@ final class FilesViewModelTests: XCTestCase {
     // COPY routes own-archive records through the idempotent V2 endpoint (NO V1 failsafe —
     // copy is not idempotent), while folders, foreign records, and MOVE stay on V1.
 
+    /// `MyFilesViewModel.selectedFiles` proxies the process-wide
+    /// `AuthenticationManager.shared.session`, and its setter silently no-ops when that session
+    /// is nil. The suite still makes live API calls whose 401s post
+    /// `sessionExpiredNotificationName`, which `AuthenticationManager` turns into an async
+    /// `logout()` — so the shared session can be nulled mid-test. That is what broke
+    /// `testRelocate_Copy_AllEligible_RoutesToV2AndSucceeds` on CI while it passed locally:
+    /// `fileAction` (plain storage on the view model) reset correctly, but the selection write
+    /// went nowhere. Keeping the selection on the view model makes the assertion about the code
+    /// under test instead of about whether a stray logout landed mid-run.
+    ///
+    /// This does not fix the underlying problem — the unit suite should not reach the network.
+    /// Tracked separately; see the repo-hygiene finding about live API calls from tests.
+    private final class StelaCopyViewModel: MyFilesViewModel {
+        private var localSelection: [FileModel]? = []
+        /// Storage only — the production override also posts a selection notification and
+        /// refreshes checkbox state, neither of which these tests assert on.
+        override var selectedFiles: [FileModel]? {
+            get { localSelection }
+            set { localSelection = newValue }
+        }
+    }
+
     /// A saved record child in the current (mock) archive — the eligible shape for V2 copy.
     /// Built via the V2 decode path (the convenience init discards its recordId, so identity
     /// would be lost). Omitting `folderId` while carrying `recordId` keeps `isFolder` false.
@@ -1198,7 +1220,10 @@ final class FilesViewModelTests: XCTestCase {
 
     func testRelocate_Copy_AllEligible_RoutesToV2AndSucceeds() {
         withStelaSessionArchive {
-            let vm = MyFilesViewModel()
+            // StelaCopyViewModel, not MyFilesViewModel: this is the one relocate test that
+            // asserts the selection was cleared, and MyFilesViewModel routes that through the
+            // shared session (see the type's doc comment).
+            let vm = StelaCopyViewModel()
             vm.fileAction = .copy
             var copied: [(record: String, destination: String)] = []
             vm.copyRecordV2Request = { recordId, destinationFolderId, completion in
