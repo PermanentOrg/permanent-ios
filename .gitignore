@@ -109,3 +109,6 @@ CLAUDE.md
 # AI maturity assessment notes
 .ai-maturity/
 ai-maturity-assessment.md
+
+# graphify knowledge graph output (regenerate with /graphify .)
+graphify-out/

@@ -66,11 +66,19 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         
         collectionView.refreshControl = refreshControl
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+        // The 6pt side gutters belong to the LAYOUT (sectionInset), not to the scroll view
+        // (contentInset). contentInset is re-resolved whenever the view re-enters the
+        // window — e.g. returning from the .fullScreen file preview, which UIKit removes
+        // the presenting view for — and the flow layout can prepare against a momentarily
+        // zero inset. That cached pass lays every row out from x=0, so the grid renders 6pt
+        // to the left with a doubled right margin until a scroll forces re-preparation.
+        // sectionInset is baked into the item frames, so it cannot be lost that way.
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
         flowLayout.minimumLineSpacing = 0
         flowLayout.estimatedItemSize = .zero
+        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 6, bottom: 0, right: 6)
         collectionView.collectionViewLayout = flowLayout
         
         refreshControl.tintColor = .primary
@@ -80,6 +88,11 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     func refreshCollectionView() {
         handleTableBackgroundView()
         collectionView.reloadData()
+        #if DEBUG
+        // Surface which navigation path served the current listing so UI parity tests can
+        // confirm a "V2" run actually used Stela (not the silent V1 failsafe). DEBUG-only.
+        collectionView.accessibilityIdentifier = "files-nav-source-\(FilesViewModel.lastNavigationSource)"
+        #endif
     }
     
     func handleTableBackgroundView() {
@@ -256,11 +269,23 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
-        // Vertical size: 30 is the height of the title label
-        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
-        
-        return gridItemSize
+        // Horizontal layout: |-6-cell-6-cell-6-|, derived from the collection view's own
+        // width rather than UIScreen so a narrower container or a re-resolved inset can't
+        // push the two-up fit over the edge and collapse the grid to one column. Flooring
+        // leaves sub-point slack instead of the exact-fit knife edge the old
+        // `UIScreen.main.bounds.width / 2 - 9` produced.
+        // Vertical size: 39 = the old (W/2 + 30) height minus the (W/2 - 9) width.
+        let layout = collectionViewLayout as? UICollectionViewFlowLayout
+        let sideGutters = (layout?.sectionInset.left ?? 6) + (layout?.sectionInset.right ?? 6)
+        let interitem = layout?.minimumInteritemSpacing ?? 6
+        let available = collectionView.bounds.width
+            - collectionView.adjustedContentInset.left
+            - collectionView.adjustedContentInset.right
+            - sideGutters
+            - interitem
+        let width = max(1, (available / 2).rounded(.down))
+
+        return CGSize(width: width, height: width + 39)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -271,6 +296,9 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
         guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
         
         if file.type.isFolder {
+            // Seed the V2 navigation target (no-op when Stela nav is off, or when the tapped
+            // item carries no V2 folderId — navigateMin gates on both and falls through to V1).
+            viewModel.v2NavigationTarget = file
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                 self.backButton.isHidden = false

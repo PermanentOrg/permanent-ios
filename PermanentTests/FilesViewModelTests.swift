@@ -316,29 +316,35 @@ final class FilesViewModelTests: XCTestCase {
     func testStelaCapability_BaseStaysV1() {
         // The base class hardcodes false: even with the flag forced ON, a bare
         // FilesViewModel (and any subclass that doesn't opt in) must NOT migrate.
+        let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = false }
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
     func testStelaCapability_FlagOn_OptedInWorkspacesFollowIt() {
-        // My Files, Public Files, Search, and Shared drill-in deliberately opt in;
-        // the base (and everything inheriting it) stays V1.
+        // My Files, Public Files, Search, Shared drill-in, and the Public Gallery
+        // deliberately opt in; the base (and everything inheriting it) stays V1.
+        let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = false }
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
         XCTAssertTrue(MyFilesViewModel().usesStelaNavigation)
         XCTAssertTrue(PublicFilesViewModel().usesStelaNavigation)
         XCTAssertTrue(SearchFilesViewModel().usesStelaNavigation)
         XCTAssertTrue(SharedFilesViewModel().usesStelaNavigation)
+        XCTAssertTrue(PublicArchiveViewModel().usesStelaNavigation)
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
     func testStelaCapability_FlagOff_EverythingStaysV1() {
+        let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = false
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
         XCTAssertFalse(MyFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(PublicFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(SearchFilesViewModel().usesStelaNavigation)
         XCTAssertFalse(SharedFilesViewModel().usesStelaNavigation)
+        XCTAssertFalse(PublicArchiveViewModel().usesStelaNavigation)
         XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
@@ -374,6 +380,222 @@ final class FilesViewModelTests: XCTestCase {
     func testV2ChildContext_SharedFailsClosedToViewerWithoutFolder() {
         XCTAssertEqual(SharedFilesViewModel().v2ChildContext(enteredFolder: nil).accessRole, .viewer,
                        "a missing role must fail closed to read-only, never the broader archive role")
+    }
+
+    // MARK: - Public Gallery read-only pin (PublicArchiveViewModel)
+    // The gallery is a read-only browser, pinned at the ARCHIVE level so every listing path
+    // agrees: the V2 `/children` mapping (through the base v2ChildContext), the V1
+    // getLeanItems failsafe, and the navigateMin folder push all read archivePermissions /
+    // archiveAccessRole. Unlike Shared it must NOT inherit the entered folder's role, and it
+    // must NOT use the real archive role — that would hand out write affordances when you
+    // browse your OWN archive here, and only on whichever backend served the listing.
+
+    private func decodeArchive(accessRole: String) -> ArchiveVOData? {
+        let json = "{\"archiveNbr\":\"0001-test\",\"accessRole\":\"\(accessRole)\",\"fullName\":\"Owned Archive\"}"
+        guard let data = json.data(using: .utf8) else { return nil }
+        return try? ArchiveVOData.decoder.decode(ArchiveVOData.self, from: data)
+    }
+
+    func testV2ChildContext_PublicGalleryPinsViewerRegardlessOfEnteredFolder() throws {
+        let vm = PublicArchiveViewModel()
+        // Seed an OWNER archive: with `currentArchive` nil the pin is indistinguishable from
+        // the un-pinned base (a nil archive already yields [.read]/.viewer), so every
+        // assertion below would pass even with the override deleted.
+        vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
+        XCTAssertEqual(AccessRole.roleForValue(vm.currentArchive?.accessRole), .owner,
+                       "precondition: the underlying archive really is owner-level")
+
+        for role in [AccessRole.owner, .manager, .curator, .editor, .contributor, .viewer] {
+            let context = vm.v2ChildContext(enteredFolder: makeV2Folder(role: role))
+            XCTAssertEqual(context.accessRole, .viewer,
+                           "public gallery children must stay read-only even inside a \(role) folder")
+            XCTAssertEqual(context.permissions, [.read],
+                           "public gallery children must carry only .read even inside a \(role) folder")
+        }
+
+        // And with no entered folder at all (the root listing).
+        XCTAssertEqual(vm.v2ChildContext(enteredFolder: nil).accessRole, .viewer)
+        XCTAssertEqual(vm.v2ChildContext(enteredFolder: nil).permissions, [.read])
+    }
+
+    func testV2ChildContext_PublicGalleryIgnoresOwnerArchiveRole() throws {
+        // Browsing YOUR OWN archive through the gallery: the archive carries the owner
+        // role, so an un-pinned gallery would stamp owner permissions onto every child.
+        // This is the one case where the pin actually narrows, and it is deliberate.
+        let ownerArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
+        XCTAssertEqual(AccessRole.roleForValue(ownerArchive.accessRole), .owner,
+                       "fixture must really be an owner archive, else this test proves nothing")
+
+        let vm = PublicArchiveViewModel()
+        vm.currentArchive = ownerArchive
+        XCTAssertEqual(vm.currentArchive?.archiveNbr, ownerArchive.archiveNbr,
+                       "sanity: the VM did take the owner archive")
+
+        let context = vm.v2ChildContext(enteredFolder: nil)
+        XCTAssertEqual(context.accessRole, .viewer, "own archive viewed publicly is still read-only")
+        XCTAssertEqual(context.permissions, [.read])
+    }
+
+    func testPublicGallery_ArchiveRolePinnedSoTheV1FailsafeCannotDisagree() throws {
+        // The pin lives on archivePermissions/archiveAccessRole rather than only on
+        // v2ChildContext, because the V1 legs (onGetLeanItemsSuccess / onNavigateMinSuccess)
+        // stamp children from these same two properties. Pinning just the V2 leg would let a
+        // transient V2 failure hand back write affordances the V2 listing withheld.
+        let vm = PublicArchiveViewModel()
+        vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
+
+        XCTAssertEqual(vm.archiveAccessRole, .viewer,
+                       "the gallery must never expose the owner role, on either backend")
+        XCTAssertEqual(vm.archivePermissions, [.read],
+                       "the gallery must never expose write permissions, on either backend")
+
+        // Guard the specific affordances this protects (FilePreviewViewController /
+        // FileDetailsViewController share menus, FilePreviewViewModel.isEditable).
+        for forbidden in [Permission.edit, .delete, .publish, .share, .ownership, .create, .upload, .move] {
+            XCTAssertFalse(vm.archivePermissions.contains(forbidden),
+                           "\(forbidden) must not be reachable from the public browser")
+        }
+
+        // And the base (non-gallery) behavior is untouched: an owner archive still grants write.
+        let base = FilesViewModel()
+        XCTAssertTrue(ArchiveVOData.permissions(forAccessRole: AccessRole.owner.apiValue).contains(.edit),
+                      "sanity: owner really does imply .edit — else the assertions above are hollow")
+        XCTAssertEqual(base.archiveAccessRole, AccessRole.roleForValue(base.currentArchive?.accessRole),
+                       "the base class must keep deriving its role from the session archive")
+    }
+
+    // MARK: - Record rename: V2 PATCH is own-archive only
+    // `patchRecord` is sent bearer-only (no share token) and is NOT exempt from the 401
+    // force-logout, so attempting it on a FOREIGN (shared-with-me) record risks logging the
+    // user out for a rename they were allowed to make. The rename itself would still land via
+    // the V1 failsafe — the logout is the damage. Foreign records must never reach the V2 leg.
+
+    /// Record built through the V2 decode path, because the convenience `FileModel` init
+    /// hardcodes `archiveId = -1` and archiveId is exactly what the ownership check reads.
+    private func makeV2Record(archiveId: Int, recordId: Int = 500) -> FileModel {
+        let json = """
+        { "items": [ { "recordId": "\(recordId)", "archiveId": "\(archiveId)",
+          "displayName": "photo.jpg", "type": "type.record.image", "status": "status.generic.ok",
+          "folderLinkId": "11", "archiveNumber": "0001-test" } ] }
+        """
+        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read, .edit], accessRole: .editor)
+    }
+
+    /// Runs `body` with the session pinned to `ArchiveVOData.mock()` (archiveID 1).
+    private func withSessionArchive(_ body: () -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock()   // archiveID 1
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        body()
+    }
+
+    func testIsInSessionArchive_OwnForeignAndIndeterminate() {
+        withSessionArchive {
+            let vm = FilesViewModel()
+            XCTAssertTrue(vm.isInSessionArchive(makeV2Record(archiveId: 1)), "same archive as the session")
+            XCTAssertFalse(vm.isInSessionArchive(makeV2Record(archiveId: 2)), "a foreign archive is not ours")
+            XCTAssertFalse(vm.isInSessionArchive(makeV2Record(archiveId: -1)),
+                           "an absent archiveId is indeterminate and must fail closed")
+        }
+    }
+
+    func testIsInSessionArchive_NoSession_FailsClosed() {
+        let previous = AuthenticationManager.shared.session
+        AuthenticationManager.shared.session = nil
+        defer { AuthenticationManager.shared.session = previous }
+
+        XCTAssertFalse(FilesViewModel().isInSessionArchive(makeV2Record(archiveId: 1)))
+    }
+
+    func testIsInSessionArchive_IgnoresOverriddenCurrentArchive() {
+        // `PublicArchiveViewModel` overrides `currentArchive` to the archive being VIEWED.
+        // The check must read the SESSION's archive, or browsing a foreign public archive
+        // would report its records as "ours".
+        withSessionArchive {
+            let gallery = PublicArchiveViewModel()
+            gallery.currentArchive = ArchiveVOData.mock()   // viewed archive == archiveID 1
+            XCTAssertFalse(gallery.isInSessionArchive(makeV2Record(archiveId: 2)),
+                           "a foreign record stays foreign even when its archive is the one being viewed")
+            XCTAssertTrue(gallery.isInSessionArchive(makeV2Record(archiveId: 1)),
+                          "ownership is decided by the session, not by currentArchive")
+        }
+    }
+
+    func testCanRenameViaStelaPatch_ForeignRecordIsRejected() {
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
+        withSessionArchive {
+            // The reported scenario: Shares → "Shared with me" → editor role → Rename.
+            let shared = SharedFilesViewModel()
+            XCTAssertTrue(shared.usesStelaNavigation, "precondition: Shared opts into the flag")
+            XCTAssertFalse(shared.canRenameViaStelaPatch(makeV2Record(archiveId: 2), newName: "new.jpg"),
+                           "a shared-with-me record must not reach PATCH /records/{id}")
+
+            // Same record on a base workspace — still foreign, still rejected.
+            XCTAssertFalse(MyFilesViewModel().canRenameViaStelaPatch(makeV2Record(archiveId: 2), newName: "new.jpg"))
+        }
+    }
+
+    func testCanRenameViaStelaPatch_OwnRecordIsAllowed() {
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
+        withSessionArchive {
+            XCTAssertTrue(MyFilesViewModel().canRenameViaStelaPatch(makeV2Record(archiveId: 1), newName: "new.jpg"),
+                          "own-archive renames must keep using V2 — the gate must not over-tighten")
+        }
+    }
+
+    func testCanRenameViaStelaPatch_OtherGuardsStillHold() {
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
+        withSessionArchive {
+            let vm = MyFilesViewModel()
+            let own = makeV2Record(archiveId: 1)
+
+            XCTAssertFalse(vm.canRenameViaStelaPatch(own, newName: ""), "an empty name must not be PATCHed")
+            XCTAssertFalse(vm.canRenameViaStelaPatch(makeV2Record(archiveId: 1, recordId: 0), newName: "new.jpg"),
+                           "a record with no id must not be PATCHed")
+            XCTAssertFalse(vm.canRenameViaStelaPatch(makeV2Folder(role: .owner), newName: "new"),
+                           "folder rename has no V2 route")
+
+            FeatureFlags.useStelaNavigation = false
+            XCTAssertFalse(vm.canRenameViaStelaPatch(own, newName: "new.jpg"), "flag off means V1")
+        }
+    }
+
+    /// Observes that `rename` actually consults the gate: a foreign record must reach the V1
+    /// leg SYNCHRONOUSLY. The V2 leg is asynchronous, so a synchronous V1 call proves no
+    /// PATCH was attempted — and nothing touches the network.
+    private final class RenameSpyViewModel: SharedFilesViewModel {
+        var v1RenameCallCount = 0
+        override func performV1Rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
+            v1RenameCallCount += 1
+            handler(.success)
+        }
+    }
+
+    func testRename_ForeignRecord_GoesStraightToV1() {
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
+        withSessionArchive {
+            let vm = RenameSpyViewModel()
+            var status: RequestStatus?
+            vm.rename(file: makeV2Record(archiveId: 2), name: "new.jpg") { status = $0 }
+
+            XCTAssertEqual(vm.v1RenameCallCount, 1,
+                           "the V1 leg must run synchronously — a V2 attempt would defer it")
+            XCTAssertEqual(status, .success)
+        }
     }
 
     // MARK: - Batch PATCH fan-out aggregation (patchSequentially seam)
