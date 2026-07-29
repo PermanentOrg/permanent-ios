@@ -470,16 +470,10 @@ final class FilesViewModelTests: XCTestCase {
     // user out for a rename they were allowed to make. The rename itself would still land via
     // the V1 failsafe — the logout is the damage. Foreign records must never reach the V2 leg.
 
-    /// Record built through the V2 decode path, because the convenience `FileModel` init
-    /// hardcodes `archiveId = -1` and archiveId is exactly what the ownership check reads.
-    private func makeV2Record(archiveId: Int, recordId: Int = 500) -> FileModel {
-        let json = """
-        { "items": [ { "recordId": "\(recordId)", "archiveId": "\(archiveId)",
-          "displayName": "photo.jpg", "type": "type.record.image", "status": "status.generic.ok",
-          "folderLinkId": "11", "archiveNumber": "0001-test" } ] }
-        """
-        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read, .edit], accessRole: .editor)
-    }
+    // Records are built with `makeV2Record(recordId:archiveId:)`, defined with the VSP-1789
+    // copy tests below. It goes through the V2 decode path, which matters here: the
+    // convenience `FileModel` init hardcodes `archiveId = -1`, and archiveId is exactly what
+    // the ownership check reads.
 
     /// Runs `body` with the session pinned to `ArchiveVOData.mock()` (archiveID 1).
     private func withSessionArchive(_ body: () -> Void) {
@@ -561,7 +555,7 @@ final class FilesViewModelTests: XCTestCase {
             let own = makeV2Record(archiveId: 1)
 
             XCTAssertFalse(vm.canRenameViaStelaPatch(own, newName: ""), "an empty name must not be PATCHed")
-            XCTAssertFalse(vm.canRenameViaStelaPatch(makeV2Record(archiveId: 1, recordId: 0), newName: "new.jpg"),
+            XCTAssertFalse(vm.canRenameViaStelaPatch(makeV2Record(recordId: 0, archiveId: 1), newName: "new.jpg"),
                            "a record with no id must not be PATCHed")
             XCTAssertFalse(vm.canRenameViaStelaPatch(makeV2Folder(role: .owner), newName: "new"),
                            "folder rename has no V2 route")
