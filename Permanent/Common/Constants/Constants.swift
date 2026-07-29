@@ -22,12 +22,20 @@ enum FeatureFlags {
     /// every screen) and the upload dedupe listing. V1 remains an automatic failsafe on
     /// every gated path except publish (owned-records-only by gate), so OFF is always
     /// safe. Changing it requires an app release (no Remote Config).
-    // ON only for Debug builds that ALSO point at STAGING (Permanent-DEV scheme), so the
-    // V2 path is exercised there. Gating on DEBUG alone was not enough: running the
-    // production scheme from Xcode is still a Debug build, which silently sent V2 calls
-    // against the PROD API — prod must stay on the legacy endpoints (in every build)
-    // until the rollout flips the Release `let`. Tests may still set the var directly.
-    #if DEBUG
+    // ON only in builds that point at STAGING; production stays on the legacy endpoints
+    // in every build until the rollout flips the Release `let` below.
+    //
+    // Two gates, deliberately:
+    // - DEBUG alone was not enough: running the PRODUCTION scheme from Xcode is still a
+    //   Debug build, and it silently sent V2 calls against the prod API — hence the
+    //   runtime `APIEnvironment` check.
+    // - DEBUG-only was ALSO not enough in the other direction: the Firebase App
+    //   Distribution build testers install is DEV-Release (no DEBUG), which silently
+    //   pinned the flag to the Release `let false` — QA was testing the OLD V1 paths
+    //   while the tickets said Stela (VSP-1789 got a bug report against the very V1 copy
+    //   behavior it replaces). DEV-Release defines STAGING_ENVIRONMENT, so gate on that
+    //   too. Tests may still set the var directly.
+    #if DEBUG || STAGING_ENVIRONMENT
     static var useStelaNavigation = APIEnvironment.defaultEnv == .staging
     #else
     static let useStelaNavigation = false
