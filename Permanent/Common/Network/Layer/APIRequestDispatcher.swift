@@ -20,13 +20,53 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     /// The network session configuration.
     private var networkSession: NetworkSessionProtocol
 
+    #if DEBUG
+    /// True when this process is hosting an XCTest **unit** bundle.
+    ///
+    /// The unit suite must never reach the network. It used to: a full run issued ~255 live
+    /// requests to staging, whose 401s posted `sessionExpiredNotificationName` and produced 714
+    /// asynchronous `logout()` calls — nulling `AuthenticationManager.shared.session` at random
+    /// points, so any test reading session-backed state could fail on timing alone. Three CI
+    /// failures came from that. It also meant the suite could mutate real staging data
+    /// (`/api/account/update`, `/api/archive/change`) whenever it ran with a valid token.
+    ///
+    /// `XCTestConfigurationFilePath` is set by XCTest in the process the test bundle is injected
+    /// into. Unit tests run inside the app host, so it is present. UI tests drive a separate app
+    /// process that is NOT given it, so `PermanentUITests` keeps its real networking — which also
+    /// means this needs no test-plan wiring and cannot be missed when a plan is added.
+    /// Read once; the environment is fixed for the process lifetime.
+    private static let isHostingUnitTests =
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    #endif
+
+    /// The session handed to dispatchers that don't specify one. Production code constructs
+    /// `APIRequestDispatcher()` at hundreds of call sites, so this default is the only practical
+    /// chokepoint for keeping the unit suite offline. Tests that want canned responses keep
+    /// injecting their own seam or passing `networkSession:` explicitly, and are unaffected.
+    static func defaultNetworkSession() -> NetworkSessionProtocol {
+        #if DEBUG
+        if isHostingUnitTests { return OfflineTestNetworkSession() }
+        #endif
+        return APINetworkSession()
+    }
+
+    /// As `defaultNetworkSession()`, for the CDN-backed download path. Separate factory because
+    /// `CDNSession` carries its own configuration; the point is that the offline substitution
+    /// happens here too, so no call site can quietly bypass it.
+    static func defaultCDNSession() -> NetworkSessionProtocol {
+        #if DEBUG
+        if isHostingUnitTests { return OfflineTestNetworkSession() }
+        #endif
+        return CDNSession()
+    }
+
     /// Required initializer.
     /// - Parameters:
     ///   - environment: Instance conforming to `EnvironmentProtocol` used to determine on which environment the requests will be executed.
     ///   - networkSession: Instance conforming to `NetworkSessionProtocol` used for executing requests with a specific configuration.
     required init(
         environment: EnvironmentProtocol = APIEnvironment.defaultEnv,
-        networkSession: NetworkSessionProtocol = APINetworkSession()
+        networkSession: NetworkSessionProtocol = APIRequestDispatcher.defaultNetworkSession()
     ) {
         self.environment = environment
         self.networkSession = networkSession

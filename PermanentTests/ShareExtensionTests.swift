@@ -19,15 +19,21 @@ class ShareExtensionTests: XCTestCase {
     
     let token: String = "token"
     
+    /// ShareExtensionViewModel.init assigns its session to the process-wide
+    /// PermSession.currentSession, so it must be restored or it leaks across the suite.
+    private var previousCurrentSession: PermSession?
+
     override func setUpWithError() throws {
         try super.setUpWithError()
-        
+        previousCurrentSession = PermSession.currentSession
+
         positiveTestInit()
     }
     
     override func tearDownWithError() throws {
         sut = nil
-        
+        PermSession.currentSession = previousCurrentSession
+
         try super.tearDownWithError()
     }
     

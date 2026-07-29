@@ -1173,13 +1173,17 @@ final class FilesViewModelTests: XCTestCase {
     /// Stela flag ON, restoring both afterwards.
     private func withStelaSessionArchive(_ body: () -> Void) {
         let previousSession = AuthenticationManager.shared.session
+        let previousFlag = FeatureFlags.useStelaNavigation
         let session = PermSession(token: "test_token")
         session.selectedArchive = ArchiveVOData.mock() // archiveID 1
         AuthenticationManager.shared.session = session
         FeatureFlags.useStelaNavigation = true
         defer {
             AuthenticationManager.shared.session = previousSession
-            FeatureFlags.useStelaNavigation = false
+            // Restore what was there, NOT a literal: the ambient value in this build is TRUE
+            // (Constants.swift derives it from APIEnvironment == .staging), so restoring false
+            // silently changed what every later test saw.
+            FeatureFlags.useStelaNavigation = previousFlag
         }
         body()
     }
@@ -1203,8 +1207,12 @@ final class FilesViewModelTests: XCTestCase {
         let session = PermSession(token: "test_token")
         session.selectedArchive = ArchiveVOData.mock()
         AuthenticationManager.shared.session = session
+        let previousFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = false
-        defer { AuthenticationManager.shared.session = previousSession }
+        defer {
+            AuthenticationManager.shared.session = previousSession
+            FeatureFlags.useStelaNavigation = previousFlag
+        }
 
         XCTAssertFalse(MyFilesViewModel().isEligibleForStelaCopy(makeV2Record()),
                        "flag off keeps every record on V1")
@@ -1852,8 +1860,9 @@ final class FilesViewModelTests: XCTestCase {
     private var navParams: NavigateMinParams { ("0001-test", 11, nil) }
 
     func testNavigateV2_Committed_AppendsTargetAndSucceeds() {
+        let previousFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = false }
+        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.committed])
         let target = makeV2FolderTarget()
         vm.v2NavigationTarget = target
@@ -1867,8 +1876,9 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_ForwardSupersededOnce_RetriesAndWins() {
+        let previousFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = false }
+        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .committed])
         let target = makeV2FolderTarget()
         vm.v2NavigationTarget = target
@@ -1882,8 +1892,9 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_ForwardSupersededTwice_CompletesQuietlyWithoutNavigating() {
+        let previousFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = false }
+        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .superseded])
         vm.v2NavigationTarget = makeV2FolderTarget()
 
@@ -1896,8 +1907,9 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_BackOrRefreshSuperseded_CompletesQuietlyWithoutRetry() {
+        let previousFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = false }
+        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded])
         let current = makeV2FolderTarget()
         vm.navigationStack.append(current)

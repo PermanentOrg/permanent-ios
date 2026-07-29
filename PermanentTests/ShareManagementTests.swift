@@ -10,8 +10,13 @@ class ShareManagementTests: XCTestCase {
     var sut: ShareLinkViewModel!
     let token: String = "token"
 
+    /// See ManageTagsTests: createMockSession() installs a process-wide session that must be
+    /// put back, or it leaks into tests that assume no session.
+    private var previousSession: PermSession?
+
     override func setUp() {
         super.setUp()
+        previousSession = AuthenticationManager.shared.session
 
         let downloadManagerMock = DownloadManagerMock()
         let shareManagementMockDataSource = ShareManagementMockRemoteDataSource()
@@ -26,6 +31,7 @@ class ShareManagementTests: XCTestCase {
 
     override func tearDown() {
         sut = nil
+        AuthenticationManager.shared.session = previousSession
         super.tearDown()
     }
 
