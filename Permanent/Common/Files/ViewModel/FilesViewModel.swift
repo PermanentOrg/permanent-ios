@@ -37,9 +37,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Whether this screen routes folder navigation through the Stela V2 endpoint.
     /// Default OFF (this base class hardcodes `false`). The opted-in workspaces override
     /// this to `FeatureFlags.useStelaNavigation`: `MyFilesViewModel`, `PublicFilesViewModel`
-    /// (via inheritance), and `SearchFilesViewModel`. `SharedFilesViewModel` and everything
-    /// else inherit `false` and stay on V1 (shared listings need per-item permissions the
-    /// V2 path doesn't compute).
+    /// (via inheritance), `SearchFilesViewModel`, `SharedFilesViewModel`, and
+    /// `PublicArchiveViewModel`. Everything else inherits `false` and stays on V1.
+    ///
+    /// The V2 `/children` payload carries no per-child accessRole, so each opted-in
+    /// workspace declares how to stamp one via `v2ChildContext(enteredFolder:)` — the
+    /// archive role by default, inherited-from-the-entered-folder for Shared. The Public
+    /// Gallery instead pins `archivePermissions`/`archiveAccessRole` themselves to
+    /// read-only, so the V1 failsafe cannot disagree with the V2 listing.
     var usesStelaNavigation: Bool { false }
 
     /// The folder a forward V2 navigation is heading into (the tapped item / resolved
@@ -792,7 +797,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    private func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+    /// Overridable (rather than private) so tests can observe that the V1 leg was taken
+    /// without standing up the network — same seam as `MyFilesViewModel.performV1GetRoot`.
+    /// Driving the real request from a unit test is not harmless: on a logged-in simulator
+    /// it carries a Bearer token, and a 401 reply posts `sessionExpiredNotificationName`,
+    /// which logs out asynchronously and clears the session later tests read.
+    func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
         #if DEBUG
         // Reached either as the primary V1 path (flag off) or as the V2 failsafe.
         FilesViewModel.lastNavigationSource = "v1"
@@ -1071,11 +1081,45 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
+    /// True when the record belongs to the archive the SESSION currently has selected.
+    ///
+    /// Deliberately reads `AuthenticationManager.shared.session?.selectedArchive` rather
+    /// than `currentArchive`: subclasses override `currentArchive` to mean the archive being
+    /// VIEWED (`PublicArchiveViewModel` returns the foreign archive being browsed), so
+    /// comparing against it would report "own archive" for someone else's records.
+    /// Mirrors `FilePreviewViewModel.isInCurrentArchive`. Indeterminate ownership (no
+    /// session, or an absent `-1` archiveId) answers false, i.e. falls to V1.
+    func isInSessionArchive(_ file: FileModel) -> Bool {
+        guard let sessionArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return false }
+        return file.archiveId > 0 && file.archiveId == sessionArchiveId
+    }
+
+    /// Whether a record rename may take the Stela `PATCH /records/{id}` route.
+    ///
+    /// OWN-ARCHIVE ONLY. `patchRecord` is sent bearer-only — `RecordV2Endpoint` attaches no
+    /// share token — so a shared-with-me record (which lives in a FOREIGN archive) would be
+    /// rejected. The rename itself would still land, because the V2 arm falls back to
+    /// `performV1Rename`, but `patchRecord` is NOT exempt from the 401 handler
+    /// (`ignoreErrors == false`, and `/api/v2/records` is not a non-critical path), so a 401
+    /// would post `sessionExpiredNotificationName` and log the user out for renaming a file
+    /// they were legitimately allowed to rename. Foreign records take V1, whose server-side
+    /// share membership authorizes them.
+    ///
+    /// Extracted from `rename` so both the positive and the negative case are unit-testable
+    /// without issuing a request.
+    func canRenameViaStelaPatch(_ file: FileModel, newName: String) -> Bool {
+        return usesStelaNavigation
+            && !file.type.isFolder          // folder rename has no V2 route
+            && file.recordId > 0
+            && !newName.isEmpty
+            && isInSessionArchive(file)
+    }
+
     func rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
-        // Record rename → Stela PATCH /records/{id} (My Files only) with V1 as an automatic
-        // failsafe; renaming to the same name is idempotent so re-applying is harmless.
-        // Folder rename has no V2 route and stays on V1.
-        if usesStelaNavigation, !file.type.isFolder, file.recordId > 0, let newName = name, !newName.isEmpty {
+        // Record rename → Stela PATCH /records/{id} (own archive only) with V1 as an
+        // automatic failsafe; renaming to the same name is idempotent so re-applying is
+        // harmless. Folder rename has no V2 route and stays on V1.
+        if let newName = name, canRenameViaStelaPatch(file, newName: newName) {
             let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: ["displayName": newName]))
             apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
                 switch result {
@@ -1090,7 +1134,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
         performV1Rename(file: file, name: name, then: handler)
     }
 
-    private func performV1Rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
+    /// Overridable (rather than private) so a test can observe that the V1 leg was taken
+    /// without issuing a real request — same seam as `performV1NavigateMin`.
+    func performV1Rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
         var params: UpdateRecordParams
         var apiOperation: APIOperation
 

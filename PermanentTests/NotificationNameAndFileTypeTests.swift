@@ -48,4 +48,69 @@ final class NotificationNameAndFileTypeTests: XCTestCase {
         let decoded = try JSONDecoder().decode(FileType.self, from: jsonData)
         XCTAssertEqual(decoded, .video)
     }
+
+    // MARK: - FileType.fromV2 (Stela V2 `type` strings)
+    // The V2 /folders/{id}/children payload serializes FOLDER types as a pretty string
+    // ("public", "private-root", …) that does NOT match FileType's raw values, while
+    // RECORDS keep the legacy "type.record.*" raw string. Getting this wrong silently
+    // turns a folder into a record: `didSelectItemAt` keys the drill-in vs open-preview
+    // decision on `file.type.isFolder`, so a mis-mapped folder would open the file
+    // preview instead of navigating into it.
+
+    func testFromV2_FolderTypes_MapToFolderCases() {
+        // "public" is the Public Gallery's case — the gallery is the first screen whose
+        // V2 children come back public rather than private (verified against staging).
+        let cases: [(String, FileType)] = [
+            ("public", .publicFolder),
+            ("public-root", .publicRootFolder),
+            ("public_root", .publicRootFolder),
+            ("private", .privateFolder),
+            ("private-root", .privateRootFolder),
+            ("private_root", .privateRootFolder),
+            ("share", .sharedFolder),
+            ("share-root", .sharedFolder),
+            ("share_root", .sharedFolder)
+        ]
+
+        for (raw, expected) in cases {
+            let mapped = FileType.fromV2(typeString: raw, isFolder: true)
+            XCTAssertEqual(mapped, expected, "V2 folder type \"\(raw)\" must map to \(expected.rawValue)")
+            XCTAssertTrue(mapped.isFolder, "V2 folder type \"\(raw)\" must stay tappable as a folder")
+        }
+    }
+
+    func testFromV2_UnknownFolderType_FallsBackToAFolder() {
+        // An unrecognized folder type must still be a FOLDER. Falling back to a record
+        // case would make the item open a file preview that can never load.
+        for raw in ["something-new", "", "type.folder.public"] {
+            let mapped = FileType.fromV2(typeString: raw, isFolder: true)
+            XCTAssertTrue(mapped.isFolder, "unknown V2 folder type \"\(raw)\" must still be a folder")
+        }
+        XCTAssertTrue(FileType.fromV2(typeString: nil, isFolder: true).isFolder)
+    }
+
+    func testFromV2_RecordTypes_KeepLegacyRawValues() {
+        let cases: [(String, FileType)] = [
+            ("type.record.image", .image),
+            ("type.record.video", .video),
+            ("type.record.audio", .audio),
+            ("type.record.pdf", .pdf),
+            ("type.record.misc", .miscellaneous)
+        ]
+
+        for (raw, expected) in cases {
+            let mapped = FileType.fromV2(typeString: raw, isFolder: false)
+            XCTAssertEqual(mapped, expected, "V2 record type \"\(raw)\" must decode from its raw value")
+            XCTAssertFalse(mapped.isFolder, "V2 record type \"\(raw)\" must not be treated as a folder")
+        }
+    }
+
+    func testFromV2_UnknownRecordType_FallsBackToMiscellaneous() {
+        for raw in ["type.record.brand.new", "public", ""] {
+            let mapped = FileType.fromV2(typeString: raw, isFolder: false)
+            XCTAssertEqual(mapped, .miscellaneous, "unknown V2 record type \"\(raw)\" must degrade to .miscellaneous")
+            XCTAssertFalse(mapped.isFolder)
+        }
+        XCTAssertEqual(FileType.fromV2(typeString: nil, isFolder: false), .miscellaneous)
+    }
 }
