@@ -258,6 +258,83 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Empty array → no polling.
     static let thumbnailPollIntervals: [TimeInterval] = [3, 6, 12, 24]
 
+    /// Cadence of the post-paste/post-upload thumbnail poll (MainViewController.
+    /// scheduleNextThumbnailPoll). The server processes fresh copies SLOWLY — on staging
+    /// even the access-copy thumbnail can take minutes — so poll gently but persistently.
+    static let thumbnailPollInterval: TimeInterval = 10
+    /// Hard cap on consecutive polls (~5 minutes at 10s) so a folder whose records
+    /// legitimately never produce a thumbnail can't refetch forever.
+    static let thumbnailPollMaxRuns = 30
+
+    /// Cadence used while the pasted rows themselves are still MISSING. That's a
+    /// read-after-write race against the server's commit, which usually clears within a
+    /// second — polling it at `thumbnailPollInterval` made a pasted file take ~10s to show up.
+    static let pastedItemsPollInterval: TimeInterval = 1
+    /// How many polls stay on the fast cadence before falling back to the slow one, so a row
+    /// that never arrives doesn't hammer the server (5 × 1s ≈ 5s of quick re-checks).
+    static let pastedItemsFastRuns = 5
+
+    /// Cadence while an item is mid copy/move (`status` "copying"/"moving"). Those items are
+    /// not tappable until the server finishes, and a V1 folder copy takes tens of seconds —
+    /// staging-measured: the copied folder row appeared 9s after the request and only flipped
+    /// to "ok" 15s later. Polling that at `thumbnailPollInterval` left the folder
+    /// un-enterable long enough to look broken; polling it at `pastedItemsPollInterval` would
+    /// hammer the server for the whole copy.
+    static let transientStatePollInterval: TimeInterval = 2
+
+    /// True while any listed item is still being processed server-side: mid copy/move
+    /// (`thumbStatus` .copying/.moving), or a RECORD with no thumbnail source at all —
+    /// the fresh-Stela-copy shape (create-record-copy returns null thumbUrl* and its
+    /// access-copy 256 lands minutes later). Gates the thumbnail poll: while true the
+    /// folder keeps refetching every `thumbnailPollInterval`, bounded by
+    /// `thumbnailPollMaxRuns`; once everything settles the chain ends.
+    var hasItemsAwaitingProcessing: Bool {
+        hasItemsInTransientState || viewModels.contains { file in
+            !file.type.isFolder && (file.thumbnailURL ?? "").isEmpty
+        }
+    }
+
+    /// True while a listed item is mid copy/move server-side (`status` "copying"/"moving").
+    /// Such items are deliberately NOT tappable (`FileModel.canBeAccessed`), so this is a
+    /// wait the user is actively blocked on — and it clears in seconds to tens of seconds,
+    /// unlike the thumbnail wait, which takes minutes. Drives the middle poll cadence.
+    var hasItemsInTransientState: Bool {
+        viewModels.contains { $0.thumbStatus == .copying || $0.thumbStatus == .moving }
+    }
+
+    /// How many items the destination folder must list before a paste counts as landed, and
+    /// the folder that expectation belongs to. A relocate is committed ASYNCHRONOUSLY
+    /// server-side, so the refetch fired straight after it can still return the PRE-paste
+    /// listing. `hasItemsAwaitingProcessing` cannot detect that: it inspects the items that
+    /// ARE listed, and a MOVED record arrives with its thumbnails already in place — so for a
+    /// move the item count is the only signal that works. Keyed to the folder id, so
+    /// navigating elsewhere makes the expectation inert.
+    private(set) var expectedItemCount: Int?
+    private(set) var expectedItemCountFolderId: Int?
+
+    /// Records "this folder must reach `viewModels.count + pastedItems.count` items".
+    /// MUST be called BEFORE the post-paste refetch — the baseline is the pre-paste count.
+    func expectPastedItems(_ pastedItems: [FileModel], destination: FileModel) {
+        guard !pastedItems.isEmpty, destination.folderId == currentFolder?.folderId else {
+            clearPastedItemsExpectation()
+            return
+        }
+        expectedItemCount = viewModels.count + pastedItems.count
+        expectedItemCountFolderId = destination.folderId
+    }
+
+    func clearPastedItemsExpectation() {
+        expectedItemCount = nil
+        expectedItemCountFolderId = nil
+    }
+
+    /// True while the folder that received a paste still lists fewer items than expected.
+    var isAwaitingPastedItems: Bool {
+        guard let expected = expectedItemCount,
+              expectedItemCountFolderId == currentFolder?.folderId else { return false }
+        return viewModels.count < expected
+    }
+
     func updateTimerCount() {
         timerRunCount += 1
         if timerRunCount >= Self.thumbnailPollIntervals.count {
@@ -270,7 +347,24 @@ class FilesViewModel: NSObject, ViewModelInterface {
         if timer != nil {
             timer?.invalidate()
             timerRunCount = 0
+            clearPastedItemsExpectation() // a manual pull-to-refresh cancels the settle chain
         }
+    }
+
+    /// Injection seam for the single-record Stela V2 copy (VSP-1789), mirroring
+    /// `childrenFetchV2Request`. Tests pin the partition + aggregation policy without a
+    /// dispatcher by returning per-record success/failure. Production leaves it nil.
+    var copyRecordV2Request: ((_ recordId: String, _ destinationFolderId: String, _ completion: @escaping (Bool) -> Void) -> Void)?
+
+    /// A record is eligible for the idempotent Stela V2 copy (POST /records/{id}/copies)
+    /// only when the flag is on, it is a SAVED record (not a folder — there is no V2
+    /// folder-copy route), and it lives in the CURRENT archive. A foreign/shared record
+    /// would be rejected on the bearer-only V2 call, so it stays on V1 (same gate as
+    /// `FilePreviewViewModel.canPublishViaStelaCopy`). Internal so tests can pin it.
+    func isEligibleForStelaCopy(_ file: FileModel) -> Bool {
+        guard usesStelaNavigation, !file.type.isFolder, file.recordId > 0,
+              let currentArchiveId = currentArchive?.archiveID else { return false }
+        return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
 
     func relocate(files: [FileModel]?, to destination: FileModel, then handler: @escaping ServerResponse) {
@@ -278,7 +372,102 @@ class FilesViewModel: NSObject, ViewModelInterface {
             handler(.error(message: "No files selected".localized()))
             return
         }
-        
+
+        // VSP-1789: the COPY action prefers the idempotent Stela V2 copy endpoint for
+        // own-archive records. The legacy V1 copy is NOT idempotent — a failed copy can
+        // orphan invisible files that keep consuming the member's storage. V2 copy has NO
+        // V1 failsafe (a mis-read success would silently duplicate the copy), so it is
+        // flag-SELECT per record: eligible records go V2, while folders and foreign
+        // records (no V2 route) stay on the V1 batch. MOVE is untouched.
+        //
+        // A non-positive destination folderId (e.g. a degenerate getPublicRoot result whose
+        // folderVO carries a nil folderID) is NOT a valid V2 target — since copy has no V1
+        // failsafe, posting "-1" would just fail. Route the whole copy through V1 in that
+        // case, mirroring the `folderId > 0` guard on the FilePreview/FileDetails publish path.
+        if fileAction == .copy, destination.folderId > 0 {
+            let v2Records = files.filter { isEligibleForStelaCopy($0) }
+            if !v2Records.isEmpty {
+                let v1Rest = files.filter { !isEligibleForStelaCopy($0) }
+                copyViaStela(v2Records: v2Records, v1Rest: v1Rest, to: destination, then: handler)
+                return
+            }
+        }
+
+        performV1Relocate(files: files, to: destination, then: handler)
+    }
+
+    /// Copies `v2Records` one at a time through Stela V2 and `v1Rest` through the V1 batch,
+    /// aggregating into one `ServerResponse` (`.success` only if EVERY copy succeeded).
+    /// V2 copies run serially and best-effort — a single failure never aborts the rest, and
+    /// there is NO V2→V1 fallback (copy is not idempotent). Serial execution also avoids a
+    /// data race on `errors`. The caller refetches the destination afterwards, so a partial
+    /// success still reflects the true server state. Clears selection on the main thread.
+    private func copyViaStela(v2Records: [FileModel], v1Rest: [FileModel], to destination: FileModel, then handler: @escaping ServerResponse) {
+        let destinationFolderId = String(destination.folderId)
+        Task {
+            var errors: [String] = []
+
+            for record in v2Records {
+                let succeeded: Bool = await withCheckedContinuation { continuation in
+                    self.copyRecordViaStelaV2(recordId: String(record.recordId), destinationFolderId: destinationFolderId) {
+                        continuation.resume(returning: $0)
+                    }
+                }
+                if !succeeded { errors.append("Unknown error") }
+            }
+
+            if !v1Rest.isEmpty {
+                let v1Error: String? = await withCheckedContinuation { continuation in
+                    self.performV1Relocate(files: v1Rest, to: destination) { status in
+                        if case .error(let message) = status {
+                            continuation.resume(returning: message ?? "Unknown error")
+                        } else {
+                            continuation.resume(returning: nil)
+                        }
+                    }
+                }
+                if let v1Error { errors.append(v1Error) }
+            }
+
+            await MainActor.run {
+                self.selectedFiles = []
+                self.fileAction = .none
+                handler(errors.isEmpty ? .success : .error(message: errors.joined(separator: "\n")))
+            }
+        }
+    }
+
+    /// Single-record Stela V2 copy (POST /records/{id}/copies). Uses the injected seam in
+    /// tests; otherwise calls the endpoint. `true` iff the server returned JSON success.
+    private func copyRecordViaStelaV2(recordId: String, destinationFolderId: String, completion: @escaping (Bool) -> Void) {
+        if let injected = copyRecordV2Request {
+            injected(recordId, destinationFolderId, completion)
+            return
+        }
+        let apiOperation = APIOperation(RecordV2Endpoint.copyRecord(recordId: recordId, destinationFolderId: destinationFolderId))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            if case .json = result {
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }
+
+    /// Injection seam for the V1 relocate batch (copy/move), so tests can exercise the
+    /// copy partition + move routing without a dispatcher. Production leaves it nil.
+    var relocateV1Request: ((_ files: [FileModel], _ destination: FileModel, _ completion: @escaping ServerResponse) -> Void)?
+
+    private func performV1Relocate(files: [FileModel], to destination: FileModel, then handler: @escaping ServerResponse) {
+        if let injected = relocateV1Request {
+            injected(files, destination) { [weak self] status in
+                self?.selectedFiles = []
+                self?.fileAction = .none
+                handler(status)
+            }
+            return
+        }
+
         let fileGroup = DispatchGroup()
         var errors: [String] = []
 
@@ -349,8 +538,15 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     func publish(files: [FileModel], then handler: @escaping ServerResponse) {
         fileAction = .copy
-        guard let archiveNbr = currentArchive?.archiveNbr else { return }
-        
+        guard let archiveNbr = currentArchive?.archiveNbr else {
+            // Always complete (and clear the copy state) so the caller's spinner is
+            // dismissed. A bare `return` here previously stranded MainViewController's
+            // spinner (it only hides it in the handler) with fileAction stuck at .copy.
+            fileAction = .none
+            handler(.error(message: .errorMessage))
+            return
+        }
+
         getPublicRoot(archiveNbr: archiveNbr, then: { status in
             switch status {
             case .success(let folder):

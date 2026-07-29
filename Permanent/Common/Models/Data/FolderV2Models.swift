@@ -178,16 +178,37 @@ struct FolderChildV2Data: Model {
     // Resolve the flat (record) field first, then the nested (folder) field.
     var resolvedParentFolderId: String? { parentFolderId ?? parentFolder?.id }
     var resolvedParentFolderLinkId: String? { parentFolderLinkId ?? parentFolder?.folderLinkId }
-    // `thumbnailUrls.256` is the Archivematica access-copy thumbnail — a tiny 48x48 that comes
-    // back BLANK for HEIC (its HEIC→JPEG thumbnail generation produces nothing). It must NOT be
-    // used as the 256 source, or the preview blurs a blank image into a white loading square for
-    // every HEIC. Only a real flat `thumbnail256` counts; otherwise callers fall through to the
-    // Permanent `.thumb.wNNN` renditions (resolvedThumb200/500/…).
+    // `thumbnailUrls.256` is the Archivematica access-copy thumbnail — small, and BLANK for
+    // HEIC (its HEIC→JPEG thumbnail generation produces nothing). It must NOT be preferred
+    // over the Permanent `.thumb.wNNN` renditions, and never used for HEIC (white square).
+    // But it IS a valid LAST resort for the list/grid slots (VSP-1566 lineage: use a 256
+    // thumb over nothing): a Stela COPY (POST /records/{id}/copies) currently gets NO
+    // `.thumb.wNNN` renditions at all (backend gap) — the access copy is the only
+    // thumbnail a fresh copy has, so without this fallback copies render as permanent
+    // placeholders. The 256 blur slot keeps flat `thumbnail256` only (preview behavior
+    // unchanged; a copy's preview blur comes through the 200 slot instead).
     var resolvedThumb256: String? { thumbnail256 }
-    var resolvedThumb200: String? { thumbUrl200 ?? thumbnailUrls?.url200 }
-    var resolvedThumb500: String? { thumbUrl500 ?? thumbnailUrls?.url500 }
+    var resolvedThumb200: String? { thumbUrl200 ?? thumbnailUrls?.url200 ?? accessCopyThumb256 }
+    var resolvedThumb500: String? { thumbUrl500 ?? thumbnailUrls?.url500 ?? accessCopyThumb256 }
     var resolvedThumb1000: String? { thumbUrl1000 ?? thumbnailUrls?.url1000 }
     var resolvedThumb2000: String? { thumbUrl2000 ?? thumbnailUrls?.url2000 }
+
+    /// The Archivematica access-copy thumbnail, HEIC-guarded: nil for HEIC originals
+    /// (their access copies are blank — the July white-square bug), the real small
+    /// thumbnail for everything else.
+    private var accessCopyThumb256: String? {
+        guard !isHEICOriginal, let url = thumbnailUrls?.url256, !url.isEmpty else { return nil }
+        return url
+    }
+
+    /// True when the ORIGINAL file is HEIC/HEIF — detected from `files[]` (the original's
+    /// granular `type`), with the upload/download filename extension as fallback for
+    /// listings that omit `files`.
+    var isHEICOriginal: Bool {
+        if files?.originalFileIsHEIC == true { return true }
+        let name = (uploadFileName ?? downloadName ?? "").lowercased()
+        return name.hasSuffix(".heic") || name.hasSuffix(".heif")
+    }
 
     /// Returns the best available thumbnail URL (flat for records, nested for folders)
     var bestThumbnailURL: String? {
@@ -228,6 +249,20 @@ struct FileV2Data: Model {
     let format: String?
     let fileUrl: String?
     let downloadUrl: String?
+}
+
+extension Array where Element == FileV2Data {
+    /// True when the ORIGINAL upload (format `file.format.original`) is HEIC/HEIF — the
+    /// type whose Archivematica access-copy thumbnail comes back blank. Used to exclude
+    /// `thumbnailUrls.256` from the thumbnail fallbacks for those files only (see
+    /// FolderChildV2Data.resolvedThumb200 / RecordV2Data.preferredThumbnailURL).
+    var originalFileIsHEIC: Bool {
+        contains { file in
+            guard (file.format ?? "").contains("original") else { return false }
+            let type = (file.type ?? "").lowercased()
+            return type.contains("heic") || type.contains("heif")
+        }
+    }
 }
 
 struct PaginationV2: Model {

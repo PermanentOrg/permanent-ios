@@ -185,7 +185,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }
 
             self.fileActionBottomView.isHidden = true
-            self.fabView.isHidden = true
+            self.fabView.setVisibility(hidden: true)
             self.backButton.isHidden = true
             self.directoryLabel.text = "Shares".localized()
             self.collectionView.setContentOffset(.zero, animated: false)
@@ -280,7 +280,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             return
         }
         
-        fabView.isHidden = true
+        fabView.setVisibility(hidden: true)
         
         guard floatingActionIsland == nil else { return }
         
@@ -319,8 +319,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
             self?.dismissFloatingActionIsland()
-            self?.fabView.isHidden = false
-            
+            self?.fabView.setVisibility(hidden: false)
+
             self?.viewModel?.selectedFiles = []
             self?.viewModel?.fileAction = .none
             self?.viewModel?.isSelectingDestination = false
@@ -353,7 +353,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
                     
-                    self?.fabView.isHidden = false
+                    self?.fabView.setVisibility(hidden: false)
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -370,7 +370,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
                     
-                    self?.fabView.isHidden = false
+                    self?.fabView.setVisibility(hidden: false)
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -418,14 +418,16 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             })
         })
 
-        if currentFolderPermissions?.contains(.create) == true && currentFolderPermissions?.contains(.upload) == true {
-            fabView.isHidden = false
-        } else {
-            fabView.isHidden = true
-        }
-        if !fileActionBottomView.isHidden {
-            fabView.isHidden = true
-        }
+        var shouldShowFAB = currentFolderPermissions?.contains(.create) == true
+            && currentFolderPermissions?.contains(.upload) == true
+        if !fileActionBottomView.isHidden { shouldShowFAB = false }
+        // Hide the create/upload FAB (and its checklist sub-button) while picking a copy/move
+        // destination — you're choosing where to paste, not adding new files here.
+        if viewModel?.isSelectingDestination == true { shouldShowFAB = false }
+
+        // setVisibility fades the buttons back in (see FABView) — hiding them for paste mode
+        // created a real hide→show transition that used to not exist.
+        fabView.setVisibility(hidden: !shouldShowFAB)
     }
 
     private func performChangeArchive(withArchiveId archiveId: Int, archiveNbr: String, completion: @escaping (Bool) -> Void) {
@@ -584,7 +586,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         self.directoryLabel.text = "Shares".localized()
         self.backButton.isHidden = true
-        self.fabView.isHidden = true
+        self.fabView.setVisibility(hidden: true)
         self.fileActionBottomView.isHidden = true
         
         viewModel?.shareListType = listType
@@ -651,7 +653,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
-        fabView.isHidden = true
+        // Can't (re)enter multi-select while choosing a paste destination — that mode owns
+        // the fixed relocate selection. Belt-and-suspenders with hiding the button below.
+        guard !viewModel.isSelectingDestination else { return }
+        fabView.setVisibility(hidden: true)
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = false
             backButton.layer.opacity = 0.3
@@ -674,7 +679,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     @objc
     private func clearButtonWasPressed(_ sender: UIButton) {
-        fabView.isHidden = false
+        fabView.setVisibility(hidden: false)
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = true
             backButton.layer.opacity = 1
@@ -954,7 +959,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                         self?.deleteFile(self?.viewModel?.selectedFiles)
                         
                         self?.dismissFloatingActionIsland()
-                        self?.fabView.isHidden = false
+                        self?.fabView.setVisibility(hidden: false)
                         self?.clearButtonWasPressed(UIButton())
                     }, positiveButtonColor: .brightRed,
                     cancelButtonColor: .primary,
@@ -969,7 +974,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
                     
-                    self?.fabView.isHidden = false
+                    self?.fabView.setVisibility(hidden: false)
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -1012,7 +1017,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                                 self?.viewModel?.removeSyncedFiles(files)
                                 self?.refreshCollectionView()
                                 self?.dismissFloatingActionIsland()
-                                self?.fabView.isHidden = false
+                                self?.fabView.setVisibility(hidden: false)
                                 self?.clearButtonWasPressed(UIButton())
                             }
                             
@@ -1159,7 +1164,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             showSpinner()
         }
         
-        fabView.isHidden = true
+        fabView.setVisibility(hidden: true)
 
         let runRequest: (@escaping ServerResponse) -> Void = getSharesRequest ?? { [weak self] handler in
             self?.viewModel?.getShares(then: handler)
@@ -1268,8 +1273,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     // original record (data loss). A move can change link ids too.
                     self.floatingActionIsland?.showDoneCheckmark() {
                         self.dismissFloatingActionIsland({ [weak self] in
-                            self?.fabView?.isHidden = false
+                            self?.fabView?.setVisibility(hidden: false)
                             self?.viewModel?.isSelectingDestination = false
+                            // Fully exit selection mode after the paste (parity with
+                            // MainViewController) — otherwise checkboxes can reappear.
+                            self?.viewModel?.isSelecting = false
 
                             self?.refreshCurrentFolder(shouldDisplaySpinner: false)
                         })
@@ -1565,9 +1573,23 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         guard let viewModel = viewModel else { return }
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        
+
         guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
-        
+
+        // Paste-destination mode is navigation-only (same rationale as MainViewController):
+        // tap a folder to drill into it; items can't be (re)selected while the relocate
+        // selection is fixed to the items being copied/moved.
+        if viewModel.isSelectingDestination {
+            guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
+            viewModel.v2NavigationTarget = file
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                self.backButton.isHidden = false
+                self.directoryLabel.text = file.name
+            })
+            return
+        }
+
         if viewModel.isSelecting {
             if let index = viewModel.selectedFiles?.firstIndex(of: file) {
                 viewModel.selectedFiles?.remove(at: index)
@@ -1576,7 +1598,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
             }
             self.refreshCollectionView()
         } else {
-            
+
             if file.type.isFolder {
                 // Seed the V2 forward-nav target so Stela drill-in engages and its children
                 // inherit this folder's accessRole (see SharedFilesViewModel.v2ChildContext).
@@ -1616,6 +1638,10 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                 headerView.leftButtonAction = nil
             }
             
+            // Reset the reused header's Select button to visible; a previous dequeue may
+            // have hidden it for a paste-destination section (see below).
+            headerView.rightButton.isHidden = false
+
             if viewModel?.hasCancelButton(forSection: section) == true {
                 headerView.rightButtonTitle = "Cancel All".localized()
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
@@ -1627,7 +1653,11 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                         headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
                     }
                 }
-                
+                // A title-less button still occupies a tappable area, so in paste-destination
+                // mode hide it outright — otherwise tapping where "Select" used to be silently
+                // re-enters multi-select and lets items be reselected instead of navigating.
+                headerView.rightButton.isHidden = viewModel?.isSelectingDestination ?? false
+
                 headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton()) }
                 headerView.clearButtonAction = { [weak self] header in self?.clearButtonWasPressed(UIButton())}
             }
@@ -1738,7 +1768,7 @@ extension SharesViewController: SharedFileActionSheetDelegate {
         self.present(hostingController, animated: true, completion: nil)
         
         self.dismissFloatingActionIsland()
-        self.fabView.isHidden = false
+        self.fabView.setVisibility(hidden: false)
         self.clearButtonWasPressed(UIButton())
         
         hostingController.rootView.dismissAction = { hasUpdates in
@@ -2003,6 +2033,6 @@ extension SharesViewController: UIDocumentPickerDelegate {
 extension SharesViewController: UIAdaptivePresentationControllerDelegate {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         // Show FAB buttons when menu is dismissed
-        fabView.isHidden = false
+        fabView.setVisibility(hidden: false)
     }
 }

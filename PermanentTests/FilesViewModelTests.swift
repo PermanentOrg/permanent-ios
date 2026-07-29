@@ -916,6 +916,533 @@ final class FilesViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
+    // MARK: - VSP-1789: Stela V2 copy routing (POST /records/{id}/copies)
+    // COPY routes own-archive records through the idempotent V2 endpoint (NO V1 failsafe —
+    // copy is not idempotent), while folders, foreign records, and MOVE stay on V1.
+
+    /// A saved record child in the current (mock) archive — the eligible shape for V2 copy.
+    /// Built via the V2 decode path (the convenience init discards its recordId, so identity
+    /// would be lost). Omitting `folderId` while carrying `recordId` keeps `isFolder` false.
+    private func makeV2Record(recordId: Int = 100, archiveId: Int = 1) -> FileModel {
+        let json = """
+        { "items": [ { "recordId": "\(recordId)", "archiveId": "\(archiveId)", "displayName": "r\(recordId)",
+          "type": "type.record.image", "status": "ok", "folderLinkId": "1" } ] }
+        """
+        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
+    }
+
+    /// Runs `body` with a session whose selected archive is the mock (archiveID 1) and the
+    /// Stela flag ON, restoring both afterwards.
+    private func withStelaSessionArchive(_ body: () -> Void) {
+        let previousSession = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock() // archiveID 1
+        AuthenticationManager.shared.session = session
+        FeatureFlags.useStelaNavigation = true
+        defer {
+            AuthenticationManager.shared.session = previousSession
+            FeatureFlags.useStelaNavigation = false
+        }
+        body()
+    }
+
+    func testIsEligibleForStelaCopy_Matrix() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            XCTAssertTrue(vm.isEligibleForStelaCopy(makeV2Record(recordId: 100, archiveId: 1)),
+                          "own-archive saved record with the flag on is eligible")
+            XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2FolderTarget()),
+                           "folders have no V2 copy route")
+            XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2Record(recordId: 100, archiveId: 999)),
+                           "a foreign-archive record would be rejected on the bearer-only V2 copy")
+            XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2Record(recordId: 0, archiveId: 1)),
+                           "an unsaved record (recordId 0) is not eligible")
+        }
+    }
+
+    func testIsEligibleForStelaCopy_FlagOff_False() {
+        let previousSession = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock()
+        AuthenticationManager.shared.session = session
+        FeatureFlags.useStelaNavigation = false
+        defer { AuthenticationManager.shared.session = previousSession }
+
+        XCTAssertFalse(MyFilesViewModel().isEligibleForStelaCopy(makeV2Record()),
+                       "flag off keeps every record on V1")
+    }
+
+    func testIsEligibleForStelaCopy_BaseViewModelNeverStela() {
+        withStelaSessionArchive {
+            // Base FilesViewModel returns usesStelaNavigation == false regardless of the flag.
+            XCTAssertFalse(FilesViewModel().isEligibleForStelaCopy(makeV2Record()),
+                           "workspaces that never opt into Stela keep copy on V1")
+        }
+    }
+
+    func testRelocate_Copy_AllEligible_RoutesToV2AndSucceeds() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .copy
+            var copied: [(record: String, destination: String)] = []
+            vm.copyRecordV2Request = { recordId, destinationFolderId, completion in
+                copied.append((recordId, destinationFolderId))
+                completion(true)
+            }
+            vm.relocateV1Request = { _, _, _ in XCTFail("all files eligible → the V1 batch must not run") }
+
+            let files = [makeV2Record(recordId: 1, archiveId: 1), makeV2Record(recordId: 2, archiveId: 1)]
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: files, to: makeV2FolderTarget(folderId: 10)) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(copied.map { $0.record }, ["1", "2"], "each record copied via V2, serially in order")
+            XCTAssertEqual(Set(copied.map { $0.destination }), ["10"], "into the destination folderId")
+            XCTAssertEqual(vm.fileAction, .none, "the action resets after a copy")
+            XCTAssertTrue(vm.selectedFiles?.isEmpty ?? false, "the selection clears after a copy")
+        }
+    }
+
+    func testRelocate_Copy_V2Failure_ReportsErrorAndNeverFallsBackToV1() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .copy
+            var v1Called = false
+            vm.copyRecordV2Request = { _, _, completion in completion(false) }
+            vm.relocateV1Request = { _, _, completion in v1Called = true; completion(.success) }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: [makeV2Record(recordId: 1, archiveId: 1)], to: makeV2FolderTarget()) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            if case .error = status {} else { XCTFail("a V2 copy failure must surface as an error") }
+            XCTAssertFalse(v1Called, "copy is not idempotent — a failed V2 copy must NOT retry on V1")
+        }
+    }
+
+    func testRelocate_Copy_Mixed_RecordViaV2_FolderViaV1_Aggregates() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .copy
+            var v2Records: [String] = []
+            var v1Files: [FileModel] = []
+            vm.copyRecordV2Request = { recordId, _, completion in v2Records.append(recordId); completion(true) }
+            vm.relocateV1Request = { files, _, completion in v1Files = files; completion(.success) }
+
+            let record = makeV2Record(recordId: 7, archiveId: 1)
+            let folder = makeV2FolderTarget(folderId: 20)
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: [record, folder], to: makeV2FolderTarget(folderId: 10)) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(v2Records, ["7"], "the record is copied via V2")
+            XCTAssertEqual(v1Files.map { $0.folderId }, [20], "the folder falls to the V1 batch (no V2 folder-copy route)")
+        }
+    }
+
+    func testRelocate_Copy_Mixed_V1FolderFails_FailsWholeCopy() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .copy
+            vm.copyRecordV2Request = { _, _, completion in completion(true) }
+            vm.relocateV1Request = { _, _, completion in completion(.error(message: "boom")) }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: [makeV2Record(recordId: 7, archiveId: 1), makeV2FolderTarget(folderId: 20)],
+                        to: makeV2FolderTarget(folderId: 10)) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            if case .error = status {} else { XCTFail("a V1 batch failure must fail the aggregated copy") }
+        }
+    }
+
+    func testRelocate_Move_NeverUsesStelaV2() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .move
+            vm.copyRecordV2Request = { _, _, _ in XCTFail("MOVE must never touch the V2 copy endpoint") }
+            var v1Files: [FileModel] = []
+            vm.relocateV1Request = { files, _, completion in v1Files = files; completion(.success) }
+
+            let record = makeV2Record(recordId: 7, archiveId: 1) // eligible if it were a copy
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: [record], to: makeV2FolderTarget(folderId: 10)) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(v1Files.map { $0.recordId }, [7], "even an own-archive record moves via V1")
+        }
+    }
+
+    func testRelocate_Copy_MultipleRecords_FirstFails_RestStillAttempted_AggregatesError() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .copy
+            var attempted: [String] = []
+            vm.copyRecordV2Request = { recordId, _, completion in
+                attempted.append(recordId)
+                completion(recordId != "1") // the first record fails; the rest succeed
+            }
+            vm.relocateV1Request = { _, _, _ in XCTFail("all records eligible → the V1 batch must not run") }
+
+            let files = [makeV2Record(recordId: 1, archiveId: 1),
+                         makeV2Record(recordId: 2, archiveId: 1),
+                         makeV2Record(recordId: 3, archiveId: 1)]
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: files, to: makeV2FolderTarget(folderId: 10)) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(attempted, ["1", "2", "3"],
+                           "best-effort: a failed copy must NOT abort the remaining records")
+            if case .error = status {} else { XCTFail("any single failure makes the aggregate an error") }
+        }
+    }
+
+    func testRelocate_Copy_AllIneligible_RoutesToV1Only() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .copy
+            vm.copyRecordV2Request = { _, _, _ in XCTFail("no eligible records → V2 must not run") }
+            var v1Files: [FileModel] = []
+            vm.relocateV1Request = { files, _, completion in v1Files = files; completion(.success) }
+
+            let folders = [makeV2FolderTarget(folderId: 20), makeV2FolderTarget(folderId: 21)]
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: folders, to: makeV2FolderTarget(folderId: 10)) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(v1Files.map { $0.folderId }, [20, 21],
+                           "an all-folder copy under the flag still falls entirely to the V1 batch")
+        }
+    }
+
+    func testRelocate_Copy_Mixed_V2RecordFails_V1FolderSucceeds_FailsWholeCopy() {
+        withStelaSessionArchive {
+            let vm = MyFilesViewModel()
+            vm.fileAction = .copy
+            vm.copyRecordV2Request = { _, _, completion in completion(false) }
+            var v1Ran = false
+            vm.relocateV1Request = { _, _, completion in v1Ran = true; completion(.success) }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.relocate(files: [makeV2Record(recordId: 7, archiveId: 1), makeV2FolderTarget(folderId: 20)],
+                        to: makeV2FolderTarget(folderId: 10)) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            if case .error = status {} else {
+                XCTFail("a failed V2 record must not be masked by a successful V1 folder batch")
+            }
+            XCTAssertTrue(v1Ran, "the V1 folder batch still runs alongside the failed V2 record")
+        }
+    }
+
+    // MARK: - VSP-1789: copy thumbnails — HEIC-guarded access-copy 256 as last resort
+    // A Stela copy gets NO .thumb.wNNN renditions (backend gap, staging-captured
+    // 2026-07-24): thumbUrl* all null; its ONLY thumb is the access-copy
+    // thumbnailUrls.256. Non-HEIC listings must fall back to it (else copies are
+    // permanent placeholders); HEIC must never use it (blank — white-square bug).
+
+    func testV2CopyShape_ListSlotsFallBackToAccessCopy256_NonHEIC() {
+        let json = """
+        { "items": [ { "recordId": "89647", "displayName": "frog", "type": "type.record.image",
+          "status": "status.generic.ok", "folderLinkId": "137782",
+          "uploadFileName": "a-long-frog-3840x2160-green-10125.jpg",
+          "thumbUrl200": null, "thumbUrl500": null,
+          "thumbnailUrls": { "256": "https://cdn.example/access-256.jpg", "200": null },
+          "files": [ { "fileId": "1", "type": "type.file.image.jpg", "format": "file.format.original" } ] } ] }
+        """
+        let child = decodeChildren(json)!.items![0]
+
+        XCTAssertFalse(child.isHEICOriginal)
+        XCTAssertEqual(child.resolvedThumb200, "https://cdn.example/access-256.jpg",
+                       "list slot: the access copy is the only thumb a fresh copy has")
+        XCTAssertEqual(child.resolvedThumb500, "https://cdn.example/access-256.jpg",
+                       "grid slot gets the same last resort")
+        XCTAssertNil(child.resolvedThumb256,
+                     "the 256/blur slot keeps flat thumbnail256 only — preview behavior unchanged")
+    }
+
+    func testV2CopyShape_HEICNeverUsesAccessCopy256() {
+        // files[] granular type is the primary signal…
+        let byType = """
+        { "items": [ { "recordId": "1", "displayName": "heic", "type": "type.record.image",
+          "status": "ok", "folderLinkId": "2",
+          "thumbnailUrls": { "256": "https://cdn.example/access-256.jpg" },
+          "files": [ { "fileId": "1", "type": "type.file.image.heic", "format": "file.format.original" } ] } ] }
+        """
+        let heicByType = decodeChildren(byType)!.items![0]
+        XCTAssertTrue(heicByType.isHEICOriginal)
+        XCTAssertNil(heicByType.resolvedThumb200, "a blank HEIC access copy must never be served")
+
+        // …and the filename extension is the fallback when files[] is absent.
+        let byName = """
+        { "items": [ { "recordId": "1", "displayName": "heic", "type": "type.record.image",
+          "status": "ok", "folderLinkId": "2", "uploadFileName": "IMG_0042.HEIC",
+          "thumbnailUrls": { "256": "https://cdn.example/access-256.jpg" } } ] }
+        """
+        let heicByName = decodeChildren(byName)!.items![0]
+        XCTAssertTrue(heicByName.isHEICOriginal)
+        XCTAssertNil(heicByName.resolvedThumb200)
+    }
+
+    func testV2NormalShape_RealRenditionsBeatAccessCopy256() {
+        let json = """
+        { "items": [ { "recordId": "1", "displayName": "photo", "type": "type.record.image",
+          "status": "ok", "folderLinkId": "2", "uploadFileName": "photo.jpg",
+          "thumbUrl200": "https://cdn.example/w200.jpg", "thumbUrl500": "https://cdn.example/w500.jpg",
+          "thumbnailUrls": { "256": "https://cdn.example/access-256.jpg" },
+          "files": [ { "fileId": "1", "type": "type.file.image.jpg", "format": "file.format.original" } ] } ] }
+        """
+        let child = decodeChildren(json)!.items![0]
+        XCTAssertEqual(child.resolvedThumb200, "https://cdn.example/w200.jpg",
+                       "real renditions keep priority — no quality change for normal uploads")
+        XCTAssertEqual(child.resolvedThumb500, "https://cdn.example/w500.jpg")
+    }
+
+    // MARK: - thumbnail poll gate (hasItemsAwaitingProcessing)
+    // Gates the 10s post-paste/upload folder poll: keep refetching while a record has
+    // no thumbnail source (the fresh-Stela-copy shape) or an item is mid copy/move;
+    // stop as soon as everything settles (bounded separately by thumbnailPollMaxRuns).
+
+    func testHasItemsAwaitingProcessing_FreshCopyWithoutThumb_True() {
+        let json = """
+        { "items": [ { "recordId": "89647", "displayName": "copy", "type": "type.record.image",
+          "status": "status.generic.ok", "folderLinkId": "1", "uploadFileName": "copy.heic" } ] }
+        """
+        let vm = FilesViewModel()
+        vm.viewModels = [FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)]
+        XCTAssertTrue(vm.hasItemsAwaitingProcessing,
+                      "a record with no thumbnail source is still processing server-side")
+    }
+
+    func testHasItemsAwaitingProcessing_SettledRecordAndFolder_False() {
+        let json = """
+        { "items": [ { "recordId": "1", "displayName": "photo", "type": "type.record.image",
+          "status": "ok", "folderLinkId": "2", "thumbUrl200": "https://cdn.example/w200.jpg" },
+          { "folderId": "3", "displayName": "folder", "type": "private", "status": "ok", "folderLinkId": "4" } ] }
+        """
+        let vm = FilesViewModel()
+        vm.viewModels = decodeChildren(json)!.items!.map { FileModel(model: $0, permissions: [.read], accessRole: .viewer) }
+        XCTAssertFalse(vm.hasItemsAwaitingProcessing,
+                       "a thumbed record and a folder are settled — the poll must stop")
+    }
+
+    func testHasItemsAwaitingProcessing_CopyingStatus_True() {
+        let json = """
+        { "items": [ { "folderId": "5", "displayName": "busy", "type": "private",
+          "status": "copying", "folderLinkId": "6" } ] }
+        """
+        let vm = FilesViewModel()
+        vm.viewModels = [FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)]
+        XCTAssertTrue(vm.hasItemsAwaitingProcessing, "mid copy/move items keep the poll alive")
+    }
+
+    // MARK: - post-paste settle expectation (isAwaitingPastedItems)
+    // A relocate commits asynchronously server-side, so the refetch right after a paste can
+    // still return the pre-paste listing. hasItemsAwaitingProcessing can't see that (a MOVED
+    // record arrives WITH its thumbnails), so the item count is the only usable signal.
+
+    private func makeVMInFolder(itemCount: Int) -> (MyFilesViewModel, FileModel) {
+        let vm = MyFilesViewModel()
+        let folder = makeV2FolderTarget(folderId: 10)
+        vm.navigationStack.append(folder)
+        vm.viewModels = (0..<itemCount).map { makeV2Record(recordId: $0 + 1, archiveId: 1) }
+        return (vm, folder)
+    }
+
+    func testIsAwaitingPastedItems_TrueUntilTheCountArrives() {
+        let (vm, folder) = makeVMInFolder(itemCount: 3)
+        vm.expectPastedItems([makeV2Record(recordId: 90), makeV2Record(recordId: 91)], destination: folder)
+
+        XCTAssertTrue(vm.isAwaitingPastedItems, "3 listed, 5 expected → still settling")
+
+        vm.viewModels.append(makeV2Record(recordId: 90))
+        XCTAssertTrue(vm.isAwaitingPastedItems, "4 of 5 → a partial refetch keeps polling")
+
+        vm.viewModels.append(makeV2Record(recordId: 91))
+        XCTAssertFalse(vm.isAwaitingPastedItems, "5 of 5 → landed, chain must stop")
+    }
+
+    func testIsAwaitingPastedItems_InertInADifferentFolder() {
+        let (vm, folder) = makeVMInFolder(itemCount: 1)
+        vm.expectPastedItems([makeV2Record(recordId: 90)], destination: folder)
+        XCTAssertTrue(vm.isAwaitingPastedItems)
+
+        vm.navigationStack.append(makeV2FolderTarget(folderId: 99)) // user navigates elsewhere
+        XCTAssertFalse(vm.isAwaitingPastedItems,
+                       "the expectation is keyed to its folder — it must not poll another folder")
+    }
+
+    func testExpectPastedItems_IgnoresEmptyPasteAndForeignDestination() {
+        let (vm, folder) = makeVMInFolder(itemCount: 2)
+
+        vm.expectPastedItems([], destination: folder)
+        XCTAssertFalse(vm.isAwaitingPastedItems, "nothing pasted → nothing to wait for")
+
+        vm.expectPastedItems([makeV2Record(recordId: 90)], destination: makeV2FolderTarget(folderId: 77))
+        XCTAssertFalse(vm.isAwaitingPastedItems, "destination isn't the folder on screen → no expectation")
+    }
+
+    func testInvalidateTimer_ClearsThePasteExpectation() {
+        let (vm, folder) = makeVMInFolder(itemCount: 1)
+        vm.expectPastedItems([makeV2Record(recordId: 90)], destination: folder)
+        vm.timer = Timer(timeInterval: 60, repeats: false) { _ in }
+
+        vm.invalidateTimer() // what a manual pull-to-refresh does
+
+        XCTAssertFalse(vm.isAwaitingPastedItems, "a manual pull cancels the chain and its expectation")
+        XCTAssertEqual(vm.timerRunCount, 0)
+    }
+
+    // MARK: - FAB slide-in contract (FABView.setVisibility)
+    // The FAB is hidden while picking a paste destination, which created a hide→show
+    // transition that never used to exist. It slides up from the bottom edge; a REPEAT show
+    // call (the post-paste folder refetch fires updateFABViewVisibility again a few hundred
+    // ms later) must not cut that animation short — that was the "snaps in" symptom.
+
+    /// FAB in a container, so `offscreenSlideDistance` has a superview to measure against.
+    private func makeHostedFAB() -> FABView {
+        let host = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 800))
+        let fab = FABView(frame: CGRect(x: 300, y: 700, width: 64, height: 64))
+        host.addSubview(fab)
+        return fab
+    }
+
+    func testFABSetVisibility_ShowFromHiddenSlidesUpFromBelow() {
+        let fab = makeHostedFAB()
+        fab.setVisibility(hidden: true)
+        XCTAssertTrue(fab.isHidden)
+        XCTAssertEqual(fab.transform, .identity, "hiding resets the transform so it can't be left off-screen")
+
+        fab.setVisibility(hidden: false)
+
+        XCTAssertFalse(fab.isHidden)
+        XCTAssertTrue(fab.isAnimatingIn, "showing from hidden animates")
+        XCTAssertGreaterThan(fab.layer.animation(forKey: "transform")?.duration ?? 0, 0,
+                             "the slide runs as a real transform animation")
+    }
+
+    func testFABSetVisibility_RepeatShowDoesNotRestartOrCutTheSlide() {
+        let fab = makeHostedFAB()
+        fab.setVisibility(hidden: true)
+        fab.setVisibility(hidden: false)
+        XCTAssertTrue(fab.isAnimatingIn)
+
+        fab.setVisibility(hidden: false) // what the post-paste refetch triggers
+
+        XCTAssertTrue(fab.isAnimatingIn, "a redundant show must leave the running slide alone")
+        XCTAssertFalse(fab.isHidden)
+    }
+
+    func testFABSetVisibility_HideStaysSynchronousWhileTheExitAnimates() {
+        let fab = makeHostedFAB()
+        fab.setVisibility(hidden: true)
+        fab.setVisibility(hidden: false)
+        XCTAssertTrue(fab.isAnimatingIn)
+
+        // `isHidden` flips at once even though the exit slides a snapshot away — several
+        // callers (and MainViewController/SharesViewController tests) read it immediately.
+        fab.setVisibility(hidden: true)
+        XCTAssertTrue(fab.isHidden)
+        XCTAssertFalse(fab.isAnimatingIn)
+        XCTAssertEqual(fab.transform, .identity, "the FAB itself is never left translated")
+    }
+
+    func testFABSetVisibility_RedundantHideIsANoOp() {
+        let fab = makeHostedFAB()
+        fab.setVisibility(hidden: true)
+        fab.setVisibility(hidden: true) // e.g. updateFABViewVisibility re-asserting paste mode
+        XCTAssertTrue(fab.isHidden)
+    }
+
+    func testFABSetVisibility_NotAnimatedShowsInstantly() {
+        let fab = makeHostedFAB()
+        fab.setVisibility(hidden: true)
+        fab.setVisibility(hidden: false, animated: false)
+        XCTAssertFalse(fab.isHidden)
+        XCTAssertFalse(fab.isAnimatingIn)
+        XCTAssertEqual(fab.transform, .identity, "no animation → lands in place immediately")
+    }
+
+    // MARK: - poll cadence constants
+    // Two different waits: missing rows are a server-commit race (fast), pending thumbnails
+    // are genuinely slow. Polling a missing row at the slow cadence made a pasted file take
+    // ~10s to appear.
+
+    func testPollCadence_FastForMissingRowsSlowForThumbnails() {
+        XCTAssertLessThan(FilesViewModel.pastedItemsPollInterval, FilesViewModel.thumbnailPollInterval,
+                          "a missing row must be re-checked faster than a pending thumbnail")
+        XCTAssertLessThan(FilesViewModel.pastedItemsFastRuns, FilesViewModel.thumbnailPollMaxRuns,
+                          "the fast phase is a bounded prefix of the chain, not the whole budget")
+    }
+
+    func testPollCadence_TransientStateSitsBetweenTheTwo() {
+        // A copying/moving item blocks tapping and clears in seconds-to-tens-of-seconds:
+        // faster than the thumbnail settle, gentler than the missing-row race.
+        XCTAssertGreaterThan(FilesViewModel.transientStatePollInterval, FilesViewModel.pastedItemsPollInterval)
+        XCTAssertLessThan(FilesViewModel.transientStatePollInterval, FilesViewModel.thumbnailPollInterval)
+    }
+
+    func testHasItemsInTransientState_DetectsCopyingFolderAndFeedsAwaitingProcessing() {
+        // The shape a freshly copied FOLDER arrives in (staging-captured): status "copying",
+        // which makes it non-tappable until the server flips it to "ok".
+        let json = """
+        { "items": [ { "folderId": "49720", "displayName": "22222", "type": "private",
+          "status": "copying", "folderLinkId": "137843", "archiveNumber": "01it-06xd" } ] }
+        """
+        let vm = FilesViewModel()
+        vm.viewModels = [FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)]
+
+        XCTAssertTrue(vm.hasItemsInTransientState, "a copying folder is still settling")
+        XCTAssertTrue(vm.hasItemsAwaitingProcessing, "…and therefore keeps the poll alive")
+        XCTAssertFalse(vm.viewModels[0].canBeAccessed, "copying items stay non-tappable, as on V1")
+    }
+
+    func testHasItemsInTransientState_FalseOnceSettled() {
+        let json = """
+        { "items": [ { "folderId": "49720", "displayName": "22222", "type": "private",
+          "status": "ok", "folderLinkId": "137843", "archiveNumber": "01it-06xd" } ] }
+        """
+        let vm = FilesViewModel()
+        vm.viewModels = [FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)]
+
+        XCTAssertFalse(vm.hasItemsInTransientState)
+        XCTAssertFalse(vm.hasItemsAwaitingProcessing, "a settled folder ends the chain")
+    }
+
+    // MARK: - publish edge case
+
+    func testPublish_NoArchive_CompletesWithErrorAndResetsFileAction() {
+        // No session → currentArchive (and archiveNbr) is nil, tripping publish's guard.
+        // Uses the BASE FilesViewModel because its `fileAction` is a real stored property;
+        // MyFilesViewModel's is session-backed and would read `.none` vacuously here.
+        let previousSession = AuthenticationManager.shared.session
+        AuthenticationManager.shared.session = nil
+        defer { AuthenticationManager.shared.session = previousSession }
+
+        let vm = FilesViewModel()
+        let exp = expectation(description: "completion")
+        var status: RequestStatus?
+        vm.publish(files: [makeRecordFile()]) { status = $0; exp.fulfill() }
+        wait(for: [exp], timeout: 1.0)
+
+        if case .error = status {} else {
+            XCTFail("publish must complete with an error when there is no archive (else the caller's spinner hangs)")
+        }
+        XCTAssertEqual(vm.fileAction, .none, "the guard must reset fileAction so the copy state isn't left stuck")
+    }
+
     // MARK: - delete edge case
 
     func testDelete_NilFiles_ReturnsError() {

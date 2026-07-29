@@ -22,10 +22,13 @@ enum FeatureFlags {
     /// every screen) and the upload dedupe listing. V1 remains an automatic failsafe on
     /// every gated path except publish (owned-records-only by gate), so OFF is always
     /// safe. Changing it requires an app release (no Remote Config).
-    // Enabled for DEBUG/dev builds (staging via Permanent-DEV) so the Stela V2 path is exercised
-    // there; production/Release stays on V1 until the release `let` is flipped for rollout.
+    // ON only for Debug builds that ALSO point at STAGING (Permanent-DEV scheme), so the
+    // V2 path is exercised there. Gating on DEBUG alone was not enough: running the
+    // production scheme from Xcode is still a Debug build, which silently sent V2 calls
+    // against the PROD API — prod must stay on the legacy endpoints (in every build)
+    // until the rollout flips the Release `let`. Tests may still set the var directly.
     #if DEBUG
-    static var useStelaNavigation = true
+    static var useStelaNavigation = APIEnvironment.defaultEnv == .staging
     #else
     static let useStelaNavigation = false
     #endif
