@@ -29,7 +29,7 @@ class InfoViewModel: ViewModelInterface {
         self.accountId = accountId
     }
     
-    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    var sessionProtocol: NetworkSessionProtocol = APIRequestDispatcher.defaultNetworkSession()
 
     func getUserData(then handler: @escaping (GetUserDataStatus) -> Void) {
         guard let accountId = accountId else {

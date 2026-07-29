@@ -11,7 +11,7 @@ import UIKit
 typealias ServerResponse = (RequestStatus) -> Void
 
 class AuthViewModel: ViewModelInterface, LoginEventProtocol {
-    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    var sessionProtocol: NetworkSessionProtocol = APIRequestDispatcher.defaultNetworkSession()
     static let updateArchiveSettingsChevron = Notification.Name("AuthViewModel.updateArchiveSettingsChevron")
     var archiveSetingsWasPressed: Bool = false {
         didSet {

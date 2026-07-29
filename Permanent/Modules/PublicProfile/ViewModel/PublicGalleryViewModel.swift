@@ -26,7 +26,7 @@ class PublicGalleryViewModel: ViewModelInterface {
     var searchQuery: String = ""
     var searchOperation: APIOperation?
     
-    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    var sessionProtocol: NetworkSessionProtocol = APIRequestDispatcher.defaultNetworkSession()
     
     func currentArchive() -> ArchiveVOData? {
         return AuthenticationManager.shared.session?.selectedArchive
