@@ -1539,13 +1539,12 @@ extension MainViewController: FABViewDelegate {
         
         present(hostingController, animated: true)
         
-        // Hide FAB with fade animation after presenting
+        // Hide the FAB through the same API that shows it, so the two stay symmetrical.
+        // Hand-fading alpha here meant the restore had to undo alpha as well, and the
+        // permission gate (updateFABViewVisibility) only manages isHidden — so the FAB came
+        // back invisible after any menu action, e.g. starting or cancelling an upload.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
-                self.fabView.alpha = 0
-            } completion: { _ in
-                self.fabView.isHidden = true
-            }
+            self.fabView.setVisibility(hidden: true)
         }
         
         viewModel?.trackEvent(action: RecordEventAction.initiateUpload)

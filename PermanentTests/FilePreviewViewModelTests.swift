@@ -91,48 +91,6 @@ final class FilePreviewViewModelTests: XCTestCase {
         XCTAssertEqual(vm.fileName(), "file_example_ODS_100.ods")
     }
 
-    // MARK: - isAwaitingPDFRendition
-    // Archivematica generates the access copy asynchronously. A document opened moments
-    // after upload has only its original, which is "not ready yet" rather than broken —
-    // reporting it as a load failure is what made a freshly uploaded .xlsx look unopenable.
-
-    func testIsAwaitingPDFRendition_TrueWhenOnlyTheOriginalIsPresent() {
-        let vm = makeVM()
-        vm.recordVO = makeRecordWithFiles(odsOriginalJSON)
-
-        XCTAssertTrue(vm.isAwaitingPDFRendition)
-    }
-
-    func testIsAwaitingPDFRendition_FalseOnceTheAccessCopyExists() {
-        let vm = makeVM()
-        vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(accessCopyPDFJSON)")
-
-        XCTAssertFalse(vm.isAwaitingPDFRendition,
-                       "the rendition arrived — waiting longer would spin for nothing")
-    }
-
-    func testIsAwaitingPDFRendition_FalseWhenANonOriginalRenditionExists() {
-        // A converted rendition that simply isn't a PDF means conversion already ran;
-        // there is nothing further to wait for.
-        let vm = makeVM()
-        vm.recordVO = makeRecordWithFiles("""
-        \(odsOriginalJSON),
-        { "fileId": "9", "size": 1, "format": "file.format.converted",
-          "type": "type.file.video.mp4", "fileUrl": "https://cdn/c.mp4" }
-        """)
-
-        XCTAssertFalse(vm.isAwaitingPDFRendition)
-    }
-
-    func testIsAwaitingPDFRendition_FalseWithNoRecordOrNoFiles() {
-        let noRecord = makeVM()
-        XCTAssertFalse(noRecord.isAwaitingPDFRendition, "nothing fetched yet is not a pending rendition")
-
-        let noFiles = makeVM()
-        noFiles.recordVO = RecordVO(recordVO: nil)
-        XCTAssertFalse(noFiles.isAwaitingPDFRendition)
-    }
-
     // MARK: - Initialization
 
     func testInit_SetsNameFromFile() {

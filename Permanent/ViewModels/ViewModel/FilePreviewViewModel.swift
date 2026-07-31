@@ -403,18 +403,6 @@ class FilePreviewViewModel: ViewModelInterface {
         return URL(string: urlString)
     }
 
-    /// True when this record has no previewable PDF rendition and every file it carries is
-    /// the original upload — i.e. Archivematica has not produced the access copy yet.
-    ///
-    /// The rendition is generated asynchronously, so a document opened moments after being
-    /// uploaded legitimately has nothing this preview can render. That is a "not ready yet",
-    /// not a broken file, and it resolves on its own within seconds-to-minutes.
-    var isAwaitingPDFRendition: Bool {
-        guard pdfAccessCopyURL() == nil else { return false }
-        guard let files = recordVO?.recordVO?.fileVOS, !files.isEmpty else { return false }
-        return files.allSatisfy { $0.format == "file.format.original" }
-    }
-
     func fileThumbnailURL() -> String? {
         let stringURL: String? = recordVO?.recordVO?.preferredThumbnailURL
         return stringURL

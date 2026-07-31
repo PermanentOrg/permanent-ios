@@ -166,6 +166,42 @@ final class MainViewControllerTests: XCTestCase {
         XCTAssertTrue(vc.fabView.isHidden)
     }
 
+    func testUpdateFABViewVisibility_RestoresAlpha_NotJustIsHidden() {
+        // The FAB menu used to hide itself by fading alpha to 0 and setting isHidden. The
+        // permission gate only manages isHidden, so the FAB came back present-but-invisible
+        // — the "+ button never returns after an upload action" report. Showing it must
+        // restore alpha on every path, including when the view was left visible-but-clear.
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+
+        vc.fabView.isHidden = true
+        vc.fabView.alpha = 0
+
+        vc.updateFABViewVisibility()
+
+        XCTAssertFalse(vc.fabView.isHidden)
+        XCTAssertEqual(vc.fabView.alpha, 1, "a zero-alpha FAB is invisible no matter what isHidden says")
+    }
+
+    func testUpdateFABViewVisibility_RestoresAlpha_WhenNotHidden() {
+        // The hide sets isHidden in an animation completion, so a fast restore can land
+        // while isHidden is still false and alpha already 0 — that early-return path has to
+        // reset alpha too.
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+
+        vc.fabView.isHidden = false
+        vc.fabView.alpha = 0
+
+        vc.updateFABViewVisibility()
+
+        XCTAssertEqual(vc.fabView.alpha, 1)
+    }
+
     func testCancelButtonPressedDismissesController() {
         let vc = TestableMainViewController()
 

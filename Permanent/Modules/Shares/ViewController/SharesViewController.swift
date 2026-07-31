@@ -1846,13 +1846,11 @@ extension SharesViewController: FABViewDelegate {
         
         present(hostingController, animated: true)
         
-        // Hide FAB with fade animation after presenting
+        // Hide the FAB through the same API that shows it (see MainViewController) — a
+        // hand-faded alpha is not undone by the permission gate, so the FAB returned
+        // invisible after any menu action.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
-                self.fabView.alpha = 0
-            } completion: { _ in
-                self.fabView.isHidden = true
-            }
+            self.fabView.setVisibility(hidden: true)
         }
     }
     
