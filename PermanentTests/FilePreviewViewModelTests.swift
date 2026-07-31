@@ -18,6 +18,121 @@ final class FilePreviewViewModelTests: XCTestCase {
         return FilePreviewViewModel(file: file)
     }
 
+    /// Builds a RecordVO through the real V2 adapter, so these tests exercise the same
+    /// `fileVOS` shape the app receives from Stela rather than a hand-built stand-in.
+    private func makeRecordWithFiles(_ filesJSON: String) -> RecordVO {
+        let json = """
+        { "data": {
+            "recordId": "89793", "displayName": "file_example_ODS_100", "archiveId": "3227",
+            "archiveNumber": "01on-0006", "uploadFileName": "file_example_ODS_100.ods",
+            "size": 68446, "type": "type.record.spreadsheet", "folderLinkId": "137946",
+            "files": [ \(filesJSON) ]
+        } }
+        """
+        let v2 = try! RecordV2Response.decoder.decode(RecordV2Response.self, from: Data(json.utf8)).data!
+        return JSONHelper.decoding(from: v2.toRecordVOPayload(), with: RecordVO.decoder)!
+    }
+
+    private let odsOriginalJSON = """
+    { "fileId": "1318542", "size": 68446, "format": "file.format.original",
+      "type": "type.file.spreadsheet.ods",
+      "fileUrl": "https://cdn/originals/1318542",
+      "downloadUrl": "https://cdn/originals/1318542?response-content-disposition=attachment" }
+    """
+
+    private let accessCopyPDFJSON = """
+    { "fileId": "1318544", "size": 29249, "format": "file.format.archivematica.access",
+      "type": "type.file.pdf.pdf",
+      "fileUrl": "https://cdn/access_copies/1318542.pdf",
+      "downloadUrl": "https://cdn/access_copies/1318542.pdf?response-content-disposition=x.pdf" }
+    """
+
+    // MARK: - pdfAccessCopyURL
+    // A spreadsheet's original has no inline renderer: WebKit converts the navigation into a
+    // download, the provisional load fails (WebKitErrorDomain 102) and the preview showed
+    // nothing. The Archivematica PDF rendition is what actually gets displayed.
+
+    func testPDFAccessCopyURL_ReturnsArchivematicaPDF_NotTheOriginal() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(accessCopyPDFJSON)")
+
+        XCTAssertEqual(vm.pdfAccessCopyURL()?.absoluteString,
+                       "https://cdn/access_copies/1318542.pdf",
+                       "must render the access copy, and via fileUrl — downloadUrl's content-disposition asks for a save")
+    }
+
+    func testPDFAccessCopyURL_NilWhenRecordHasOnlyTheOriginal() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles(odsOriginalJSON)
+
+        XCTAssertNil(vm.pdfAccessCopyURL(),
+                     "with no rendition the caller must fall back to loadMisc, not pass nil to loadPDF")
+    }
+
+    func testPDFAccessCopyURL_IgnoresAnOriginalPDF() {
+        // A record that IS a pdf takes the .pdf branch already; only a generated ACCESS copy
+        // may stand in for an unrenderable original.
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("""
+        { "fileId": "1", "size": 10, "format": "file.format.original", "type": "type.file.pdf.pdf",
+          "fileUrl": "https://cdn/originals/1.pdf" }
+        """)
+
+        XCTAssertNil(vm.pdfAccessCopyURL())
+    }
+
+    func testFileVO_StaysOnTheOriginal_WhenAnAccessCopyExists() {
+        // The preview swap must not leak into download/filename — the user downloads the .ods
+        // they uploaded, not its PDF rendition.
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(accessCopyPDFJSON)")
+
+        XCTAssertEqual(vm.fileVO()?.type, "type.file.spreadsheet.ods")
+        XCTAssertEqual(vm.fileName(), "file_example_ODS_100.ods")
+    }
+
+    // MARK: - isAwaitingPDFRendition
+    // Archivematica generates the access copy asynchronously. A document opened moments
+    // after upload has only its original, which is "not ready yet" rather than broken —
+    // reporting it as a load failure is what made a freshly uploaded .xlsx look unopenable.
+
+    func testIsAwaitingPDFRendition_TrueWhenOnlyTheOriginalIsPresent() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles(odsOriginalJSON)
+
+        XCTAssertTrue(vm.isAwaitingPDFRendition)
+    }
+
+    func testIsAwaitingPDFRendition_FalseOnceTheAccessCopyExists() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(accessCopyPDFJSON)")
+
+        XCTAssertFalse(vm.isAwaitingPDFRendition,
+                       "the rendition arrived — waiting longer would spin for nothing")
+    }
+
+    func testIsAwaitingPDFRendition_FalseWhenANonOriginalRenditionExists() {
+        // A converted rendition that simply isn't a PDF means conversion already ran;
+        // there is nothing further to wait for.
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("""
+        \(odsOriginalJSON),
+        { "fileId": "9", "size": 1, "format": "file.format.converted",
+          "type": "type.file.video.mp4", "fileUrl": "https://cdn/c.mp4" }
+        """)
+
+        XCTAssertFalse(vm.isAwaitingPDFRendition)
+    }
+
+    func testIsAwaitingPDFRendition_FalseWithNoRecordOrNoFiles() {
+        let noRecord = makeVM()
+        XCTAssertFalse(noRecord.isAwaitingPDFRendition, "nothing fetched yet is not a pending rendition")
+
+        let noFiles = makeVM()
+        noFiles.recordVO = RecordVO(recordVO: nil)
+        XCTAssertFalse(noFiles.isAwaitingPDFRendition)
+    }
+
     // MARK: - Initialization
 
     func testInit_SetsNameFromFile() {

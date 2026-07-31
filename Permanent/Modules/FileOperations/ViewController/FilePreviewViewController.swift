@@ -254,6 +254,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         nonImageAwaitingReconnect = false
         imageStateOverlay.render(.idle)
         recordLoaded = false
+        // Drop the cached record and reset the rendition budget. Replaying a cached record
+        // fails identically — a document waiting on its PDF rendition only recovers once a
+        // FRESH fetch reports the new file — which made Retry a dead end for exactly the
+        // case most likely to be retried.
+        renditionWaitAttempts = 0
+        viewModel?.recordVO = nil
         loadVM()
     }
 
@@ -390,9 +396,23 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 
             case FileType.pdf:
                 self.loadPDF(withURL: downloadURL)
-                
+
             default:
-                self.loadMisc(withURL: downloadURL)
+                // Documents have no inline renderer on this path: WebKit refuses the
+                // original's MIME type (.ods, .xls) and converts the navigation into a
+                // download, which fails the load with WebKitErrorDomain 102 and rendered
+                // nothing. Archivematica generates a PDF access copy for exactly this case,
+                // and PDFKit displays it without involving WebKit at all. Preview only —
+                // `fileVO()` stays on the original so Download and the displayed filename
+                // still give the user the file they uploaded.
+                if let accessCopyURL = self.viewModel?.pdfAccessCopyURL() {
+                    self.loadPDF(withURL: accessCopyURL)
+                } else {
+                    // No rendition available: still prefer the inline url, since
+                    // `downloadURL` carries `response-content-disposition=attachment` and
+                    // therefore guarantees the download path rather than a render.
+                    self.loadMisc(withURL: fileVO.fileURL.flatMap { URL(string: $0) } ?? downloadURL)
+                }
             }
         } else if file.type == .image {
             self.viewModel?.imageLoadDidFail(error: nil)
@@ -778,6 +798,47 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     private var previewBlurAvailable = false
     /// A non-image preview is parked in the offline state, awaiting reconnect to auto-retry.
     private var nonImageAwaitingReconnect = false
+
+    /// Re-fetches consumed while waiting for a document's PDF rendition to be generated.
+    private var renditionWaitAttempts = 0
+    /// Bounded on purpose: the rendition may never arrive (a file type Archivematica does
+    /// not convert), and an unbounded poll would refetch the record forever in the
+    /// background of every such preview. When the budget runs out the failure card is
+    /// shown, and tapping Retry starts a fresh budget.
+    private static let maxRenditionWaitAttempts = 6
+    private static let renditionWaitInterval: TimeInterval = 10
+
+    /// Handles the case where the original could not be rendered because the record's PDF
+    /// rendition does not exist YET: Archivematica generates the access copy asynchronously,
+    /// so a document opened moments after upload has nothing previewable and would otherwise
+    /// show "Couldn't load file" for a file that is perfectly fine. Re-fetches the record on
+    /// a bounded schedule, holding the loading state meanwhile.
+    ///
+    /// Returns true when it has taken ownership of the outcome — the caller must NOT paint
+    /// the failure card in that case.
+    private func waitForPendingRenditionIfNeeded() -> Bool {
+        guard viewModel?.isAwaitingPDFRendition == true,
+              renditionWaitAttempts < Self.maxRenditionWaitAttempts
+        else { return false }
+
+        renditionWaitAttempts += 1
+        imageStateOverlay.render(.loadingFullRes(hasThumbnail: previewBlurAvailable))
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.renditionWaitInterval) { [weak self] in
+            guard let self = self, self.isViewLoaded else { return }
+            // A fresh fetch is required — replaying the cached record reproduces the
+            // failure identically, since the rendition is a NEW file on the record.
+            self.viewModel?.getRecord(file: self.file) { [weak self] record in
+                guard let self = self else { return }
+                if record != nil {
+                    self.loadRecord()
+                } else {
+                    self.showPreviewLoadFailure()
+                }
+            }
+        }
+        return true
+    }
 
     /// Snapshots the player's QuickTime artwork and runs the blur-to-sharp reveal.
     /// drawHierarchy(afterScreenUpdates: true) moves windowless views into a temporary
@@ -1228,6 +1289,20 @@ extension FilePreviewViewController: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         webView.removeFromSuperview()
+        if waitForPendingRenditionIfNeeded() { return }
+        showPreviewLoadFailure()
+    }
+
+    /// `didFail navigation:` only fires once a response has been committed. A load that dies
+    /// BEFORE that — most importantly one WebKit converts into a download, which is what an
+    /// `attachment` Content-Disposition does (WebKitErrorDomain 102,
+    /// FrameLoadInterruptedByPolicyChange) — reports through this callback instead. With it
+    /// unimplemented, neither completion path ran for spreadsheets and the preview sat on its
+    /// loading overlay forever instead of offering the failure/retry card.
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        webView.removeFromSuperview()
+        // Most common cause for a document: its PDF rendition is still being generated.
+        if waitForPendingRenditionIfNeeded() { return }
         showPreviewLoadFailure()
     }
 }

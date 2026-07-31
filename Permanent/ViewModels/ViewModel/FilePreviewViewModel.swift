@@ -383,6 +383,38 @@ class FilePreviewViewModel: ViewModelInterface {
         return recordVO?.recordVO?.fileVOS?.first
     }
     
+    /// The Archivematica-generated PDF rendition of this record, when it has one.
+    ///
+    /// Document types (spreadsheets, presentations, …) cannot be rendered inline by the
+    /// preview's web view: WebKit refuses the original's MIME type and turns the navigation
+    /// into a download, so nothing is ever displayed. This access copy is a real PDF that
+    /// PDFKit renders directly.
+    ///
+    /// Preview only, deliberately separate from `fileVO()` — that stays on the original so
+    /// Download and `fileName()` keep giving the user the file they actually uploaded.
+    func pdfAccessCopyURL() -> URL? {
+        guard let accessCopy = recordVO?.recordVO?.fileVOS?.first(where: {
+            $0.type == "type.file.pdf.pdf" && $0.format == "file.format.archivematica.access"
+        }) else { return nil }
+
+        // fileURL is the plain object; downloadURL carries a content-disposition that would
+        // ask for a save instead of a render.
+        guard let urlString = accessCopy.fileURL ?? accessCopy.downloadURL else { return nil }
+        return URL(string: urlString)
+    }
+
+    /// True when this record has no previewable PDF rendition and every file it carries is
+    /// the original upload — i.e. Archivematica has not produced the access copy yet.
+    ///
+    /// The rendition is generated asynchronously, so a document opened moments after being
+    /// uploaded legitimately has nothing this preview can render. That is a "not ready yet",
+    /// not a broken file, and it resolves on its own within seconds-to-minutes.
+    var isAwaitingPDFRendition: Bool {
+        guard pdfAccessCopyURL() == nil else { return false }
+        guard let files = recordVO?.recordVO?.fileVOS, !files.isEmpty else { return false }
+        return files.allSatisfy { $0.format == "file.format.original" }
+    }
+
     func fileThumbnailURL() -> String? {
         let stringURL: String? = recordVO?.recordVO?.preferredThumbnailURL
         return stringURL

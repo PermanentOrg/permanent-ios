@@ -429,6 +429,55 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertTrue(called)
     }
 
+    // MARK: - FAB visibility across select mode
+    // Same regression class as MainViewController: the restore paths un-hid the
+    // create/upload FAB unconditionally, so leaving select mode inside a folder shared
+    // at viewer level conjured a + button the role does not allow.
+
+    func testDeselect_ViewOnlyFolder_DoesNotRevealFAB() {
+        let vc = makeController()
+        // A folder shared at viewer level: [.read] only (makeFolder's default).
+        vc.viewModel?.navigationStack.append(makeFolder(name: "Shared viewer folder", folderLinkId: 9))
+        // The real screen starts with the action sheet hidden; a bare view defaults to
+        // visible, and the gate correctly refuses to show the FAB over it.
+        vc.fileActionBottomView.isHidden = true
+
+        vc.updateFAB()
+        XCTAssertTrue(vc.fabView.isHidden, "precondition: a view-only folder never shows the FAB")
+
+        vc.selectButtonWasPressed(UIButton())
+        XCTAssertTrue(vc.fabView.isHidden)
+
+        vc.clearButtonWasPressed(UIButton())
+        XCTAssertTrue(vc.fabView.isHidden,
+                      "leaving select mode must not conjure + in a folder without write access")
+    }
+
+    func testDeselect_WritableFolder_RestoresFAB() {
+        let vc = makeController()
+        let writable = FileModel(
+            name: "Editable shared folder",
+            recordId: 0,
+            folderLinkId: 9,
+            archiveNbr: "0001-0000",
+            type: FileType.privateFolder.rawValue,
+            permissions: [.read, .create, .upload]
+        )
+        vc.viewModel?.navigationStack.append(writable)
+        // The real screen starts with the action sheet hidden; a bare view defaults to
+        // visible, and the gate correctly refuses to show the FAB over it.
+        vc.fileActionBottomView.isHidden = true
+
+        vc.updateFAB()
+        XCTAssertFalse(vc.fabView.isHidden, "precondition: writable folder shows the FAB")
+
+        vc.selectButtonWasPressed(UIButton())
+        XCTAssertTrue(vc.fabView.isHidden, "select mode owns the screen while active")
+
+        vc.clearButtonWasPressed(UIButton())
+        XCTAssertFalse(vc.fabView.isHidden, "deselect restores the FAB when permissions allow")
+    }
+
     private func makeController() -> SharesViewController {
         let vc = SharesViewController()
         vc.viewModel = MockSharedFilesViewModel()

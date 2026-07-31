@@ -319,7 +319,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
             self?.dismissFloatingActionIsland()
-            self?.fabView.setVisibility(hidden: false)
+            self?.updateFAB()
 
             self?.viewModel?.selectedFiles = []
             self?.viewModel?.fileAction = .none
@@ -353,7 +353,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
                     
-                    self?.fabView.setVisibility(hidden: false)
+                    self?.updateFAB()
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -370,7 +370,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
                     
-                    self?.fabView.setVisibility(hidden: false)
+                    self?.updateFAB()
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -407,7 +407,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
     }
     
-    fileprivate func updateFAB() {
+    /// Internal (not private) so tests can assert the permission gate directly.
+    func updateFAB() {
         let currentFolderPermissions = viewModel?.currentFolder?.permissions
         
         viewModel?.showMemberChecklist({ [weak self]  showChecklist in
@@ -421,6 +422,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         var shouldShowFAB = currentFolderPermissions?.contains(.create) == true
             && currentFolderPermissions?.contains(.upload) == true
         if !fileActionBottomView.isHidden { shouldShowFAB = false }
+        // Multi-select owns the screen while active; restore paths route through this gate.
+        if viewModel?.isSelecting == true { shouldShowFAB = false }
         // Hide the create/upload FAB (and its checklist sub-button) while picking a copy/move
         // destination — you're choosing where to paste, not adding new files here.
         if viewModel?.isSelectingDestination == true { shouldShowFAB = false }
@@ -651,7 +654,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     @objc
-    private func selectButtonWasPressed(_ sender: UIButton) {
+    /// Internal (not private) so tests can drive the select-mode transitions directly —
+    /// the FAB permission-gate regression lived exactly on this path.
+    func selectButtonWasPressed(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
         // Can't (re)enter multi-select while choosing a paste destination — that mode owns
         // the fixed relocate selection. Belt-and-suspenders with hiding the button below.
@@ -678,8 +683,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     @objc
-    private func clearButtonWasPressed(_ sender: UIButton) {
-        fabView.setVisibility(hidden: false)
+    /// Internal (not private) so tests can drive the select-mode transitions directly —
+    /// the FAB permission-gate regression lived exactly on this path.
+    func clearButtonWasPressed(_ sender: UIButton) {
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = true
             backButton.layer.opacity = 1
@@ -687,6 +693,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         viewModel?.selectedFiles = []
         viewModel?.isSelecting = false
+        // Restore the FAB through the permission gate, never unconditionally: leaving
+        // select mode in a folder you can only view must NOT conjure the create/upload
+        // button (the gate reads isSelecting, so this must run after the reset above).
+        updateFAB()
         collectionView.reloadData()
     }
     
@@ -959,7 +969,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                         self?.deleteFile(self?.viewModel?.selectedFiles)
                         
                         self?.dismissFloatingActionIsland()
-                        self?.fabView.setVisibility(hidden: false)
                         self?.clearButtonWasPressed(UIButton())
                     }, positiveButtonColor: .brightRed,
                     cancelButtonColor: .primary,
@@ -974,7 +983,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
                     
-                    self?.fabView.setVisibility(hidden: false)
+                    self?.updateFAB()
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
@@ -1017,7 +1026,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                                 self?.viewModel?.removeSyncedFiles(files)
                                 self?.refreshCollectionView()
                                 self?.dismissFloatingActionIsland()
-                                self?.fabView.setVisibility(hidden: false)
                                 self?.clearButtonWasPressed(UIButton())
                             }
                             
@@ -1768,7 +1776,6 @@ extension SharesViewController: SharedFileActionSheetDelegate {
         self.present(hostingController, animated: true, completion: nil)
         
         self.dismissFloatingActionIsland()
-        self.fabView.setVisibility(hidden: false)
         self.clearButtonWasPressed(UIButton())
         
         hostingController.rootView.dismissAction = { hasUpdates in
@@ -1825,12 +1832,9 @@ extension SharesViewController: FABViewDelegate {
             },
             onDismiss: { [weak self] in
                 self?.dismiss(animated: false, completion: {
-                    // Show FAB buttons with animation when menu is dismissed
-                    self?.fabView.isHidden = false
-                    self?.fabView.alpha = 0
-                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                        self?.fabView.alpha = 1
-                    }
+                    // Restore through the permission gate — a view-only folder must not get
+                    // the FAB back just because the menu closed. setVisibility animates.
+                    self?.updateFAB()
                 })
             }
         )
@@ -2033,6 +2037,6 @@ extension SharesViewController: UIDocumentPickerDelegate {
 extension SharesViewController: UIAdaptivePresentationControllerDelegate {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         // Show FAB buttons when menu is dismissed
-        fabView.setVisibility(hidden: false)
+        updateFAB()
     }
 }
