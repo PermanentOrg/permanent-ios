@@ -31,6 +31,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     /// restricts V2 to records in the user's own archive and auto-falls back to V1 on
     /// any error/thin payload, so no presenter needs to override this default.
     var usesStelaDetail: Bool = FeatureFlags.useStelaNavigation
+    /// Set by the public gallery: its records live in a FOREIGN archive but are public, so
+    /// the V2 read applies there too. See FilePreviewViewModel.allowsForeignDetail.
+    var allowsForeignStelaDetail: Bool = false
 
     var playerItem: AVPlayerItem?
     var videoPlayer: AVPlayerViewController?
@@ -170,7 +173,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
 
         if viewModel == nil || viewModel?.recordVO == nil {
-            viewModel = FilePreviewViewModel(file: file, usesStelaDetail: usesStelaDetail)
+            viewModel = FilePreviewViewModel(file: file,
+                                            usesStelaDetail: usesStelaDetail,
+                                            allowsForeignDetail: allowsForeignStelaDetail)
             bindImagePreviewState()
 
             if file.type == .image {
