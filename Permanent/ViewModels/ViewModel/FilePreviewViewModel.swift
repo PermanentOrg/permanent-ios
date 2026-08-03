@@ -51,8 +51,16 @@ class FilePreviewViewModel: ViewModelInterface {
     /// Stela V2 getRecordById, with the legacy V1 getRecord as an automatic failsafe.
     private let usesStelaDetail: Bool
 
-    init(file: FileModel, usesStelaDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
+    /// Extends the V2 record READ to records outside the current archive. Set by the public
+    /// gallery, where you browse a FOREIGN archive whose records are public — the same
+    /// bearer-only credentials already list that archive's folder children on V2, so there is
+    /// no reason the record read should need V1. Read only: writes (patch/copy) stay
+    /// own-archive regardless, and the gallery is pinned read-only anyway.
+    private let allowsForeignDetail: Bool
+
+    init(file: FileModel, usesStelaDetail: Bool = false, allowsForeignDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
         self.usesStelaDetail = usesStelaDetail
+        self.allowsForeignDetail = allowsForeignDetail
         self.tagsRepository = tagsRepository
         self.reachability = reachability
         self.file = file
@@ -144,10 +152,14 @@ class FilePreviewViewModel: ViewModelInterface {
         }
         #endif
 
-        // Stela V2 detail (own-archive records on ANY screen) with the legacy V1 fetch as
-        // an automatic failsafe. Foreign/shared records stay on V1: they're authorized
-        // server-side via share membership, which the bearer-only V2 read can't carry.
-        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file) {
+        // Stela V2 detail with the legacy V1 fetch as an automatic failsafe. Own-archive
+        // records on any screen, plus foreign records where the caller says the read is
+        // public (`allowsForeignDetail` — the gallery). Shared-with-me records still go to
+        // V1: those are authorized server-side via share membership, which the bearer-only
+        // V2 read can't carry. The failsafe makes a wrong guess cheap — a rejected V2 read
+        // silently becomes the V1 read, costing one request, because record reads are
+        // idempotent (unlike copy, which is why copy has no fallback).
+        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file) || allowsForeignDetail {
             getRecordV2(file: file, then: handler)
             return
         }

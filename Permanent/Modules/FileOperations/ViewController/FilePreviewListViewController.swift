@@ -111,8 +111,10 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     private func createFilePreviewViewController(for file: FileModel) -> FilePreviewViewController {
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = file
-        // usesStelaDetail keeps its property default (the in-app flag); the VM scopes V2
-        // to own-archive records and auto-falls back to V1. loadVM() builds the VM.
+        // usesStelaDetail keeps its property default (the in-app flag). The VM scopes V2 to
+        // own-archive records, plus the public gallery's foreign-but-public ones, and auto-
+        // falls back to V1. loadVM() builds the VM, so this must be set before it runs.
+        filePreviewVC.allowsForeignStelaDetail = viewModel is PublicArchiveViewModel
 
         // If opened from notification, pass close action to child VC
         if isFromNotification {
@@ -265,8 +267,10 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             fileDetailsVC.onDidActivatePlaybackAudioSession = { [weak self] in
                 self?.didActivatePreviewAudioSession = true
             }
-            // usesStelaDetail keeps its property default (the in-app flag); the VM scopes
-            // V2 to own-archive records with a V1 failsafe.
+            // usesStelaDetail keeps its property default (the in-app flag); the VM scopes V2
+            // to own-archive records plus the gallery's public ones, with a V1 failsafe.
+            // Must precede loadVM(), which is what builds the view model.
+            fileDetailsVC.allowsForeignStelaDetail = viewModel is PublicArchiveViewModel
             fileDetailsVC.view.isHidden = false // preload the view
             fileDetailsVC.loadVM()
             

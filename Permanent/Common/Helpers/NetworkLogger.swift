@@ -48,13 +48,6 @@ class NetworkLogger {
         /// bounding the pathological case. Staging only: `environmentRestriction` keeps all
         /// of this out of production, and `logBodies` is off there regardless.
         var maxBodyLength: Int = 1_000_000
-
-        /// Bytes per emitted log line. os_log truncates an individual message well before
-        /// `maxBodyLength` — in practice around 1 KB — so a long body must be emitted in
-        /// pieces or the tail is silently lost (this is what hid the archive list: the cut
-        /// happened at ~1 KB even though the cap was 10 KB and no truncation marker was
-        /// appended, because the loss was in os_log, not here).
-        var logChunkSize: Int = 800
     }
     
     /// Current logger configuration
@@ -145,23 +138,20 @@ class NetworkLogger {
         return String(decoding: body.prefix(cap), as: UTF8.self) + " … [truncated \(body.count - cap) of \(body.count) bytes]"
     }
 
-    /// Emits a body across as many log lines as it takes, because os_log drops the tail of
-    /// any single long message. Each line is prefixed `label [i/n]` so `log stream` output
-    /// can be reassembled in order; a short body still logs as one unprefixed line.
+    /// Emits the body as ONE unbroken line, via stdout rather than os_log.
+    ///
+    /// os_log hard-truncates any individual message at roughly 1 KB, so a real response body
+    /// cannot go through `logger` at all — it used to lose its tail with no marker, which is
+    /// what hid the `getAllArchives` response and made a server payload look incomplete.
+    /// Splitting it across numbered lines fixed the loss but left the JSON in pieces, so it
+    /// could not be copied into a formatter. stdout has no per-message cap: Xcode's console
+    /// shows the whole body as a single entry you can select, copy and paste as-is.
+    ///
+    /// Staging only — `isLoggingEnabled` gates every caller and `logBodies` is off in
+    /// production. Note this is deliberately NOT visible to `log stream`, which only carries
+    /// os_log; use Xcode's console, or `simctl launch --console`, to read bodies.
     private static func logBody(_ label: String, _ body: Data) {
-        let text = loggableBody(body)
-        let size = max(1, configuration.logChunkSize)
-        guard text.count > size else {
-            logger.debug("\(label): \(text, privacy: .public)")
-            return
-        }
-        let chars = Array(text)
-        let total = (chars.count + size - 1) / size
-        for index in 0..<total {
-            let start = index * size
-            let piece = String(chars[start..<min(start + size, chars.count)])
-            logger.debug("\(label) [\(index + 1, privacy: .public)/\(total, privacy: .public)]: \(piece, privacy: .public)")
-        }
+        print("\(label): \(loggableBody(body))")
     }
     
     /// Log a network response
