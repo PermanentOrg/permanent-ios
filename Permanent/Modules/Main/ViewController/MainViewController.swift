@@ -400,7 +400,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
             self?.dismissFloatingActionIsland()
-            self?.fabView.setVisibility(hidden: false)
+            self?.updateFABViewVisibility()
 
             self?.viewModel?.selectedFiles = []
             self?.viewModel?.fileAction = .none
@@ -440,6 +440,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         // the FAB reappears on every navigation during paste mode.
         let shouldShowFAB = hasCreatePermission && hasUploadPermission && !viewModel.isPickingImage
             && !viewModel.isSelectingDestination
+            // Multi-select owns the screen while active; the FAB comes back via the
+            // restore paths below, which all route through this gate.
+            && !viewModel.isSelecting
 
         // setVisibility fades the buttons back in (see FABView). Hiding them for paste mode
         // created a real hide→show transition that previously never happened — the FAB used
@@ -630,7 +633,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
 
     @objc
-    private func selectButtonWasPressed(_ sender: UIButton) {
+    /// Internal (not private) so tests can drive the select-mode transitions directly —
+    /// the FAB permission-gate regression lived exactly on this path.
+    func selectButtonWasPressed(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
         // Can't (re)enter multi-select while choosing a paste destination — that mode owns
         // the fixed relocate selection. Belt-and-suspenders with hiding the button below.
@@ -657,8 +662,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     @objc
-    private func clearButtonWasPressed(_ sender: UIButton) {
-        fabView.setVisibility(hidden: false)
+    /// Internal (not private) so tests can drive the select-mode transitions directly —
+    /// the FAB permission-gate regression lived exactly on this path.
+    func clearButtonWasPressed(_ sender: UIButton) {
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = true
             backButton.layer.opacity = 1
@@ -666,6 +672,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         viewModel?.selectedFiles = []
         viewModel?.isSelecting = false
+        // Restore the FAB through the permission gate, never unconditionally: on a
+        // viewer-role archive, leaving select mode must NOT conjure the create/upload
+        // button (the gate reads isSelecting, so this must run after the reset above).
+        updateFABViewVisibility()
         collectionView.reloadData()
     }
     
@@ -990,7 +1000,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 DispatchQueue.main.async {
                     self.showErrorAlert(message: .deleteError) {
                         self.refreshCurrentFolder()
-                        self.fabView.setVisibility(hidden: false)
+                        self.updateFABViewVisibility()
                     }
                 }
             }
@@ -1515,12 +1525,9 @@ extension MainViewController: FABViewDelegate {
             },
             onDismiss: { [weak self] in
                 self?.dismiss(animated: false, completion: {
-                    // Show FAB buttons with animation when menu is dismissed
-                    self?.fabView.isHidden = false
-                    self?.fabView.alpha = 0
-                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                        self?.fabView.alpha = 1
-                    }
+                    // Restore through the permission gate — a viewer-role archive must not
+                    // get the FAB back just because the menu closed. setVisibility animates.
+                    self?.updateFABViewVisibility()
                 })
             }
         )
@@ -1532,13 +1539,12 @@ extension MainViewController: FABViewDelegate {
         
         present(hostingController, animated: true)
         
-        // Hide FAB with fade animation after presenting
+        // Hide the FAB through the same API that shows it, so the two stay symmetrical.
+        // Hand-fading alpha here meant the restore had to undo alpha as well, and the
+        // permission gate (updateFABViewVisibility) only manages isHidden — so the FAB came
+        // back invisible after any menu action, e.g. starting or cancelling an upload.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
-                self.fabView.alpha = 0
-            } completion: { _ in
-                self.fabView.isHidden = true
-            }
+            self.fabView.setVisibility(hidden: true)
         }
         
         viewModel?.trackEvent(action: RecordEventAction.initiateUpload)
@@ -1719,7 +1725,7 @@ extension MainViewController: FABActionSheetDelegate {
                             DispatchQueue.main.async {
                                 self?.showErrorAlert(message: .deleteError) {
                                     self?.refreshCurrentFolder()
-                                    self?.fabView.setVisibility(hidden: false)
+                                    self?.updateFABViewVisibility()
                                 }
                             }
                         }
@@ -1766,7 +1772,6 @@ extension MainViewController: FABActionSheetDelegate {
                         self?.deleteFile(self?.viewModel?.selectedFiles)
                         
                         self?.dismissFloatingActionIsland()
-                        self?.fabView.setVisibility(hidden: false)
                         self?.clearButtonWasPressed(UIButton())
                     }, positiveButtonColor: .brightRed,
                     cancelButtonColor: .primary,
@@ -1855,7 +1860,6 @@ extension MainViewController: FABActionSheetDelegate {
                                 self?.viewModel?.removeSyncedFiles(files)
                                 self?.refreshCollectionView()
                                 self?.dismissFloatingActionIsland()
-                                self?.fabView.setVisibility(hidden: false)
                                 self?.clearButtonWasPressed(UIButton())
                             }
 
@@ -1864,7 +1868,6 @@ extension MainViewController: FABActionSheetDelegate {
                                 self?.showErrorAlert(message: .deleteError) {
                                     self?.refreshCurrentFolder()
                                     self?.dismissFloatingActionIsland()
-                                    self?.fabView.setVisibility(hidden: false)
                                     self?.clearButtonWasPressed(UIButton())
                                 }
                             }
@@ -2009,7 +2012,6 @@ extension MainViewController: FABActionSheetDelegate {
         self.present(hostingController, animated: true, completion: nil)
         
         self.dismissFloatingActionIsland()
-        self.fabView.setVisibility(hidden: false)
         self.clearButtonWasPressed(UIButton())
         
         // Add a way to call the completion block when the view is dismissed.

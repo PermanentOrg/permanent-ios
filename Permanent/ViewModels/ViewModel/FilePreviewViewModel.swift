@@ -383,6 +383,26 @@ class FilePreviewViewModel: ViewModelInterface {
         return recordVO?.recordVO?.fileVOS?.first
     }
     
+    /// The Archivematica-generated PDF rendition of this record, when it has one.
+    ///
+    /// Document types (spreadsheets, presentations, …) cannot be rendered inline by the
+    /// preview's web view: WebKit refuses the original's MIME type and turns the navigation
+    /// into a download, so nothing is ever displayed. This access copy is a real PDF that
+    /// PDFKit renders directly.
+    ///
+    /// Preview only, deliberately separate from `fileVO()` — that stays on the original so
+    /// Download and `fileName()` keep giving the user the file they actually uploaded.
+    func pdfAccessCopyURL() -> URL? {
+        guard let accessCopy = recordVO?.recordVO?.fileVOS?.first(where: {
+            $0.type == "type.file.pdf.pdf" && $0.format == "file.format.archivematica.access"
+        }) else { return nil }
+
+        // fileURL is the plain object; downloadURL carries a content-disposition that would
+        // ask for a save instead of a render.
+        guard let urlString = accessCopy.fileURL ?? accessCopy.downloadURL else { return nil }
+        return URL(string: urlString)
+    }
+
     func fileThumbnailURL() -> String? {
         let stringURL: String? = recordVO?.recordVO?.preferredThumbnailURL
         return stringURL

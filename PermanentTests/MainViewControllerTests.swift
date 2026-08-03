@@ -99,6 +99,109 @@ final class MainViewControllerTests: XCTestCase {
         XCTAssertNotNil(collectionView.refreshControl)
     }
 
+    // MARK: - FAB visibility across select mode
+    // The + button is gated on archive permissions, but the RESTORE paths used to un-hide
+    // it unconditionally. The reported repro: open a viewer-role archive, tap Select, then
+    // deselect — the create/upload FAB appeared on an archive the user cannot write to.
+
+    /// Wires just the outlets the select-mode handlers touch. Returns strong refs —
+    /// controller outlets are weak.
+    private func makeSelectModeHarness(_ vm: MyFilesViewModel)
+    -> (vc: MainViewController, retained: [UIView]) {
+        let vc = MainViewController()
+        vc.viewModel = vm
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+        let backButton = UIButton(type: .system)
+        let fabView = FABView(frame: .zero)
+        vc.collectionView = collectionView
+        vc.backButton = backButton
+        vc.fabView = fabView
+        return (vc, [collectionView, backButton, fabView])
+    }
+
+    func testDeselect_ViewerArchive_DoesNotRevealFAB() {
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read]           // viewer role — no create/upload
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+
+        vc.updateFABViewVisibility()
+        XCTAssertTrue(vc.fabView.isHidden, "precondition: a viewer archive never shows the FAB")
+
+        vc.selectButtonWasPressed(UIButton())
+        XCTAssertTrue(vc.fabView.isHidden, "select mode keeps it hidden")
+
+        vc.clearButtonWasPressed(UIButton())          // the reported repro: deselect
+        XCTAssertTrue(vc.fabView.isHidden,
+                      "leaving select mode must not conjure + on an archive without write access")
+    }
+
+    func testDeselect_WritableArchive_RestoresFAB() {
+        // The gate must not over-tighten: with create+upload the FAB comes back on deselect.
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+
+        vc.updateFABViewVisibility()
+        XCTAssertFalse(vc.fabView.isHidden, "precondition: writable archive shows the FAB")
+
+        vc.selectButtonWasPressed(UIButton())
+        XCTAssertTrue(vc.fabView.isHidden, "select mode owns the screen while active")
+
+        vc.clearButtonWasPressed(UIButton())
+        XCTAssertFalse(vc.fabView.isHidden, "deselect restores the FAB when permissions allow")
+    }
+
+    func testUpdateFABViewVisibility_HiddenWhileSelecting() {
+        // The gate itself must treat select mode as hidden, so any stray refresh that
+        // recomputes visibility mid-selection cannot re-show the FAB either.
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+
+        vm.isSelecting = true
+        vc.updateFABViewVisibility()
+        XCTAssertTrue(vc.fabView.isHidden)
+    }
+
+    func testUpdateFABViewVisibility_RestoresAlpha_NotJustIsHidden() {
+        // The FAB menu used to hide itself by fading alpha to 0 and setting isHidden. The
+        // permission gate only manages isHidden, so the FAB came back present-but-invisible
+        // — the "+ button never returns after an upload action" report. Showing it must
+        // restore alpha on every path, including when the view was left visible-but-clear.
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+
+        vc.fabView.isHidden = true
+        vc.fabView.alpha = 0
+
+        vc.updateFABViewVisibility()
+
+        XCTAssertFalse(vc.fabView.isHidden)
+        XCTAssertEqual(vc.fabView.alpha, 1, "a zero-alpha FAB is invisible no matter what isHidden says")
+    }
+
+    func testUpdateFABViewVisibility_RestoresAlpha_WhenNotHidden() {
+        // The hide sets isHidden in an animation completion, so a fast restore can land
+        // while isHidden is still false and alpha already 0 — that early-return path has to
+        // reset alpha too.
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+
+        vc.fabView.isHidden = false
+        vc.fabView.alpha = 0
+
+        vc.updateFABViewVisibility()
+
+        XCTAssertEqual(vc.fabView.alpha, 1)
+    }
+
     func testCancelButtonPressedDismissesController() {
         let vc = TestableMainViewController()
 
@@ -224,7 +327,14 @@ final class MainViewControllerTests: XCTestCase {
     
     func testClearButtonSelectorDisablesSelectingAndRestoresUI() {
         let vc = MainViewController()
-        let vm = MyFilesViewModel()
+        // Permission-aware mock WITH write access: the FAB restore below is only correct
+        // for a writable archive. (A bare MyFilesViewModel has no session, so its
+        // permissions are [.read] — this test used to assert the FAB reappearing in that
+        // state, which was precisely the permission leak fixed by routing the restore
+        // through updateFABViewVisibility. The viewer case is covered by
+        // testDeselect_ViewerArchive_DoesNotRevealFAB.)
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
         vc.viewModel = vm
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())

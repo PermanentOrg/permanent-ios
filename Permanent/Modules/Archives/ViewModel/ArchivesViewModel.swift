@@ -21,6 +21,41 @@ class ArchivesViewModel: ViewModelInterface {
     var pendingArchives: [ArchiveVOData] {
         return allArchives.filter({ $0.status == ArchiveVOData.Status.pending })
     }
+
+    /// The archives to keep from an account-archives response: deduped by id, with only
+    /// `.unknown` (unparseable status) dropped.
+    ///
+    /// PENDING archives are RETAINED. `pendingArchives` above filters this same collection
+    /// for `.pending`, so excluding them during parsing made that property — and with it
+    /// the "Pending Archives" section and its Accept/Decline buttons — permanently empty:
+    /// an invitation showed on the web and could not be accepted on iOS at all. The archive
+    /// switcher is unaffected because it reads `selectableArchives`, which requires `.ok`.
+    ///
+    /// Static and internal so the filter is unit-testable without a network call. The
+    /// version this replaces lived inside the request completion and was unreachable from
+    /// a test, which is why four passing `pendingArchives` tests never caught the bug —
+    /// they all assigned `allArchives` directly, bypassing this step.
+    static func usableArchives(from accountArchives: [ArchiveVO]?) -> [ArchiveVOData] {
+        var archiveMap: [Int: ArchiveVOData] = [:]
+
+        accountArchives?.forEach { archive in
+            guard let archiveVOData = archive.archiveVO,
+                  archiveVOData.status != .unknown,
+                  let archiveID = archiveVOData.archiveID
+            else { return }
+
+            // Server-side duplicates: prefer the row that actually carries a name.
+            if let existingArchive = archiveMap[archiveID] {
+                if existingArchive.fullName == nil && archiveVOData.fullName != nil {
+                    archiveMap[archiveID] = archiveVOData
+                }
+            } else {
+                archiveMap[archiveID] = archiveVOData
+            }
+        }
+
+        return Array(archiveMap.values)
+    }
     var selectableArchives: [ArchiveVOData] {
         return availableArchives.filter({ $0.status == ArchiveVOData.Status.ok })
     }
@@ -117,29 +152,8 @@ class ArchivesViewModel: ViewModelInterface {
                 }
                 
                 let accountArchives = model.results.first?.data
-                
-                self.allArchives.removeAll()
-                var archiveMap: [Int: ArchiveVOData] = [:]
-                
-                accountArchives?.forEach { archive in
-                    if let archiveVOData = archive.archiveVO, 
-                       archiveVOData.status != .pending && archiveVOData.status != .unknown,
-                       let archiveID = archiveVOData.archiveID {
-                        
-                        // Handle server-side data corruption by preferring archives with valid names
-                        if let existingArchive = archiveMap[archiveID] {
-                            // Prefer the archive with a valid (non-nil) name
-                            if existingArchive.fullName == nil && archiveVOData.fullName != nil {
-                                archiveMap[archiveID] = archiveVOData
-                            }
-                        } else {
-                            archiveMap[archiveID] = archiveVOData
-                        }
-                    }
-                }
-                
-                // Convert map back to array
-                self.allArchives = Array(archiveMap.values)
+
+                self.allArchives = Self.usableArchives(from: accountArchives)
                 completionBlock(accountArchives, nil)
                 return
                 

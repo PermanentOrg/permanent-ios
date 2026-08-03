@@ -61,6 +61,60 @@ final class ArchivesViewModelTests: XCTestCase {
         XCTAssertNotNil(vm.defaultArchiveId)
     }
 
+    // MARK: - usableArchives (the parsing step that feeds allArchives)
+    // The pendingArchives tests below all assign `allArchives` directly, so none of them
+    // exercised parsing — which is exactly where a `status != .pending` filter was dropping
+    // invitations. The web showed a pending viewer archive that iOS could not accept at all.
+
+    func testUsableArchives_KeepsPending_SoInvitationsAreAcceptable() {
+        let parsed = ArchivesViewModel.usableArchives(from: [
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "001", status: .ok, archiveID: 1)),
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "002", status: .pending, archiveID: 2))
+        ])
+
+        XCTAssertEqual(parsed.count, 2, "a pending invitation must survive parsing")
+        XCTAssertEqual(parsed.filter { $0.status == .pending }.first?.archiveNbr, "002")
+
+        // End to end through the property the Pending Archives section actually reads.
+        let vm = ArchivesViewModel()
+        vm.allArchives = parsed
+        XCTAssertEqual(vm.pendingArchives.count, 1,
+                       "parsing must feed pendingArchives, or Accept/Decline is unreachable")
+        XCTAssertEqual(vm.selectableArchives.count, 1,
+                       "the switcher must still exclude pending — it requires .ok")
+    }
+
+    func testUsableArchives_DropsUnknownStatus() {
+        let parsed = ArchivesViewModel.usableArchives(from: [
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "001", status: .ok, archiveID: 1)),
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "002", status: .unknown, archiveID: 2))
+        ])
+
+        XCTAssertEqual(parsed.count, 1, "an unparseable status is still dropped")
+        XCTAssertEqual(parsed.first?.archiveNbr, "001")
+    }
+
+    func testUsableArchives_DedupesByIdPreferringNamedRow() {
+        // Server-side duplicates: the row carrying a name must win regardless of order.
+        let namelessFirst = ArchivesViewModel.usableArchives(from: [
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "001", status: .ok, archiveID: 7, fullName: nil)),
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "001", status: .ok, archiveID: 7, fullName: "Real Name"))
+        ])
+        XCTAssertEqual(namelessFirst.count, 1)
+        XCTAssertEqual(namelessFirst.first?.fullName, "Real Name")
+
+        let namedFirst = ArchivesViewModel.usableArchives(from: [
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "001", status: .ok, archiveID: 7, fullName: "Real Name")),
+            ArchiveVO(archiveVO: makeArchive(archiveNbr: "001", status: .ok, archiveID: 7, fullName: nil))
+        ])
+        XCTAssertEqual(namedFirst.count, 1)
+        XCTAssertEqual(namedFirst.first?.fullName, "Real Name")
+    }
+
+    func testUsableArchives_NilInput_ReturnsEmpty() {
+        XCTAssertTrue(ArchivesViewModel.usableArchives(from: nil).isEmpty)
+    }
+
     // MARK: - pendingArchives
 
     func testPendingArchives_Empty_ReturnsEmpty() {

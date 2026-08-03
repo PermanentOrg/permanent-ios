@@ -41,10 +41,20 @@ class NetworkLogger {
         /// Whether to log request/response bodies
         var logBodies: Bool = true
 
-        /// Maximum number of body bytes rendered per log line. Bodies are stringified on
-        /// the dispatcher's completion thread (currently main), so an uncapped multi-
-        /// megabyte listing would stall the UI just to be logged.
-        var maxBodyLength: Int = 10_000
+        /// Maximum number of body bytes rendered. Bodies are stringified on the dispatcher's
+        /// completion thread (currently main), so this is not unbounded — a multi-megabyte
+        /// listing would stall the UI just to be logged. 1 MB is far above any real API
+        /// response here (the largest, a full folder listing, is tens of KB) while still
+        /// bounding the pathological case. Staging only: `environmentRestriction` keeps all
+        /// of this out of production, and `logBodies` is off there regardless.
+        var maxBodyLength: Int = 1_000_000
+
+        /// Bytes per emitted log line. os_log truncates an individual message well before
+        /// `maxBodyLength` — in practice around 1 KB — so a long body must be emitted in
+        /// pieces or the tail is silently lost (this is what hid the archive list: the cut
+        /// happened at ~1 KB even though the cap was 10 KB and no truncation marker was
+        /// appended, because the loss was in os_log, not here).
+        var logChunkSize: Int = 800
     }
     
     /// Current logger configuration
@@ -121,7 +131,7 @@ class NetworkLogger {
         
         // Log body if present and enabled
         if configuration.logBodies, configuration.logLevel == .debug, let body = request.httpBody {
-            logger.debug("Body: \(loggableBody(body), privacy: .public)")
+            logBody("Body", body)
         }
     }
 
@@ -133,6 +143,25 @@ class NetworkLogger {
         let cap = configuration.maxBodyLength
         guard body.count > cap else { return String(decoding: body, as: UTF8.self) }
         return String(decoding: body.prefix(cap), as: UTF8.self) + " … [truncated \(body.count - cap) of \(body.count) bytes]"
+    }
+
+    /// Emits a body across as many log lines as it takes, because os_log drops the tail of
+    /// any single long message. Each line is prefixed `label [i/n]` so `log stream` output
+    /// can be reassembled in order; a short body still logs as one unprefixed line.
+    private static func logBody(_ label: String, _ body: Data) {
+        let text = loggableBody(body)
+        let size = max(1, configuration.logChunkSize)
+        guard text.count > size else {
+            logger.debug("\(label): \(text, privacy: .public)")
+            return
+        }
+        let chars = Array(text)
+        let total = (chars.count + size - 1) / size
+        for index in 0..<total {
+            let start = index * size
+            let piece = String(chars[start..<min(start + size, chars.count)])
+            logger.debug("\(label) [\(index + 1, privacy: .public)/\(total, privacy: .public)]: \(piece, privacy: .public)")
+        }
     }
     
     /// Log a network response
@@ -167,7 +196,7 @@ class NetworkLogger {
         
         // Log body if present and enabled
         if configuration.logBodies, configuration.logLevel == .debug, let body = data {
-            logger.debug("Body: \(loggableBody(body), privacy: .public)")
+            logBody("Body", body)
         }
     }
 }

@@ -219,6 +219,14 @@ class FABView: UIView {
         exitSnapshot?.removeFromSuperview()
         exitSnapshot = nil
 
+        // Restore alpha on EVERY show path, including the early returns below. Callers used
+        // to fade alpha to 0 as their own hide animation, so a show that only cleared
+        // `isHidden` handed back a fully transparent FAB — present, tappable-looking to
+        // code, invisible on screen. Any competing fade is cancelled first, otherwise its
+        // completion lands after this and zeroes alpha again.
+        layer.removeAnimation(forKey: "opacity")
+        alpha = 1
+
         // A slide is already running: let it finish untouched. This branch is load-bearing —
         // `updateFABViewVisibility()` fires again a few hundred ms later when the post-paste
         // folder refetch lands, and re-asserting the transform there cut the animation short,
