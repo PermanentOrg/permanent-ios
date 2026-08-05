@@ -119,6 +119,22 @@ extension ItemVO {
     }
 
     var preferredThumbnailURL: String? {
-        nonEmpty(thumbnail256) ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
+        resolvedThumbnail256 ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
+    }
+
+    /// See `RecordVOData.resolvedThumbnail256` — `thumbnail256` is the Archivematica access-copy
+    /// thumbnail, blank for HEIC originals. `getLeanItems` (the V1 folder listing, which is what
+    /// production runs) returns `ItemVO`, so this is the copy that fixes the placeholder icons in
+    /// a folder listing — and, via `FileModel.thumbnailURL256`, the preview's blur placeholder too.
+    var resolvedThumbnail256: String? {
+        guard !isHEICOriginal else { return nil }
+        return nonEmpty(thumbnail256)
+    }
+
+    /// True when the ORIGINAL upload was HEIC/HEIF; filename-extension test, as V1 carries no
+    /// granular `files[]` type. Mirrors `RecordVO.isHEICOriginal`.
+    var isHEICOriginal: Bool {
+        let name = (uploadFileName ?? "").lowercased()
+        return name.hasSuffix(".heic") || name.hasSuffix(".heif")
     }
 }

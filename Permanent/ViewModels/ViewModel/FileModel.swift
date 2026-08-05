@@ -130,8 +130,11 @@ struct FileModel: Equatable, Codable {
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
-            
-        self.thumbnailURL256 = model.thumbnail256
+
+        // `resolvedThumbnail256`, not the raw field: `preferredThumbnailURL` below tries the 256
+        // slot first, and it also feeds the full-screen preview's blurred placeholder. On V1 the
+        // raw `thumbnail256` is the access copy, blank for HEIC. See ItemVO.resolvedThumbnail256.
+        self.thumbnailURL256 = model.resolvedThumbnail256
         self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
         self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
         self.thumbnailURL1000 = model.preferredThumbnailURL ?? model.thumbURL1000
@@ -181,8 +184,11 @@ struct FileModel: Equatable, Codable {
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
-            
-        self.thumbnailURL256 = model.thumbnail256
+
+        // See the ItemVO init above — the 256 slot must be HEIC-guarded because it is both the
+        // first choice in `preferredThumbnailURL` and the preview's blur source. This is the
+        // record-detail path, so getting it wrong blurs a blank image behind the full-res load.
+        self.thumbnailURL256 = model.resolvedThumbnail256
         self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
         self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
         self.thumbnailURL1000 = model.preferredThumbnailURL ?? model.thumbURL1000

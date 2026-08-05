@@ -397,6 +397,13 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testV2ChildContext_PublicGalleryPinsViewerRegardlessOfEnteredFolder() throws {
+        // The pin is gated on the V2 flag (VSP-1811) and v2ChildContext reads through it, so
+        // pin the flag explicitly instead of inheriting the scheme default — otherwise this
+        // passes under Permanent-DEV (flag on) and fails under Permanent (flag off).
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
         let vm = PublicArchiveViewModel()
         // Seed an OWNER archive: with `currentArchive` nil the pin is indistinguishable from
         // the un-pinned base (a nil archive already yields [.read]/.viewer), so every
@@ -422,6 +429,10 @@ final class FilesViewModelTests: XCTestCase {
         // Browsing YOUR OWN archive through the gallery: the archive carries the owner
         // role, so an un-pinned gallery would stamp owner permissions onto every child.
         // This is the one case where the pin actually narrows, and it is deliberate.
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
         let ownerArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
         XCTAssertEqual(AccessRole.roleForValue(ownerArchive.accessRole), .owner,
                        "fixture must really be an owner archive, else this test proves nothing")
@@ -441,6 +452,10 @@ final class FilesViewModelTests: XCTestCase {
         // v2ChildContext, because the V1 legs (onGetLeanItemsSuccess / onNavigateMinSuccess)
         // stamp children from these same two properties. Pinning just the V2 leg would let a
         // transient V2 failure hand back write affordances the V2 listing withheld.
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = true
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
         let vm = PublicArchiveViewModel()
         vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
 
@@ -462,6 +477,33 @@ final class FilesViewModelTests: XCTestCase {
                       "sanity: owner really does imply .edit — else the assertions above are hollow")
         XCTAssertEqual(base.archiveAccessRole, AccessRole.roleForValue(base.currentArchive?.accessRole),
                        "the base class must keep deriving its role from the session archive")
+    }
+
+    func testPublicGallery_PinLiftsWhenStelaNavigationIsOff() throws {
+        // With V2 navigation OFF there is only one listing path (V1), so the backend-dependent
+        // disagreement the pin exists to prevent cannot arise. Keeping the pin would instead
+        // strip Share / Publish / editable metadata from your OWN archive in a build that ships
+        // with V2 disabled — a regression against what 1.15.x already offers.
+        let prevFlag = FeatureFlags.useStelaNavigation
+        FeatureFlags.useStelaNavigation = false
+        defer { FeatureFlags.useStelaNavigation = prevFlag }
+
+        let vm = PublicArchiveViewModel()
+        vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
+
+        XCTAssertEqual(vm.archiveAccessRole, .owner,
+                       "with V2 nav off the gallery must fall back to the archive's real role")
+        XCTAssertTrue(vm.archivePermissions.contains(.edit),
+                      "your own archive browsed with V2 nav off keeps its write permissions")
+
+        // Lifting the pin must not over-grant on someone else's archive: a null/unknown
+        // accessRole already maps to .viewer, so the foreign case is unchanged either way.
+        let foreign = PublicArchiveViewModel()
+        foreign.currentArchive = try XCTUnwrap(decodeArchive(accessRole: ""))
+        XCTAssertEqual(foreign.archiveAccessRole, .viewer,
+                       "a foreign archive must stay read-only even with the pin lifted")
+        XCTAssertFalse(foreign.archivePermissions.contains(.edit),
+                       "lifting the pin must never grant write on a foreign archive")
     }
 
     // MARK: - Record rename: V2 PATCH is own-archive only
@@ -1457,6 +1499,108 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(child.resolvedThumb200, "https://cdn.example/w200.jpg",
                        "real renditions keep priority — no quality change for normal uploads")
         XCTAssertEqual(child.resolvedThumb500, "https://cdn.example/w500.jpg")
+    }
+
+    // MARK: - V1 listing thumbnails: the same access-copy trap, a different payload
+    // On the V1 payload the `thumbnail256` FIELD is itself the Archivematica access copy
+    // (`/access_copies/…/thumbnails/….jpg`), not a real 256 rendition — so preferring it
+    // unconditionally served the blank HEIC copy and every HEIC photo in a folder fell back to
+    // the file-type placeholder, while `thumbStatus` was "ok" and thumbURL200/500/1000/2000 were
+    // all populated right beside it. V2 only met the access copy under `thumbnailUrls.256`, so
+    // guarding that left the identically-named V1 field exposed. Production runs V1.
+    // `getLeanItems` (the folder listing) decodes ItemVO; record detail decodes RecordVOData.
+
+    func testV1ItemVO_HEICSkipsAccessCopy256AndUsesRealRendition() throws {
+        let json = """
+        { "uploadFileName": "IMG_1135.heic",
+          "thumbnail256": "https://cdn.example/access_copies/blank-for-heic.jpg",
+          "thumbURL200": "https://cdn.example/01it-06u7.thumb.w200",
+          "thumbURL500": "https://cdn.example/01it-06u7.thumb.w500" }
+        """
+        let item = try JSONDecoder().decode(ItemVO.self, from: try XCTUnwrap(json.data(using: .utf8)))
+
+        XCTAssertTrue(item.isHEICOriginal)
+        XCTAssertEqual(item.preferredThumbnailURL, "https://cdn.example/01it-06u7.thumb.w500",
+                       "HEIC must skip the blank access copy and take a real rendition")
+    }
+
+    func testV1ItemVO_NonHEICStillPrefersThumbnail256() throws {
+        // The guard has to stay narrow: a non-HEIC record must resolve the exact same source it
+        // did before, so the fix cannot regress thumbnail size or bandwidth for normal uploads.
+        let json = """
+        { "uploadFileName": "arctic-fox-4366x3010.jpg",
+          "thumbnail256": "https://cdn.example/real-256.jpg",
+          "thumbURL500": "https://cdn.example/w500.jpg" }
+        """
+        let item = try JSONDecoder().decode(ItemVO.self, from: try XCTUnwrap(json.data(using: .utf8)))
+
+        XCTAssertFalse(item.isHEICOriginal)
+        XCTAssertEqual(item.preferredThumbnailURL, "https://cdn.example/real-256.jpg",
+                       "non-HEIC keeps the 256 — this fix must not touch it")
+    }
+
+    func testV1ItemVO_HEICWithNoRenditionsResolvesNil() throws {
+        // Fail closed rather than serve a known-blank image: no thumbnail draws the file-type
+        // placeholder, whereas a blank one is a white square indistinguishable from a broken file.
+        let json = """
+        { "uploadFileName": "IMG_9999.HEIF",
+          "thumbnail256": "https://cdn.example/access_copies/blank-for-heic.jpg" }
+        """
+        let item = try JSONDecoder().decode(ItemVO.self, from: try XCTUnwrap(json.data(using: .utf8)))
+
+        XCTAssertTrue(item.isHEICOriginal, ".heif counts too, and the test is case-insensitive")
+        XCTAssertNil(item.preferredThumbnailURL)
+    }
+
+    func testV1RecordVOData_MirrorsTheItemVOGuard() throws {
+        // Record detail decodes RecordVOData, so the guard must exist on both — otherwise the
+        // listing is fixed while the preview's blur placeholder still resolves the blank copy.
+        let json = """
+        { "uploadFileName": "IMG_1135.HEIC",
+          "thumbnail256": "https://cdn.example/access_copies/blank-for-heic.jpg",
+          "thumbURL500": "https://cdn.example/w500.jpg" }
+        """
+        let record = try JSONDecoder().decode(RecordVOData.self, from: try XCTUnwrap(json.data(using: .utf8)))
+
+        XCTAssertTrue(record.isHEICOriginal)
+        XCTAssertEqual(record.preferredThumbnailURL, "https://cdn.example/w500.jpg")
+    }
+
+    func testV1FileModel_PreviewBlurSourceIsHEICGuarded() throws {
+        // Guarding only the VO's `preferredThumbnailURL` fixed listings and left the FULL-SCREEN
+        // preview broken: `FileModel.preferredThumbnailURL` tries `thumbnailURL256` FIRST, that
+        // slot was assigned from the raw field, and it is what the preview blurs behind the
+        // full-res load — so HEIC blurred a blank image (the white-square bug). Assert through
+        // FileModel, the type the preview actually reads, or the same gap reopens silently.
+        let json = """
+        { "uploadFileName": "IMG_1135.heic",
+          "thumbnail256": "https://cdn.example/access_copies/blank-for-heic.jpg",
+          "thumbURL200": "https://cdn.example/w200.jpg",
+          "thumbURL500": "https://cdn.example/w500.jpg" }
+        """
+        let item = try JSONDecoder().decode(ItemVO.self, from: try XCTUnwrap(json.data(using: .utf8)))
+        let file = FileModel(model: item, permissions: [.read], accessRole: .viewer)
+
+        XCTAssertNil(file.thumbnailURL256,
+                     "the 256 slot must stay empty for HEIC — it is the preview's blur source")
+        XCTAssertEqual(file.preferredThumbnailURL, "https://cdn.example/w500.jpg",
+                       "the preview must blur a real rendition, never the blank access copy")
+    }
+
+    func testV1FileModel_NonHEICKeepsThe256BlurSource() throws {
+        // Symmetry check: without this a future "simplification" could null the 256 slot for
+        // everything and no test would object, quietly downgrading every preview's placeholder
+        // from a 256 thumbnail to a 500 rendition.
+        let json = """
+        { "uploadFileName": "arctic-fox-4366x3010.jpg",
+          "thumbnail256": "https://cdn.example/real-256.jpg",
+          "thumbURL500": "https://cdn.example/w500.jpg" }
+        """
+        let item = try JSONDecoder().decode(ItemVO.self, from: try XCTUnwrap(json.data(using: .utf8)))
+        let file = FileModel(model: item, permissions: [.read], accessRole: .viewer)
+
+        XCTAssertEqual(file.thumbnailURL256, "https://cdn.example/real-256.jpg")
+        XCTAssertEqual(file.preferredThumbnailURL, "https://cdn.example/real-256.jpg")
     }
 
     // MARK: - thumbnail poll gate (hasItemsAwaitingProcessing)

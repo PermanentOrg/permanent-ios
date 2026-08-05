@@ -29,11 +29,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UITextField.appearance().clearButtonMode = .always
         }
 
-        #if DEBUG
+        #if DEBUG || STAGING_ENVIRONMENT
         // UI tests flip the Stela V2 navigation flag at launch (see BaseUITestCase /
         // TEST_RUNNER_STELA_NAV) so the SAME suite can prove parity against both the V2
         // path and the V1 failsafe without a rebuild. Parsed here, before anything reads
         // the flag. No effect in Release, where the flag is an immutable `let`.
+        //
+        // STAGING_ENVIRONMENT is included because DEV-Release — the Firebase build testers
+        // install — is not a DEBUG build. Now that the flag defaults OFF in every build so
+        // testers see the shipping V1 paths, this launch argument is the only way to exercise
+        // the deferred V2 epic on a staging build without editing code and cutting a new one.
         if CommandLine.arguments.contains("--forceStelaNavigation") {
             FeatureFlags.useStelaNavigation = true
         } else if CommandLine.arguments.contains("--forceLegacyNavigation") {

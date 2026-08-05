@@ -22,21 +22,28 @@ enum FeatureFlags {
     /// every screen) and the upload dedupe listing. V1 remains an automatic failsafe on
     /// every gated path except publish (owned-records-only by gate), so OFF is always
     /// safe. Changing it requires an app release (no Remote Config).
-    // ON only in builds that point at STAGING; production stays on the legacy endpoints
-    // in every build until the rollout flips the Release `let` below.
+    // OFF in EVERY build, staging included. The 1.16.0 release ships with the V2 navigation
+    // migration deferred, so a tester on the Firebase build has to see the same V1 paths
+    // production runs — a staging build defaulting to V2 means nobody can validate what
+    // actually ships.
     //
-    // Two gates, deliberately:
-    // - DEBUG alone was not enough: running the PRODUCTION scheme from Xcode is still a
-    //   Debug build, and it silently sent V2 calls against the prod API — hence the
-    //   runtime `APIEnvironment` check.
-    // - DEBUG-only was ALSO not enough in the other direction: the Firebase App
-    //   Distribution build testers install is DEV-Release (no DEBUG), which silently
-    //   pinned the flag to the Release `let false` — QA was testing the OLD V1 paths
-    //   while the tickets said Stela (VSP-1789 got a bug report against the very V1 copy
-    //   behavior it replaces). DEV-Release defines STAGING_ENVIRONMENT, so gate on that
-    //   too. Tests may still set the var directly.
+    // This inverts the previous `APIEnvironment.defaultEnv == .staging` default. That default
+    // existed for a good reason: DEV-Release (no DEBUG) had silently pinned to the Release
+    // `let false`, so QA was testing the OLD V1 paths while the tickets said Stela — VSP-1789
+    // got a bug report against the very V1 copy behavior it replaces. That was correct while
+    // the epic was in flight. With the epic deferred the same reasoning points the other way:
+    // the default should follow whatever is shipping, and V1 is shipping.
+    //
+    // Not a one-way door. `--forceStelaNavigation` still flips it at launch on any DEBUG *or*
+    // STAGING build (see `AppDelegate`), so the epic can be exercised on a Firebase build
+    // without a code change. When the epic resumes, restore
+    // `APIEnvironment.defaultEnv == .staging` below.
+    //
+    // The `#if` still earns its keep even with both arms `false`: DEBUG/STAGING needs a `var`
+    // for that launch-arg override and for tests (which pin it explicitly and defer-restore),
+    // while Release stays an immutable `let` with no runtime path to flip it.
     #if DEBUG || STAGING_ENVIRONMENT
-    static var useStelaNavigation = APIEnvironment.defaultEnv == .staging
+    static var useStelaNavigation = false
     #else
     static let useStelaNavigation = false
     #endif

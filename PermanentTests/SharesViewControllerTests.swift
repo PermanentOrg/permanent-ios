@@ -200,6 +200,28 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertTrue(vm.selectedFiles?.isEmpty ?? true)
     }
 
+    func testEmptyState_EachSegmentGetsItsOwnCopy() throws {
+        // Both segments used to show the Shared-By-Me message, so an inbox with nothing in it told
+        // the user "You haven't shared any content with anyone" — which reads as a bug rather than
+        // an empty list, and was part of why the archive-switch refresh issue got reported.
+        let vc = makeController()
+        let vm = try XCTUnwrap(vc.viewModel)
+        vm.viewModels = []
+        let segmented = try XCTUnwrap(vc.segmentedControl)
+
+        segmented.selectedSegmentIndex = ShareListType.sharedByMe.rawValue
+        vc.segmentedControlValueChanged(segmented)
+        let byMeText = (vc.collectionView.backgroundView as? EmptyFolderView)?.emptyFolderLabel.text
+        XCTAssertEqual(byMeText, .shareActionMessage)
+
+        segmented.selectedSegmentIndex = ShareListType.sharedWithMe.rawValue
+        vc.segmentedControlValueChanged(segmented)
+        let withMeText = (vc.collectionView.backgroundView as? EmptyFolderView)?.emptyFolderLabel.text
+        XCTAssertEqual(withMeText, .shareWithMeActionMessage)
+        XCTAssertNotEqual(withMeText, .shareActionMessage,
+                          "an empty inbox must not claim the user hasn't shared anything")
+    }
+
     func testBackButtonActionWithoutHierarchyAndNoActionReturns() throws {
         let vc = makeController()
         let vm = try XCTUnwrap(vc.viewModel as? MockSharedFilesViewModel)

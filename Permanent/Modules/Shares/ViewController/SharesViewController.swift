@@ -191,6 +191,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self.collectionView.setContentOffset(.zero, animated: false)
             self.refreshControl.endRefreshing()
 
+            // Only fetch if this screen is actually on screen. Fetching while hidden is what made
+            // the list render blank: the archive switch auto-dismisses the settings sheet, so Shares
+            // reappears at the same time as the response lands, and a `reloadData()` that runs with
+            // no window leaves its cells un-laid-out. Racing that transition is unwinnable, so don't
+            // enter it — `loadedArchiveId` still points at the previous archive, which makes
+            // `syncSharesForCurrentArchive` fetch on the way in, with a spinner, on a screen that is
+            // already visible.
+            guard self.viewIfLoaded?.window != nil else { return }
             self.getShares(shouldShowSpinner: true)
         }
         
@@ -201,8 +209,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         overlayView.frame = view.bounds
+
+        // The view can return to a window without an appear callback (non-fullscreen sheet
+        // dismissal), but layout always runs — so flush any relayout deferred from an off-window
+        // reload here. See `loadedArchiveId` for why this is checked rather than assumed.
+        if needsCollectionViewReloadOnAppear, viewIfLoaded?.window != nil {
+            needsCollectionViewReloadOnAppear = false
+            collectionView.reloadData()
+            configureCollectionViewBgView()
+        }
     }
     
     fileprivate func configureUI() {
@@ -258,7 +275,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     fileprivate func configureCollectionViewBgView() {
         if let items = viewModel?.viewModels, items.isEmpty {
-            let emptyView = EmptyFolderView(title: .shareActionMessage, image: .shares)
+            // The two segments need different copy: "you haven't shared anything" is wrong when the
+            // user is looking at what OTHERS have shared with them.
+            let isSharedWithMe = viewModel?.shareListType == .sharedWithMe
+            let emptyView = EmptyFolderView(title: isSharedWithMe ? .shareWithMeActionMessage : .shareActionMessage,
+                                            image: .shares)
             emptyView.frame = collectionView.bounds
             collectionView.backgroundView = emptyView
         } else {
@@ -266,9 +287,56 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
     }
     
+    /// The archive the currently displayed shares were loaded for, and whether the last reload ran
+    /// while this screen was off-window.
+    ///
+    /// Two separate failures produced the same "blank Shares list, not even an empty-state message"
+    /// report, and both are lifecycle-dependent, so both are handled by checking state on the way in
+    /// rather than by trusting a notification to arrive at a convenient moment:
+    ///
+    /// - The archive-change refresh lands while the archives sheet covers Shares, so `reloadData()`
+    ///   runs on a collection view with no window and its cells are never laid out. A device trace
+    ///   showed `viewModels=3 cvItems=3 bgViewNil=true` on a screen rendering nothing — and
+    ///   `bgViewNil` is why there was no message either: the data was not empty, so the empty view
+    ///   was correctly absent.
+    /// - Whether `viewWillAppear` even fires on the way back depends on how the sheet was dismissed
+    ///   and on its presentation style, so a flag set at notification time can be missed entirely.
+    ///
+    /// Comparing `loadedArchiveId` against the session is immune to both: if what is on screen
+    /// belongs to a different archive than the one now selected, it is refetched, no matter which
+    /// lifecycle callbacks ran. `viewDidLayoutSubviews` flushes a pending relayout for the case
+    /// where the view returns to a window without an appear callback.
+    private var loadedArchiveId: Int?
+    private var needsCollectionViewReloadOnAppear = false
+
+    private var sessionArchiveId: Int? {
+        AuthenticationManager.shared.session?.selectedArchive?.archiveID
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        syncSharesForCurrentArchive()
+    }
+
+    /// Refetch if the displayed shares belong to a different archive than the selected one;
+    /// otherwise just make sure the layout is current.
+    private func syncSharesForCurrentArchive() {
+        guard viewModel != nil else { return }
+
+        if loadedArchiveId != sessionArchiveId {
+            getShares(shouldShowSpinner: true)
+        } else if needsCollectionViewReloadOnAppear {
+            needsCollectionViewReloadOnAppear = false
+            collectionView.reloadData()
+            configureCollectionViewBgView()
+        }
+    }
+
     fileprivate func refreshCollectionView(_ completion: (() -> ())? = nil) {
         collectionView.reloadData()
         configureCollectionViewBgView()
+        // A reload that ran on-screen supersedes any pending one, hence the plain assignment.
+        needsCollectionViewReloadOnAppear = viewIfLoaded?.window == nil
         completion?()
     }
     
@@ -1187,6 +1255,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self.hideSpinner()
             switch status {
             case .success:
+                // Stamp what is now on screen, so `syncSharesForCurrentArchive` can tell whether it
+                // still matches the selected archive. Only on success: a failed refresh leaves the
+                // previous archive's data visible, and claiming otherwise would suppress the retry.
+                self.loadedArchiveId = self.sessionArchiveId
                 self.refreshCollectionView {
                     self.scrollToFileIfNeeded()
                     

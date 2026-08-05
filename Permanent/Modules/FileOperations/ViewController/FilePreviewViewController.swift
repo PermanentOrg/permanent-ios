@@ -78,6 +78,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     /// don't poke it on teardown.
     private var didActivatePlaybackAudioSession = false
 
+    /// One-shot: the A/V original failed to load and we retried with the converted rendition.
+    /// Without this the retry would re-enter the same `.failed` handler and loop.
+    private var didFallBackToConvertedAV = false
+
     /// Set by a coordinating pager (FilePreviewListViewController) that owns the shared audio
     /// session across its cached pages. When non-nil, this controller does NOT deactivate the
     /// session in deinit — the pager deactivates once on its own teardown. Otherwise a cached
@@ -1041,6 +1045,19 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             if status == .failed {
                 self.stopObservingPlayerItem()
                 self.removeVideoPlayer()
+
+                // The original could not be loaded — retry once with the converted rendition
+                // before declaring failure. This replaces the synchronous `AVAsset.isPlayable`
+                // probe that used to pick between them on the main thread: the common case now
+                // costs nothing, and only a genuinely unplayable original pays for a retry.
+                if !self.didFallBackToConvertedAV,
+                   let converted = self.viewModel?.convertedAVFileVO(),
+                   let url = URL(string: converted.downloadURL) {
+                    self.didFallBackToConvertedAV = true
+                    self.loadAV(withURL: url, contentType: converted.contentType ?? "")
+                    return
+                }
+
                 self.showPreviewLoadFailure()
             }
         }

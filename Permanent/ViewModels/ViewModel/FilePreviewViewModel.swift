@@ -382,17 +382,28 @@ class FilePreviewViewModel: ViewModelInterface {
         downloader = nil
     }
     
+    /// The file to play/preview: always the ORIGINAL upload.
+    ///
+    /// This briefly preferred `file.format.converted` for A/V. That was a regression: the
+    /// Archivematica-normalised derivative is not guaranteed to carry a playable audio track or to
+    /// be muxed for progressive streaming, so video played silently and stalled while buffering.
+    /// The original is also the higher-fidelity file, which matters in an archival product.
+    ///
+    /// The version before that probed `AVAsset(url:).isPlayable` synchronously on a REMOTE url to
+    /// decide, which blocks the main thread (`fileVO()` is called on main from `loadRecord`). Both
+    /// are avoidable: play the original, and if AVPlayer reports it cannot be loaded, retry with
+    /// `convertedAVFileVO()` — see `FilePreviewViewController`'s `.failed` handling. That keeps the
+    /// main thread free, costs nothing in the common case, and only pays a retry when the original
+    /// genuinely will not play.
     func fileVO() -> FileVO? {
-        // For A/V, prefer the app-friendly converted rendition, else the first file — matching
-        // DownloadManagerGCD.fileVO. Previously this probed `AVAsset(url:).isPlayable`
-        // synchronously on a REMOTE url, which blocks the main thread (fileVO() is called on
-        // main from loadRecord); AVPlayer already surfaces unplayable assets at play time.
-        if file.type == .video || file.type == .audio,
-           let converted = recordVO?.recordVO?.fileVOS?.first(where: { $0.format == "file.format.converted" }) {
-            return converted
-        }
+        recordVO?.recordVO?.fileVOS?.first
+    }
 
-        return recordVO?.recordVO?.fileVOS?.first
+    /// The converted A/V rendition, used only as the fallback when the original fails to load.
+    /// Nil when the record has no such rendition, in which case the failure is terminal.
+    func convertedAVFileVO() -> FileVO? {
+        guard file.type == .video || file.type == .audio else { return nil }
+        return recordVO?.recordVO?.fileVOS?.first(where: { $0.format == "file.format.converted" })
     }
     
     /// The Archivematica-generated PDF rendition of this record, when it has one.
