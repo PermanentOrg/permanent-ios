@@ -28,9 +28,10 @@ class PublicArchiveViewModel: FilesViewModel {
     /// bearer auth (in fact with no auth at all), so the listing itself needs no membership.
     override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
 
-    /// The public browser is READ-ONLY, pinned at the archive level so every listing path
-    /// agrees — V2 `/children` (via the base `v2ChildContext`), the V1 `getLeanItems`
-    /// failsafe, and the `navigateMin` folder push all read these two properties.
+    /// The public browser is READ-ONLY **while Stela V2 navigation is on**, pinned at the
+    /// archive level so every listing path agrees — V2 `/children` (via the base
+    /// `v2ChildContext`), the V1 `getLeanItems` failsafe, and the `navigateMin` folder push
+    /// all read these two properties.
     ///
     /// Pinning only the V2 leg would make the user's capabilities depend on which backend
     /// happened to serve the listing: `navigateV2` falls back to V1 on any error, so the
@@ -39,14 +40,24 @@ class PublicArchiveViewModel: FilesViewModel {
     /// gated on the per-item `permissions` this stamps (`FilePreviewViewController` /
     /// `FileDetailsViewController` share menus, and `FilePreviewViewModel.isEditable`).
     ///
-    /// For a FOREIGN archive this changes nothing — `accessRole` comes back null, which
+    /// Gated on the same flag as the migration it belongs to (VSP-1811). With V2 navigation
+    /// OFF there is only one listing path — V1 — so the backend-dependent disagreement this
+    /// pin exists to prevent cannot arise, and keeping the pin would instead remove
+    /// affordances that shipped builds already offer.
+    ///
+    /// A FOREIGN archive is unaffected either way: `accessRole` comes back null, which
     /// `AccessRole.roleForValue` already maps to `.viewer` and `ArchiveVOData.permissions()`
-    /// to `[.read]`. It narrows exactly one case: browsing your OWN archive through the
-    /// gallery, where the archive role is owner. That narrowing is deliberate — this screen
-    /// has no write UI of its own, so those affordances only ever arrived incidentally
-    /// through the shared preview component.
-    override var archivePermissions: [Permission] { [.read] }
-    override var archiveAccessRole: AccessRole { .viewer }
+    /// to `[.read]`. This governs exactly one case — browsing your OWN archive through the
+    /// gallery, where the archive role is owner. Those affordances arrive incidentally via the
+    /// shared preview component rather than from any write UI on this screen, so whether they
+    /// belong here at all is a live product question — but not one to settle silently inside a
+    /// release whose purpose is to ship with V2 navigation disabled.
+    override var archivePermissions: [Permission] {
+        usesStelaNavigation ? [.read] : super.archivePermissions
+    }
+    override var archiveAccessRole: AccessRole {
+        usesStelaNavigation ? .viewer : super.archiveAccessRole
+    }
 
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
 

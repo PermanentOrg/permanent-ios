@@ -26,35 +26,6 @@ struct UploadLiveActivitySnapshot: Codable {
 class UploadLiveActivityManager {
     static let shared = UploadLiveActivityManager()
 
-    /// Compile-time kill switch for the upload Live Activity feature.
-    ///
-    /// The feature is **on by default**. To turn it off for a build, add
-    /// `DISABLE_LIVE_ACTIVITIES` to that configuration's Swift flags — e.g.
-    /// `OTHER_SWIFT_FLAGS = "$(inherited) -DDISABLE_LIVE_ACTIVITIES"`, the same
-    /// mechanism used for `STAGING_ENVIRONMENT`.
-    ///
-    /// This switch is intended to be **temporary and trivially removable**. Its
-    /// entire footprint is this property plus three `guard Self.isFeatureEnabled`
-    /// checks — in `startActivity`, `fileCompleted`, and `reconcileOnLaunch`. No
-    /// original logic was modified, so to restore Live Activities permanently:
-    /// `grep isFeatureEnabled` in this file, delete this property and those three
-    /// guards, and drop the `-DDISABLE_LIVE_ACTIVITIES` build flag. Nothing else
-    /// needs reverting.
-    ///
-    /// Why only three guards: `currentActivity` is only ever assigned in
-    /// `startActivity` and `reconcileOnLaunch`, so gating both keeps it `nil`,
-    /// which makes every other lifecycle method a no-op via its own
-    /// `currentActivity != nil` guard. The one exception is `fileCompleted`,
-    /// which has a side effect that runs even with no activity, so it is gated
-    /// explicitly too.
-    static var isFeatureEnabled: Bool {
-        #if DISABLE_LIVE_ACTIVITIES
-        return false
-        #else
-        return true
-        #endif
-    }
-
     private let logger = Logger(subsystem: "com.permanent.ios", category: "LiveActivity")
     private let flowLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
     private var currentActivity: Activity<UploadActivityAttributes>?
@@ -66,6 +37,17 @@ class UploadLiveActivityManager {
     private var currentFileName: String = ""
     private var currentFileProgress: Double = 0.0
     private var lastReportedProgress: Double = 0.0
+
+    /// Throttle for `activity.update` pushes. `updateProgress` runs on every
+    /// URLSession progress callback — hundreds of times for a single large file —
+    /// and ActivityKit budgets updates per app, so pushing all of them risks iOS
+    /// silently throttling the activity and freezing the Lock Screen mid-upload.
+    /// A whole percent is the finest change the UI can actually render, so
+    /// anything smaller is spent budget for no visible gain. A change of file
+    /// always pushes, so the displayed name never lags behind the bytes.
+    private let minProgressPushDelta: Double = 0.01
+    private var lastPushedProgress: Double = 0.0
+    private var lastPushedFileName: String = ""
 
     /// Whether a Live Activity is currently active.
     var isActive: Bool { currentActivity != nil }
@@ -105,16 +87,6 @@ class UploadLiveActivityManager {
     ///    they stay visible until uploads finish or iOS marks them stale.
     /// 3. No snapshot AND no in-flight metadata → truly orphaned, end them.
     func reconcileOnLaunch() {
-        guard Self.isFeatureEnabled else {
-            // Feature compiled out — end any activities left over from a
-            // previously-enabled build so none linger on the Lock Screen.
-            for activity in Activity<UploadActivityAttributes>.activities {
-                Task { await activity.end(nil, dismissalPolicy: .immediate) }
-            }
-            clearSnapshot()
-            return
-        }
-
         let runningActivities = Activity<UploadActivityAttributes>.activities
         let snapshot = loadSnapshot()
 
@@ -240,8 +212,6 @@ class UploadLiveActivityManager {
     // MARK: - Lifecycle
 
     func startActivity(totalFiles: Int, firstFileName: String, archiveNo: String = "", folderLinkId: Int = 0) {
-        guard Self.isFeatureEnabled else { return }
-
         let authInfo = ActivityAuthorizationInfo()
         flowLogger.info("🔼 [LIVE ACTIVITY] startActivity called — areActivitiesEnabled=\(authInfo.areActivitiesEnabled, privacy: .public) totalFiles=\(totalFiles, privacy: .public) currentActivity=\(self.currentActivity != nil, privacy: .public)")
 
@@ -261,6 +231,8 @@ class UploadLiveActivityManager {
         self.failedFiles = 0
         self.currentFileName = firstFileName
         self.currentFileProgress = 0.0
+        self.lastPushedProgress = 0.0
+        self.lastPushedFileName = ""
 
         let attributes = UploadActivityAttributes(sessionStartTime: Date(), archiveNo: archiveNo, folderLinkId: folderLinkId)
         let initialState = UploadActivityAttributes.ContentState(
@@ -298,6 +270,17 @@ class UploadLiveActivityManager {
         let displayProgress = max(overallProgress, lastReportedProgress)
         lastReportedProgress = displayProgress
 
+        // Skip pushes that wouldn't visibly change the Lock Screen. Moving to a
+        // new file and reaching 100% always push; see `minProgressPushDelta`.
+        let fileChanged = fileName != lastPushedFileName
+        guard fileChanged
+                || displayProgress >= 1.0
+                || displayProgress - lastPushedProgress >= minProgressPushDelta
+        else { return }
+
+        lastPushedProgress = displayProgress
+        lastPushedFileName = fileName
+
         let state = UploadActivityAttributes.ContentState(
             currentFileIndex: min(fileIndex, totalFiles),
             totalFiles: totalFiles,
@@ -314,8 +297,6 @@ class UploadLiveActivityManager {
     }
 
     func fileCompleted(success: Bool) {
-        guard Self.isFeatureEnabled else { return }
-
         if success {
             completedFiles += 1
         } else {
@@ -530,6 +511,8 @@ class UploadLiveActivityManager {
         currentFileName = ""
         currentFileProgress = 0.0
         lastReportedProgress = 0.0
+        lastPushedProgress = 0.0
+        lastPushedFileName = ""
         clearSnapshot()
     }
 }

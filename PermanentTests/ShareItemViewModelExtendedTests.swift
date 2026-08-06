@@ -133,7 +133,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         let firstArchive = try XCTUnwrap(vm.sharedArchives.first)
         let shareID = try XCTUnwrap(firstArchive.shareID, "Pending share should have a shareID")
-        XCTAssertLessThan(shareID, 0, "Pending share should have negative shareID to distinguish from real shares")
+        XCTAssertEqual(shareID, -42, "Pending share must encode the exact invite id, negated — resend/revoke read it back out")
     }
 
     // MARK: - Pending Shares Computed Property Tests

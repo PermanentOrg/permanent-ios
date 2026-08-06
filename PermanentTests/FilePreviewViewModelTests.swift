@@ -153,6 +153,48 @@ final class FilePreviewViewModelTests: XCTestCase {
         XCTAssertNil(vm.fileVO())
     }
 
+    func testFileVO_VideoPlaysTheOriginal_ConvertedIsOnlyTheFallback() {
+        // This briefly preferred file.format.converted for A/V, which regressed playback: the
+        // normalised derivative is not guaranteed to carry a playable audio track or to be muxed
+        // for progressive streaming, so video played silently and stalled. The original plays, and
+        // the converted rendition is reachable only as the retry after AVPlayer reports a failure.
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoOriginalJSON), \(videoConvertedJSON)")
+
+        XCTAssertEqual(vm.fileVO()?.format, "file.format.original",
+                       "playback must use the user's own file, not the derivative")
+        XCTAssertEqual(vm.convertedAVFileVO()?.format, "file.format.converted",
+                       "the derivative must still be reachable as the fallback")
+    }
+
+    func testConvertedAVFileVO_NilForNonAV() {
+        // The fallback is A/V-only: a document must never silently swap to a converted rendition.
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(videoConvertedJSON)")
+
+        XCTAssertNil(vm.convertedAVFileVO())
+    }
+
+    private func makeVideoVM() -> FilePreviewViewModel {
+        FilePreviewViewModel(file: FileModel(name: "clip.mov", recordId: 89793, folderLinkId: 137946,
+                                             archiveNbr: "01on-0006", type: FileType.video.rawValue,
+                                             permissions: [.read]))
+    }
+
+    private let videoOriginalJSON = """
+    { "fileId": "2000", "size": 900000, "format": "file.format.original",
+      "type": "type.file.video.quicktime",
+      "fileUrl": "https://cdn/originals/2000",
+      "downloadUrl": "https://cdn/originals/2000?response-content-disposition=attachment" }
+    """
+
+    private let videoConvertedJSON = """
+    { "fileId": "2001", "size": 400000, "format": "file.format.converted",
+      "type": "type.file.video.mp4",
+      "fileUrl": "https://cdn/converted/2001",
+      "downloadUrl": "https://cdn/converted/2001?response-content-disposition=attachment" }
+    """
+
     // MARK: - fileThumbnailURL()
 
     func testFileThumbnailURL_NilRecordVO_ReturnsNil() {

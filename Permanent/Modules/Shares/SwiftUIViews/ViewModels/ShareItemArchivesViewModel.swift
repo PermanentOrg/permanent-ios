@@ -422,7 +422,10 @@ extension ShareItemViewModel {
 
             let trimmedName = pending.name?.trimmingCharacters(in: .whitespacesAndNewlines)
             let displayName = (trimmedName?.isEmpty == false) ? trimmedName! : email
-            let inviteId = Int(pending.id ?? "") ?? 0
+            // An id that does not parse means we have no invitation to act on. Leaving shareID
+            // nil keeps that visible to Send again / Revoke, which previously fell back to -1
+            // and so addressed invite id 1 — a real, unrelated invitation.
+            let inviteId = Int(pending.id ?? "").flatMap { $0 > 0 ? $0 : nil }
 
             let account = AccountVOData(
                 accountID: nil,
@@ -465,7 +468,7 @@ extension ShareItemViewModel {
             )
 
             return ShareVOData(
-                shareID: inviteId > 0 ? -inviteId : -1,
+                shareID: inviteId.map { -$0 },
                 folderLinkID: nil,
                 archiveID: nil,
                 accessRole: pending.accessRole,
@@ -483,6 +486,40 @@ extension ShareItemViewModel {
         }
     }
 
+    /// Keeps a locally captured invite id alive across a refetch.
+    ///
+    /// The V2-derived row wins the email dedupe below, so a pending share that carries no usable
+    /// id of its own would otherwise erase the id captured from `/invite/share` — and Send again
+    /// and Revoke would go dead again on the next refresh. Where both rows describe the same
+    /// invitation (same email), graft the local id onto the V2 row.
+    private func preservingLocalInviteId(for invitedShare: ShareVOData) -> ShareVOData {
+        guard invitedShare.shareID == nil,
+              let email = invitedShare.accountVO?.primaryEmail?.lowercased(),
+              let localShareID = sharedArchives.first(where: {
+                  $0.status?.contains("invited") == true
+                      && $0.accountVO?.primaryEmail?.lowercased() == email
+                      && $0.shareID != nil
+              })?.shareID
+        else { return invitedShare }
+
+        return ShareVOData(
+            shareID: localShareID,
+            folderLinkID: invitedShare.folderLinkID,
+            archiveID: invitedShare.archiveID,
+            accessRole: invitedShare.accessRole,
+            type: invitedShare.type,
+            status: invitedShare.status,
+            requestToken: invitedShare.requestToken,
+            previewToggle: invitedShare.previewToggle,
+            folderVO: invitedShare.folderVO,
+            recordVO: invitedShare.recordVO,
+            archiveVO: invitedShare.archiveVO,
+            accountVO: invitedShare.accountVO,
+            createdDT: invitedShare.createdDT,
+            updatedDT: invitedShare.updatedDT
+        )
+    }
+
     func finalizeSharedArchives(_ baseShares: [ShareVOData], pendingSharesV2: [PendingShareV2]? = nil) {
         var mergedShares = baseShares
 
@@ -495,7 +532,7 @@ extension ShareItemViewModel {
                     return existing.accountVO?.primaryEmail?.lowercased() == invitedEmail
                 }
                 if !alreadyExists {
-                    mergedShares.append(invitedShare)
+                    mergedShares.append(preservingLocalInviteId(for: invitedShare))
                 }
             }
         }

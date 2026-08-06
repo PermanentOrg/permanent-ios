@@ -110,6 +110,7 @@
 "SharedByMe" = "Shared By Me";
 "SharedWithMe" = "Shared With Me";
 "ShareActionMessage" = "You haven’t shared any content with anyone. Choose an item from My Files and share it with someone!";
+"ShareWithMeActionMessage" = "Nobody has shared anything with this archive yet. When someone shares a file or folder with you, it will appear here.";
 "Add" = "Add";
 "LogOut" = "Log Out";
 "AutoApproveTooltip" = "Automatically approve requests for access to this share.";

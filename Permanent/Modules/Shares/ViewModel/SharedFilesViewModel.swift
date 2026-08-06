@@ -73,55 +73,80 @@ class SharedFilesViewModel: FilesViewModel {
         }
     }
     
+    /// Monotonic token so two overlapping `getShares` calls cannot interleave their results.
+    ///
+    /// The archive-change notification fires more than once per switch (it is posted from
+    /// `AuthenticationManager.updateSelectedArchive`, `ArchivesViewModel.setCurrentArchive` and
+    /// the archives screen), so the handler started two fetches. Both cleared the three arrays
+    /// up front and both appended on response, which made three shared items render as six — and
+    /// when the surviving request was the one whose completion the view controller's supersede
+    /// guard dropped, the arrays stayed cleared and the list rendered EMPTY until a manual
+    /// pull-to-refresh. Verified from a device trace: `withMe=3` then `withMe=6` for 3 real items.
+    ///
+    /// Two changes make a fetch atomic: parse into locals and commit once, and do not clear
+    /// anything up front — blanking the list at request start is what turned a dropped response
+    /// into a visibly empty screen. A stale refresh now leaves the previous content alone.
+    private var sharesRequestGeneration = 0
+
     func getShares(then handler: @escaping ServerResponse) {
-        viewModels.removeAll()
-        sharedByMeViewModels.removeAll()
-        sharedWithMeViewModels.removeAll()
-        
+        sharesRequestGeneration += 1
+        let generation = sharesRequestGeneration
+
         let apiOperation = APIOperation(ShareEndpoint.getShares)
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             DispatchQueue.main.async {
+                // A superseded fetch must not touch published state: a newer request is already
+                // in flight and its response is the authoritative one.
+                guard generation == self.sharesRequestGeneration else { return }
+
                 switch result {
                 case .json(let response, _):
                     guard let model: APIResults<ArchiveVO> = JSONHelper.decoding( from: response, with: APIResults<ArchiveVO>.decoder)
                     else {
                         return handler(.error(message: .errorMessage))
                     }
-                    
+
                     let currentArchive: ArchiveVOData? = AuthenticationManager.shared.session?.selectedArchive
                     let currentArchiveId: Int? = currentArchive?.archiveID
-                    
+                    let archivePermissionsSet = Set(self.archivePermissions)
+
+                    var byMe: [FileModel] = []
+                    var withMe: [FileModel] = []
+
                     model.results.first?.data?.forEach { archive in
-                        let itemVOS = archive.archiveVO?.itemVOS
-                        
-                        let archivePermissionsSet = Set(self.archivePermissions)
-                        
-                        itemVOS?.forEach {
+                        archive.archiveVO?.itemVOS?.forEach {
                             let accessRole = AccessRole.roleForValue($0.accessRole)
                             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
                             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
-                            
+
                             let sharedByArchive = $0.archiveID == currentArchiveId ? nil : archive.archiveVO
                             let sharedFileVM = FileModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection, accessRole: accessRole)
-                            
+
                             if $0.archiveID == currentArchiveId {
-                                self.sharedByMeViewModels.append(sharedFileVM)
+                                byMe.append(sharedFileVM)
                             } else {
-                                self.sharedWithMeViewModels.append(sharedFileVM)
+                                withMe.append(sharedFileVM)
                             }
                         }
-                        
-                        self.viewModels = self.shareListType == .sharedByMe ? self.sharedByMeViewModels : self.sharedWithMeViewModels
                     }
-                    
+
+                    // Commit once, after the whole response is parsed. This assignment used to sit
+                    // INSIDE the archive loop, so a response carrying no archives never ran it and
+                    // left `viewModels` in whatever state the up-front clear had put it in.
+                    self.sharedByMeViewModels = byMe
+                    self.sharedWithMeViewModels = withMe
+                    self.viewModels = self.shareListType == .sharedByMe ? byMe : withMe
+
                     handler(.success)
-                    
+
                 case .error(let error, _):
                     handler(.error(message: error?.localizedDescription))
-                    
+
                 default:
-                    break
+                    // Never leave the caller hanging. The view controller hides its spinner in
+                    // this handler, so a silent `break` left the Shares screen spinning forever.
+                    handler(.error(message: .errorMessage))
                 }
             }
         }

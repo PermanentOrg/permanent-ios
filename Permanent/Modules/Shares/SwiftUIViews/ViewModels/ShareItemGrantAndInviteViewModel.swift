@@ -316,7 +316,7 @@ extension ShareItemViewModel {
             case .json(let response, _):
                 guard
                     let inviteResponse: ShareInviteResponse = JSONHelper.convertToModel(from: response),
-                    inviteResponse.inviteId != nil
+                    let inviteId = inviteResponse.inviteId
                 else {
                     self.errorMessage = "Unable to send invitation right now. Please try again."
                     return
@@ -325,7 +325,8 @@ extension ShareItemViewModel {
                 self.addInvitedRecipientToCurrentAccessList(
                     fullName: trimmedName,
                     email: trimmedEmail,
-                    role: self.selectedRoleForInviteAccess
+                    role: self.selectedRoleForInviteAccess,
+                    inviteId: inviteId
                 )
 
                 self.navigationDirection = .backward
@@ -344,21 +345,48 @@ extension ShareItemViewModel {
         }
     }
 
-    private func addInvitedRecipientToCurrentAccessList(fullName: String, email: String, role: AccessRole) {
+    func addInvitedRecipientToCurrentAccessList(fullName: String, email: String, role: AccessRole, inviteId: Int) {
         let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedEmail.isEmpty else { return }
 
-        let trimmedName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let displayName = trimmedName.isEmpty ? trimmedEmail.split(separator: "@").first.map(String.init) ?? "Invited user" : trimmedName
-
         if let existingIndex = sharedArchives.firstIndex(where: { $0.accountVO?.primaryEmail?.caseInsensitiveCompare(trimmedEmail) == .orderedSame }) {
-            sharedArchives[existingIndex].accessRole = role.apiValue
+            let existing = sharedArchives[existingIndex]
+            if existing.status?.contains("invited") == true {
+                // Re-inviting the same address issues a fresh invite id that supersedes the old
+                // one, so the stored row has to be rebuilt around it — mutating accessRole alone
+                // would leave Send again / Revoke pointed at the superseded invitation.
+                sharedArchives[existingIndex] = makeInvitedShareRow(
+                    fullName: existing.accountVO?.fullName ?? fullName,
+                    email: trimmedEmail,
+                    role: role,
+                    inviteId: inviteId
+                )
+            } else {
+                sharedArchives[existingIndex].accessRole = role.apiValue
+            }
             shouldShowArchivesSection = !sharedArchives.isEmpty
             return
         }
 
+        sharedArchives.append(
+            makeInvitedShareRow(fullName: fullName, email: trimmedEmail, role: role, inviteId: inviteId)
+        )
+        shouldShowArchivesSection = !sharedArchives.isEmpty
+    }
+
+    /// Builds the client-side row that stands in for a pending invitation until the next refetch.
+    ///
+    /// `inviteId` is the id `/invite/share` returned, and it is stored negated in `shareID`:
+    /// `inviteId(from:)` reads it back out, so this is what makes Send again and Revoke address
+    /// the real invitation. A non-positive id is stored as `nil` rather than a fabricated value,
+    /// so "no usable id" stays visible to those two actions instead of becoming a wrong target.
+    func makeInvitedShareRow(fullName: String, email: String, role: AccessRole, inviteId: Int) -> ShareVOData {
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let displayName = trimmedName.isEmpty ? trimmedEmail.split(separator: "@").first.map(String.init) ?? "Invited user" : trimmedName
+
         let now = ISO8601DateFormatter().string(from: Date())
-        let shareID = -Int.random(in: 100_000...999_999)
+        let shareID: Int? = inviteId > 0 ? -inviteId : nil
 
         let localAccount = AccountVOData(
             accountID: nil,
@@ -400,7 +428,7 @@ extension ShareItemViewModel {
             hideChecklist: nil
         )
 
-        let localShare = ShareVOData(
+        return ShareVOData(
             shareID: shareID,
             folderLinkID: nil,
             archiveID: nil,
@@ -416,9 +444,6 @@ extension ShareItemViewModel {
             createdDT: now,
             updatedDT: now
         )
-
-        sharedArchives.append(localShare)
-        shouldShowArchivesSection = !sharedArchives.isEmpty
     }
 
     // MARK: - Edit Invitation Flow
@@ -436,14 +461,23 @@ extension ShareItemViewModel {
         editingInvitation = nil
     }
 
-    private func inviteId(from shareVO: ShareVOData) -> Int? {
+    /// Recovers the invite id a pending-invitation row carries in its `shareID`.
+    ///
+    /// Only invitation rows encode an id this way. A locally granted archive also gets a
+    /// synthetic negative `shareID` but is not an invitation, so the status check is what keeps
+    /// it from being read as one and revoked against an unrelated invite.
+    func inviteId(from shareVO: ShareVOData) -> Int? {
+        guard shareVO.status?.contains("invited") == true else { return nil }
         guard let shareID = shareVO.shareID, shareID < 0 else { return nil }
         return abs(shareID)
     }
 
     func resendInvitation() {
-        guard let invitation = editingInvitation,
-              let id = inviteId(from: invitation) else { return }
+        guard let invitation = editingInvitation else { return }
+        guard let id = inviteId(from: invitation) else {
+            errorMessage = "This invitation can't be resent right now. Please refresh and try again."
+            return
+        }
 
         isLoading = true
 
@@ -535,14 +569,29 @@ extension ShareItemViewModel {
             case .json(let response, _):
                 guard
                     let inviteResponse: ResendInviteResponse = JSONHelper.convertToModel(from: response),
-                    inviteResponse.inviteId != nil
+                    let newInviteId = inviteResponse.inviteId
                 else {
                     self.errorMessage = "Unable to update invitation right now. Please try again."
                     return
                 }
 
-                if let index = self.sharedArchives.firstIndex(where: { $0.shareID == invitation.shareID }) {
-                    self.sharedArchives[index].accessRole = self.selectedRoleForEditInvitation.apiValue
+                // A role change re-POSTs /invite/share, which issues a new invite id and
+                // supersedes the previous one. Rebuild the row so it carries the new id as well
+                // as the new role; otherwise re-opening Edit would resend or revoke a dead
+                // invitation. Matched by email, the stable identity of an invitation row —
+                // shareID is what is being replaced here, and may be nil on both sides.
+                let updatedRow = self.makeInvitedShareRow(
+                    fullName: fullName,
+                    email: email,
+                    role: self.selectedRoleForEditInvitation,
+                    inviteId: newInviteId
+                )
+
+                if let index = self.sharedArchives.firstIndex(where: {
+                    $0.status?.contains("invited") == true
+                        && $0.accountVO?.primaryEmail?.caseInsensitiveCompare(email) == .orderedSame
+                }) {
+                    self.sharedArchives[index] = updatedRow
                 }
 
                 self.navigationDirection = .backward
@@ -560,8 +609,11 @@ extension ShareItemViewModel {
     }
 
     func revokeInvitation() {
-        guard let invitation = editingInvitation,
-              let id = inviteId(from: invitation) else { return }
+        guard let invitation = editingInvitation else { return }
+        guard let id = inviteId(from: invitation) else {
+            errorMessage = "This invitation can't be revoked right now. Please refresh and try again."
+            return
+        }
 
         isLoading = true
 
