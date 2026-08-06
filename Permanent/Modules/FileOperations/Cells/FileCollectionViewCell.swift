@@ -65,7 +65,8 @@ class FileCollectionViewCell: UICollectionViewCell {
         for subview in sharingInfoStackView.arrangedSubviews {
             subview.removeFromSuperview()
         }
-        
+        syncSharingInfoVisibility()
+
         setMoreButtonBadgeCount(0)
     }
     
@@ -149,7 +150,8 @@ class FileCollectionViewCell: UICollectionViewCell {
         if sharedFile {
             updateSharingInfo(withModel: model)
         }
-        
+        syncSharingInfoVisibility()
+
         if isSelecting {
             if isFileSelected {
                 rightButtonImageView.image = UIImage(named: "fullCheckbox")?.templated
@@ -300,6 +302,19 @@ class FileCollectionViewCell: UICollectionViewCell {
         progressView.setProgress(value, animated: true)
     }
     
+    /// A visible-but-empty arranged subview still costs the enclosing stack its 5pt spacing.
+    /// `sharingInfoStackView` is only populated for `sharedFile` rows, and no call site
+    /// currently passes `sharedFile: true`, so on every row that 5pt was being taken from the
+    /// file name and date labels for nothing. Derived from the arranged subviews rather than
+    /// hardcoded so the stack reappears by itself whenever it does have content.
+    ///
+    /// Not a fix for clipped descenders: VSP-1823 investigated that and found the labels
+    /// render identical glyph ink at 70pt, 74pt and a 120pt row, so nothing was being cut.
+    /// This reclaims dead space; it does not change what the text looks like.
+    private func syncSharingInfoVisibility() {
+        sharingInfoStackView.isHidden = sharingInfoStackView.arrangedSubviews.isEmpty
+    }
+
     func updateSharingInfo(withModel model: FileModel) {
         if model.sharedByArchive != nil {
             guard let archive = model.sharedByArchive else { return }
