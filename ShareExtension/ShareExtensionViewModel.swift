@@ -343,7 +343,17 @@ class ShareExtensionViewModel: ViewModelInterface {
                    let folderId = uploadsFolder.folderID,
                    let folderLinkId = uploadsFolder.folderLinkID {
                     // Mobile Uploads Folder Exists
-                    selectedFiles.forEach({ $0.folder = FolderInfo(folderId: folderId, folderLinkId: folderLinkId) })
+                    // No item count: the root listing doesn't carry this folder's
+                    // children, and the Live Activity omits the count rather than
+                    // report one that only counts this batch.
+                    selectedFiles.forEach({
+                        $0.folder = FolderInfo(
+                            folderId: folderId,
+                            folderLinkId: folderLinkId,
+                            name: uploadsFolder.displayName,
+                            isShared: false
+                        )
+                    })
                     completion(nil)
                 } else {
                     // Mobile Uploads Folder has to be created
@@ -355,7 +365,17 @@ class ShareExtensionViewModel: ViewModelInterface {
                             return
                         }
                                             
-                        selectedFiles.forEach({ $0.folder = FolderInfo(folderId: folderId, folderLinkId: folderLinkId) })
+                        // Freshly created, so the count really is 0 — the Live
+                        // Activity counts up from there as files land.
+                        selectedFiles.forEach({
+                            $0.folder = FolderInfo(
+                                folderId: folderId,
+                                folderLinkId: folderLinkId,
+                                name: folderVO.displayName ?? "Mobile Uploads",
+                                itemCount: 0,
+                                isShared: false
+                            )
+                        })
                         completion(nil)
                     }
                 }

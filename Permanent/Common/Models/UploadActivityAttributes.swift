@@ -24,6 +24,16 @@ struct UploadActivityAttributes: ActivityAttributes {
         var completedCount: Int
         /// Number of files that failed
         var failedCount: Int
+        /// How many items the destination folder holds right now — the folder's
+        /// count when the batch started, plus everything that has landed since.
+        /// Lives here rather than in the attributes because it changes as files
+        /// complete, and the design surfaces it live ("32 items • Private").
+        ///
+        /// `nil` when the count isn't known: uploads started from the Share
+        /// Extension never list the destination, and showing a count that counts
+        /// only this batch would understate the folder. The folder card omits the
+        /// count entirely in that case rather than print a wrong one.
+        var folderItemCount: Int?
     }
 
     enum UploadStatus: String, Codable, Hashable {
@@ -40,4 +50,16 @@ struct UploadActivityAttributes: ActivityAttributes {
     var archiveNo: String
     /// Folder link ID for deep-link navigation to the upload folder
     var folderLinkId: Int
+    /// Display name of the destination folder, shown on the folder card. Immutable
+    /// for the life of a batch, so it belongs here rather than in `ContentState`.
+    /// Empty when unknown — the card drops the title line rather than show a blank.
+    var folderName: String
+    /// Whether the destination sits in the Shared workspace rather than Private.
+    /// Drives the badge text and colour on the folder card.
+    ///
+    /// `nil` when unknown, and deliberately not defaulted to `false`: an upload
+    /// re-queued from a queue persisted before `FolderInfo.isShared` existed has no
+    /// value to report, and labelling a Shared destination "Private" is a wrong claim
+    /// about who can see the upload. The card omits the badge instead.
+    var folderIsShared: Bool?
 }

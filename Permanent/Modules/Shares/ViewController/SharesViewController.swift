@@ -2038,15 +2038,28 @@ extension SharesViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
+    /// Destination folder for an upload, carrying the name, item count and access
+    /// level that the upload Live Activity's folder card shows. Anything reached
+    /// through Shares sits in the Shared workspace.
+    private func uploadDestination(_ folder: FileModel) -> FolderInfo {
+        FolderInfo(
+            folderId: folder.folderId,
+            folderLinkId: folder.folderLinkId,
+            name: folder.name,
+            itemCount: viewModel?.viewModels.count,
+            isShared: true
+        )
+    }
+
     private func processUpload(toFolder folder: FileModel, forURLS urls: [URL], loadInMemory: Bool = false) {
-        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
-        
+        let folderInfo = uploadDestination(folder)
+
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
     }
 
     private func processUpload(toFolder folder: FileModel, selectedFiles: [SelectedUploadFile], loadInMemory: Bool = false) {
-        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
+        let folderInfo = uploadDestination(folder)
 
         let files = FileInfo.createFiles(from: selectedFiles, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
@@ -2091,8 +2104,10 @@ extension SharesViewController: UIDocumentPickerDelegate {
         }
 
         showSpinner()
+        // Resolve the destination here, on main, where the view model's listing is
+        // safe to read — not inside the background block below.
+        let folderInfo = uploadDestination(currentFolder)
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let folderInfo = FolderInfo(folderId: currentFolder.folderId, folderLinkId: currentFolder.folderLinkId)
             let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: false)
             DispatchQueue.main.async {
                 self?.checkDuplicatesThenUpload(files: files, in: currentFolder) { _ in

@@ -1975,16 +1975,30 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
+    /// Destination folder for an upload, carrying the name, item count and access
+    /// level that the upload Live Activity's folder card shows. My Files is always
+    /// the Private workspace. The count is the listing the user is looking at; the
+    /// Live Activity adds each completed file on top of it.
+    private func uploadDestination(_ folder: FileModel) -> FolderInfo {
+        FolderInfo(
+            folderId: folder.folderId,
+            folderLinkId: folder.folderLinkId,
+            name: folder.name,
+            itemCount: viewModel?.viewModels.count,
+            isShared: false
+        )
+    }
+
     private func processUpload(toFolder folder: FileModel, forURLS urls: [URL], loadInMemory: Bool = false) {
-        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
-        
+        let folderInfo = uploadDestination(folder)
+
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
         viewModel?.trackEvent(action: RecordEventAction.submit)
     }
 
     private func processUpload(toFolder folder: FileModel, selectedFiles: [SelectedUploadFile], loadInMemory: Bool = false) {
-        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
+        let folderInfo = uploadDestination(folder)
 
         let files = FileInfo.createFiles(from: selectedFiles, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
@@ -2038,8 +2052,10 @@ extension MainViewController: UIDocumentPickerDelegate {
         controller.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
             self.showSpinner()
+            // Resolve the destination here, on main, where the view model's listing
+            // is safe to read — not inside the background block below.
+            let folderInfo = self.uploadDestination(currentFolder)
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                let folderInfo = FolderInfo(folderId: currentFolder.folderId, folderLinkId: currentFolder.folderLinkId)
                 let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: false)
                 DispatchQueue.main.async {
                     self?.checkDuplicatesThenUpload(files: files, in: currentFolder) { _ in

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Network
 import UIKit
 import os.log
 
@@ -35,6 +36,23 @@ class UploadManager {
     
     private let logger = Logger(subsystem: "com.permanent.ios", category: "UploadManager")
     private let flowLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
+
+    // MARK: - Reachability
+
+    /// Watches the network so the queue can be parked instead of retried while offline.
+    /// Without this, transient failures return in microseconds and the failure handler
+    /// re-queues immediately and uncapped — see [[offline-upload-retry-spin]].
+    private let pathMonitor = NWPathMonitor()
+    private let pathMonitorQueue = DispatchQueue(label: "com.permanent.ios.upload.reachability")
+
+    /// Defaults to `true` so a monitor that has not reported yet can never block uploads.
+    /// Only a `.unsatisfied` path sets it false.
+    private var isNetworkAvailable = true
+
+    /// Coalesces `refreshQueue()` so no caller can spin it. Leading edge — the first call
+    /// still runs immediately.
+    private var refreshThrottle = RefreshThrottle(minInterval: 1.0)
+    private let refreshThrottleLock = NSLock()
 
     /// True for `URLError`s caused by connectivity loss / handoff, not server
     /// faults. Such failures shouldn't burn retry attempts — they'll recover
@@ -85,7 +103,35 @@ class UploadManager {
                                               name: UIApplication.didEnterBackgroundNotification,
                                               object: nil)
 
+        startReachabilityMonitoring()
+
         logger.info("🔼 UploadManager initialized with \(self.uploadQueue.maxConcurrentOperationCount, privacy: .public) concurrent uploads")
+    }
+
+    /// Suspends the queue while there is no route and resumes when one returns.
+    ///
+    /// Suspending is the point: it stops queued operations from *starting*, so they cannot
+    /// fail-instantly-and-re-queue. Resuming goes through `refreshQueue()` rather than
+    /// clearing `isSuspended` here, because the queue can also be suspended for a failed
+    /// auth and only `refreshQueue` knows about both reasons.
+    private func startReachabilityMonitoring() {
+        pathMonitor.pathUpdateHandler = { [weak self] path in
+            guard let self = self else { return }
+            let available = path.status == .satisfied
+            DispatchQueue.main.async {
+                guard available != self.isNetworkAvailable else { return }
+                self.isNetworkAvailable = available
+
+                if available {
+                    self.flowLogger.info("🔼 [NETWORK] Route available — resuming upload queue")
+                    self.refreshQueue()
+                } else {
+                    self.flowLogger.info("🔼 [NETWORK] No route — suspending upload queue; \(self.uploadQueue.operationCount, privacy: .public) operation(s) parked")
+                    self.uploadQueue.isSuspended = true
+                }
+            }
+        }
+        pathMonitor.start(queue: pathMonitorQueue)
     }
 
     @objc private func appDidEnterBackground() {
@@ -123,6 +169,7 @@ class UploadManager {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+        pathMonitor.cancel()
     }
     
     @objc private func handleRegisterRecordTiming(_ notification: Notification) {
@@ -222,12 +269,15 @@ class UploadManager {
                         UserDefaults.standard.set(accountId, forKey: Constants.Keys.StorageKeys.uploadQueueOwnerAccountIdKey)
 
                         let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
-                        let folderLinkId = files.first?.folder.folderLinkId ?? 0
+                        let destination = files.first?.folder
                         UploadLiveActivityManager.shared.startActivity(
                             totalFiles: files.count,
                             firstFileName: files.first?.name ?? "",
                             archiveNo: archiveNo,
-                            folderLinkId: folderLinkId
+                            folderLinkId: destination?.folderLinkId ?? 0,
+                            folderName: destination?.name ?? "",
+                            folderItemCount: destination?.itemCount,
+                            folderIsShared: destination?.isShared
                         )
                     }
 
@@ -302,9 +352,34 @@ class UploadManager {
         }
     }
     
-    @objc
-    func refreshQueue() {
-        if uploadQueue.isSuspended, PermSession.currentSession != nil {
+    /// Throttled entry point. The work itself is `performRefreshQueue()`; this only decides
+    /// whether to run it now, once more shortly, or not at all. See `RefreshThrottle`.
+    @objc func refreshQueue() {
+        refreshThrottleLock.lock()
+        let decision = refreshThrottle.request(now: ProcessInfo.processInfo.systemUptime)
+        refreshThrottleLock.unlock()
+
+        switch decision {
+        case .runNow:
+            performRefreshQueue()
+        case .alreadyScheduled:
+            break
+        case .schedule(let delay):
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self = self else { return }
+                self.refreshThrottleLock.lock()
+                self.refreshThrottle.pendingRunFired(now: ProcessInfo.processInfo.systemUptime)
+                self.refreshThrottleLock.unlock()
+                self.performRefreshQueue()
+            }
+        }
+    }
+
+    private func performRefreshQueue() {
+        // Network-aware on purpose: without the `isNetworkAvailable` term this would
+        // immediately undo the offline suspend that `startReachabilityMonitoring` applies,
+        // because refreshQueue runs on a 30 s timer and on every foreground.
+        if uploadQueue.isSuspended, PermSession.currentSession != nil, isNetworkAvailable {
             logger.info("🔼 Session restored — resuming upload queue")
             uploadQueue.isSuspended = false
         }
@@ -508,10 +583,19 @@ class UploadManager {
                                 } else {
                                     try? PreferencesManager.shared.setCustomObject([file], forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                                 }
-                                // Re-queue synchronously — the new background URLSession task
-                                // will park itself via `waitsForConnectivity` until the network
-                                // is back, which works correctly even if iOS suspends us next.
-                                self.refreshQueue()
+                                // Only re-queue if there is a route. `waitsForConnectivity` is
+                                // set on the background upload session but NOT on the session
+                                // carrying Phase 1/3, so offline those calls fail in
+                                // microseconds — and since transient errors are exempt from the
+                                // retry cap, re-queuing here used to spin as fast as the CPU
+                                // allowed. The file is already persisted above, so the
+                                // reachability monitor picks it up when the route returns.
+                                if self.isNetworkAvailable {
+                                    self.refreshQueue()
+                                } else {
+                                    self.uploadQueue.isSuspended = true
+                                    self.flowLogger.info("🔼 [HANDLER] No route — parking \(file.name, privacy: .public) until connectivity returns instead of re-queuing")
+                                }
                             } else {
                                 file.retryCount += 1
 
@@ -556,12 +640,18 @@ class UploadManager {
                         .filter { !$0.isFinished && !$0.isCancelled }
                     if !reQueuedOps.isEmpty {
                         let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
-                        let folderLinkId = reQueuedOps.first?.file.folder.folderLinkId ?? 0
+                        // The folder detail rides along on the persisted queue, so a
+                        // re-queue after relaunch can still populate the folder card
+                        // without any view-model context.
+                        let destination = reQueuedOps.first?.file.folder
                         UploadLiveActivityManager.shared.startActivity(
                             totalFiles: reQueuedOps.count,
                             firstFileName: reQueuedOps.first?.file.name ?? "",
                             archiveNo: archiveNo,
-                            folderLinkId: folderLinkId
+                            folderLinkId: destination?.folderLinkId ?? 0,
+                            folderName: destination?.name ?? "",
+                            folderItemCount: destination?.itemCount,
+                            folderIsShared: destination?.isShared
                         )
                     }
                 }

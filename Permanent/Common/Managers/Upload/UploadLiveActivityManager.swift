@@ -21,6 +21,12 @@ struct UploadLiveActivitySnapshot: Codable {
     var lastReportedProgress: Double
     var archiveNo: String
     var folderLinkId: Int
+    /// The destination folder's item count when the batch started; completed files
+    /// are added on top of it for display. Optional so a snapshot written by an
+    /// older build still decodes, instead of forcing the activity to be treated as
+    /// orphaned on the next launch. The folder's name and access level need no
+    /// field here — they're immutable, so they come back off `activity.attributes`.
+    var folderBaseItemCount: Int?
 }
 
 class UploadLiveActivityManager {
@@ -37,6 +43,20 @@ class UploadLiveActivityManager {
     private var currentFileName: String = ""
     private var currentFileProgress: Double = 0.0
     private var lastReportedProgress: Double = 0.0
+
+    // Destination folder detail, shown on the Live Activity's folder card. Set once
+    // when the batch starts and carried through every content update. `nil` when the
+    // caller couldn't tell us — the Share Extension never lists the destination.
+    private var folderBaseItemCount: Int?
+
+    /// Item count to display: what the folder held when the batch started, plus
+    /// everything that has landed since. The design shows this live. Stays `nil` when
+    /// the base count is unknown, so the card omits it rather than undercount.
+    /// Arithmetic lives in `FolderItemCountMath` so it can be unit-tested — nothing here
+    /// is reachable from a test.
+    private var displayedFolderItemCount: Int? {
+        FolderItemCountMath.displayed(base: folderBaseItemCount, completedFiles: completedFiles)
+    }
 
     /// Throttle for `activity.update` pushes. `updateProgress` runs on every
     /// URLSession progress callback — hundreds of times for a single large file —
@@ -57,6 +77,24 @@ class UploadLiveActivityManager {
     var hasVisibleActivity: Bool {
         return !Activity<UploadActivityAttributes>.activities.isEmpty
     }
+
+    /// How long a finished batch stays **active** so the Dynamic Island can show its terminal
+    /// state — the green ring + checkmark for completed, red + exclamation for failed.
+    ///
+    /// Ended activities are dropped from the island almost immediately, so the previous code
+    /// (which called `end()` the instant the last file finished) built a correct completed
+    /// presentation that could never be seen: the island just vanished. The `.after(...)`
+    /// dismissal policy does not help — it governs how long the *Lock Screen* banner lingers.
+    private let completionHoldInterval: TimeInterval = 4
+
+    /// A batch that has been updated to its terminal state and is waiting out
+    /// `completionHoldInterval` before being ended.
+    ///
+    /// Deliberately separate from `currentActivity`: during the hold the manager must look
+    /// idle, so a new upload starts a fresh activity rather than adding files to a finished
+    /// one — but the reference has to survive so `startActivity` can end it and avoid two
+    /// live activities at once.
+    private var finishingActivity: Activity<UploadActivityAttributes>?
 
     /// How long after the last update before iOS marks the activity as stale.
     /// Matched to iOS's ~30s `beginBackgroundTask` budget: once the app gets
@@ -103,7 +141,8 @@ class UploadLiveActivityManager {
                 overallProgress: 1.0,
                 status: .completed,
                 completedCount: activity.content.state.completedCount,
-                failedCount: activity.content.state.failedCount
+                failedCount: activity.content.state.failedCount,
+                folderItemCount: activity.content.state.folderItemCount
             )
             logger.info("🔼 Migrating stuck .processing Live Activity id=\(activity.id, privacy: .public) to .completed")
             Task {
@@ -124,6 +163,13 @@ class UploadLiveActivityManager {
             failedFiles = snapshot.failedFiles
             currentFileName = snapshot.currentFileName
             lastReportedProgress = snapshot.lastReportedProgress
+            // Fall back to backing the count out of the live activity's own state
+            // when the snapshot predates this field.
+            folderBaseItemCount = FolderItemCountMath.recoveredBase(
+                snapshotBase: snapshot.folderBaseItemCount,
+                activityDisplayedCount: reattached.content.state.folderItemCount,
+                completedFiles: snapshot.completedFiles
+            )
 
             flowLogger.info("🔼 [LIVE ACTIVITY] Reattached id=\(reattached.id, privacy: .public) completed=\(self.completedFiles, privacy: .public)/\(self.totalFiles, privacy: .public) failed=\(self.failedFiles, privacy: .public)")
 
@@ -156,14 +202,11 @@ class UploadLiveActivityManager {
         logger.info("🔼 Found \(remainingActivities.count) stale Live Activities from previous session — ending them")
 
         for activity in remainingActivities {
-            let finalState = UploadActivityAttributes.ContentState(
-                currentFileIndex: 0,
-                totalFiles: 0,
-                currentFileName: "",
-                overallProgress: 0.0,
-                status: .failed,
-                completedCount: 0,
-                failedCount: 0
+            // Preserves an already-terminal state: a batch suspended mid-completion-hold has
+            // no snapshot and looks like a zombie, but it finished. See
+            // `UploadActivityTerminalState`.
+            let finalState = UploadActivityTerminalState.orphanFinalState(
+                existing: activity.content.state
             )
             Task {
                 await activity.end(
@@ -193,7 +236,8 @@ class UploadLiveActivityManager {
             currentFileName: currentFileName,
             lastReportedProgress: lastReportedProgress,
             archiveNo: archiveNo ?? existing?.archiveNo ?? activity.attributes.archiveNo,
-            folderLinkId: folderLinkId ?? existing?.folderLinkId ?? activity.attributes.folderLinkId
+            folderLinkId: folderLinkId ?? existing?.folderLinkId ?? activity.attributes.folderLinkId,
+            folderBaseItemCount: folderBaseItemCount
         )
         if let data = try? JSONEncoder().encode(snapshot) {
             UserDefaults.standard.set(data, forKey: snapshotStorageKey)
@@ -211,7 +255,15 @@ class UploadLiveActivityManager {
 
     // MARK: - Lifecycle
 
-    func startActivity(totalFiles: Int, firstFileName: String, archiveNo: String = "", folderLinkId: Int = 0) {
+    func startActivity(
+        totalFiles: Int,
+        firstFileName: String,
+        archiveNo: String = "",
+        folderLinkId: Int = 0,
+        folderName: String = "",
+        folderItemCount: Int? = nil,
+        folderIsShared: Bool? = nil
+    ) {
         let authInfo = ActivityAuthorizationInfo()
         flowLogger.info("🔼 [LIVE ACTIVITY] startActivity called — areActivitiesEnabled=\(authInfo.areActivitiesEnabled, privacy: .public) totalFiles=\(totalFiles, privacy: .public) currentActivity=\(self.currentActivity != nil, privacy: .public)")
 
@@ -219,6 +271,10 @@ class UploadLiveActivityManager {
             flowLogger.warning("🔼 [LIVE ACTIVITY] Live Activities are not enabled by the user")
             return
         }
+
+        // A previous batch may still be holding its terminal state for the island. End it now:
+        // two live activities would both be shown, and its counts belong to the old batch.
+        endFinishingActivityNow()
 
         // If there's already an active upload session, add to it instead
         if currentActivity != nil {
@@ -233,8 +289,15 @@ class UploadLiveActivityManager {
         self.currentFileProgress = 0.0
         self.lastPushedProgress = 0.0
         self.lastPushedFileName = ""
+        self.folderBaseItemCount = folderItemCount
 
-        let attributes = UploadActivityAttributes(sessionStartTime: Date(), archiveNo: archiveNo, folderLinkId: folderLinkId)
+        let attributes = UploadActivityAttributes(
+            sessionStartTime: Date(),
+            archiveNo: archiveNo,
+            folderLinkId: folderLinkId,
+            folderName: folderName,
+            folderIsShared: folderIsShared
+        )
         let initialState = UploadActivityAttributes.ContentState(
             currentFileIndex: 1,
             totalFiles: totalFiles,
@@ -242,7 +305,8 @@ class UploadLiveActivityManager {
             overallProgress: 0.0,
             status: .uploading,
             completedCount: 0,
-            failedCount: 0
+            failedCount: 0,
+            folderItemCount: displayedFolderItemCount
         )
 
         do {
@@ -288,7 +352,8 @@ class UploadLiveActivityManager {
             overallProgress: displayProgress,
             status: .uploading,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
 
         Task {
@@ -340,7 +405,8 @@ class UploadLiveActivityManager {
                 overallProgress: displayProgress,
                 status: .uploading,
                 completedCount: completedFiles,
-                failedCount: failedFiles
+                failedCount: failedFiles,
+                folderItemCount: displayedFolderItemCount
             )
             Task {
                 await currentActivity?.update(.init(state: state, staleDate: Date() + staleInterval))
@@ -379,7 +445,8 @@ class UploadLiveActivityManager {
             overallProgress: overallProgress,
             status: .uploading,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
         Task {
             await currentActivity?.update(.init(state: state, staleDate: Date() + staleInterval))
@@ -404,22 +471,58 @@ class UploadLiveActivityManager {
             overallProgress: 1.0,
             status: status,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
 
         let dismissDelay: TimeInterval = status == .completed ? 120 : 30
-        Task {
+        let hold = completionHoldInterval
+
+        // Park the activity in the finishing slot and clear live state FIRST, so a new upload
+        // arriving during the hold finds an idle manager and a reference it can dispose of.
+        endFinishingActivityNow()
+        finishingActivity = activity
+        currentActivity = nil
+        resetState()
+
+        Task { [weak self] in
+            // Keep it ACTIVE and show the terminal state — this is the part the island can
+            // render. The staleDate covers the case where iOS suspends us before the `end`
+            // below ever runs: the banner then reads as stale instead of sitting there looking
+            // like a fresh completion indefinitely.
+            await activity.update(
+                .init(state: finalState, staleDate: Date().addingTimeInterval(hold + 30))
+            )
+            try? await Task.sleep(for: .seconds(hold))
             await activity.end(
                 .init(state: finalState, staleDate: nil),
                 dismissalPolicy: .after(Date().addingTimeInterval(dismissDelay))
             )
+            await MainActor.run { self?.releaseFinishingActivity(activity) }
         }
+    }
 
-        currentActivity = nil
-        resetState()
+    /// Ends a held terminal-state activity right now. Called when a new batch starts, so the
+    /// previous batch's checkmark never sits alongside a fresh upload.
+    private func endFinishingActivityNow() {
+        guard let activity = finishingActivity else { return }
+        finishingActivity = nil
+        logger.info("🔼 Ending held terminal activity early — a new batch is starting")
+        Task { await activity.end(nil, dismissalPolicy: .immediate) }
+    }
+
+    /// Clears the slot only if it still holds this activity; a newer batch may already have
+    /// replaced it via `endFinishingActivityNow()`.
+    private func releaseFinishingActivity(_ activity: Activity<UploadActivityAttributes>) {
+        if finishingActivity?.id == activity.id {
+            finishingActivity = nil
+        }
     }
 
     func cancelActivity() {
+        // A cancel should clear any held terminal state too — the user asked for it gone.
+        endFinishingActivityNow()
+
         guard let activity = currentActivity else { return }
 
         logger.info("🔼 Cancelling upload Live Activity")
@@ -467,7 +570,8 @@ class UploadLiveActivityManager {
             overallProgress: displayProgress,
             status: .uploading,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
 
         logger.info("🔼 App entering foreground — refreshing Live Activity state")
@@ -513,6 +617,7 @@ class UploadLiveActivityManager {
         lastReportedProgress = 0.0
         lastPushedProgress = 0.0
         lastPushedFileName = ""
+        folderBaseItemCount = nil
         clearSnapshot()
     }
 }

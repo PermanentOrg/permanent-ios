@@ -92,8 +92,27 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
         return contentViewModels.last?.folder
     }
     
+    /// Whether the chosen destination sits in the Shared workspace. Drives the badge
+    /// on the upload Live Activity's folder card.
+    var isSharedWorkspace: Bool {
+        switch workspace {
+        case .sharedByMeFiles, .shareWithMeFiles: return true
+        case .privateFiles, .publicFiles: return false
+        }
+    }
+
     func selectedFolderInfo() -> FolderInfo? {
-        guard let selectedFolder = selectedFolder() else { return nil }
-        return FolderInfo(folderId: selectedFolder.folderId, folderLinkId: selectedFolder.folderLinkId)
+        guard let destination = contentViewModels.last else { return nil }
+        let folder = destination.folder
+        return FolderInfo(
+            folderId: folder.folderId,
+            folderLinkId: folder.folderLinkId,
+            name: folder.name,
+            // Only report a count once the listing has actually loaded — an
+            // in-flight `files` is empty, and the Live Activity would rather show
+            // no count than a wrong one.
+            itemCount: destination.isLoading ? nil : destination.files.count,
+            isShared: isSharedWorkspace
+        )
     }
 }
