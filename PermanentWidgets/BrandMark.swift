@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-/// The Permanent swirl. Drawn height-first, exactly as Figma lays it out
-/// (`aspect-[1.3266/1] h-full` on 26269:50874), so the width always follows the height.
+/// The Permanent swirl. Drawn height-first, as the design lays it out, so the width always
+/// follows the height.
 struct BrandMark: View {
     let height: CGFloat
 

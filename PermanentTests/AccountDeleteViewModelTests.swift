@@ -44,18 +44,8 @@ final class AccountDeleteViewModelTests: XCTestCase {
     }
 
     // MARK: - Delete Account Tests
-    //
-    // DO NOT call viewModel.deleteAccount() from a unit test. It is NOT mockable:
-    // it reads AuthenticationManager.shared.session and hits the real
-    // /account/delete endpoint via APIRequestDispatcher(). These tests assumed no
-    // active session (so deleteAccount would early-return false), but the session
-    // persists in the shared keychain across runs — if any account is logged in on
-    // the test host, running them DELETES that real account on the backend.
-    //
-    // Safe coverage requires making AccountDeleteViewModel injectable (a session
-    // provider + dispatcher seam, like FilePreviewViewModel's ReachabilityProviding)
-    // and asserting against a mock. Until then, the delete path is left untested
-    // here rather than risk destroying a live account.
+    // DO NOT call `deleteAccount()` from a test: it reads the shared session and hits the real
+    // endpoint, so with an account logged in on the test host it DELETES that real account.
 
     // MARK: - ViewModelInterface Default Methods Tests
 

@@ -7,29 +7,17 @@
 
 import SwiftUI
 
-/// The destination folder row — 26269:50873 (expanded) / 26269:50850 (Lock Screen):
-/// brand mark on the left, folder glyph on the right, and the folder's name and item
-/// count centred across the whole row.
-///
-/// Figma centres that text block absolutely (`left-1/2`, outside the flex flow) rather
-/// than as a third stack child, so it is an `.overlay` here — a third `HStack` child
-/// would centre it in the gap between the glyphs instead, which sits several points off.
-/// The overlay is inset past the glyphs so a long folder name truncates rather than
-/// running underneath them.
-///
-/// Every field degrades independently. An upload re-queued from a queue persisted
-/// before `FolderInfo` carried these knows none of them, and the card shows what it has
-/// rather than inventing the rest.
+/// Brand mark left, folder glyph right, name and count centred across the full row — an
+/// `.overlay`, since a third `HStack` child would centre in the gap instead.
 struct DestinationFolderCard: View {
     /// Empty drops the title line.
     let folderName: String
     /// `nil` drops the count, rather than printing a number that only counts this batch.
     let itemCount: Int?
-    /// `nil` drops the badge. Not defaulted to Private: this label is a claim about who
-    /// can see the upload, and a confidently wrong one is worse than none.
+    /// `nil` drops the badge, rather than defaulting to Private — a claim about who can see
+    /// the upload, where a confidently wrong one is worse than none.
     let isShared: Bool?
-    /// Height of the two glyphs. The row itself sizes to its tallest child, so at large
-    /// accessibility text sizes it grows instead of clipping.
+    /// Height of the two glyphs. The row sizes to its tallest child, so large text grows it.
     let glyphHeight: CGFloat
 
     private var badgeText: String? {
@@ -46,9 +34,8 @@ struct DestinationFolderCard: View {
         return "\(itemCount) item\(itemCount == 1 ? "" : "s")"
     }
 
-    /// "32 items • Private" — 26269:50893. One string with two colours, built as an
-    /// `AttributedString` so the count and badge share a baseline. Either half can be
-    /// absent, and the separator appears only when both are present.
+    /// "32 items • Private" — two colours in one string, so the halves share a baseline.
+    /// Either half can be absent; the separator appears only when both are present.
     private var subtitle: AttributedString? {
         func run(_ string: String, _ color: Color) -> AttributedString {
             var run = AttributedString(string)
@@ -77,8 +64,8 @@ struct DestinationFolderCard: View {
         return parts.isEmpty ? "Destination folder" : parts.joined(separator: ", ")
     }
 
-    /// Horizontal inset that keeps the centred text clear of both glyphs. The 8pt gap
-    /// is ours, not the design's — Figma never has a name long enough to collide.
+    /// Keeps the centred text clear of both glyphs. The 8pt gap is not a design value; it is
+    /// there so a long folder name truncates rather than colliding.
     private var glyphClearance: CGFloat {
         let mark = glyphHeight * UploadActivityStyle.brandMarkAspect
         let folder = glyphHeight * UploadActivityStyle.folderGlyphAspect

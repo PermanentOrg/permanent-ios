@@ -142,9 +142,8 @@ extension String {
     static var sharedByMe: String { return "SharedByMe".localized() }
     static var sharedWithMe: String { return "SharedWithMe".localized() }
     static var shareActionMessage: String { return "ShareActionMessage".localized() }
-    /// Empty state for the "Shared With Me" segment. The Shared-By-Me copy used to be shown on
-    /// both, so a legitimately empty inbox told the user they hadn't shared anything — which read
-    /// as a bug rather than an empty list.
+    /// Empty state for the Shared With Me segment. Distinct from Shared By Me, whose copy on an empty
+    /// inbox tells the user they haven't shared anything.
     static var shareWithMeActionMessage: String { return "ShareWithMeActionMessage".localized() }
     static var addMember: String { return "\(add) \(member)" }
     static var add: String { return "Add".localized() }

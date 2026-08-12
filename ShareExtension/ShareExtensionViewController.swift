@@ -187,9 +187,8 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
                         case .insufficientSpace:
                             self.showStorageQuotaExceededAlert()
                         case .apiError:
-                            // The quota check itself failed (offline / transient / expired token).
-                            // Don't claim "Storage Full" or cancel the share — show a retryable
-                            // message; the upload button is already re-enabled above.
+                            // The quota check itself failed, so don't claim "Storage Full" or cancel the share — show a
+                            // retryable message instead. The upload button is already re-enabled above.
                             let alert = UIAlertController(title: "Couldn’t check storage".localized(),
                                                           message: quotaError.localizedDescription,
                                                           preferredStyle: .alert)

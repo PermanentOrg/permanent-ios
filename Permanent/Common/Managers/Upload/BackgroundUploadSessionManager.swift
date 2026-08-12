@@ -41,9 +41,8 @@ class BackgroundUploadSessionManager: NSObject {
         config.sessionSendsLaunchEvents = true
         config.shouldUseExtendedBackgroundIdleMode = true
         config.timeoutIntervalForResource = 86400 // 24 hours
-        // Hold tasks in a waiting state during network handoffs (Wi-Fi ↔ cellular)
-        // instead of failing them. This is critical for background uploads where
-        // app-side retry timers can't fire while the app is suspended.
+        // Hold tasks waiting through a network handoff rather than failing them: app-side retry timers
+        // cannot fire while the app is suspended.
         config.waitsForConnectivity = true
         return URLSession(configuration: config, delegate: self, delegateQueue: delegateQueue)
     }()
@@ -52,10 +51,8 @@ class BackgroundUploadSessionManager: NSObject {
     private var completionHandlers: [Int: (Error?) -> Void] = [:]
     private let lock = NSLock()
 
-    /// Task identifiers whose URLSession completion event has fired but whose
-    /// follow-up work (Phase 3 registerRecord) hasn't finished yet. The system
-    /// completion handler must NOT be invoked while this set is non-empty —
-    /// doing so causes iOS to suspend the app mid-API-call.
+    /// Tasks whose URLSession event fired but whose Phase 3 follow-up is unfinished. The system
+    /// completion handler must not run while this is non-empty, or iOS suspends us mid-call.
     private var awaitingPostProcessing: Set<Int> = []
     private let postProcessingLock = NSLock()
 
@@ -71,9 +68,8 @@ class BackgroundUploadSessionManager: NSObject {
         super.init()
     }
 
-    /// Call on app launch to reconnect to any in-flight background tasks.
-    /// Cleans up stale metadata for tasks that no longer exist (e.g. after
-    /// force-quit) and triggers a queue refresh so those files get re-queued.
+    /// Reconnects to in-flight background tasks on launch, drops metadata for tasks that no longer
+    /// exist, and refreshes the queue so those files are re-queued.
     func reconnectToExistingSession() {
         session.getTasksWithCompletionHandler { [weak self] _, uploadTasks, _ in
             guard let self = self else { return }
@@ -99,20 +95,15 @@ class BackgroundUploadSessionManager: NSObject {
         }
     }
 
-    /// Start a background upload and register a completion handler.
-    ///
-    /// **Deprecated:** the upload pipeline now runs entirely through the
-    /// foreground `URLSession.shared` via `UploadOperation`. This method is
-    /// kept only so that legacy in-flight tasks from older app versions can
-    /// drain on launch via the existing delegate methods. New uploads must
-    /// not call this — remove this entire file after one release cycle.
+    /// **Deprecated.** Uploads run through the foreground session now; kept only so tasks an older
+    /// build left in flight can drain on launch.
     ///
     /// - Parameters:
-    ///   - request: The URLRequest for the S3 upload.
-    ///   - fileURL: Path to the temp file containing the multipart body (must be in the app group container).
-    ///   - metadata: The metadata to persist so registerRecord can run after relaunch.
-    ///   - completion: Called when the upload finishes. May not be called if the app is terminated
-    ///                 (in that case BackgroundUploadCompletionHandler handles it on relaunch).
+    ///   - request: the S3 upload request.
+    ///   - fileURL: the multipart body's temp file, in the app-group container.
+    ///   - metadata: persisted so registerRecord can run after relaunch.
+    ///   - completion: may not run if the app is terminated — `BackgroundUploadCompletionHandler`
+    ///     picks it up on relaunch instead.
     @available(*, deprecated, message: "Background URLSession path removed — UploadOperation now uses foreground session exclusively. Do not call.")
     /// - Returns: The task identifier for tracking.
     @discardableResult
@@ -220,9 +211,8 @@ extension BackgroundUploadSessionManager: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let taskId = task.taskIdentifier
 
-        // Mark this task as needing follow-up work before invoking the system
-        // completion handler. UploadOperation.finish() or BackgroundUploadCompletionHandler
-        // will call `notifyPostProcessingComplete(taskIdentifier:)` when Phase 3 is done.
+        // Mark the task as needing follow-up before the system completion handler runs; Phase 3 clears
+        // it via `notifyPostProcessingComplete(taskIdentifier:)`.
         registerPostProcessingStart(taskIdentifier: taskId)
 
         if let error = error {
@@ -306,18 +296,16 @@ extension BackgroundUploadSessionManager: URLSessionDelegate {
 // MARK: - Post-processing tracking
 
 extension BackgroundUploadSessionManager {
-    /// Called when a URLSession completion event fires, before kicking off
-    /// Phase 3 follow-up work. iOS expects us to call the system completion
-    /// handler only after this Phase 3 is done.
+    /// Called when a URLSession event fires, before Phase 3 starts: iOS expects the system
+    /// completion handler only once that follow-up is done.
     private func registerPostProcessingStart(taskIdentifier: Int) {
         postProcessingLock.lock()
         awaitingPostProcessing.insert(taskIdentifier)
         postProcessingLock.unlock()
     }
 
-    /// Call this when Phase 3 follow-up for a specific task is fully done.
-    /// Once the set is empty AND iOS has signalled all events delivered, we
-    /// invoke the stored system completion handler.
+    /// Call once a task's Phase 3 follow-up is done. The stored system completion handler runs when
+    /// the set empties and iOS has signalled all events delivered.
     func notifyPostProcessingComplete(taskIdentifier: Int) {
         postProcessingLock.lock()
         let didRemove = awaitingPostProcessing.remove(taskIdentifier) != nil

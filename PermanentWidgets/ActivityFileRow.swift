@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-/// Current file name and percentage — 26269:50845, Lock Screen only. The design
-/// truncates the name at the tail ("…animati…"), so the trailing value never moves.
+/// Current file name and percentage. Lock Screen only. Tail truncation, not middle: the start of
+/// a name is what distinguishes files in a batch, even though the extension is lost.
 struct ActivityFileRow: View {
     let fileName: String
     let detail: String

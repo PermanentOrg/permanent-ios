@@ -66,9 +66,8 @@ struct AddLocationView: View {
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "New location", message: "Are you sure you want set a new location for selected items?", buttonTitle: "Set location") {
                     viewModel.update { success in
-                        // Only dismiss on success — dismissing regardless previously reported
-                        // a failed save as done and closed the sheet, losing the edit silently.
-                        // On failure keep the sheet open and surface an error so the user can retry.
+                        // Dismiss only on success: closing regardless reports a failed save as done and loses the edit.
+                        // On failure the sheet stays open with an error, so the user can retry.
                         if success {
                             presentationMode.wrappedValue.dismiss()
                         } else {

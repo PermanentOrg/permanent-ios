@@ -10,13 +10,8 @@ import SwiftUI
 // WidgetKit. They were reachable while this type shared a file with the Widget itself.
 import WidgetKit
 
-/// The Lock Screen banner's background, per `UploadActivityStyle.bannerBackground`.
-///
-/// `.systemGlass` deliberately draws **nothing** and only tints: on iOS 26 the container
-/// iOS supplies is Liquid Glass, and any opaque background of ours would replace it —
-/// which is exactly the bug this modifier exists to prevent. `.figmaLiteral` draws the
-/// design's navy slab instead, via `containerBackground(for: .widget)` on iOS 17+ and an
-/// ordinary background below that, since this target ships to 16.2.
+/// `.systemGlass` draws nothing and only tints, so iOS 26's Liquid Glass survives.
+/// `.opaqueFill` draws the navy panel — `containerBackground` on 17+, `.background` below.
 struct BannerBackground: ViewModifier {
     private var navySlab: some View {
         ZStack {
@@ -30,7 +25,7 @@ struct BannerBackground: ViewModifier {
         switch UploadActivityStyle.bannerBackground {
         case .systemGlass:
             content.activityBackgroundTint(UploadActivityStyle.lockScreenGlassTint)
-        case .figmaLiteral:
+        case .opaqueFill:
             if #available(iOS 17.0, *) {
                 content
                     .containerBackground(for: .widget) { navySlab }

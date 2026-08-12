@@ -1605,10 +1605,8 @@ final class ThumbnailSelectionTests: XCTestCase {
     }
 
     func testRecordV2PreferredThumbnailURL_IgnoresAccessCopyThumbnailUrls256() throws {
-        // `thumbnailUrls.256` is the Archivematica access-copy thumbnail (a tiny 48x48 that is
-        // blank for HEIC), so it must NOT be used as the 256 source — the preview would blur a
-        // blank image into a white loading square. With no real flat `thumbnail256`, selection
-        // falls through to the Permanent `.thumb.wNNN` renditions (thumbUrl500 here).
+        // `thumbnailUrls.256` is the access copy, blank for HEIC, so it must not be the 256 source or the
+        // preview blurs a blank image. With no flat `thumbnail256`, selection falls to the renditions.
         let record = try decode(
             RecordV2Data.self,
             from: """
@@ -1630,10 +1628,8 @@ final class ThumbnailSelectionTests: XCTestCase {
     }
 
     func testRecordV2PreferredThumbnailURL_AccessCopyIsLastResortWhenNoRenditions() throws {
-        // A Stela COPY (POST /records/{id}/copies) gets NO .thumb.wNNN renditions (backend
-        // gap, captured on staging 2026-07-24): thumbUrl200/500/1000/2000 all null and the
-        // ONLY thumb is the access-copy thumbnailUrls.256. For non-HEIC that access copy is
-        // a real image and must be used — otherwise copies render as permanent placeholders.
+        // A Stela copy gets no `.thumb.wNNN` renditions at all, so the access copy is its only thumbnail.
+        // For non-HEIC it is a real image and must be used, or copies stay placeholders.
         let record = try decode(
             RecordV2Data.self,
             from: """

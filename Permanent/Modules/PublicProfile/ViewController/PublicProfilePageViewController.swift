@@ -206,10 +206,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                     self?.collectionView.reloadData()
                 }
             } else if !isRetry {
-                // Opening a foreign public archive fires this concurrently with the file-tab
-                // and banner fetches on a cold connection; a transient first-attempt failure
-                // clears on retry. Retry exactly once (scoped to THIS load, so later loads get
-                // their own retry) before surfacing the (non-actionable) alert.
+                // This fires concurrently with the file-tab and banner fetches on a cold connection, where a
+                // first-attempt failure clears on retry. Retry once, scoped to this load.
                 getAllByArchiveNbr(archive, isRetry: true)
             } else {
                 showAlert(title: .error, message: .errorMessage)
@@ -255,11 +253,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
             }
             
-            // Don't post delayed notification as it causes unwanted side effects
-            // The archives list should refresh naturally when users navigate back to it
-            // All the important UI elements (title, local data) are already updated correctly
-            // Skip session sync during profile editing to prevent unwanted archive switches
-            // The session sync is returning incorrect archive data and causing the app to switch archives
+            // No notification and no session sync here: the archives list refreshes when navigated back to,
+            // and syncing during profile editing returns stale data and switches the user's archive.
 
         } else if localArchiveData.fullName != updatedArchiveName {
 

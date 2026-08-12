@@ -201,9 +201,8 @@ final class SharesViewControllerTests: XCTestCase {
     }
 
     func testEmptyState_EachSegmentGetsItsOwnCopy() throws {
-        // Both segments used to show the Shared-By-Me message, so an inbox with nothing in it told
-        // the user "You haven't shared any content with anyone" — which reads as a bug rather than
-        // an empty list, and was part of why the archive-switch refresh issue got reported.
+        // The two segments need different empty-state copy: the Shared-By-Me message on an empty inbox
+        // tells the user they haven't shared anything, which reads as a bug rather than an empty list.
         let vc = makeController()
         let vm = try XCTUnwrap(vc.viewModel)
         vm.viewModels = []
@@ -452,9 +451,8 @@ final class SharesViewControllerTests: XCTestCase {
     }
 
     // MARK: - FAB visibility across select mode
-    // Same regression class as MainViewController: the restore paths un-hid the
-    // create/upload FAB unconditionally, so leaving select mode inside a folder shared
-    // at viewer level conjured a + button the role does not allow.
+    // A restore path that un-hides unconditionally conjures a + button inside a folder shared at
+    // viewer level, which the role does not allow.
 
     func testDeselect_ViewOnlyFolder_DoesNotRevealFAB() {
         let vc = makeController()

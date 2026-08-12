@@ -131,9 +131,8 @@ struct FileModel: Equatable, Codable {
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
 
-        // `resolvedThumbnail256`, not the raw field: `preferredThumbnailURL` below tries the 256
-        // slot first, and it also feeds the full-screen preview's blurred placeholder. On V1 the
-        // raw `thumbnail256` is the access copy, blank for HEIC. See ItemVO.resolvedThumbnail256.
+        // `resolvedThumbnail256`, not the raw field: the 256 slot is tried first and also feeds the
+        // preview's blur, and on V1 the raw field is the access copy, blank for HEIC.
         self.thumbnailURL256 = model.resolvedThumbnail256
         self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
         self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
@@ -185,9 +184,8 @@ struct FileModel: Equatable, Codable {
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
 
-        // See the ItemVO init above — the 256 slot must be HEIC-guarded because it is both the
-        // first choice in `preferredThumbnailURL` and the preview's blur source. This is the
-        // record-detail path, so getting it wrong blurs a blank image behind the full-res load.
+        // The 256 slot must be HEIC-guarded: it is both the first choice and the preview's blur source,
+        // so on the record-detail path getting it wrong blurs a blank image.
         self.thumbnailURL256 = model.resolvedThumbnail256
         self.thumbnailURL = model.preferredThumbnailURL ?? model.thumbURL200
         self.thumbnailURL500 = model.preferredThumbnailURL ?? model.thumbURL500
@@ -306,12 +304,8 @@ struct FileModel: Equatable, Codable {
 
     }
     
-    /// Maps a Stela V2 child item (folder or record) into the UIKit `FileModel`.
-    ///
-    /// Permissions/accessRole are passed in by the caller (archive-derived on the
-    /// Private Files path) — the per-item `shares[]` is intentionally not read here.
-    /// String ids are converted to the legacy `Int` at the `model.intId` boundary;
-    /// `archiveNo` is a String passthrough (Stela `archiveNumber` is non-numeric).
+    /// Maps a V2 child into `FileModel`. Permissions come from the caller — the per-item `shares[]` is
+    /// deliberately not read — and string ids convert at the `intId` boundary, except `archiveNo`.
     init(model: FolderChildV2Data, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         // Records carry displayDate; folders carry displayTimestamp.
@@ -347,11 +341,8 @@ struct FileModel: Equatable, Codable {
         self.permissions = permissions
         self.accessRole = accessRole
 
-        // Map Stela shares[] into minArchiveVOS so the "shared item" badge keeps
-        // showing on the user's own shared items (parity with the V1 ItemVO init).
-        // Opaque ids are numeric-as-string; a non-numeric one simply drops that badge
-        // rather than corrupting state. This is presentation only — item permissions
-        // remain archive-derived.
+        // Map `shares[]` into `minArchiveVOS` so the shared-item badge still shows. Presentation only —
+        // permissions stay archive-derived, and a non-numeric id just drops the badge.
         model.shares?.forEach {
             guard let name = $0.archive?.name,
                   let shareStatus = $0.status,

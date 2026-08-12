@@ -7,23 +7,8 @@
 
 import Foundation
 
-/// Leading-edge throttle for `UploadManager.refreshQueue()`.
-///
-/// `refreshQueue` is called from a 30 s timer, from foregrounding, from `upload(files:)` and
-/// from every upload-failure handler. That last caller is why this exists: a transient
-/// network failure re-queues immediately, and offline those failures return in microseconds,
-/// so the handler → `refreshQueue` → new operation → handler cycle spins as fast as the CPU
-/// allows. Each turn re-archives the whole queue to UserDefaults and reads it back, so it is
-/// a disk storm, not just CPU. See [[offline-upload-retry-spin]].
-///
-/// **Leading edge, not trailing:** the first request runs immediately, so starting an upload
-/// or foregrounding stays as responsive as before. Only requests arriving inside
-/// `minInterval` are held, and they collapse into a single catch-up run rather than queueing
-/// up one per call.
-///
-/// Pure and clock-injected so it can be tested without timing flakiness — the manager it
-/// serves is a singleton wired to a `Timer` and `NWPathMonitor`, none of which a unit test
-/// can drive.
+/// Leading-edge throttle for `UploadManager.refreshQueue()`, whose failure-handler caller
+/// re-queues immediately and spins with no route. Clock-injected so it is testable.
 struct RefreshThrottle {
     /// What the caller should do with this request.
     enum Decision: Equatable {
@@ -61,12 +46,8 @@ struct RefreshThrottle {
             return .runNow
         }
 
-        // Everything else waits — including a nonsensical negative `elapsed`, which would
-        // mean `lastRunAt` is somehow in the future. This guard **fails closed** on purpose:
-        // the whole job of this type is to stop a spin, so when the clock makes no sense the
-        // safe answer is to throttle, never to run free. An earlier version returned
-        // `.runNow` there and a test proved it degraded to no throttling at all.
-        // The delay is clamped so a future `lastRunAt` cannot produce an unbounded wait.
+        // Fails closed on a negative `elapsed`: this type exists to stop a spin, so a clock
+        // that makes no sense must throttle, never run free. Delay clamped for the same reason.
         isRunPending = true
         return .schedule(after: min(minInterval, max(0, minInterval - elapsed)))
     }

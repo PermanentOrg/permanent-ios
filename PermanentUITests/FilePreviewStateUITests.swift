@@ -7,9 +7,8 @@
 
 import XCTest
 
-/// UI tests for the full screen image preview loading / failure states (VSP-1768).
-/// The states are driven deterministically through the DEBUG-only launch arguments
-/// handled by FilePreviewViewController and AppDelegate.
+/// The full-screen image preview's loading and failure states, driven deterministically through
+/// the DEBUG-only launch arguments.
 class FilePreviewStateUITests: BaseUITestCase {
 
     override func setUpWithError() throws {

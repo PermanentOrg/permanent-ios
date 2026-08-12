@@ -4,7 +4,7 @@
 //
 //  Created by Lucian Cerbu on 29.05.2026.
 //
-//  Guard 0 UX: when the user picks files for upload and some of them already
+//  Pre-upload duplicate prompt: when the user picks files and some of them already
 //  exist (by `uploadFileName`) in the destination folder, present a modal
 //  alert with three explicit choices. We never silently swallow re-uploads —
 //  doing so would break the user's mental model — but we also don't quietly
@@ -24,14 +24,12 @@ enum DuplicateUploadChoice {
 }
 
 extension UIViewController {
-    /// Surfaces existing-in-folder files to the user before any bytes leave
-    /// the device.
+    /// Surfaces files already in the destination folder before any bytes leave the device.
     ///
     /// - Parameters:
-    ///   - total: total number of files the user picked.
-    ///   - duplicateFileNames: filenames already present in the destination
-    ///     folder. Must be a subset of the picked files; `count <= total`.
-    ///   - completion: invoked with the user's choice on the main queue.
+    ///   - total: how many files the user picked.
+    ///   - duplicateFileNames: names already present; must be a subset of the picked files.
+    ///   - completion: the user's choice, on the main queue.
     func promptDuplicateUploadDecision(
         total: Int,
         duplicateFileNames: [String],

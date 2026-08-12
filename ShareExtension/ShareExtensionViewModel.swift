@@ -50,9 +50,8 @@ class ShareExtensionViewModel: ViewModelInterface {
             sessionToUse = try? SessionKeychainHandler().savedSession()
         }
 
-        // If the session loaded but lacks a selectedArchive (fresh extension
-        // install after host login, or stale session blob), pull from the
-        // App Group snapshot the host mirrors on every selectedArchive write.
+        // A session with no selectedArchive means a fresh extension install or a stale blob, so read the
+        // App-Group snapshot the host mirrors on every archive write.
         if sessionToUse != nil, sessionToUse?.selectedArchive == nil,
            let mirrored = SharedSelectedArchiveStore.read() {
             sessionToUse?.selectedArchive = mirrored
@@ -108,10 +107,8 @@ class ShareExtensionViewModel: ViewModelInterface {
                 defer { dispatchGroup.leave() }
                 guard error == nil else { return }
 
-                // Not every share hands us a file URL: screenshots arrive as UIImage
-                // and some apps provide raw Data. Those used to be dropped SILENTLY
-                // while the share completed as a success — persist them to a temp
-                // file so they upload like any picked file.
+                // Not every share hands over a file URL — screenshots arrive as `UIImage`, some apps as raw
+                // `Data` — so persist those to a temp file rather than drop them silently.
                 let url: URL?
                 switch data {
                 case let fileURL as URL:
@@ -119,9 +116,8 @@ class ShareExtensionViewModel: ViewModelInterface {
                 case let raw as Data:
                     url = Self.persistToTempFile(raw, preferredExtension: Self.preferredExtension(for: provider) ?? "dat")
                 case let image as UIImage:
-                    // Preserve transparency: an image with an alpha channel (e.g. a PNG
-                    // screenshot) would be flattened and re-typed by a forced JPEG, so encode
-                    // it losslessly as PNG. Opaque images stay JPEG (far smaller for photos).
+                    // Preserve transparency: a forced JPEG would flatten and re-type an image with an alpha channel,
+                    // so encode those as PNG. Opaque images stay JPEG, which is far smaller for photos.
                     let alphaInfo = image.cgImage?.alphaInfo
                     let hasAlpha = alphaInfo != nil && alphaInfo != .none && alphaInfo != .noneSkipFirst && alphaInfo != .noneSkipLast
                     if hasAlpha, let png = image.pngData() {
@@ -213,10 +209,8 @@ class ShareExtensionViewModel: ViewModelInterface {
         selectedFiles.removeAll(where: { $0 == file })
     }
     
-    /// Result of the quota check: `nil` = enough space; `.insufficientSpace` = genuinely full;
-    /// `.apiError` = the check itself couldn't complete (no session, network/decode failure).
-    /// Distinguishing the last case stops a transient failure from being reported as "Storage
-    /// Full" and cancelling the whole share.
+    /// `nil` means enough space, `.insufficientSpace` genuinely full, `.apiError` that the check
+    /// itself failed — distinguished so a transient failure isn't reported as "Storage Full".
     private func checkStorageQuota(completion: @escaping (StorageQuotaError?) -> Void) {
         // Calculate total size of selected files
         var totalFilesSize = 0
@@ -288,20 +282,16 @@ class ShareExtensionViewModel: ViewModelInterface {
                             let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), name: file.id, usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
                             copied.append((file, tempLocation))
                         }
-                        // Apply every `selectedFiles` (and FileInfo) mutation on main — the
-                        // table view reads them there, so mutating off a background queue was a
-                        // data race (torn reads / crash while scrolling during processing).
+                        // Mutate `selectedFiles` on main only: the table view reads it there, so a background write is a
+                        // data race that tears reads while scrolling.
                         DispatchQueue.main.async {
                             for entry in copied {
                                 entry.file.url = entry.url
                                 entry.file.archiveId = self.currentArchive?.archiveID ?? -1
                             }
                             do {
-                                // Atomic cross-process merge: `append` reads the queue and
-                                // writes it back inside one file-coordination barrier, so the
-                                // main app clearing completed uploads concurrently can't drop
-                                // these files. (The old read-`savedFiles()`-then-`save()` had a
-                                // lost-update gap between the two calls.)
+                                // `append` reads and writes the queue inside one coordination barrier, so the app clearing
+                                // completed uploads concurrently cannot drop these files.
                                 try ExtensionUploadManager.shared.append(self.selectedFiles)
                                 completion(nil)
                             } catch {
@@ -342,10 +332,8 @@ class ShareExtensionViewModel: ViewModelInterface {
                    let uploadsFolder = items.filter({ $0.displayName == "Mobile Uploads" }).first,
                    let folderId = uploadsFolder.folderID,
                    let folderLinkId = uploadsFolder.folderLinkID {
-                    // Mobile Uploads Folder Exists
-                    // No item count: the root listing doesn't carry this folder's
-                    // children, and the Live Activity omits the count rather than
-                    // report one that only counts this batch.
+                    // Mobile Uploads Folder Exists. No item count: the root listing
+                    // doesn't carry this folder's children, so the activity omits it.
                     selectedFiles.forEach({
                         $0.folder = FolderInfo(
                             folderId: folderId,

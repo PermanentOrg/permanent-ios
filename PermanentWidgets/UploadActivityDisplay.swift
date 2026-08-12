@@ -7,41 +7,28 @@
 
 import SwiftUI
 
-/// Everything the three presentations draw, resolved from the activity's state in one
-/// place so the Lock Screen and the Dynamic Island can never disagree about copy,
-/// counts, or accent colour. Built by `UploadActivityLiveActivity.display(for:)`.
-///
-/// Every view in this target takes plain values like these rather than an
-/// `ActivityViewContext`, so each presentation can be rendered at its exact design
-/// size outside a running activity and diffed against Figma frame 112916.
-///
-/// Note this does NOT buy invalidation boundaries: the `LinearGradient` members mean
-/// the struct isn't `Equatable`, and the composed views take the whole thing — every
-/// update re-evaluates all of it. Fine here and deliberately not engineered around: a
-/// Live Activity renders out-of-process from an archived view, at most once per whole
-/// percent of progress (see `minProgressPushDelta` in UploadLiveActivityManager.swift).
-/// Do not carry this reasoning into an in-app view, where it would be wrong.
+/// Everything the three presentations draw, resolved once so they cannot disagree about copy,
+/// counts or accent. Plain values, not an `ActivityViewContext`, so views render standalone.
 struct UploadActivityDisplay {
-    /// Header line, e.g. "Uploading to Permanent" — 26269:50898
+    /// Header line, e.g. "Uploading to Permanent".
     let headerTitle: String
-    /// Header trailing count, e.g. "3 of 5" — 26269:50899
+    /// Header trailing count, e.g. "3 of 5".
     let counter: String
-    /// Lock Screen second line, left: the current file name — 26269:50846
+    /// Lock Screen second line, left: the current file name.
     let fileLine: String
-    /// Lock Screen second line, right: the percentage — 26269:50847
+    /// Lock Screen second line, right: the percentage.
     let fileDetail: String
-    /// Emphasised word in the pill row, e.g. "Uploading" — 26268:46411
+    /// Emphasised word in the pill row, e.g. "Uploading".
     let statusWord: String
     /// De-emphasised remainder of the pill row, e.g. " • 4 of 6"
     let pillDetail: String
     let progress: Double
     /// Empty when unknown; the folder card drops its title line rather than show a blank.
     let folderName: String
-    /// `nil` when the destination's item count isn't known — see
-    /// `UploadActivityAttributes.ContentState.folderItemCount`.
+    /// `nil` when the destination's item count isn't known; the card drops the count.
     let folderItemCount: Int?
-    /// `nil` when the workspace isn't known, so the badge is omitted rather than
-    /// defaulting to Private — see `UploadActivityAttributes.folderIsShared`.
+    /// `nil` when the workspace isn't known, so the badge is omitted rather than defaulting
+    /// to Private — a wrong claim about who can see the upload.
     let folderIsShared: Bool?
     let barFill: LinearGradient
     let ringTint: LinearGradient
@@ -51,15 +38,13 @@ struct UploadActivityDisplay {
     /// A short actionable hint for the expanded island, e.g. "Tap to resume". `nil` when
     /// there is nothing for the user to do.
     let hint: String?
-    /// True only while uploading. The design gives a folder card to that state; the
-    /// others get the minimum-height pill row in the expanded island.
+    /// True only while uploading; other states get the minimum-height pill row.
     let showsFolderCard: Bool
 }
 
 // MARK: - Preview samples
 //
-// Copy matches Figma frame 112916 exactly, so a preview can be diffed against the
-// design render rather than eyeballed.
+// Copy matches the design exactly, so a preview can be compared against it directly.
 
 #if DEBUG
 extension UploadActivityDisplay {
@@ -117,9 +102,8 @@ extension UploadActivityDisplay {
         showsFolderCard: false
     )
 
-    /// Worst case: an upload re-queued from a queue persisted before `FolderInfo`
-    /// carried the folder's name, count and workspace. The card must degrade rather
-    /// than invent values — see `DestinationFolderCard`.
+    /// Worst case: an upload re-queued from a queue persisted before `FolderInfo` carried the
+    /// folder's name, count and workspace. The card must degrade rather than invent values.
     static let previewUnknownFolder = UploadActivityDisplay(
         headerTitle: "Uploading to Permanent",
         counter: "1 of 3",

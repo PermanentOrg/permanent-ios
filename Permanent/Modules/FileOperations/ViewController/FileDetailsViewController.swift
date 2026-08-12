@@ -204,10 +204,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func closeButtonAction(_ sender: Any) {
-        // Hand off to the delegate (the preview pager), which dismisses the whole
-        // presentation chain in one animated transition. Dismissing this details modal
-        // here first (animated: false) would briefly reveal the fullscreen preview
-        // underneath before it too gets dismissed — a visible flash.
+        // Hand off to the pager, which dismisses the whole chain in one transition. Dismissing this modal
+        // first would briefly reveal the fullscreen preview underneath.
         let hasChanges = (self.navigationController as? FilePreviewNavigationController)?.hasChanges ?? false
         if let delegate = delegate {
             delegate.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
@@ -402,9 +400,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
 
-        // VSP-1787 sibling: an own-archive record that publishes via the V2 copy resolves its
-        // public-workspace destination through the Stela archives search (no V1 getPublicRoot).
-        // On ANY resolution failure, fall back to the V1 getPublicRoot destination lookup.
+        // An own-archive record publishing via the V2 copy resolves its public destination through the
+        // archives search. Any resolution failure falls back to the V1 getPublicRoot lookup.
         if viewModel?.canPublishViaStelaCopy == true {
             viewModel?.resolvePublicRootFolderIdV2 { [weak self] publicRootFolderId in
                 guard let self = self else { return }
@@ -420,10 +417,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         publishViaV1PublicRoot(onPublishResult: onPublishResult)
     }
 
-    /// Legacy destination lookup, kept as the failsafe for the V2 public-root path: V1
-    /// getPublicRoot → V2 copyRecordV2 (own-archive records) or V1 relocate (folders /
-    /// foreign records). A -1 destination folderId (getPublicRoot omitted folderID) routes
-    /// to relocate rather than posting "-1".
+    /// The V1 destination lookup, kept as the failsafe for the V2 public-root path. A -1 folderId
+    /// routes to relocate rather than posting "-1".
     private func publishViaV1PublicRoot(onPublishResult: @escaping (Error?) -> Void) {
         guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr else {
             hideSpinner()

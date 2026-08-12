@@ -45,9 +45,8 @@ class MetadataEditFileNamesViewModel: ObservableObject {
             return
         }
         isLoading = true
-        // Stela V2 (flag-gated): fan out one PATCH /records/{id} {displayName} per record,
-        // with the V1 batch as an automatic failsafe. Records only. Only the display name is
-        // sent on the V2 path (the V1 date-passthrough is irrelevant to a name edit).
+        // One PATCH per record, with the V1 batch as an automatic failsafe. Records only, and only the
+        // display name is sent.
         if FeatureFlags.useStelaNavigation,
            updatedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
             updatedFiles.patchEachRecordToV2(fieldsFor: { ["displayName": $0.name] }) { [weak self] succeeded in

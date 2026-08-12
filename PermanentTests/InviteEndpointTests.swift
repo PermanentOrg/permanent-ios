@@ -9,9 +9,8 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// `InviteEndpoint` is shared by the share-invitation flow (VSP-1800) and the legacy
-/// account-invites screen, so its paths and payload shape must not drift. These assert the
-/// id handed in is the id that goes out as `InviteVO.inviteId`.
+/// `InviteEndpoint` is shared by the share-invitation flow and the legacy account-invites screen,
+/// so its paths must not drift. Asserts the id handed in is the id that goes out.
 @Suite
 struct InviteEndpointTests {
 

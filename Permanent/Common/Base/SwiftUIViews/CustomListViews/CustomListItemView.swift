@@ -6,48 +6,8 @@
 
 import SwiftUI
 
-/// A SwiftUI view that represents a customizable list item with a consistent design pattern.
-/// 
-/// This view creates a horizontal layout that includes:
-/// - A leading icon/image
-/// - A content section with title and description
-/// - An optional badge (for highlighting new or special items)
-/// - A trailing chevron indicator
-/// 
-/// The view is designed for use in lists where each item needs to display structured information
-/// in a visually appealing way. It's particularly useful for navigation menus, settings pages,
-/// or any list where items need to show both primary and secondary information.
-/// 
-/// - Parameters:
-///   - image: The leading image/icon to display (24x24 points, automatically tinted)
-///   - titleText: The primary text displayed in a semi-bold style
-///   - descText: Secondary text shown below the title (limited to 2 lines)
-///   - showBadge: When true, displays a badge next to the title. Defaults to `false`
-///   - badgeText: Custom text for the badge. Defaults to "NEW" if not specified
-///   - badgeColor: Custom color for the badge. Defaults to yellow if not specified
-///
-/// # Example Usage
-/// ```swift
-/// // Basic usage
-/// CustomListItemView(
-///     image: Image(systemName: "folder.fill"),
-///     titleText: "Documents",
-///     descText: "Access all your stored documents"
-/// )
-///
-/// // With badge
-/// CustomListItemView(
-///     image: Image(systemName: "gift.fill"),
-///     titleText: "Special Offer",
-///     descText: "Limited time storage upgrade available",
-///     showBadge: true,
-///     badgeText: "NEW",
-///     badgeColor: .red
-/// )
-/// ```
-///
-/// The view automatically handles proper spacing, alignment, and color styling
-/// to maintain consistency across the app's interface.
+/// A list row: leading icon, title and description, an optional badge, and a trailing chevron.
+/// The description is limited to two lines; the badge defaults to a yellow "NEW".
 
 
 struct CustomListItemView: View {

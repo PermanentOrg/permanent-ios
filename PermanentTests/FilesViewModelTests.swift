@@ -132,10 +132,8 @@ final class FilesViewModelTests: XCTestCase {
 
     // MARK: - Upload dedupe: V2 child → ItemVO matcher (post-upload dedupe migration)
 
-    /// The V2 folder listing feeds the existing ItemVO dedupe matcher via
-    /// `toMatchableItemVOs()` — the SAME production pipeline `UploadManager.fetchFolderContents`
-    /// runs, not a re-implementation. This is the correctness-critical path: a miss would
-    /// create a duplicate record.
+    /// The V2 listing feeds the same ItemVO dedupe matcher production runs, not a re-implementation.
+    /// Correctness-critical: a miss creates a duplicate record.
     func testUploadDedupe_V2ChildAdaptsToItemVO_MatchesByUploadFileName() {
         let json = """
         {
@@ -170,10 +168,8 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertNotNil(items.record(forUploadName: "Scan.pdf", size: 100))
     }
 
-    /// Invariant-3 sentinel: a decodable 2xx body MISSING the `items` key must decode with
-    /// `items == nil` (contract failure → UploadManager falls back to V1), while a
-    /// present-but-EMPTY array decodes non-nil (folder legitimately verified empty).
-    /// Collapsing the two would let a malformed 200 green-light a duplicate upload.
+    /// A 2xx body missing `items` must decode nil (contract failure → V1 fallback); a present-but-
+    /// empty array decodes non-nil. Collapsing them lets a malformed 200 allow a duplicate upload.
     func testUploadDedupe_MissingItemsKeyDecodesNil_EmptyArrayDecodesEmpty() {
         XCTAssertNotNil(decodeChildren("{}"), "body without items should still decode")
         XCTAssertNil(decodeChildren("{}")?.items, "missing items key must be nil, not []")
@@ -245,9 +241,9 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(vm.sortedByActiveOption([newFile, oldFile]).map { $0.name }, ["old", "new"])
     }
 
-    // MARK: - Stela date parsing (B3 — the client-side date sort must tolerate the timestamp
-    // shapes Stela emits; fractional-second and Postgres forms previously collapsed to
-    // .distantPast, silently degenerating the sort to server order).
+    // MARK: - Stela date parsing
+    // The client-side sort must tolerate every timestamp shape Stela emits; fractional-second and
+    // Postgres forms collapse to .distantPast otherwise, degenerating the sort to server order.
 
     func testParseSortDate_HandlesAllStelaTimestampFormats() {
         XCTAssertNotEqual(FilesViewModel.parseSortDate("2025-10-09T08:35:55Z"), .distantPast, "plain ISO8601")
@@ -261,11 +257,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testParseSortDate_SameInstantAcrossFormatsIsEqual() {
-        // The same instant in all four shapes must parse to ONE Date, so a mixed listing
-        // whose fields arrive in different formats still sorts coherently. The zone-less
-        // case is the regression pin: without a UTC anchor it parses in device-local time
-        // and lands up to a full UTC-offset away from the other three (skewing mixed
-        // record/folder date sorts on any non-UTC device).
+        // All four shapes must parse to one Date so a mixed listing still sorts coherently. The
+        // zone-less case is the pin: with no UTC anchor it parses local and lands an offset away.
         let iso = FilesViewModel.parseSortDate("2025-10-09T08:35:55Z")
         XCTAssertNotEqual(iso, .distantPast)
         XCTAssertEqual(iso, FilesViewModel.parseSortDate("2025-10-09T08:35:55.000Z"))
@@ -296,9 +289,8 @@ final class FilesViewModelTests: XCTestCase {
     // is missing `archiveNumber`, because retained V1 writes send archiveNbr).
 
     func testFileModelFromV2_MissingArchiveNumber_YieldsEmptyArchiveNo() {
-        // The gate keys on file.archiveNo.isEmpty; a child without `archiveNumber` must
-        // surface as empty here so the listing falls back to V1 rather than render items
-        // whose later V1 rename/move/edit would send archiveNbr "".
+        // The gate keys on `archiveNo.isEmpty`, so a child with no `archiveNumber` must surface empty
+        // and fall back to V1 — otherwise a later rename or move sends archiveNbr "".
         let missing = """
         { "items": [ { "recordId": "5", "displayName": "no-archive", "type": "type.record.image", "folderLinkId": "9" } ] }
         """
@@ -310,8 +302,7 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - Stela capability matrix — which workspaces follow FeatureFlags.useStelaNavigation
-    // Pinned via the in-app FeatureFlags constant (deterministic — no Remote Config dependency);
-    // each test restores it in a defer so it can't leak into other tests.
+    // Pinned via the in-app constant so it stays deterministic; each test restores it in a defer.
 
     func testStelaCapability_BaseStaysV1() {
         // The base class hardcodes false: even with the flag forced ON, a bare
@@ -349,10 +340,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - Shared-workspace V2 per-child role inheritance (v2ChildContext)
-    // The V2 /children payload carries no per-child accessRole, so Shared inherits the
-    // ENTERED folder's role onto its children (confirmed 2026-07-22: a shared folder's own
-    // shares[] holds the role, but every child returns shares:[]). Base workspaces keep the
-    // archive-level role. Inheritance must fail CLOSED (→ .viewer) so it can never over-grant.
+    // The V2 /children payload has no per-child accessRole, so Shared inherits the entered folder's
+    // role while base workspaces keep the archive role. Must fail closed (→ .viewer), never over-grant.
 
     private func makeV2Folder(role: AccessRole) -> FileModel {
         let json = """
@@ -383,12 +372,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - Public Gallery read-only pin (PublicArchiveViewModel)
-    // The gallery is a read-only browser, pinned at the ARCHIVE level so every listing path
-    // agrees: the V2 `/children` mapping (through the base v2ChildContext), the V1
-    // getLeanItems failsafe, and the navigateMin folder push all read archivePermissions /
-    // archiveAccessRole. Unlike Shared it must NOT inherit the entered folder's role, and it
-    // must NOT use the real archive role — that would hand out write affordances when you
-    // browse your OWN archive here, and only on whichever backend served the listing.
+    // Pinned at the archive level so the V2, V1-failsafe and navigateMin paths all agree. It must
+    // not inherit the entered folder's role, nor the real archive role — that grants write on your own.
 
     private func decodeArchive(accessRole: String) -> ArchiveVOData? {
         let json = "{\"archiveNbr\":\"0001-test\",\"accessRole\":\"\(accessRole)\",\"fullName\":\"Owned Archive\"}"
@@ -397,17 +382,15 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testV2ChildContext_PublicGalleryPinsViewerRegardlessOfEnteredFolder() throws {
-        // The pin is gated on the V2 flag (VSP-1811) and v2ChildContext reads through it, so
-        // pin the flag explicitly instead of inheriting the scheme default — otherwise this
-        // passes under Permanent-DEV (flag on) and fails under Permanent (flag off).
+        // The pin is gated on the V2 flag and v2ChildContext reads through it, so set the flag here
+        // rather than inherit the scheme default, which differs between schemes.
         let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = prevFlag }
 
         let vm = PublicArchiveViewModel()
-        // Seed an OWNER archive: with `currentArchive` nil the pin is indistinguishable from
-        // the un-pinned base (a nil archive already yields [.read]/.viewer), so every
-        // assertion below would pass even with the override deleted.
+        // Seed an OWNER archive: with `currentArchive` nil the pin is indistinguishable from the
+        // un-pinned base, so every assertion below would pass even with the override deleted.
         vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
         XCTAssertEqual(AccessRole.roleForValue(vm.currentArchive?.accessRole), .owner,
                        "precondition: the underlying archive really is owner-level")
@@ -426,9 +409,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testV2ChildContext_PublicGalleryIgnoresOwnerArchiveRole() throws {
-        // Browsing YOUR OWN archive through the gallery: the archive carries the owner
-        // role, so an un-pinned gallery would stamp owner permissions onto every child.
-        // This is the one case where the pin actually narrows, and it is deliberate.
+        // Browsing your own archive through the gallery, where an un-pinned view would stamp owner
+        // permissions onto every child. The one case where the pin narrows, and it is deliberate.
         let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = prevFlag }
@@ -448,10 +430,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testPublicGallery_ArchiveRolePinnedSoTheV1FailsafeCannotDisagree() throws {
-        // The pin lives on archivePermissions/archiveAccessRole rather than only on
-        // v2ChildContext, because the V1 legs (onGetLeanItemsSuccess / onNavigateMinSuccess)
-        // stamp children from these same two properties. Pinning just the V2 leg would let a
-        // transient V2 failure hand back write affordances the V2 listing withheld.
+        // The pin lives on archivePermissions/archiveAccessRole, not just v2ChildContext, because the
+        // V1 legs stamp children from those two — pinning one leg lets a V2 failure re-grant write.
         let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = prevFlag }
@@ -480,10 +460,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testPublicGallery_PinLiftsWhenStelaNavigationIsOff() throws {
-        // With V2 navigation OFF there is only one listing path (V1), so the backend-dependent
-        // disagreement the pin exists to prevent cannot arise. Keeping the pin would instead
-        // strip Share / Publish / editable metadata from your OWN archive in a build that ships
-        // with V2 disabled — a regression against what 1.15.x already offers.
+        // With V2 off there is one listing path, so the disagreement the pin prevents cannot arise.
+        // Keeping it would strip Share, Publish and editable metadata from your own archive.
         let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = false
         defer { FeatureFlags.useStelaNavigation = prevFlag }
@@ -507,15 +485,11 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - Record rename: V2 PATCH is own-archive only
-    // `patchRecord` is sent bearer-only (no share token) and is NOT exempt from the 401
-    // force-logout, so attempting it on a FOREIGN (shared-with-me) record risks logging the
-    // user out for a rename they were allowed to make. The rename itself would still land via
-    // the V1 failsafe — the logout is the damage. Foreign records must never reach the V2 leg.
+    // `patchRecord` is bearer-only and not exempt from the 401 force-logout, so a foreign record
+    // risks logging the user out for a rename they were allowed to make. The logout is the damage.
 
-    // Records are built with `makeV2Record(recordId:archiveId:)`, defined with the VSP-1789
-    // copy tests below. It goes through the V2 decode path, which matters here: the
-    // convenience `FileModel` init hardcodes `archiveId = -1`, and archiveId is exactly what
-    // the ownership check reads.
+    // Records come from `makeV2Record`, which uses the V2 decode path: the convenience `FileModel`
+    // init hardcodes `archiveId = -1`, and archiveId is what the ownership check reads.
 
     /// Runs `body` with the session pinned to `ArchiveVOData.mock()` (archiveID 1).
     private func withSessionArchive(_ body: () -> Void) {
@@ -546,9 +520,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testIsInSessionArchive_IgnoresOverriddenCurrentArchive() {
-        // `PublicArchiveViewModel` overrides `currentArchive` to the archive being VIEWED.
-        // The check must read the SESSION's archive, or browsing a foreign public archive
-        // would report its records as "ours".
+        // `PublicArchiveViewModel` overrides `currentArchive` to the archive being viewed, so the check
+        // must read the session's archive or a foreign public archive reports its records as ours.
         withSessionArchive {
             let gallery = PublicArchiveViewModel()
             gallery.currentArchive = ArchiveVOData.mock()   // viewed archive == archiveID 1
@@ -607,9 +580,8 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    /// Observes that `rename` actually consults the gate: a foreign record must reach the V1
-    /// leg SYNCHRONOUSLY. The V2 leg is asynchronous, so a synchronous V1 call proves no
-    /// PATCH was attempted — and nothing touches the network.
+    /// Proves `rename` consults the gate: the V2 leg is asynchronous, so a synchronous V1 call is
+    /// proof no PATCH was attempted — and nothing touches the network.
     private final class RenameSpyViewModel: SharedFilesViewModel {
         var v1RenameCallCount = 0
         override func performV1Rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
@@ -635,14 +607,12 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - Batch PATCH fan-out aggregation (patchSequentially seam)
-    // Callers (batch description/location/filename) rely on: `true` ONLY if every record
-    // succeeded (a partial-success `true` would skip the V1 batch failsafe and silently
-    // drop the remaining edits), short-circuit on first failure, main-thread completion.
+    // `true` only if every record succeeded — a partial-success `true` skips the V1 failsafe and
+    // silently drops the rest. Short-circuits on first failure, completes on main.
 
     private func makeBatchFile(recordId: Int) -> FileModel {
-        // Built via the V2 decode path: the convenience init(name:recordId:...) DISCARDS
-        // its recordId parameter (hardcodes -1, FileModel.swift:117), so it cannot build
-        // fixtures whose identity matters.
+        // Built via the V2 decode path: the convenience init discards its recordId and hardcodes -1,
+        // so it cannot build fixtures whose identity matters.
         let json = """
         { "items": [ { "recordId": "\(recordId)", "displayName": "f\(recordId)", "type": "type.record.image",
           "status": "ok", "folderLinkId": "1" } ] }
@@ -705,9 +675,8 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.pdf.pdf"), "application/pdf")
         XCTAssertNil(FileV2Data.mimeType(forFileType: "type.record.image")) // record type, not a file type
         XCTAssertNil(FileV2Data.mimeType(forFileType: nil))
-        // Misc/doc/archive classes get a generic MIME: the preview's loadRecord() requires a
-        // non-nil contentType in BOTH branches (V1 always ships one; loadMisc only needs
-        // presence) — nil here rendered docs/text/zips as a BLANK preview on the V2 path.
+        // Misc, doc and archive classes need a generic MIME: the preview requires a non-nil
+        // contentType in both branches, and nil rendered docs, text and zips as a blank preview.
         XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.doc.docx"), "application/octet-stream")
         XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.txt.txt"), "application/octet-stream")
         XCTAssertEqual(FileV2Data.mimeType(forFileType: "type.file.archive.zip"), "application/octet-stream")
@@ -753,11 +722,8 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(record.locnVO?.locality, "NYC")
         XCTAssertEqual(record.locnVO?.latitude, 40.7)
         XCTAssertEqual(record.tagVOS?.first?.name, "vacation")
-        // tagId is load-bearing: the batch-metadata screen rebuilds its tag state from
-        // these VOs and the V1 unlink body sends tagVO.tagId — a nil here became
-        // `tagId: 0` and tag unassign silently no-oped after a V2 record read.
-        // REAL WIRE SHAPE (E2E-verified on staging): the key is "id" and it is a JSON
-        // NUMBER — decoding the old "tagId"-string contract yielded nil.
+        // tagId is load-bearing: the batch screen rebuilds tag state from these VOs and the unlink body
+        // sends it, so a nil became `tagId: 0` and unassign no-oped. The wire key is "id", a number.
         XCTAssertEqual(record.tagVOS?.first?.tagId, 5)
         XCTAssertEqual(record.tagVOS?.first?.type, "type.generic")
     }
@@ -1083,9 +1049,8 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - updateTimerCount
 
     func testUpdateTimerCount_IncrementsAcrossBackoffChain() {
-        // The thumbnail-poll chain uses exponential-backoff intervals; each
-        // fire bumps timerRunCount, and invalidateTimer is only triggered once
-        // the chain is exhausted. Confirm increments and the final reset.
+        // The thumbnail poll uses exponential backoff: each fire bumps timerRunCount, and
+        // invalidateTimer runs only once the chain is exhausted.
         let vm = FilesViewModel()
         XCTAssertEqual(vm.timerRunCount, 0)
 
@@ -1174,22 +1139,12 @@ final class FilesViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
-    // MARK: - VSP-1789: Stela V2 copy routing (POST /records/{id}/copies)
-    // COPY routes own-archive records through the idempotent V2 endpoint (NO V1 failsafe —
-    // copy is not idempotent), while folders, foreign records, and MOVE stay on V1.
+    // MARK: - Stela V2 copy routing (POST /records/{id}/copies)
+    // Own-archive records go through the idempotent V2 endpoint with no V1 failsafe, since copy is
+    // not idempotent. Folders, foreign records and MOVE stay on V1.
 
-    /// `MyFilesViewModel.selectedFiles` proxies the process-wide
-    /// `AuthenticationManager.shared.session`, and its setter silently no-ops when that session
-    /// is nil. The suite still makes live API calls whose 401s post
-    /// `sessionExpiredNotificationName`, which `AuthenticationManager` turns into an async
-    /// `logout()` — so the shared session can be nulled mid-test. That is what broke
-    /// `testRelocate_Copy_AllEligible_RoutesToV2AndSucceeds` on CI while it passed locally:
-    /// `fileAction` (plain storage on the view model) reset correctly, but the selection write
-    /// went nowhere. Keeping the selection on the view model makes the assertion about the code
-    /// under test instead of about whether a stray logout landed mid-run.
-    ///
-    /// This does not fix the underlying problem — the unit suite should not reach the network.
-    /// Tracked separately; see the repo-hygiene finding about live API calls from tests.
+    /// Keeps the selection on the view model: `MyFilesViewModel.selectedFiles` proxies the shared
+    /// session and no-ops silently once a stray 401 logout nulls it mid-run.
     private final class StelaCopyViewModel: MyFilesViewModel {
         private var localSelection: [FileModel]? = []
         /// Storage only — the production override also posts a selection notification and
@@ -1200,9 +1155,8 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    /// A saved record child in the current (mock) archive — the eligible shape for V2 copy.
-    /// Built via the V2 decode path (the convenience init discards its recordId, so identity
-    /// would be lost). Omitting `folderId` while carrying `recordId` keeps `isFolder` false.
+    /// A saved record child in the current archive — the eligible shape for V2 copy. Built via the
+    /// V2 decode path, since the convenience init discards recordId and identity matters here.
     private func makeV2Record(recordId: Int = 100, archiveId: Int = 1) -> FileModel {
         let json = """
         { "items": [ { "recordId": "\(recordId)", "archiveId": "\(archiveId)", "displayName": "r\(recordId)",
@@ -1222,9 +1176,8 @@ final class FilesViewModelTests: XCTestCase {
         FeatureFlags.useStelaNavigation = true
         defer {
             AuthenticationManager.shared.session = previousSession
-            // Restore what was there, NOT a literal: the ambient value in this build is TRUE
-            // (Constants.swift derives it from APIEnvironment == .staging), so restoring false
-            // silently changed what every later test saw.
+            // Restore what was there, not a literal: the ambient value is derived from APIEnvironment, so
+            // restoring a hardcoded false silently changed what every later test saw.
             FeatureFlags.useStelaNavigation = previousFlag
         }
         body()
@@ -1270,9 +1223,8 @@ final class FilesViewModelTests: XCTestCase {
 
     func testRelocate_Copy_AllEligible_RoutesToV2AndSucceeds() {
         withStelaSessionArchive {
-            // StelaCopyViewModel, not MyFilesViewModel: this is the one relocate test that
-            // asserts the selection was cleared, and MyFilesViewModel routes that through the
-            // shared session (see the type's doc comment).
+            // StelaCopyViewModel, not MyFilesViewModel: this is the one relocate test asserting the
+            // selection was cleared, which the shared session would swallow.
             let vm = StelaCopyViewModel()
             vm.fileAction = .copy
             var copied: [(record: String, destination: String)] = []
@@ -1438,11 +1390,9 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    // MARK: - VSP-1789: copy thumbnails — HEIC-guarded access-copy 256 as last resort
-    // A Stela copy gets NO .thumb.wNNN renditions (backend gap, staging-captured
-    // 2026-07-24): thumbUrl* all null; its ONLY thumb is the access-copy
-    // thumbnailUrls.256. Non-HEIC listings must fall back to it (else copies are
-    // permanent placeholders); HEIC must never use it (blank — white-square bug).
+    // MARK: - Copy thumbnails — HEIC-guarded access-copy 256 as last resort
+    // A Stela copy gets no .thumb.wNNN renditions, so its only thumb is the access-copy 256.
+    // Non-HEIC must fall back to it or copies stay placeholders; HEIC must never, as it is blank.
 
     func testV2CopyShape_ListSlotsFallBackToAccessCopy256_NonHEIC() {
         let json = """
@@ -1502,13 +1452,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - V1 listing thumbnails: the same access-copy trap, a different payload
-    // On the V1 payload the `thumbnail256` FIELD is itself the Archivematica access copy
-    // (`/access_copies/…/thumbnails/….jpg`), not a real 256 rendition — so preferring it
-    // unconditionally served the blank HEIC copy and every HEIC photo in a folder fell back to
-    // the file-type placeholder, while `thumbStatus` was "ok" and thumbURL200/500/1000/2000 were
-    // all populated right beside it. V2 only met the access copy under `thumbnailUrls.256`, so
-    // guarding that left the identically-named V1 field exposed. Production runs V1.
-    // `getLeanItems` (the folder listing) decodes ItemVO; record detail decodes RecordVOData.
+    // On V1 the `thumbnail256` field IS the access copy, not a real rendition, so preferring it
+    // served blank HEIC while thumbStatus read "ok". Production runs V1.
 
     func testV1ItemVO_HEICSkipsAccessCopy256AndUsesRealRendition() throws {
         let json = """
@@ -1567,11 +1512,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testV1FileModel_PreviewBlurSourceIsHEICGuarded() throws {
-        // Guarding only the VO's `preferredThumbnailURL` fixed listings and left the FULL-SCREEN
-        // preview broken: `FileModel.preferredThumbnailURL` tries `thumbnailURL256` FIRST, that
-        // slot was assigned from the raw field, and it is what the preview blurs behind the
-        // full-res load — so HEIC blurred a blank image (the white-square bug). Assert through
-        // FileModel, the type the preview actually reads, or the same gap reopens silently.
+        // Guarding only the VO left the full-screen preview broken: `FileModel.preferredThumbnailURL`
+        // tries 256 first. Assert through FileModel, the type the preview reads, or the gap reopens.
         let json = """
         { "uploadFileName": "IMG_1135.heic",
           "thumbnail256": "https://cdn.example/access_copies/blank-for-heic.jpg",
@@ -1588,9 +1530,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testV1FileModel_NonHEICKeepsThe256BlurSource() throws {
-        // Symmetry check: without this a future "simplification" could null the 256 slot for
-        // everything and no test would object, quietly downgrading every preview's placeholder
-        // from a 256 thumbnail to a 500 rendition.
+        // Symmetry check: otherwise a later simplification could null the 256 slot for everything with
+        // no test objecting, downgrading every preview's placeholder to a 500 rendition.
         let json = """
         { "uploadFileName": "arctic-fox-4366x3010.jpg",
           "thumbnail256": "https://cdn.example/real-256.jpg",
@@ -1603,10 +1544,9 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(file.preferredThumbnailURL, "https://cdn.example/real-256.jpg")
     }
 
-    // MARK: - thumbnail poll gate (hasItemsAwaitingProcessing)
-    // Gates the 10s post-paste/upload folder poll: keep refetching while a record has
-    // no thumbnail source (the fresh-Stela-copy shape) or an item is mid copy/move;
-    // stop as soon as everything settles (bounded separately by thumbnailPollMaxRuns).
+    // MARK: - Thumbnail poll gate (hasItemsAwaitingProcessing)
+    // Keeps refetching while a record has no thumbnail source or an item is mid copy/move, and
+    // stops once everything settles. Bounded separately by thumbnailPollMaxRuns.
 
     func testHasItemsAwaitingProcessing_FreshCopyWithoutThumb_True() {
         let json = """
@@ -1641,10 +1581,9 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertTrue(vm.hasItemsAwaitingProcessing, "mid copy/move items keep the poll alive")
     }
 
-    // MARK: - post-paste settle expectation (isAwaitingPastedItems)
-    // A relocate commits asynchronously server-side, so the refetch right after a paste can
-    // still return the pre-paste listing. hasItemsAwaitingProcessing can't see that (a MOVED
-    // record arrives WITH its thumbnails), so the item count is the only usable signal.
+    // MARK: - Post-paste settle expectation (isAwaitingPastedItems)
+    // A relocate commits asynchronously, so the refetch after a paste can return the pre-paste
+    // listing. A moved record arrives with its thumbnails, so item count is the only signal.
 
     private func makeVMInFolder(itemCount: Int) -> (MyFilesViewModel, FileModel) {
         let vm = MyFilesViewModel()
@@ -1699,10 +1638,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - FAB slide-in contract (FABView.setVisibility)
-    // The FAB is hidden while picking a paste destination, which created a hide→show
-    // transition that never used to exist. It slides up from the bottom edge; a REPEAT show
-    // call (the post-paste folder refetch fires updateFABViewVisibility again a few hundred
-    // ms later) must not cut that animation short — that was the "snaps in" symptom.
+    // The FAB hides while picking a paste destination, so it slides up from the bottom edge on
+    // return. A repeat show call from the post-paste refetch must not cut that animation short.
 
     /// FAB in a container, so `offscreenSlideDistance` has a superview to measure against.
     private func makeHostedFAB() -> FABView {
@@ -1768,10 +1705,9 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(fab.transform, .identity, "no animation → lands in place immediately")
     }
 
-    // MARK: - poll cadence constants
-    // Two different waits: missing rows are a server-commit race (fast), pending thumbnails
-    // are genuinely slow. Polling a missing row at the slow cadence made a pasted file take
-    // ~10s to appear.
+    // MARK: - Poll cadence constants
+    // Two different waits: a missing row is a server-commit race and fast, a pending thumbnail is
+    // genuinely slow. Polling a missing row slowly made a pasted file take ~10s to appear.
 
     func testPollCadence_FastForMissingRowsSlowForThumbnails() {
         XCTAssertLessThan(FilesViewModel.pastedItemsPollInterval, FilesViewModel.thumbnailPollInterval,
@@ -1817,9 +1753,8 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - publish edge case
 
     func testPublish_NoArchive_CompletesWithErrorAndResetsFileAction() {
-        // No session → currentArchive (and archiveNbr) is nil, tripping publish's guard.
-        // Uses the BASE FilesViewModel because its `fileAction` is a real stored property;
-        // MyFilesViewModel's is session-backed and would read `.none` vacuously here.
+        // No session → currentArchive is nil, tripping publish's guard. Uses base FilesViewModel
+        // because its `fileAction` is a real stored property, not session-backed.
         let previousSession = AuthenticationManager.shared.session
         AuthenticationManager.shared.session = nil
         defer { AuthenticationManager.shared.session = previousSession }
@@ -1972,11 +1907,8 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     // MARK: - V2 navigation supersede policy (childrenFetchV2Request seam)
-    // A superseded children fetch must ALWAYS complete its caller (a dropped completion
-    // left the tap's spinner hanging — "content doesn't load"), a superseded forward
-    // navigation retries exactly once so a racing background refresh can't eat the
-    // user's tap, and a superseded fetch must NEVER run the V1 failsafe (its
-    // out-of-order response could overwrite the newer listing).
+    // A superseded fetch must always complete its caller or the spinner hangs, a superseded forward
+    // navigation retries once, and it must never run the V1 failsafe and overwrite a newer listing.
 
     /// Folder target built via the V2 decode path (folderId > 0 — the convenience
     /// init(name:recordId:...) can't set folderId).
@@ -1989,7 +1921,7 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     /// MyFilesViewModel with the flag pinned ON and the fetch seam scripted to return
-    /// `outcomes` in order. Returns the VM and a counter box for fetch invocations.
+    /// `outcomes` in order. Returns the view model and a counter box for fetch invocations.
     private func makeNavVM(outcomes: [FilesViewModel.ChildrenFetchOutcome]) -> (MyFilesViewModel, () -> Int) {
         let vm = MyFilesViewModel()
         var remaining = outcomes
@@ -2066,19 +1998,17 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(vm.navigationStack.map { $0.folderId }, [current.folderId], "stack untouched")
     }
 
-    // MARK: - VSP-1787: Stela root discovery (archives.rootFolderId → children)
-    // Replaces the V1 /folder/getRoot bootstrap. resolveMyFilesTargetV2 is the
-    // side-effect-free core (archives → archive-root children → private-root child);
-    // any failure returns nil so getRoot falls back to the V1 bootstrap.
+    // MARK: - Stela root discovery (archives.rootFolderId → children)
+    // Replaces the V1 /folder/getRoot bootstrap. `resolveMyFilesTargetV2` is the side-effect-free
+    // core; any failure returns nil so getRoot falls back to V1.
 
     private func decodeArchives(_ json: String) -> [ArchiveV2Data] {
         guard let data = json.data(using: .utf8) else { return [] }
         return (try? ArchivesV2Response.decoder.decode(ArchivesV2Response.self, from: data))?.items ?? []
     }
 
-    /// Archive-root children mirroring the live staging shape: Apps (app-root),
-    /// My Files (private-root), Public (public-root). `myFilesFolderId`/`myFilesType`
-    /// are parameterized to exercise the id guard and the type/displayName selection.
+    /// Archive-root children in the real shape: Apps, My Files, Public. The folder id and type are
+    /// parameterized to exercise the id guard and the type/displayName selection.
     private func archiveRootChildrenJSON(myFilesFolderId: String = "600",
                                          myFilesType: String = "private-root",
                                          myFilesDisplayName: String = "My Files") -> String {
@@ -2094,9 +2024,8 @@ final class FilesViewModelTests: XCTestCase {
         """
     }
 
-    /// MyFilesViewModel with the session's selected archive pinned (archiveNbr "1001",
-    /// matching ArchiveVOData.mock()) so `currentArchive` resolves. Restores the previous
-    /// session when `body` returns; the injected fetch seams complete synchronously.
+    /// MyFilesViewModel with the session's archive pinned so `currentArchive` resolves. Restores the
+    /// previous session on return; the injected fetch seams complete synchronously.
     private func withMyFilesVM(_ body: (MyFilesViewModel) -> Void) {
         let previous = AuthenticationManager.shared.session
         let session = PermSession(token: "test_token")
@@ -2377,7 +2306,7 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    // MARK: - VSP-1787 follow-up: Public Files root discovery (public-root section)
+    // MARK: - Public Files root discovery (public-root section)
     // PublicFilesViewModel reuses the same V2 discovery, overriding only the section type
     // (public-root) and the V1 failsafe (getPublicRoot).
 

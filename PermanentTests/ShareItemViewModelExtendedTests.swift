@@ -550,12 +550,8 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.updateShareLinkV2(shareLinkId: "link-123")
 
-        // The merge lands in an async completion (mock 100ms delay → Task → MainActor).
-        // A fixed sleep raced on the loaded CI runner — a sibling test ran for ~2.9s —
-        // so the assertions below fired before the update applied and read the pre-update
-        // values. Poll for the merged result with a generous ceiling: this returns the
-        // instant the update lands (≈immediately locally) and only waits long under
-        // contention; if it never lands it fails as a real regression, not a flake.
+        // The merge lands in an async completion, so a fixed sleep races under load and asserts against
+        // pre-update values. Polling returns as soon as it lands and only waits long under contention.
         await waitUntil(timeout: 10, vm.shareLinkV2Data?.permissionsLevel == "editor")
 
         XCTAssertEqual(vm.shareLinkV2Data?.itemId, "folder-1", "Should preserve itemId from previous data")
@@ -1965,9 +1961,8 @@ extension ShareItemViewModelExtendedTests {
         }
     }
 
-    /// Polls `condition` every 10 ms until it returns true or `timeout` elapses.
-    /// Replaces fragile fixed-duration `Task.sleep` waits whose 100 ms window
-    /// was enough locally but flaked on slower CI runners.
+    /// Polls `condition` until it holds or `timeout` elapses. A fixed `Task.sleep` is enough locally
+    /// but flakes on a slower runner.
     private func waitUntil(
         timeout: TimeInterval = 2.0,
         _ condition: @autoclosure () -> Bool

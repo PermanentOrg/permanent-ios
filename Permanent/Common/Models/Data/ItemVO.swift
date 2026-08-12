@@ -122,10 +122,8 @@ extension ItemVO {
         resolvedThumbnail256 ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
     }
 
-    /// See `RecordVOData.resolvedThumbnail256` — `thumbnail256` is the Archivematica access-copy
-    /// thumbnail, blank for HEIC originals. `getLeanItems` (the V1 folder listing, which is what
-    /// production runs) returns `ItemVO`, so this is the copy that fixes the placeholder icons in
-    /// a folder listing — and, via `FileModel.thumbnailURL256`, the preview's blur placeholder too.
+    /// `thumbnail256` is the access-copy thumbnail, blank for HEIC originals. The V1 folder listing
+    /// returns `ItemVO`, so this is the copy that governs listing icons and the preview's blur.
     var resolvedThumbnail256: String? {
         guard !isHEICOriginal else { return nil }
         return nonEmpty(thumbnail256)

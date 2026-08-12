@@ -34,16 +34,12 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
             return
         }
 
-        // Only images upgrade to full resolution. For documents/audio/video the download
-        // URL is the raw file (a PDF binary, etc.), which SDWebImage can't decode as an
-        // image — attempting it always fails and previously left the spinner spinning.
-        // The 256px thumbnail is the preview for those types. Use the record's content
-        // type (reliable) rather than the listing file.type.
+        // Only images upgrade to full resolution: for other types the download URL is the raw file, which
+        // can't decode as an image and leaves the spinner running. Keyed on the record's content type.
         let fullResURL: URL? = {
             guard let fileVO = viewModel.fileVO() else { return nil }
-            // Upgrade only for images: an image content type, or (as a fallback for
-            // records with a missing content type) an image file type. Documents/audio/
-            // video are excluded so we don't try to decode a raw binary as an image.
+            // An image content type, or the file type as a fallback when the content type is missing.
+            // Everything else is excluded, so no raw binary is decoded as an image.
             let isImage = fileVO.contentType?.hasPrefix("image/") == true || viewModel.file.type == .image
             guard isImage, let urlString = fileVO.downloadURL else { return nil }
             return URL(string: urlString)

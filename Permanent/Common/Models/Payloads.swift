@@ -115,9 +115,8 @@ struct Payloads {
     
     static func updateProfileVisibility(profileItemVOData: [ProfileItemModel], isVisible: Bool) -> RequestParameters {
         let dateFormatter = DateFormatter()
-        // Fixed-format formatter must pin en_US_POSIX, else a non-Gregorian device locale
-        // (e.g. Buddhist/Persian calendar) emits the wrong year or non-Arabic digits and the
-        // backend rejects the timestamp.
+        // A fixed-format formatter must pin `en_US_POSIX`, or a non-Gregorian device locale emits the
+        // wrong year or non-Arabic digits and the backend rejects the timestamp.
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"

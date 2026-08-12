@@ -11,9 +11,8 @@ class FolderInfo: NSObject, NSCoding {
     let folderId: Int
     let folderLinkId: Int
 
-    /// Display name of the folder, used by the upload Live Activity's folder card.
-    /// Optional because most call sites don't need it and older persisted upload
-    /// queues were encoded without it.
+    /// Folder name for the upload Live Activity's card. Optional: most call sites don't
+    /// need it, and older persisted queues were encoded without it.
     let name: String?
     /// How many items the folder held when the upload was queued. The Live Activity
     /// adds each completed file on top of this to show a live count.

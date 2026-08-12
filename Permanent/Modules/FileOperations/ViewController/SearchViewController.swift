@@ -19,9 +19,8 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
 
-    /// Token for the block-based `didSearch` observer. Held so it can be removed in
-    /// `deinit` — a block observer that captures `self` otherwise keeps this controller
-    /// alive for the app's lifetime (NotificationCenter retains the block).
+    /// Token for the `didSearch` observer, held so `deinit` can remove it: NotificationCenter retains
+    /// the block, which would keep this controller alive for the app's lifetime.
     private var didSearchObserver: NSObjectProtocol?
     
     let fileHelper = FileHelper()

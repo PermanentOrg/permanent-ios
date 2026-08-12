@@ -9,12 +9,8 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// The throttle that stops `UploadManager.refreshQueue()` spinning. The bug it exists for:
-/// offline, upload API calls fail in microseconds, transient failures are exempt from the
-/// retry cap, and the failure handler re-queued immediately — a tight loop that re-archived
-/// the whole queue to UserDefaults every turn and warmed the device.
-///
-/// Clock is injected, so none of this is timing-dependent.
+/// The throttle that stops `UploadManager.refreshQueue()` spinning offline, where failures
+/// return in microseconds and bypass the retry cap. Clock injected, so nothing here is timed.
 struct RefreshThrottleTests {
 
     /// `Decision` carries a `TimeInterval`, so exact equality is the wrong tool —
@@ -62,7 +58,7 @@ struct RefreshThrottleTests {
         var t = RefreshThrottle(minInterval: 1.0)
         #expect(t.request(now: 100) == .runNow)
 
-        // This is the spin: the failure handler calling back as fast as the CPU allows.
+        // The spin: the failure handler calling back as fast as the CPU allows.
         var scheduled = 0
         var dropped = 0
         for i in 1...10_000 {
@@ -96,9 +92,8 @@ struct RefreshThrottleTests {
         var now = 100.0
         var pendingFireAt: TimeInterval?
 
-        // 10 seconds of continuous requests at 0.01s intervals. The pending run fires when
-        // the simulated clock actually reaches it — advancing `lastRunAt` into the future
-        // instead (an earlier version of this test) is not what production does.
+        // 10s of requests at 0.01s. The pending run fires when the simulated clock reaches
+        // it, as production does.
         while now < 110 {
             if let fireAt = pendingFireAt, now >= fireAt {
                 t.pendingRunFired(now: now)
@@ -127,7 +122,7 @@ struct RefreshThrottleTests {
         var t = RefreshThrottle(minInterval: 1.0)
         _ = t.request(now: 500)
         // Fail CLOSED: throttling on a nonsensical clock is safe, running is not — this type
-        // exists to stop a spin. The delay is clamped to minInterval, never negative or huge.
+        // exists to stop a spin. The delay is clamped to minInterval, never negative or large.
         expectSchedule(t.request(now: 100), after: 1.0, "must not degrade to no throttling")
     }
 

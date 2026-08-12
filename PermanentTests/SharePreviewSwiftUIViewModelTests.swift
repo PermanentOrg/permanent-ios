@@ -237,9 +237,8 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
             vm.originalArchiveNbr = archive.archiveNbr
         }
         
-        // Note: viewInArchive() requires user to be the share creator
-        // Mock data has creator email "robert.friedman@example.com"
-        // Current user must match for this test to work properly
+        // `viewInArchive()` requires the current user to be the share creator, which the mock data's
+        // creator email has to match.
         vm.viewInArchive()
         
         // This test verifies the navigation callback isn't called without matching creator
@@ -417,7 +416,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         // The view model should complete initial load successfully
         XCTAssertTrue(vm.hasCompletedInitialLoad, "Should complete initial load")
         // Items may be empty, placeholders, or actual depending on V2 API success
-        // The test validates that the VM doesn't crash and handles folder data gracefully
+        // The test validates that the view model doesn't crash and handles folder data gracefully
         XCTAssertTrue(vm.items.count >= 0, "Should handle folder data without crashing")
     }
     
@@ -438,7 +437,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         // The view model should complete initial load successfully
         XCTAssertTrue(vm.hasCompletedInitialLoad, "Should complete initial load")
         // Items may be empty, placeholders, or actual depending on V2 API success
-        // The test validates that the VM doesn't crash and handles record data gracefully
+        // The test validates that the view model doesn't crash and handles record data gracefully
         XCTAssertTrue(vm.items.count >= 0, "Should handle record data without crashing")
     }
     
@@ -741,9 +740,8 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         // Wait for V2 data to load
         try? await Task.sleep(nanoseconds: 300_000_000)
         
-        // Display mode depends on V2 data loading from ShareManagementRepository
-        // Without proper mocking, this will show blurred placeholders
-        // This test verifies the property is accessible
+        // Display mode depends on V2 data from the repository, so unmocked it shows blurred placeholders.
+        // This only checks that the property is reachable.
         _ = vm.displayMode
         // XCTAssertEqual(vm.displayMode, .actualThumbnails, "Unrestricted share should show actual thumbnails")
     }
@@ -1520,9 +1518,8 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         
         try? await Task.sleep(nanoseconds: 300_000_000)
         
-        // Without v2 data, the share defaults to unrestricted (accessRestrictions = "none")
-        // So even archives not in shareVOS will show "Open" for unrestricted shares
-        // This test verifies that findShareVOForCurrentArchive returns nil when archive is not in shareVOS
+        // With no V2 data the share defaults to unrestricted, so even an archive absent from `shareVOS`
+        // shows Open. This checks the lookup returns nil for that archive.
         XCTAssertEqual(vm.buttonState, .open, "Unrestricted share shows Open even for archives not in shareVOS")
         XCTAssertEqual(vm.buttonTitle, "Open")
     }

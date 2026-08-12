@@ -11,21 +11,12 @@ class SharedFilesViewModel: FilesViewModel {
     static let didSelectFilesNotifName = NSNotification.Name("SharedFilesViewModel.didSelectFilesNotifName")
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
 
-    /// Enable Stela V2 folder drill-in for the Shared workspace (same switch the other
-    /// file screens use), with the V1 two-step navigation kept as the automatic failsafe.
-    /// The Shared ROOT still loads via V1 `getShares` — there is no V2 aggregate route yet.
+    /// V2 drill-in for the Shared workspace, with V1 as the automatic failsafe. The Shared root still
+    /// loads via V1 `getShares`, as there is no V2 aggregate route.
     override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
 
-    /// V2 `/folders/{id}/children` carries no per-child accessRole, and a shared folder's
-    /// contents inherit the folder's grant (confirmed 2026-07-22: a shared folder's own
-    /// `shares[]` holds the role, but every child comes back with `shares: []`). So stamp
-    /// each child with the ENTERED folder's role ∩ archive permissions — identical to the
-    /// V1 `onGetLeanItemsSuccess` path this replaces. Fails CLOSED: with no entered folder
-    /// the role falls back to `.viewer` (read-only), never the broader archive role, so a
-    /// missing role can only ever under-grant. (A child shared at a *different* level than
-    /// its folder inherits the folder's role here; realistically such overrides only raise
-    /// access, so inheriting under-grants — safe — and any fetch failure falls back to V1,
-    /// which carries the true per-item roles.)
+    /// The V2 payload carries no per-child accessRole, so each child takes the entered folder's role
+    /// intersected with archive permissions. Fails closed to `.viewer`, so it can only under-grant.
     override func v2ChildContext(enteredFolder: FileModel?) -> (permissions: [Permission], accessRole: AccessRole) {
         let inheritedRole = enteredFolder?.accessRole ?? .viewer
         let inheritedPermissions = Set(ArchiveVOData.permissions(forAccessRole: inheritedRole.apiValue))
@@ -73,19 +64,8 @@ class SharedFilesViewModel: FilesViewModel {
         }
     }
     
-    /// Monotonic token so two overlapping `getShares` calls cannot interleave their results.
-    ///
-    /// The archive-change notification fires more than once per switch (it is posted from
-    /// `AuthenticationManager.updateSelectedArchive`, `ArchivesViewModel.setCurrentArchive` and
-    /// the archives screen), so the handler started two fetches. Both cleared the three arrays
-    /// up front and both appended on response, which made three shared items render as six — and
-    /// when the surviving request was the one whose completion the view controller's supersede
-    /// guard dropped, the arrays stayed cleared and the list rendered EMPTY until a manual
-    /// pull-to-refresh. Verified from a device trace: `withMe=3` then `withMe=6` for 3 real items.
-    ///
-    /// Two changes make a fetch atomic: parse into locals and commit once, and do not clear
-    /// anything up front — blanking the list at request start is what turned a dropped response
-    /// into a visibly empty screen. A stale refresh now leaves the previous content alone.
+    /// Monotonic token so two overlapping `getShares` calls can't interleave: the archive-change
+    /// notification fires several times per switch. Fetches parse into locals and commit once.
     private var sharesRequestGeneration = 0
 
     func getShares(then handler: @escaping ServerResponse) {
@@ -131,9 +111,8 @@ class SharedFilesViewModel: FilesViewModel {
                         }
                     }
 
-                    // Commit once, after the whole response is parsed. This assignment used to sit
-                    // INSIDE the archive loop, so a response carrying no archives never ran it and
-                    // left `viewModels` in whatever state the up-front clear had put it in.
+                    // Commit once, after the whole response is parsed — inside the archive loop, a response with no
+                    // archives never runs it and leaves the previous state behind.
                     self.sharedByMeViewModels = byMe
                     self.sharedWithMeViewModels = withMe
                     self.viewModels = self.shareListType == .sharedByMe ? byMe : withMe

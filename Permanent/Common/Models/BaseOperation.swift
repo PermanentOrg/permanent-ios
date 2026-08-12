@@ -8,10 +8,8 @@
 import Foundation
 
 class BaseOperation: Operation {
-    // keep track of executing and finished states.
-    // Guarded by `stateLock`: `finish()` can run on a background URLSession callback thread
-    // while the OperationQueue reads `isExecuting`/`isFinished` via KVO on another thread —
-    // an unsynchronized read/write is a data race and can drop the finished transition.
+    // Guarded by `stateLock`: `finish()` runs on a URLSession callback thread while the queue reads
+    // these via KVO on another, and an unsynchronized write can drop the finished transition.
     private let stateLock = NSLock()
     private var _executing = false
     private var _finished = false
@@ -25,9 +23,8 @@ class BaseOperation: Operation {
     }
 
     func finish() {
-        // Change isExecuting to `false` and isFinished to `true`.
-        // Task will be considered finished. KVO notifications fire OUTSIDE the lock to avoid
-        // re-entrancy if an observer reads isExecuting/isFinished synchronously.
+        // Marks the task finished. KVO notifications fire outside the lock, to avoid re-entrancy if an
+        // observer reads these synchronously.
         willChangeValue(forKey: "isExecuting")
         willChangeValue(forKey: "isFinished")
         stateLock.lock()

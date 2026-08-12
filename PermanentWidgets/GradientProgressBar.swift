@@ -7,16 +7,8 @@
 
 import SwiftUI
 
-/// The gradient progress bar shared by the expanded island (26269:50882) and the Lock
-/// Screen banner (26269:50829).
-///
-/// Figma gives the track a 12pt radius and the fill a 40pt one; on a 6pt-tall bar
-/// SwiftUI clamps both to a capsule, which is what the design renders as.
-///
-/// `GeometryReader` is deliberate: `containerRelativeFrame()` is iOS 17+ and this
-/// target ships to 16.2, and `ProgressView`'s linear style tints with a `Color`, not a
-/// gradient. The cost is contained — fixed height, one instance per presentation, no
-/// nesting. Revisit if the deployment target reaches 17.
+/// `GeometryReader` is deliberate: `containerRelativeFrame` is iOS 17+ and this target ships
+/// to 16.2, and `ProgressView` tints with a `Color`, not a gradient. Revisit at 17.
 struct GradientProgressBar: View {
     let progress: Double
     let fill: LinearGradient

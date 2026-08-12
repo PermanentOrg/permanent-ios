@@ -20,10 +20,8 @@ class NavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if #available(iOS 26.0, *) {
-            // On iOS 26, CustomNavigationView resets the global UINavigationBar.appearance()
-            // proxy to defaults when it disappears. Since NavigationController relied on that
-            // proxy for its dark blue style, set the appearance at instance level here so it
-            // is always correct regardless of the global proxy state.
+            // `CustomNavigationView` clears the global appearance proxy when it disappears, so set the
+            // appearance per instance here and stay correct whatever the proxy holds.
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = UIColor.darkBlue

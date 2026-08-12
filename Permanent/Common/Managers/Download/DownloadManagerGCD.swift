@@ -177,9 +177,8 @@ class DownloadManagerGCD: Downloader {
             }
         }
         
-        // Cache the download under a per-record subdirectory so two records that share a
-        // display name can't collide (previously one record's bytes could be served/shared
-        // as another's). Readers (preview/share/download-open) route through the same helper.
+        // Cache under a per-record subdirectory, so two records sharing a display name can't collide and
+        // be served as one another. Readers route through the same helper.
         let scopedFileName = FileHelper.recordScopedName(fileName, recordId: record.recordVO?.recordID ?? 0)
         let apiOperation = APIOperation(FilesEndpoint.download(url: url, filename: scopedFileName, progressHandler: progressHandler))
         self.operation = apiOperation

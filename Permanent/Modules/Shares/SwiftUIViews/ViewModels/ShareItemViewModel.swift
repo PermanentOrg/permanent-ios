@@ -119,11 +119,8 @@ class ShareItemViewModel: ObservableObject {
     // MARK: - Link Settings State
 
     @Published var selectedExpiration: ShareExpirationOption = .none
-    /// The link's ACTUAL expiry parsed from the API (`expiresDT`), independent of the preset
-    /// picker category. `expirationDisplayText` shows this for a loaded/saved link so the date
-    /// reflects the real server expiry — not a now()-relative recomputation from the preset
-    /// (which drifts, and reads "never" when the real expiry falls outside the preset ranges).
-    /// nil = no expiry (or unparseable).
+    /// The link's real expiry from the API, independent of the preset picker: recomputing from the
+    /// preset drifts and reads "never" outside its ranges. Nil means no expiry, or unparseable.
     @Published var actualExpiryDate: Date?
     @Published var selectedAccessLevel: ShareViewAccessLevel = .anyoneCanView
     @Published var showGeneralAccess = false
@@ -210,10 +207,8 @@ class ShareItemViewModel: ObservableObject {
     var hasLoadedArchivesOnce = false
     var cachedV2ItemId: String?
     var cachedV2ItemType: String?
-    /// One-shot guard for the V1→V2 folderLinkId recovery bridge. Without it, a V1 error
-    /// bridges to fetchRecordV2 and fetchRecordV2 bridges back to V1, so when both endpoints
-    /// fail persistently the two mutually recurse forever (network hammer + stuck overlay).
-    /// Reset at the start of each fetchSharedArchives() so a fresh open/retry can recover once.
+    /// One-shot guard for the V1→V2 recovery bridge, which bridges back — so with both endpoints
+    /// failing the two recurse forever. Reset per fetch, so a fresh open can still recover once.
     var attemptedV2FolderLinkRecovery = false
 
     // Tracks original values to detect unsaved changes
@@ -299,10 +294,8 @@ class ShareItemViewModel: ObservableObject {
 
     // MARK: - Date & Size Formatters
 
-    /// Formats a record date for display. Delegates to the single shared formatter so the
-    /// Share sheet, actions sheet, and detail view render dates identically ("Sept. 16,
-    /// 2023") and all handle full ISO timestamps (incl. milliseconds + timezone). Invalid
-    /// input yields "" rather than echoing the raw string back into the UI.
+    /// Formats a record date through the one shared formatter, so every sheet renders it identically.
+    /// Invalid input yields "" rather than echoing the raw string into the UI.
     static func formatDate(_ dateString: String) -> String {
         DateUtils.displayDate(from: dateString)
     }

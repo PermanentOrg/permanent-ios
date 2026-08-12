@@ -9,14 +9,8 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// VSP-1801 added `name`, `itemCount` and `isShared` to `FolderInfo` so the upload Live
-/// Activity can draw its destination-folder card. `FolderInfo` is `NSCoding` and is
-/// persisted as part of the upload queue, so an archive written by an older build has to
-/// keep decoding — and critically, the three new fields have to come back as `nil`, not
-/// as `0`/`false`. A `false` there would label a Shared destination "Private", which is a
-/// wrong claim about who can see the upload.
-///
-/// Not `@MainActor` and not serialized: these only touch local archives.
+/// `FolderInfo` is persisted with the upload queue, so an older archive must still decode —
+/// and as `nil`, not `0`/`false`, which would label a Shared destination "Private".
 struct FolderInfoCodingTests {
 
     /// Encodes with `NSKeyedArchiver` and decodes through `init?(coder:)`, which is the

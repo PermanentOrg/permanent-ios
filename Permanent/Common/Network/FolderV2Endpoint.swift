@@ -11,10 +11,8 @@ enum FolderV2Endpoint {
     case getFolderById(folderId: String, shareToken: String)
     case getFolderChildren(folderId: String, shareToken: String, pageSize: Int)
 
-    /// Interim page size for `getFolderChildren`: request the whole folder in a single
-    /// page (cursor pagination is deferred). Large-but-bounded so the server can't reject
-    /// an absurd query value. If the server ever clamps below a folder's real size, the
-    /// listing/dedupe would silently truncate — revisit with real pagination then.
+    /// Requests the whole folder in one page while cursor pagination is deferred. Large but bounded,
+    /// so the query isn't rejected; a server-side clamp would silently truncate the listing.
     static let maxChildrenPageSize = 99_999_999
 }
 
@@ -59,9 +57,7 @@ extension FolderV2Endpoint: RequestProtocol {
         return ["Content-Type": "application/json", "Request-Version": "2"]
     }
 
-    /// Both cases are reads with V1 failsafes (navigation and the upload dedupe fall back
-    /// to V1 on any error), so a 401 here must not force-logout: it can be a foreign-archive
-    /// rejection, while a genuine session expiry still surfaces through the non-exempt V1
-    /// fallback call that immediately follows.
+    /// Both cases are reads with V1 failsafes, so a 401 here must not force-logout — it can be a
+    /// foreign-archive rejection, and real expiry surfaces through the V1 call that follows.
     var ignoreErrors: Bool { true }
 }

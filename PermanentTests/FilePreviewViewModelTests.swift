@@ -48,9 +48,8 @@ final class FilePreviewViewModelTests: XCTestCase {
     """
 
     // MARK: - pdfAccessCopyURL
-    // A spreadsheet's original has no inline renderer: WebKit converts the navigation into a
-    // download, the provisional load fails (WebKitErrorDomain 102) and the preview showed
-    // nothing. The Archivematica PDF rendition is what actually gets displayed.
+    // A spreadsheet's original has no inline renderer: WebKit turns the navigation into a download
+    // and the preview shows nothing. The PDF rendition is what actually gets displayed.
 
     func testPDFAccessCopyURL_ReturnsArchivematicaPDF_NotTheOriginal() {
         let vm = makeVM()
@@ -154,10 +153,8 @@ final class FilePreviewViewModelTests: XCTestCase {
     }
 
     func testFileVO_VideoPlaysTheOriginal_ConvertedIsOnlyTheFallback() {
-        // This briefly preferred file.format.converted for A/V, which regressed playback: the
-        // normalised derivative is not guaranteed to carry a playable audio track or to be muxed
-        // for progressive streaming, so video played silently and stalled. The original plays, and
-        // the converted rendition is reachable only as the retry after AVPlayer reports a failure.
+        // The normalised derivative may carry no playable audio track and may not be muxed for
+        // streaming, so the original plays and the conversion is only the post-failure retry.
         let vm = makeVideoVM()
         vm.recordVO = makeRecordWithFiles("\(videoOriginalJSON), \(videoConvertedJSON)")
 
@@ -302,7 +299,7 @@ final class FilePreviewViewModelTests: XCTestCase {
     }
 }
 
-// MARK: - Image preview state machine (VSP-1768)
+// MARK: - Image preview state machine
 
 private final class MockReachability: ReachabilityProviding {
     var isConnected: Bool
@@ -449,11 +446,10 @@ extension FilePreviewViewModelTests {
         XCTAssertEqual(observedStates, [.loadingThumbnail, .loadingFullRes(hasThumbnail: true), .loaded])
     }
 
-    // MARK: - Thumbnail failure while full-res is pending (VSP-1777 follow-up)
+    // MARK: - Thumbnail failure while full-res is pending
 
-    /// A transient THUMBNAIL failure must not paint the failure card while the
-    /// record fetch → full-res pipeline can still deliver: it downgrades to the
-    /// no-thumbnail loading state (S5) instead.
+    /// A transient thumbnail failure must not paint the failure card while the full-res pipeline can
+    /// still deliver — it downgrades to the no-thumbnail loading state instead.
     func testThumbnailLoadDidFail_WhileLoadingThumbnail_KeepsLoadingState() {
         let (vm, _) = makeImageVM()
         vm.startImageLoad(hasThumbnail: true)
@@ -570,10 +566,9 @@ extension FilePreviewViewModelTests {
         XCTAssertNil(handlerRecord)
     }
 
-    // MARK: - VSP-1787 sibling: V2 public-root resolution for the publish destination
-    // resolvePublicRootFolderIdV2 = archives → match archiveNbr → rootFolderId → the
-    // public-root child of that root. Any failure returns nil so publish falls back to V1
-    // getPublicRoot.
+    // MARK: - V2 public-root resolution for the publish destination
+    // Archives, matched by `archiveNbr`, to `rootFolderId`, to its public-root child. Any failure
+    // returns nil so publish falls back to the V1 `getPublicRoot`.
 
     private func decodeArchivesV2(_ json: String) -> [ArchiveV2Data] {
         guard let data = json.data(using: .utf8) else { return [] }
@@ -716,18 +711,14 @@ extension FilePreviewViewModelTests {
     }
 }
 
-// MARK: - ImagePreviewViewController fitted-geometry invariant (VSP-1777: "small then zoom" glitch)
-//
-// The full-res "small then grows" glitch came from the image being made visible (blur fading)
-// BEFORE newImageLoaded() ran sizeToFit()/setZoomScale(). These tests pin the invariant the fix
-// relies on: newImageLoaded() always fits the CURRENT image to the CURRENT scrollView frame, so
-// applying it atomically at swap time (before the blur lifts) yields the correct size immediately.
+// MARK: - ImagePreviewViewController fitted-geometry invariant
+// Pins what the atomic swap relies on: `newImageLoaded()` always fits the current image to the
+// current scrollView frame, so applying it before the blur lifts gives the right size at once.
 
 final class ImagePreviewViewControllerGeometryTests: XCTestCase {
 
-    /// A loaded controller with a known, fixed scrollView frame (no window / layout passes,
-    /// so `setZoomScale()` reads exactly the frame we set — matching how newImageLoaded()
-    /// computes geometry at full-res-arrival time).
+    /// A loaded controller with a fixed scrollView frame and no layout passes, so `setZoomScale()`
+    /// reads exactly the frame set here.
     private func makeVC(width: CGFloat = 400, height: CGFloat = 800) -> ImagePreviewViewController {
         let vc = ImagePreviewViewController()
         vc.view.frame = CGRect(x: 0, y: 0, width: width, height: height)
@@ -736,9 +727,8 @@ final class ImagePreviewViewControllerGeometryTests: XCTestCase {
         return vc
     }
 
-    /// A solid image whose point `size` equals the given dimensions (what `sizeToFit()` reads).
-    /// Forced to scale = 1 so a large "full-res" size does not allocate a screen-scale (~@3x)
-    /// bitmap — only the point size matters to the geometry under test, never the pixels.
+    /// A solid image whose point size equals the given dimensions, at scale 1 so a large size doesn't
+    /// allocate a screen-scale bitmap. Only points matter to the geometry under test.
     private func image(_ width: CGFloat, _ height: CGFloat) -> UIImage {
         let format = UIGraphicsImageRendererFormat.preferred()
         format.scale = 1
@@ -767,13 +757,8 @@ final class ImagePreviewViewControllerGeometryTests: XCTestCase {
         XCTAssertEqual(vc.scrollView.maximumZoomScale, 1.0, accuracy: 0.0001)
     }
 
-    /// Regression test for the sub-screen shrink surfaced in review. An original SMALLER than the
-    /// screen needs a fit scale > 1 (here 256px on a 400pt screen ≈ 1.57). The scroll view's
-    /// default maximumZoomScale of 1.0 used to clamp it, so the image rendered at its native 256pt
-    /// — narrower than the full-width blur placeholder — and appeared to shrink when the blur
-    /// lifted. Raising maximumZoomScale to the fit scale makes it fill the width (400pt), matching
-    /// the blur, so there is no shrink. (This also removes the thumbnail/full-res size gap that
-    /// the crossfade used to flash, on top of the atomic-swap ordering fix.)
+    /// An original smaller than the screen needs a fit scale above 1, which the default
+    /// `maximumZoomScale` of 1.0 clamps — so the image renders native and shrinks as the blur lifts.
     func testNewImageLoaded_SubScreenImage_FillsToScreenWidth_NotClampedToNative() {
         let vc = makeVC(width: 400, height: 800)
 
@@ -787,11 +772,8 @@ final class ImagePreviewViewControllerGeometryTests: XCTestCase {
         XCTAssertEqual(vc.scrollView.zoomScale, vc.scrollView.minimumZoomScale, accuracy: 0.0001)
     }
 
-    /// newImageLoaded() must fit the CURRENT image to the CURRENT scrollView frame. Geometry can
-    /// first be computed against a smaller frame (the preview view not yet laid out to device
-    /// size during pager preload); when the full-res lands after the view reaches its real size,
-    /// newImageLoaded() recomputes to the correct width — which is why the fix applies it at
-    /// full-res-arrival, before the blur lifts.
+    /// Geometry can first be computed against a smaller frame during pager preload, so
+    /// `newImageLoaded()` must refit the current image to the current frame when the full-res lands.
     func testNewImageLoaded_RecomputesForCurrentFrame_AfterFrameGrows() {
         let vc = makeVC(width: 200, height: 400) // stale, smaller frame
 

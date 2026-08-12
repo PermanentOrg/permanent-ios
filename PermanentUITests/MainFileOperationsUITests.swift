@@ -21,11 +21,8 @@ class MainFileOperationsUITests: BaseUITestCase {
         ProcessInfo.processInfo.environment["STELA_NAV"] == "0" ? "v1" : "v2"
     }
 
-    /// Stela V2 ⇄ V1 parity: folder drill-in must produce the same outcome on both
-    /// paths. Runs under both flag states (TEST_RUNNER_STELA_NAV = 1 / 0). The
-    /// `files-nav-source-*` accessibility id (DEBUG) proves which path actually ran,
-    /// so a V2 run can't silently pass on the V1 failsafe. Root listing stays V1, so
-    /// a freshly-created empty folder is the deterministic drill-in target.
+    /// Folder drill-in must give the same outcome on V2 and V1, and runs under both flag states. The
+    /// nav-source accessibility id proves which path ran, so V2 can't pass on the V1 failsafe.
     func testFolderNavigationParity() throws {
         let accountEmail = uiTestCredentials.username
         let accountPassword = uiTestCredentials.password
@@ -117,9 +114,8 @@ class MainFileOperationsUITests: BaseUITestCase {
         privateFilesPage.toggleListGridView()
         privateFilesPage.toggleListGridView()
 
-        // Create a folder we can safely rename. Using an "aaa_" prefix so the
-        // created folder sorts to the top of the Name (A-Z) list and the
-        // file-menu helpers consistently target it.
+        // A folder we can safely rename, prefixed so it sorts to the top of the A-Z list and the
+        // file-menu helpers target it consistently.
         let originalName = "aaa_rename_\(UUID().uuidString.prefix(6))"
         let renamedName = "aaa_renamed_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: originalName)

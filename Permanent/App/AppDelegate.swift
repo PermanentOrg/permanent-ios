@@ -30,15 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         #if DEBUG || STAGING_ENVIRONMENT
-        // UI tests flip the Stela V2 navigation flag at launch (see BaseUITestCase /
-        // TEST_RUNNER_STELA_NAV) so the SAME suite can prove parity against both the V2
-        // path and the V1 failsafe without a rebuild. Parsed here, before anything reads
-        // the flag. No effect in Release, where the flag is an immutable `let`.
-        //
-        // STAGING_ENVIRONMENT is included because DEV-Release — the Firebase build testers
-        // install — is not a DEBUG build. Now that the flag defaults OFF in every build so
-        // testers see the shipping V1 paths, this launch argument is the only way to exercise
-        // the deferred V2 epic on a staging build without editing code and cutting a new one.
+        // UI tests flip the V2 navigation flag at launch so one suite proves parity against both paths
+        // without a rebuild. Staging is included because the tester build is not a DEBUG build.
         if CommandLine.arguments.contains("--forceStelaNavigation") {
             FeatureFlags.useStelaNavigation = true
         } else if CommandLine.arguments.contains("--forceLegacyNavigation") {
@@ -70,11 +63,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Must be called during didFinishLaunching, or iOS won't deliver wakes.
         BackgroundUploadDrainTask.register()
 
-        // LEGACY DRAIN PATH — remove after one release cycle.
-        // The upload pipeline no longer uses background URLSession; new uploads
-        // run through the foreground session. This call exists to drain any
-        // in-flight background tasks left over from older app versions so
-        // those files don't get orphaned.
+        // LEGACY DRAIN PATH — removable once no installed version still uses background URLSession.
+        // Drains tasks an older build left in flight, so those files aren't orphaned.
         BackgroundUploadSessionManager.shared.reconnectToExistingSession()
         
         // Reattach to in-flight Live Activity or end orphans from a previous session
@@ -87,11 +77,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    // LEGACY DRAIN PATH — remove after one release cycle.
-    // The upload pipeline no longer creates background URLSession tasks. iOS
-    // only calls this if an older app version left tasks in flight; this
-    // handler exists to let them complete cleanly before the system suspends
-    // us again.
+    // LEGACY DRAIN PATH — removable once no installed version still uses background URLSession.
+    // iOS only calls this for tasks an older build left in flight; let them finish cleanly.
     func application(_ application: UIApplication,
                      handleEventsForBackgroundURLSession identifier: String,
                      completionHandler: @escaping () -> Void) {
@@ -147,10 +134,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                             let toArchiveId: Int = shareVO.archiveID else {
                             return
                         }
-                        // Store the API value (access.role.*), NOT the localized groupName
-                        // ("Owner"/"Editor"): the consumer (ArchiveVOData.permissions(forAccessRole:)
-                        // → AccessRole.roleForValue) only parses api values, so a groupName fell
-                        // through to .viewer and the share opened read-only.
+                        // Store the API value, not the localized `groupName`: the consumer only parses API values, so a
+                        // group name falls through to `.viewer` and the share opens read-only.
                         let accessRole: String = AccessRole.roleForValue(shareVO.accessRole ?? "").apiValue
                         let toArchiveNbr: String = targetArchiveNbrOpt ?? ""
                         let toArchiveName: String = ""
@@ -310,9 +295,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         let storageView = StorageView(viewModel: storageViewModel)
                         
                         let host = UIHostingController(rootView: storageView)
-                        // Present from the topmost VC, not the root: if a modal (a sheet,
-                        // file preview, etc.) is already up, presenting on the root silently
-                        // fails ("presentation is in progress") and the promo never appears.
+                        // Present from the topmost view controller, not the root: with a modal already up, presenting
+                        // on the root silently fails and the promo never appears.
                         (self.getTopMostViewController() ?? self.window?.rootViewController)?.present(host, animated: true, completion: nil)
 
                         return true
@@ -365,9 +349,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func handleLiveActivityLaunch() -> Bool {
         if #available(iOS 16.2, *) {
             let activities = Activity<UploadActivityAttributes>.activities
-            // Skip ended/dismissed activities that iOS hasn't cleaned up yet — navigating
-            // from a stale (completed-upload) activity would drop the user into the wrong
-            // folder. Only a still-live activity reflects the current upload's destination.
+            // Skip ended activities iOS hasn't cleaned up yet: only a live one reflects the current
+            // upload's destination, so a stale one would open the wrong folder.
             guard let activity = activities.first(where: { $0.activityState != .ended }) else { return false }
 
             let archiveNo = activity.attributes.archiveNo
@@ -383,11 +366,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return false
     }
     
-    /// Saves the folder navigation data and schedules a delayed navigation.
-    /// The delay lets the foreground transition and any root content loading complete first.
-    /// MainViewController's onFilesFetchCompletion also calls navigationToShareFolderLink(),
-    /// so if root content reloads, the natural chain handles it. The notification is a fallback
-    /// for cases where no reload happens (e.g., uploads in progress skip foreground refresh).
+    /// Persists the navigation data and schedules it, so the foreground transition and any root load
+    /// finish first. The notification is the fallback for when no reload happens at all.
     private func scheduleUploadFolderNavigation(archiveNo: String, folderLinkId: Int) {
         let navData = NavigationDataForShareFolderLink(
             archiveNo: archiveNo,
@@ -396,15 +376,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         try? PreferencesManager.shared.setCodableObject(navData, forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
 
-        // Tell MainViewController to show its spinner immediately so the user
-        // gets feedback during the 1.0s settle delay below + the navigateMin
-        // fetch that follows. Without this, an LA tap looks like a 2–3s freeze
-        // before the destination folder loads in.
+        // Show the spinner immediately, so the settle delay and the fetch that follows don't read as a
+        // multi-second freeze after a Live Activity tap.
         NotificationCenter.default.post(name: AppDelegate.willNavigateToFolderNotifName, object: nil)
 
-        // Give the app time to finish foregrounding and any root content loading,
-        // then trigger navigation. If onFilesFetchCompletion already consumed the
-        // saved data, navigationToShareFolderLink() will be a no-op.
+        // Let foregrounding and any root load finish before navigating. If the fetch completion already
+        // consumed the saved data, this is a no-op.
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             os_log("Posting navigateToFolderNotifName notification", log: .default, type: .info)
             NotificationCenter.default.post(name: AppDelegate.navigateToFolderNotifName, object: nil)
@@ -430,12 +407,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // Staging: verbose logging incl. capped request/response bodies.
             NetworkLogger.enableLogging()
         #elseif DEBUG
-            // TEMP(VSP-1770 · Stela migration): verbose logging for DEBUG builds that point
-            // at PRODUCTION, so a prod-scheme Xcode run shows whether a call went V1 or V2
-            // while the migration is being verified. Deliberately DEBUG-only: Release
-            // (TestFlight / App Store) still takes the errors-only branch below, so real
-            // users never pay the body-stringify cost and no user data reaches their logs.
-            // REMOVE this branch once the epic ships — grep TEMP(VSP-1770).
+            // TEMPORARY: verbose logging for DEBUG builds pointing at production, to show whether a call
+            // went V1 or V2. DEBUG-only, so no user data reaches a shipped build's logs. Remove once V2 ships.
             NetworkLogger.enableLogging()
         #else
             // Production: errors only, never bodies — the previous enableLogging() here

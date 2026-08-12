@@ -7,9 +7,8 @@
 
 import Foundation
 
-/// Response of Stela `GET /api/v2/archives` (archive search). Each item carries the
-/// archive's `rootFolderId`, which bootstraps V2 folder navigation (replacing the V1
-/// `/folder/getRoot` call). Pagination reuses the shared `PaginationV2` shape.
+/// The archive search response. Each item carries a `rootFolderId`, which bootstraps V2 folder
+/// navigation in place of the V1 `getRoot` call.
 struct ArchivesV2Response: Model {
     let items: [ArchiveV2Data]?
     let pagination: PaginationV2?
@@ -18,13 +17,11 @@ struct ArchivesV2Response: Model {
 struct ArchiveV2Data: Model {
     /// Archive id (opaque, numeric-as-string on the wire).
     let archiveId: String?
-    /// Archive number, e.g. "01it-0000" — matched against the session's selected archive
-    /// (string-to-string; the session holds `archiveID` as an Int, so `archiveNbr` is the
-    /// stable key that avoids Int/String coercion).
+    /// Archive number, matched string-to-string against the session's selected archive. The stable
+    /// key here, since the session holds `archiveID` as an Int.
     let archiveNbr: String?
-    /// The archive's top-level root folder id (`type.folder.root.root`). Its children are
-    /// the section roots (My Files / Public / Apps); the private "My Files" folder is a
-    /// CHILD of it, so one further `/folders/{rootFolderId}/children` call resolves it.
+    /// The archive's top-level root folder id. Its children are the section roots, so "My Files" takes
+    /// one further `/children` call to resolve.
     let rootFolderId: String?
     let name: String?
     let type: String?

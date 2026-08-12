@@ -60,12 +60,8 @@ class SettingsMenuPage {
         XCTAssertTrue(accountOption.waitForExistence(timeout: 10))
     }
 
-    /// Dismisses whichever destination is on top by tapping its top nav-bar
-    /// back/close button. Every settings destination wires its back/close button
-    /// with the shared `settingsContainerBackButton` identifier. When a
-    /// sub-screen is presented on top of a parent (e.g. AddStorage on Storage),
-    /// both back buttons exist in the hierarchy at once — we pick the
-    /// hittable one (the topmost / visible).
+    /// Dismisses whichever destination is on top, via the shared back-button identifier every
+        /// settings screen uses. Both exist at once under a sub-screen, so it picks the hittable one.
     func dismissCurrentScreen() {
         let backButtons = app.buttons.matching(identifier: "settingsContainerBackButton")
         XCTAssertTrue(backButtons.element.waitForExistence(timeout: 15),

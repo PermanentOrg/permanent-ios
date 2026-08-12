@@ -9,13 +9,8 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// Guards the one silent-failure path in the completion hold.
-///
-/// A finished batch is now held **active** for a few seconds so the Dynamic Island can show
-/// its checkmark. If iOS suspends the app during that hold, the `end()` never runs and on the
-/// next launch the activity looks exactly like a zombie — running, with no snapshot. The old
-/// orphan cleanup ended every such activity as `.failed` with its counts zeroed, which would
-/// tell the user a completed upload had failed.
+/// The silent-failure path in the completion hold: suspended mid-hold, a finished batch looks
+/// exactly like a zombie on the next launch, and ending it `.failed` would lie to the user.
 struct UploadActivityTerminalStateTests {
 
     private func state(
@@ -49,7 +44,7 @@ struct UploadActivityTerminalStateTests {
 
     // MARK: - The bug this exists to prevent
 
-    @Test("A completed batch orphaned mid-hold keeps its state — it must not become 'failed'")
+    @Test("A completed batch orphaned mid-hold keeps its state, and must not become failed")
     func completedOrphanIsPreservedExactly() {
         let finished = state(.completed, completed: 5, failed: 0)
         let result = UploadActivityTerminalState.orphanFinalState(existing: finished)

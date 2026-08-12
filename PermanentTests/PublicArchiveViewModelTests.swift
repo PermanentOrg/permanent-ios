@@ -8,11 +8,8 @@
 import XCTest
 @testable import Permanent
 
-/// Public gallery view model with the V1 navigation leg stubbed out. `performV1NavigateMin`
-/// issues a real network request, which a unit test must not do: on a logged-in simulator it
-/// carries a Bearer token, and a 401 posts `sessionExpiredNotificationName` → an async
-/// `logout()` that clears the session other tests depend on. Recording the call is also a
-/// stronger assertion than reading the process-wide `lastNavigationSource` string.
+/// Public gallery view model with the V1 leg stubbed: a real request carries a Bearer token whose
+/// 401 logs out asynchronously. Recording the call also beats reading a process-wide string.
 final class StubV1GalleryViewModel: PublicArchiveViewModel {
     var v1NavigateMinCallCount = 0
     var v1NavigateMinBackNavigation: [Bool] = []
@@ -31,10 +28,8 @@ final class PublicArchiveViewModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
         #if DEBUG
-        // `lastNavigationSource` is a process-wide static shared by every screen, so a
-        // leftover "v1" from an earlier test would make the assertions below pass without
-        // this run's navigation having reached the V1 path at all. Reset to a value that
-        // neither path ever writes.
+        // `lastNavigationSource` is a process-wide static, so a leftover value would make the assertions
+        // below pass vacuously. Reset to something neither path ever writes.
         FilesViewModel.lastNavigationSource = "none"
         #endif
     }
@@ -170,15 +165,12 @@ final class PublicArchiveViewModelTests: XCTestCase {
         XCTAssertTrue(url!.absoluteString.contains("record"))
     }
 
-    // MARK: - VSP-1811: V1 getPublicRoot → V2 /children handoff
-    // Stela's /archives is scoped to callerMembershipRole, so a FOREIGN archive is never
-    // listed and the V2 section-root resolver can't bootstrap this screen. V1 getPublicRoot
-    // stays as the bootstrap; when the flag is on, onGetRootSuccess seeds the public root as
-    // the V2 navigation target so the listing itself is served by /folders/{id}/children.
+    // MARK: - V1 getPublicRoot → V2 /children handoff
+    // `/archives` is scoped to the caller's membership, so a foreign archive is never listed and V2
+    // cannot bootstrap here. V1 stays the bootstrap and seeds the public root as the V2 target.
 
-    /// Mirrors the live staging `POST /folder/getPublicRoot` payload for a foreign public
-    /// archive (verified 2026-07-28 against 00js-0000). `folderId` is parameterized so the
-    /// `folderId > 0` gate in navigateMin can be exercised.
+    /// The real `getPublicRoot` payload for a foreign public archive. `folderId` is parameterized so
+    /// the `folderId > 0` gate can be exercised.
     private func decodeGetRoot(_ json: String) throws -> GetRootResponse {
         let data = try XCTUnwrap(json.data(using: .utf8))
         return try JSONDecoder().decode(GetRootResponse.self, from: data)
@@ -197,9 +189,8 @@ final class PublicArchiveViewModelTests: XCTestCase {
         """)
     }
 
-    /// Captures whether the V2 children seam fired, and for which folder id. The V1 leg is
-    /// stubbed too (see `StubV1GalleryViewModel`) so a test that deliberately drives the
-    /// failsafe observes it directly instead of issuing a real POST /folder/navigateMin.
+    /// Captures whether the V2 children seam fired, and for which folder id. The V1 leg is stubbed
+    /// too, so a test driving the failsafe observes it without a real request.
     private func makeGalleryVM(outcome: FilesViewModel.ChildrenFetchOutcome = .committed)
     -> (StubV1GalleryViewModel, () -> String?) {
         let vm = StubV1GalleryViewModel()
@@ -249,9 +240,8 @@ final class PublicArchiveViewModelTests: XCTestCase {
     }
 
     func testOnGetRootSuccess_PublicRootWithoutFolderId_FallsThroughToV1() throws {
-        // The V1 payload is all-optional. A root with no folderId maps to folderId == -1,
-        // which navigateMin's `target.folderId > 0` gate must reject rather than issuing
-        // GET /folders/-1/children. Seeding can only ever ADD a V2 attempt, never break V1.
+        // The V1 payload is all-optional, so a root with no folderId maps to -1 and the gate must reject
+        // it rather than request `/folders/-1/children`. Seeding can only add an attempt, never break V1.
         let prevFlag = FeatureFlags.useStelaNavigation
         FeatureFlags.useStelaNavigation = true
         defer { FeatureFlags.useStelaNavigation = prevFlag }
@@ -282,11 +272,8 @@ final class PublicArchiveViewModelTests: XCTestCase {
     }
 
     func testGetRoot_NoArchive_ErrorsInsteadOfCrashing() {
-        // `currentArchive` comes from the host VC's implicitly-unwrapped `archiveData`, and
-        // `archiveNbr` is optional on the VO. Both used to be force-unwrapped, so a nil
-        // archive crashed the public browser instead of surfacing the error the rest of
-        // getRoot's failure branches already report. The guard returns BEFORE the request,
-        // so this asserts synchronously without touching the network.
+        // `currentArchive` and `archiveNbr` are both optional, and force-unwrapping either crashes the
+        // public browser instead of reporting the error. The guard returns before the request.
         let vm = PublicArchiveViewModel()
         XCTAssertNil(vm.currentArchive, "precondition: no archive assigned")
 
@@ -299,7 +286,7 @@ final class PublicArchiveViewModelTests: XCTestCase {
         XCTAssertTrue(vm.navigationStack.isEmpty, "nothing may be navigated without an archive")
     }
 
-    // MARK: - VSP-1811: V2 drill-in
+    // MARK: - V2 drill-in
 
     /// Folder built via the V2 decode path — the convenience `init(name:recordId:…)` can't
     /// set `folderId`, which is exactly what navigateMin's gate reads.
@@ -349,10 +336,9 @@ final class PublicArchiveViewModelTests: XCTestCase {
     }
 }
 
-// MARK: - PublicArchiveFileViewController (VSP-1811)
-// Lives in this file rather than its own because adding a test FILE needs a project-file
-// change in Xcode; move it out when convenient. Mirrors the SharesViewControllerTests /
-// MainViewControllerTests pattern: instantiate the VC directly and wire the outlets by hand.
+// MARK: - PublicArchiveFileViewController
+// Here rather than its own file because a new test file needs a project-file change; move it out
+// when convenient. Instantiates the controller directly and wires the outlets by hand.
 
 @MainActor
 final class PublicArchiveFileViewControllerTests: XCTestCase {
@@ -504,7 +490,6 @@ final class PublicArchiveFileViewControllerTests: XCTestCase {
         XCTAssertEqual(vm.v1NavigateMinCallCount, 1, "the tap must still navigate, via the V1 leg")
     }
 
-    // NOTE: the record branch of didSelectItemAt is deliberately NOT tested here — it calls
-    // presentFileDetails, which stands up the whole preview stack and fires a real record
-    // fetch. Covered at the view-model level instead (FilePreviewViewModelTests).
+    // The record branch of `didSelectItemAt` is deliberately untested here: it stands up the whole
+    // preview stack and fires a real fetch. Covered at the view-model level instead.
 }

@@ -9,10 +9,8 @@ import Foundation
 
 class SearchFilesViewModel: FilesViewModel {
 
-    /// Search results come from V1 SearchEndpoint, but drilling INTO a result folder can
-    /// use Stela V2 `/folders/{id}/children` (behind the flag, with the V1 nav failsafe).
-    /// The controller seeds `v2NavigationTarget` on a folder tap; back/refresh use the
-    /// navigationStack, which stays consistent with `currentFolder`.
+    /// Search results come from V1, but drilling into a result folder can use V2 with the V1 failsafe.
+    /// The controller seeds the target on a folder tap; back and refresh use the navigation stack.
     override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
 
     override var currentFolderIsRoot: Bool { return navigationStack.count == 0 }

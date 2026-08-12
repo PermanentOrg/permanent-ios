@@ -96,9 +96,8 @@ class ExtensionUploadManagerTests: XCTestCase {
         XCTAssertEqual(try sut.savedFiles(), [a, c])
     }
 
-    /// The upgrade path: a queue left by an older build in the legacy App-Group
-    /// UserDefaults key must be read as a fallback and then carried into the
-    /// coordinated file on the first write — never silently dropped.
+    /// The upgrade path: a queue an older build left in the legacy UserDefaults key must be read as a
+    /// fallback and carried into the coordinated file, never dropped.
     func testMigratesLegacyUserDefaultsQueueWithoutLoss() throws {
         let legacy = makeFile("pending-from-old-build")
 
@@ -122,12 +121,8 @@ class ExtensionUploadManagerTests: XCTestCase {
         XCTAssertNil(leftover, "legacy UserDefaults key should be cleared after migration")
     }
 
-    /// The whole point of the coordinated write barrier: concurrent
-    /// read-modify-writes must not lose updates. Hammer `append` from many
-    /// threads at once and assert every file survives — an unsynchronized
-    /// read-modify-write would drop some. (In-process only; the cross-process
-    /// guarantee can't be exercised from a single test host, but the same
-    /// NSFileCoordinator barrier serializes both.)
+    /// The point of the write barrier: concurrent read-modify-writes must not lose updates. In-process
+    /// only, but the same coordinator barrier serializes the cross-process case.
     func testConcurrentAppendsDoNotLoseUpdates() throws {
         let count = 40
 

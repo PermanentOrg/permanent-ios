@@ -2,15 +2,8 @@
 //  UploadActivityStyle.swift
 //  PermanentWidgets
 //
-//  Design tokens for the upload Live Activity, lifted from Figma frame 112916
-//  (file lLHzIJcmkwkvdl3ipcjyKs, node 26268:46367). Every value here traces back
-//  to a node in that frame — the node id is in the comment next to it. Change a
-//  value here rather than at a use site so the three presentations stay in sync.
-//
-//  Nothing in this file can come from the app's `Colors.swift`: that lives in the
-//  app target and the widget extension can't see it. These are also brand values
-//  that exist nowhere else in the app (the swirl gradients, the purple→orange
-//  progress fill), so there is no existing token to reuse.
+//  Colours, gradients, fonts and metrics for the upload Live Activity. Not from the app's
+//  Colors.swift: that is app-target only, and the widget extension cannot see it.
 //
 
 import SwiftUI
@@ -18,51 +11,41 @@ import SwiftUI
 enum UploadActivityStyle {
     // MARK: - Labels
 
-    /// `Labels/Primary` — 26269:50898
+    /// Primary label colour.
     static let primaryLabel = Color.white
-    /// 48% white, used for every de-emphasised label in the design — 26269:50899.
-    ///
-    /// Over Liquid Glass on a light wallpaper this reads faint. That is measured, and both
-    /// obvious fixes were tried and rejected: raising it to 66% is near-invisible as a
-    /// change (more white on near-white does nothing), and `.secondary` tracks the colour
-    /// scheme rather than the wallpaper, so it fails over whichever backdrop the scheme
-    /// doesn't match. Making it legible over an arbitrary wallpaper needs the banner to
-    /// supply its own contrast — i.e. a darker `lockScreenGlassTint` — which trades against
-    /// how glassy the banner looks. That is a design decision, not a code fix, so this stays
-    /// at the design value until it is made.
+    /// De-emphasised labels: file name, item count, header count. Faint over a pale wallpaper,
+    /// but contrast has to come from `lockScreenGlassTint`, not from raising this opacity.
     static let secondaryLabel = Color.white.opacity(0.48)
 
     // MARK: - Status accents
 
-    /// `Accents/Red` — the only Figma variable in the frame that isn't a white tint
+    /// Failure accent.
     static let failedAccent = Color(activityHex: 0xFF383C)
-    /// 26269:50893 — the "Private" badge
+    /// The "Private" workspace badge.
     static let privateBadge = Color(activityHex: 0x6CE9A6)
-    /// 26269:50861 — the "Shared" badge
+    /// The "Shared" workspace badge.
     static let sharedBadge = Color(activityHex: 0xFEC84B)
     /// Lighter stop of the brand orange, used on its own for the paused state
     static let pausedAccent = Color(activityHex: 0xFFA142)
 
     // MARK: - Progress bar
 
-    /// `White/16%` — 26269:50882
+    /// Unfilled portion of the progress bar.
     static let progressTrack = Color.white.opacity(0.16)
     static let barHeight: CGFloat = 6
     static let barTrackRadius: CGFloat = 12
     static let barFillRadius: CGFloat = 40
 
-    /// The upload bar: `linear-gradient(91.97deg, #800080, #FF9933)` — 26269:50883.
-    /// 91.97° is 2° off horizontal; across a 6pt-tall bar that tilt is sub-pixel,
-    /// so leading→trailing reproduces it exactly.
+    /// The upload bar, #800080 to #FF9933. The design angles this 2° off horizontal;
+    /// across a 6pt-tall bar that tilt is sub-pixel, so leading-to-trailing matches it.
     static let progressFill = LinearGradient(
         colors: [Color(activityHex: 0x800080), Color(activityHex: 0xFF9933)],
         startPoint: .leading,
         endPoint: .trailing
     )
 
-    /// The brand orange used by the progress ring and the folder icon —
-    /// `#ED7B00 → #FFA142`, running bottom-trailing to top-leading (ring SVG
-    /// `paint0_linear_0_7`).
+    /// The brand orange used by the progress ring and the folder glyph, #ED7B00 to
+    /// #FFA142, running bottom-trailing to top-leading to match the ring asset.
     static let brandOrange = LinearGradient(
         colors: [Color(activityHex: 0xED7B00), Color(activityHex: 0xFFA142)],
         startPoint: UnitPoint(x: 0.75, y: 0.77),
@@ -75,9 +58,8 @@ enum UploadActivityStyle {
         LinearGradient(colors: [color, color], startPoint: .leading, endPoint: .trailing)
     }
 
-    /// Fill for the progress bar in a given status. Only `uploading` and
-    /// `processing` get the purple→orange brand fill; terminal states read faster
-    /// as a flat accent.
+    /// Bar fill per status: the purple→orange brand fill while active, a flat accent when
+    /// terminal, which reads faster.
     static func progressFill(for status: UploadActivityAttributes.UploadStatus) -> LinearGradient {
         switch status {
         case .uploading, .processing: progressFill
@@ -88,8 +70,7 @@ enum UploadActivityStyle {
     }
 
     /// Tint for the progress ring. Unlike the bar, the ring is brand orange while
-    /// uploading — that is what the ring assets use (`paint0_linear_0_7`), the
-    /// purple→orange fill is the bar's alone.
+    /// uploading, matching the ring asset; the purple-to-orange fill is the bar's alone.
     static func ringTint(for status: UploadActivityAttributes.UploadStatus) -> LinearGradient {
         switch status {
         case .uploading, .processing, .paused: brandOrange
@@ -100,65 +81,41 @@ enum UploadActivityStyle {
 
     // MARK: - Lock Screen background
 
-    /// How the Lock Screen banner's background is drawn. The two options are a real
-    /// choice, not a fallback pair — see each case.
+    /// How the Lock Screen banner's background is drawn. A real choice, not a fallback pair.
     enum BannerBackgroundStyle {
-        /// Figma frame 26269:50826 exactly as drawn: an opaque navy slab. Note the
-        /// frame also carries a `backdrop-blur-[25px]` that can have no effect
-        /// behind a full-opacity fill, so "opaque" is the literal reading of the
-        /// fills — but the blur suggests the designer had translucency in mind.
-        ///
-        /// Reproduces the design pixel-for-pixel, and ignores the wallpaper. On
-        /// iOS 26 that reads as pre-Liquid-Glass, because drawing our own opaque
-        /// `containerBackground` opts the banner out of the system's glass.
-        case figmaLiteral
+        /// The design's opaque navy panel, ignoring the wallpaper. Not for iOS 26: an opaque
+        /// `containerBackground` of our own opts the banner out of Liquid Glass.
+        case opaqueFill
 
-        /// Let iOS draw the container and only tint it. On iOS 26 that container is
-        /// Liquid Glass, so the wallpaper reads through and refracts; on 16.2–25 it
-        /// degrades to the system material with the same tint. The brand navy
-        /// survives via `lockScreenGlassTint`.
+        /// Tint the system container rather than draw one — Liquid Glass on iOS 26, the plain
+        /// system material below it. Brand colour comes from `lockScreenGlassTint`.
         case systemGlass
     }
 
-    /// Resolved from the OS, because the right answer differs by version: iOS 26 has
-    /// Liquid Glass worth deferring to, and below it there is no glass to opt into —
-    /// `.systemGlass` there would just be a flat system material, which is neither
-    /// the design nor an improvement on it. So 26+ gets glass, older gets the frame
-    /// as drawn.
+    /// iOS 26 has Liquid Glass worth deferring to. Below it, tinting alone gives a flat
+    /// material that is neither the design nor an improvement, so draw the design's panel.
     static var bannerBackground: BannerBackgroundStyle {
         if let forced = bannerBackgroundOverride { return forced }
         if #available(iOS 26.0, *) { return .systemGlass }
-        return .figmaLiteral
+        return .opaqueFill
     }
 
-    /// Force one style regardless of OS, to compare the two on the same device.
+    /// Force one style regardless of OS, to compare the two on one device.
     /// `nil` resolves from the version above.
     static let bannerBackgroundOverride: BannerBackgroundStyle? = nil
 
     // MARK: - Expanded island layout
 
-    /// Which layout the expanded Dynamic Island uses. Normally derived from the
-    /// upload status: the full folder card while uploading, the minimum-height pill
-    /// row (26268:46410) for every other state.
+    /// Which layout the expanded Dynamic Island uses. Derived from the upload status: the
+    /// full folder card while uploading, the shorter pill row for every other state.
     enum ExpandedLayout {
         case folderCard
         case pillRow
     }
 
 #if DEBUG
-    /// Set to `.pillRow` or `.folderCard` to force one layout regardless of status,
-    /// so either can be inspected on device without engineering the upload state.
-    ///
-    /// Reaching `.pillRow` by hand is genuinely awkward — iOS hides an app's island
-    /// presentation while that app is frontmost, a completed activity is already
-    /// `.ended` so the island drops it quickly, and `dismissEndedActivities()`
-    /// (UploadLiveActivityManager.swift:525) kills any ended activity as soon as you
-    /// return to the app. Backgrounding mid-upload for ~35s is the only hand-reachable
-    /// route (it goes stale → displays as paused).
-    ///
-    /// DEBUG-only on purpose: forcing `.pillRow` during an upload drops the progress
-    /// bar and folder card that VSP-1801's acceptance criteria require, so it must not
-    /// be shippable.
+    /// Force one layout regardless of status, to inspect either on device. DEBUG-only:
+    /// `.pillRow` during an upload drops the progress bar and folder card.
     static let expandedLayoutOverride: ExpandedLayout? = nil
 #endif
 
@@ -170,22 +127,12 @@ enum UploadActivityStyle {
         return status == .uploading ? .folderCard : .pillRow
     }
 
-    /// Tint laid over the system container in `.systemGlass`. The **alpha is the
-    /// knob**: lower lets more wallpaper through and looks glassier, higher pushes
-    /// back toward the designed navy.
-    ///
-    /// **25%, set by the designer on 2026-08-11.** History: 0.55 read as a dark panel
-    /// rather than glass next to a native iOS 26 control (Lucian, on device, 2026-08-10:
-    /// "this is a little weird, I think we want that native look, a little small alpha
-    /// blue from Permanent"); 0.18 was the reaction to that and looked right on device;
-    /// the designer then chose 25%. Uses the design gradient's *lighter* stop (`#364493`)
-    /// rather than the midpoint, because at low alpha a very dark navy reads as dimming
-    /// rather than as a blue tint.
+    /// Tint over the system container in `.systemGlass`; the alpha is the knob — lower shows
+    /// more wallpaper, higher approaches the designed navy. Lighter stop, as dark navy dims.
     static let lockScreenGlassTint = Color(activityHex: 0x364493).opacity(0.25)
 
-    /// 26269:50826 — `linear-gradient(98.23deg, #131B4A, #364493)` under a flat
-    /// 40% black scrim. 98.23° resolves to a left→right run tilted 8° down,
-    /// which is where the 0.43/0.57 y offsets come from. Used by `.figmaLiteral`.
+    /// The design's panel: #131B4A to #364493 under a flat 40% black scrim, running left to
+    /// right tilted 8° down — hence the 0.43/0.57 y offsets. Used by `.opaqueFill`.
     static let lockScreenBackground = LinearGradient(
         colors: [Color(activityHex: 0x131B4A), Color(activityHex: 0x364493)],
         startPoint: UnitPoint(x: 0, y: 0.43),
@@ -195,55 +142,50 @@ enum UploadActivityStyle {
     static let lockScreenCornerRadius: CGFloat = 32
 
     // MARK: - Typography
-    //
-    // SF Pro is the system font, so `.system(size:weight:)` is a direct match:
-    // Figma's `font-[510]` is Medium and `font-[590]` is Semibold. Tracking is
-    // applied separately because SwiftUI exposes it as a view modifier.
 
-    /// 17pt Medium — the "Uploading to Permanent" / "3 of 5" row (26269:50898)
+    // SF Pro is the system font, so `.system(size:weight:)` matches the design directly.
+    // Tracking is separate because SwiftUI exposes it as a view modifier.
+
+    /// 17pt Medium — the header row.
     static let headerFont = Font.system(size: 17, weight: .medium)
-    /// 17pt Bold — the emphasised status word in the pill row (26268:46411)
+    /// 17pt Bold — the emphasised status word in the pill row.
     static let headerEmphasisFont = Font.system(size: 17, weight: .bold)
     static let headerTracking: CGFloat = -0.68
-    /// Figma's explicit `leading-[22px]` on the header row (26269:50898). SwiftUI's
-    /// natural line height for 17pt is ~20.3, so this is pinned to keep the banner
-    /// at its designed 160pt.
+    /// The design pins the header row to 22pt. SwiftUI's natural line height for 17pt is
+    /// ~20.3, so pinning it is what keeps the banner at its designed 160pt.
     static let headerLineHeight: CGFloat = 22
 
-    /// 12pt Regular — file name, "32 items • Private" (26269:50846)
+    /// 12pt Regular — file name and the folder's item count.
     static let detailFont = Font.system(size: 12, weight: .regular)
     static let detailTracking: CGFloat = -0.24
 
-    /// 12pt Semibold — percentage, folder name (26269:50847)
+    /// 12pt Semibold — percentage and folder name.
     static let emphasisFont = Font.system(size: 12, weight: .semibold)
     static let emphasisTracking: CGFloat = -0.48
 
-    /// Live Activities have a hard height cap, so text that grows without limit
-    /// gets clipped by the system rather than reflowed. Allowing growth up to
-    /// xxLarge keeps the layout legible for most accessibility settings while
-    /// staying inside the cap.
+    /// Live Activities are height-capped, so unbounded text is clipped rather than reflowed.
+    /// xxLarge stays legible for most accessibility settings without hitting the cap.
     static let maxDynamicTypeSize = DynamicTypeSize.xxLarge
 
     // MARK: - Layout
 
-    /// Dynamic Island, expanded — 26269:50872
+    /// Dynamic Island, expanded.
     enum Expanded {
         static let spacing: CGFloat = 20
         static let verticalPadding: CGFloat = 32
         static let folderRowHeight: CGFloat = 42
 
-        /// Figma measures 40pt from the island's own edge to the content.
+        /// The design measures 40pt from the island's own edge to the content.
         static let horizontalPadding: CGFloat = 40
-        /// ActivityKit already insets expanded-region content from that edge by
-        /// roughly this much, so only the remainder is ours to add. Verified
-        /// against a running activity — adjust here, not at the use site.
+        /// ActivityKit already insets expanded-region content from that edge by roughly
+        /// this much, so only the remainder is ours to add. Adjust here, not at a use site.
         static let systemRegionInset: CGFloat = 16
         static var regionHorizontalPadding: CGFloat {
             max(0, horizontalPadding - systemRegionInset)
         }
     }
 
-    /// Dynamic Island, expanded at minimum height (the pill row) — 26268:46410
+    /// Dynamic Island, expanded at its minimum height (the pill row).
     enum Pill {
         static let verticalPadding: CGFloat = 24
         static let iconSpacing: CGFloat = 8
@@ -259,7 +201,7 @@ enum UploadActivityStyle {
         }
     }
 
-    /// Lock Screen banner — 26269:50849
+    /// Lock Screen banner.
     enum LockScreen {
         static let spacing: CGFloat = 16
         static let padding: CGFloat = 24
@@ -268,8 +210,8 @@ enum UploadActivityStyle {
         static let folderRowHeight: CGFloat = 34
     }
 
-    /// Dynamic Island, collapsed — 26268:46369. The ring's own geometry lives on
-    /// `UploadProgressRing.Metrics`, which is where it is drawn.
+    /// Dynamic Island, collapsed. The ring's own geometry lives on
+    /// `UploadProgressRing.Metrics`, where it is drawn.
     enum Compact {
         static let markHeight: CGFloat = 17.33
     }
@@ -277,8 +219,8 @@ enum UploadActivityStyle {
     static let headerSpacing: CGFloat = 4
     static let folderTextSpacing: CGFloat = 4
 
-    /// Aspect ratio of the Permanent swirl (55.721 × 42) and of the folder
-    /// glyph (48 × 42). Both are drawn height-first, so the width follows.
+    /// Aspect ratios of the Permanent swirl (55.721 × 42) and the folder glyph (48 × 42).
+    /// Both are drawn height-first, so the width follows.
     static let brandMarkAspect: CGFloat = 55.721 / 42
     static let folderGlyphAspect: CGFloat = 48 / 42
 }

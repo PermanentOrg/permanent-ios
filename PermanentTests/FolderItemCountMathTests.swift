@@ -9,13 +9,8 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// VSP-1801: the item count on the upload Live Activity's folder card ("32 items •
-/// Private"). The whole point of these is the `nil` handling — a destination whose count
-/// we don't know must stay unknown rather than collapse to `0` and count only the current
-/// batch, which would show the user a confidently wrong number.
-///
-/// Not `@MainActor` and not serialized: `FolderItemCountMath` is pure static arithmetic
-/// with no shared state.
+/// The folder card's item count. The point is the `nil` handling: an unknown count must stay
+/// unknown rather than collapse to `0` and count only this batch.
 struct FolderItemCountMathTests {
 
     // MARK: - displayed(base:completedFiles:)

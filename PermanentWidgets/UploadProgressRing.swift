@@ -7,12 +7,8 @@
 
 import SwiftUI
 
-/// The circular progress indicator from the collapsed island (26268:46387) and the
-/// minimum-height expanded pill (26268:46417).
-///
-/// Drawn as a trimmed `Circle` rather than shipping the exported SVG, because the SVG
-/// is frozen at whatever percentage the designer drew. Starts at 12 o'clock and runs
-/// clockwise, matching the 36pt asset's arc (`M18 6 …`).
+/// A trimmed `Circle` rather than the exported asset, which is frozen at whatever percentage
+/// it was drawn at. Starts at 12 o'clock, clockwise, as the design does.
 struct UploadProgressRing: View {
     /// Ring geometry is not proportional between the two sizes — the design uses a
     /// thicker stroke and a tighter inset at 36pt — so both are spelled out.
@@ -25,18 +21,17 @@ struct UploadProgressRing: View {
 
         var inset: CGFloat { (boxSize - pathDiameter) / 2 }
 
-        /// 26268:46387 — collapsed island: r 8.5, stroke 3, in a 23pt box.
+        /// Collapsed island: 8.5pt radius, 3pt stroke, in a 23pt box.
         static let compact = Metrics(boxSize: 23, pathDiameter: 17, lineWidth: 3)
-        /// 26268:46417 — expanded island at minimum height: r 12, stroke 4, in 36pt.
+        /// Expanded island at minimum height: 12pt radius, 4pt stroke, in a 36pt box.
         static let pill = Metrics(boxSize: 36, pathDiameter: 24, lineWidth: 4)
     }
 
     let progress: Double
     let metrics: Metrics
     var tint: LinearGradient = UploadActivityStyle.brandOrange
-    /// SF Symbol drawn inside the ring to name the state, for the statuses where the arc
-    /// alone is ambiguous — a paused upload's arc looks identical to a running one at a
-    /// glance, which is the gap this closes. `nil` while uploading, where motion says it.
+    /// SF Symbol naming the state, where the arc alone is ambiguous — a paused arc looks like a
+    /// running one. `nil` while uploading, where the motion says it.
     var glyph: String?
 
     private var clamped: Double { min(max(progress, 0), 1) }

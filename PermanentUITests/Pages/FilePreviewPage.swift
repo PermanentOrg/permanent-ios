@@ -32,9 +32,8 @@ class FilePreviewPage {
     }
 
     func waitForExistence() {
-        // The preview hosts a UIPageViewController and lives inside a
-        // FilePreviewNavigationController; verify the close button is reachable
-        // as a stable signal that the screen rendered.
+        // The preview nests a page controller inside its own navigation controller, so the close
+                // button being reachable is the stable signal that it rendered.
         XCTAssertTrue(closeButton.waitForExistence(timeout: 15))
     }
 
@@ -50,7 +49,7 @@ class FilePreviewPage {
         sleep(2)
     }
 
-    // MARK: - Image preview states (VSP-1768)
+    // MARK: - Image preview states
 
     /// Waits for the S6 "load failed" card.
     func waitForLoadFailedState() {

@@ -7,12 +7,8 @@
 
 import SwiftUI
 
-/// The expanded Dynamic Island at maximum height — 26269:50872.
-///
-/// No top padding: this renders in `DynamicIslandExpandedRegion(.bottom)`, which
-/// already starts below the sensor housing. The design's 32pt top inset is measured
-/// from the island's own top edge, and the housing occupies that band. Confirmed on
-/// device — content lands ~48pt below the island top and reads correctly.
+/// The expanded island at maximum height. No top padding: `.bottom` already starts below the
+/// sensor housing, which occupies the design's 32pt top inset.
 struct UploadExpandedCard: View {
     let display: UploadActivityDisplay
 
@@ -34,9 +30,8 @@ struct UploadExpandedCard: View {
 }
 
 #if DEBUG
-/// 374 × 174 is the design's frame. The extra top padding and the horizontal
-/// `systemRegionInset` stand in for what the real island applies, so this matches what
-/// ships rather than what the view alone produces.
+/// 374 × 174 is the design's size; the extra insets stand in for the real island's own, so
+/// this matches what ships.
 #Preview("Expanded island — 374×174") {
     UploadExpandedCard(display: .previewUploading)
         .padding(.top, UploadActivityStyle.Expanded.verticalPadding)

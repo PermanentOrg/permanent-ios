@@ -7,11 +7,8 @@
 
 import Foundation
 
-/// Decisions about an upload Live Activity's terminal state.
-///
-/// Extracted from `UploadLiveActivityManager` so it can be tested — the manager is a
-/// singleton whose entry points need ActivityKit authorization. See
-/// [[live-activity-manager-testability]].
+/// Terminal-state decisions for an upload Live Activity. Split out of
+/// `UploadLiveActivityManager`, whose entry points need ActivityKit authorization to test.
 enum UploadActivityTerminalState {
     /// Whether the batch is over. Terminal states are the ones the user should be allowed to
     /// see before the activity disappears.
@@ -22,14 +19,8 @@ enum UploadActivityTerminalState {
         }
     }
 
-    /// The state an orphaned activity should be ended with on launch.
-    ///
-    /// An activity found running with no matching snapshot is normally a zombie from a
-    /// previous session and is ended as `.failed`. But one case is not a zombie: a batch that
-    /// finished and was mid-`completionHoldInterval` when iOS suspended the app. Its state is
-    /// already `.completed`, and relabelling a finished upload "failed" — with its counts
-    /// zeroed — tells the user something untrue about their data. Already-terminal states are
-    /// therefore preserved exactly.
+    /// How to end an activity found running with no snapshot. Usually a zombie, so `.failed` —
+    /// but a terminal state is kept exactly, since relabelling a finished upload would lie.
     static func orphanFinalState(
         existing: UploadActivityAttributes.ContentState
     ) -> UploadActivityAttributes.ContentState {

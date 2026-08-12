@@ -60,9 +60,8 @@ extension ShareItemViewModel {
         let displayFormatter = DateFormatter()
         displayFormatter.dateFormat = "MMMM d, yyyy"
 
-        // For a loaded / already-saved link (no unsaved change), show the ACTUAL server expiry
-        // so the date is real — not a now()-relative recomputation from the preset, and not
-        // "never" when the true expiry falls outside the preset ranges.
+        // With no unsaved change, show the real server expiry: recomputing from the preset drifts, and
+        // reads "never" when the true expiry falls outside its ranges.
         if selectedExpiration == originalExpiration, let actualExpiryDate {
             return "The link will expire on \(displayFormatter.string(from: actualExpiryDate))."
         }

@@ -7,12 +7,8 @@
 
 import SwiftUI
 
-/// The Lock Screen banner — 26269:50826 / 26269:50849. 24pt padding on all sides and
-/// 16pt between the three blocks add up to the design's 160pt height exactly, so no
-/// explicit height is set and terminal states can size themselves.
-///
-/// The background is not drawn here — see `BannerBackground`, which tints the system
-/// container on iOS 26 rather than replacing it.
+/// 24pt padding and 16pt between blocks add up to the design's 160pt, so no height is set
+/// and terminal states size themselves. Background lives in `BannerBackground`.
 struct UploadLockScreenBanner: View {
     let display: UploadActivityDisplay
 
@@ -37,7 +33,7 @@ struct UploadLockScreenBanner: View {
 }
 
 #if DEBUG
-/// 382 × 160 is the design's frame, so this can be diffed against the Figma render.
+/// 382 × 160 is the design's size, so this can be diffed against the design directly.
 #Preview("Lock Screen banner — 382×160") {
     UploadLockScreenBanner(display: .previewShared)
         .frame(width: 382)

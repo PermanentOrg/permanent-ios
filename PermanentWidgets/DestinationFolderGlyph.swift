@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-/// The destination folder glyph — 26269:50880, `aspect-[64/56]`. Height-first for the
-/// same reason as `BrandMark`.
+/// The destination folder glyph. Height-first for the same reason as `BrandMark`.
 struct DestinationFolderGlyph: View {
     let height: CGFloat
 

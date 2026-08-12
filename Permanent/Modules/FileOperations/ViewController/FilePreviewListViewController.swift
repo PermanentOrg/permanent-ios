@@ -13,10 +13,8 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
 
     let controllersCache: NSCache<NSNumber, FilePreviewViewController> = NSCache<NSNumber, FilePreviewViewController>()
 
-    /// The preview pager owns the shared AVAudioSession for its whole session: any child page
-    /// that plays media flips this on (via `onDidActivatePlaybackAudioSession`), and the pager
-    /// deactivates once in `deinit`. Child pages never deactivate the session themselves while
-    /// coordinated, so a cached page evicted mid-session can't silence the page that's playing.
+    /// The pager owns the shared audio session for the whole flow: a child page flips this on, and
+    /// only the pager deactivates — so an evicted cached page cannot silence the playing one.
     private var didActivatePreviewAudioSession = false
     
     var filteredFiles: [FileModel] {
@@ -36,10 +34,8 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     private weak var shareBarButton: UIBarButtonItem?
 
     deinit {
-        // The pager owns the shared audio session for the whole preview flow; release it once
-        // here so background audio resumes on close. Child pages don't deactivate while
-        // coordinated (see onDidActivatePlaybackAudioSession), which avoids an evicted cached
-        // page silencing the page that's actually playing.
+        // Release the shared session once here, so background audio resumes on close. Child pages don't
+        // deactivate while coordinated, which is what stops an evicted page silencing the playing one.
         if didActivatePreviewAudioSession {
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         }
@@ -111,21 +107,19 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     private func createFilePreviewViewController(for file: FileModel) -> FilePreviewViewController {
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = file
-        // usesStelaDetail keeps its property default (the in-app flag). The VM scopes V2 to
-        // own-archive records, plus the public gallery's foreign-but-public ones, and auto-
-        // falls back to V1. loadVM() builds the VM, so this must be set before it runs.
+        // The view model scopes V2 to own-archive records plus the gallery's public ones, and falls back
+        // to V1. `loadVM()` builds it, so this must be set first.
         filePreviewVC.allowsForeignStelaDetail = viewModel is PublicArchiveViewModel
 
-        // If opened from notification, pass close action to child VC
+        // If opened from notification, pass close action to the child controller
         if isFromNotification {
             filePreviewVC.closeAction = { [weak self] in
                 self?.closeButtonAction(self as Any)
             }
         }
         
-        // Coordinate the shared audio session BEFORE loadVM(), so ownership is established
-        // even if a media page were ever to activate synchronously during load (today loading
-        // is async, but this keeps correctness independent of that timing).
+        // Claim the shared audio session before `loadVM()`, so ownership holds even if a media page ever
+        // activates synchronously during load.
         filePreviewVC.onDidActivatePlaybackAudioSession = { [weak self] in
             self?.didActivatePreviewAudioSession = true
         }
@@ -229,10 +223,8 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
     
     @discardableResult
     func dequeueViewController(atIndex index: Int, preloadLeftRightLevel: Int = 0) -> FilePreviewViewController? {
-        // The cache is keyed by index, but `filteredFiles` is computed and can shift (a
-        // delete/refresh reorders it), leaving the cached controller at `index` bound to a
-        // different file than filteredFiles[index] — which showed the WRONG file on swipe.
-        // Only reuse a cached controller when it still matches the file now at that index.
+        // The cache is keyed by index but `filteredFiles` can shift, so a cached controller may be bound
+        // to a different file than the one now at that index. Only reuse it when they still match.
         if index >= 0, index < filteredFiles.count,
            let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)),
            fileDetailsVC.file == filteredFiles[index] {
@@ -267,14 +259,13 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             fileDetailsVC.onDidActivatePlaybackAudioSession = { [weak self] in
                 self?.didActivatePreviewAudioSession = true
             }
-            // usesStelaDetail keeps its property default (the in-app flag); the VM scopes V2
-            // to own-archive records plus the gallery's public ones, with a V1 failsafe.
-            // Must precede loadVM(), which is what builds the view model.
+            // The view model scopes V2 to own-archive records plus the gallery's public ones, with a V1
+            // failsafe. Must precede `loadVM()`, which builds it.
             fileDetailsVC.allowsForeignStelaDetail = viewModel is PublicArchiveViewModel
             fileDetailsVC.view.isHidden = false // preload the view
             fileDetailsVC.loadVM()
             
-            // If opened from notification, pass close action to child VC
+            // If opened from notification, pass close action to the child controller
             if isFromNotification {
                 fileDetailsVC.closeAction = { [weak self] in
                     self?.closeButtonAction(self as Any)
@@ -304,11 +295,8 @@ extension FilePreviewListViewController: FilePreviewNavigationControllerDelegate
             self.hasChanges = true
         }
 
-        // Called when the details screen closes. The details modal is still presented on
-        // top of this preview pager, so dismiss from our presenter (the file list) to tear
-        // down both in a single animation — details slides away straight to the file list,
-        // without the preview flashing in between. (When this pager is closed directly, its
-        // own closeButtonAction handles dismissal instead.)
+        // The details modal sits on top of this pager, so dismiss from our presenter to tear both down
+        // in one animation — otherwise the preview flashes in between.
         let fileListDelegate = (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate
         let changes = self.hasChanges
         let presenter = presentingViewController ?? self

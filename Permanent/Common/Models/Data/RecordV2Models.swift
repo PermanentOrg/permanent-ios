@@ -61,17 +61,14 @@ extension RecordV2Data {
     }
 
     var resolvedThumbnail256: String? {
-        // `thumbnailUrls.256` is the Archivematica access-copy thumbnail — a tiny 48x48 that is
-        // blank for HEIC — so it is NOT used as the 256 source (it would paint a white blur in
-        // the preview). Only a real flat `thumbnail256` counts; callers otherwise fall back to
-        // the Permanent `.thumb.wNNN` renditions. See FolderChildV2Data.resolvedThumb256.
+        // `thumbnailUrls.256` is the access copy: tiny, and blank for HEIC, so it would paint a white
+        // blur. Only a real flat `thumbnail256` counts here; callers fall back to `.thumb.wNNN`.
         nonEmpty(thumbnail256)
     }
 
     var preferredThumbnailURL: String? {
-        // Access copy LAST: a Stela copy (POST /records/{id}/copies) gets no `.thumb.wNNN`
-        // renditions (backend gap), so the HEIC-guarded access-copy thumbnail is the only
-        // one it has. Real renditions always win when present.
+        // Access copy last: a Stela copy gets no `.thumb.wNNN` renditions, so its guarded access-copy
+        // thumbnail is the only one it has. Real renditions always win when present.
         resolvedThumbnail256 ?? nonEmpty(thumbUrl500) ?? nonEmpty(thumbUrl200) ?? nonEmpty(thumbUrl1000) ?? nonEmpty(thumbUrl2000) ?? accessCopyThumb256
     }
 
@@ -94,11 +91,8 @@ extension RecordV2Data {
 // MARK: - V2 record → legacy RecordVO adapter (item detail / preview / download)
 
 extension RecordV2Data {
-    /// Builds a legacy `RecordVO` JSON payload from this Stela V2 record so the existing
-    /// RecordVO-based detail / preview / download code (FilePreviewViewModel,
-    /// DownloadManagerGCD, the detail cells) consumes it unchanged. Opaque ids are
-    /// numeric-as-string → Int; `archiveNumber` stays a String. The one V2 gap —
-    /// `contentType` — is derived from each file's granular `type`.
+    /// Builds a legacy `RecordVO` payload so the existing detail, preview and download code consumes
+    /// V2 unchanged. `contentType` is the one gap, derived from each file's granular `type`.
     func toRecordVOPayload() -> [String: Any] {
         func intOf(_ value: String?) -> Int? {
             guard let value = value, let converted = Int(value) else { return nil }
@@ -128,10 +122,8 @@ extension RecordV2Data {
         record["FileVOs"] = (files ?? []).map { $0.toFileVOPayload() }
         if let location = location { record["LocnVO"] = location.toLocnVOPayload() }
         if let tags = tags {
-            // name + tagId + type — tagId is load-bearing downstream: the batch-metadata
-            // screen derives its whole tag state from these VOs and the V1 unlink body
-            // sends `tagVO.tagId` (a nil here became `tagId: 0` → unassign silently
-            // no-oped server-side while the UI removed the chip).
+            // tagId is load-bearing: the batch-metadata screen derives its tag state from these VOs and the
+            // unlink body sends it, so a nil became `tagId: 0` and unassign no-oped while the chip vanished.
             record["TagVOs"] = tags.compactMap { tag -> [String: Any]? in
                 guard let name = tag.name else { return nil }
                 var vo: [String: Any] = ["name": name]
@@ -162,10 +154,8 @@ extension FileV2Data {
         return file
     }
 
-    /// Stela carries no `contentType`; the preview guards and download-extension logic
-    /// need a MIME string. Derive it from the granular file type, e.g.
-    /// `type.file.image.jpeg` → `image/jpeg`, `type.file.video.mp4` → `video/mp4`,
-    /// `type.file.pdf.pdf` → `application/pdf`.
+    /// Stela carries no `contentType`, but the preview guards and download logic need a MIME string,
+    /// so derive it from the granular file type — `type.file.image.jpeg` becomes `image/jpeg`.
     static func mimeType(forFileType type: String?) -> String? {
         guard let type = type, type.hasPrefix("type.file.") else { return nil }
         let parts = type.split(separator: ".").map(String.init) // ["type","file","<class>","<subtype>"]
@@ -182,10 +172,8 @@ extension FileV2Data {
         case "pdf":
             return "application/pdf"
         default:
-            // Docs, text, archives, spreadsheets… V1 always ships a contentType and the
-            // preview's loadRecord() requires a non-nil one in both of its branches
-            // (loadMisc only needs presence, not accuracy) — so a generic MIME keeps
-            // misc records previewable on the V2 path instead of rendering blank.
+            // The preview requires a non-nil contentType in both branches and only needs presence, not
+            // accuracy — so a generic MIME keeps docs and archives previewable rather than blank.
             return genericMimeType
         }
     }
@@ -195,9 +183,8 @@ extension FileV2Data {
 }
 
 extension LocnVO {
-    /// Maps the picked V1 location into the Stela V2 `location` (LocationInput) body for
-    /// PATCH /records/{id}. The server updates the record's existing location row in place
-    /// (idempotent), so re-applying is safe. Only the fields LocationInput accepts are sent.
+    /// Maps the picked V1 location into the V2 `LocationInput` body. The server updates the existing
+    /// row in place, so re-applying is safe; only the fields it accepts are sent.
     func toLocationInputPayload() -> [String: Any] {
         var location: [String: Any] = [:]
         if let value = displayName, !value.isEmpty { location["name"] = value }
@@ -255,10 +242,8 @@ struct TagV2: Model {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        // The live API sends "id" as a JSON NUMBER (e.g. 1235); tolerate a string
-        // too. E2E-verified 2026-07-03: decoding this as `tagId: String?` (old key,
-        // string-only) silently yielded nil, which made tag unassign after a V2
-        // record read send `tagId: 0` to /tag/DeleteTagLink → error.api.invalid_request.
+        // The API sends "id" as a JSON number, though a string is tolerated. Decoding it string-only
+        // yields nil silently, which made tag unassign send `tagId: 0` and fail.
         if let intId = try? container.decode(Int.self, forKey: .tagId) {
             tagId = String(intId)
         } else if let stringId = try? container.decode(String.self, forKey: .tagId) {

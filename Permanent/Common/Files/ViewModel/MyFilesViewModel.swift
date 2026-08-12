@@ -16,10 +16,8 @@ class MyFilesViewModel: FilesViewModel {
     var isPickingImage: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
 
-    /// Private Files opts into Stela V2 navigation via the in-app
-    /// `FeatureFlags.useStelaNavigation` constant. `PublicFilesViewModel` inherits this
-    /// (same owner workspace), and `SearchFilesViewModel` opts in with its own override —
-    /// so flipping the flag switches My Files, Public Files, AND Search drill-in to V2.
+    /// Private Files opts into V2 navigation via the in-app flag. Public Files inherits it and Search
+    /// overrides it, so the one flag switches all three.
     override var usesStelaNavigation: Bool {
         FeatureFlags.useStelaNavigation
     }
@@ -62,20 +60,17 @@ class MyFilesViewModel: FilesViewModel {
     /// network (mirrors `childrenFetchV2Request` / `AuthenticationManager.changeArchiveOverride`).
     var archivesFetchV2Request: ((@escaping (Result<[ArchiveV2Data], Error>) -> Void) -> Void)?
 
-    /// Test seam: overrides the raw `/folders/{id}/children` fetch used by `getRootV2` to
-    /// resolve the "My Files" child. Distinct from `getFolderChildrenV2` (which commits to
-    /// `viewModels`); this one only returns the decoded items.
+    /// Test seam for the raw children fetch `getRootV2` uses. Distinct from `getFolderChildrenV2`,
+    /// which commits to `viewModels`; this only returns the decoded items.
     var rootChildrenFetchV2Request: ((String, @escaping (Result<[FolderChildV2Data], Error>) -> Void) -> Void)?
 
-    /// The archive section-root this workspace lands in — My Files = the private root.
-    /// `PublicFilesViewModel` overrides these to land in the public root, reusing the whole
-    /// V2 discovery path below (the only per-workspace difference is which section child and
-    /// which V1 failsafe).
+    /// The archive section-root this workspace lands in. `PublicFilesViewModel` overrides it and
+    /// reuses the whole discovery path below.
     var rootSectionType: FileType { .privateRootFolder }
     var rootSectionFallbackDisplayName: String { Constants.API.FileType.myFilesFolder }
 
     func getRoot(then handler: @escaping ServerResponse) {
-        // Stela V2 root discovery (VSP-1787), gated by `useStelaNavigation`, with the V1
+        // Stela V2 root discovery, gated by `useStelaNavigation`, with the V1
         // bootstrap kept as the automatic failsafe on any error/anomaly.
         if usesStelaNavigation {
             getRootV2(then: handler)
@@ -84,9 +79,8 @@ class MyFilesViewModel: FilesViewModel {
         }
     }
 
-    /// Root discovery without V1: resolve the workspace's section-root folder purely from
-    /// Stela reads, seed it as the V2 navigation target, then list it via the existing
-    /// children path. If resolution fails for ANY reason, fall back to `performV1GetRoot`.
+    /// Root discovery from Stela reads only: resolve the section root, seed it as the V2 target, then
+    /// list it. Any failure falls back to `performV1GetRoot`.
     private func getRootV2(then handler: @escaping ServerResponse) {
         resolveSectionRootTargetV2(sectionType: rootSectionType, fallbackDisplayName: rootSectionFallbackDisplayName) { [weak self] sectionRootModel in
             guard let self = self else { handler(.error(message: .errorMessage)); return }
@@ -100,24 +94,14 @@ class MyFilesViewModel: FilesViewModel {
         }
     }
 
-    /// Resolves the "My Files" folder as a `FileModel` from Stela reads only: the archive's
-    /// `rootFolderId` (matched by `archiveNbr` in the archives list) → that root's children →
-    /// the `type.folder.root.private` child (display-name fallback). Applies the same id
-    /// sanity gate the navigation relies on. Returns nil on ANY failure (no current archive,
-    /// network error, archive not listed, missing/invalid My Files child, bad id) so the
-    /// caller can fall back to V1. Side-effect-free (no navigation, no V1) — the
-    /// unit-testable core of `getRootV2`.
+    /// Resolves "My Files" from Stela reads only, applying the same id sanity gate navigation uses.
+    /// Nil on any failure so the caller falls back to V1. Side-effect-free, hence testable.
     func resolveMyFilesTargetV2(completion: @escaping (FileModel?) -> Void) {
         resolveSectionRootTargetV2(sectionType: .privateRootFolder, fallbackDisplayName: Constants.API.FileType.myFilesFolder, completion: completion)
     }
 
-    /// Resolves an archive SECTION-ROOT (private "My Files", public, …) as a `FileModel` from
-    /// Stela reads only: the archive's `rootFolderId` (matched by `archiveNbr` in the archives
-    /// list) → that root's children → the child whose Stela `type` maps to `sectionType`
-    /// (display-name fallback). Applies the same id sanity gate the navigation relies on.
-    /// Returns nil on ANY failure (no current archive, network error, archive not listed,
-    /// missing/invalid section child, bad id) so the caller can fall back to V1.
-    /// Side-effect-free (no navigation, no V1) — the unit-testable core of `getRootV2`.
+    /// Resolves any archive section-root from Stela reads only: the archive's `rootFolderId`, then the
+    /// child matching `sectionType`. Nil on any failure so the caller falls back to V1.
     func resolveSectionRootTargetV2(sectionType: FileType, fallbackDisplayName: String, completion: @escaping (FileModel?) -> Void) {
         guard let archiveNbr = currentArchive?.archiveNbr, !archiveNbr.isEmpty else {
             completion(nil)
@@ -143,10 +127,8 @@ class MyFilesViewModel: FilesViewModel {
                     return
                 }
                 let model = FileModel(model: sectionChild, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
-                // Guard the ids the V2 navigation and its V1 `navigateMin` failsafe rely on:
-                // a folderId/folderLinkId that resolved to the -1 sentinel, or an empty
-                // archiveNo, is a contract break — return nil so the caller uses V1 rather
-                // than a target whose listing/failsafe keys on a bad id.
+                // Guard the ids navigation and its failsafe key on: a -1 sentinel id or an empty archiveNo is a
+                // contract break, so return nil rather than hand back a target with a bad id.
                 guard model.folderId > 0, model.folderLinkId > 0, !model.archiveNo.isEmpty else {
                     completion(nil)
                     return
@@ -156,10 +138,8 @@ class MyFilesViewModel: FilesViewModel {
         }
     }
 
-    /// Selects a section-root child (private / public / app root) among an archive root's
-    /// children. Matches the Stela section `type` first (normalized via `FileType.fromV2`),
-    /// then falls back to the display name — parity with the V1 `childItemVOS` lookup and a
-    /// safety net until a live Stela `type` value is confirmed for every environment.
+    /// Picks a section-root child among an archive root's children, matching the Stela `type` first
+    /// and the display name second — a safety net until every environment's `type` is confirmed.
     static func sectionRootChild(in children: [FolderChildV2Data], sectionType: FileType, fallbackDisplayName: String) -> FolderChildV2Data? {
         if let byType = children.first(where: {
             $0.isFolder && FileType.fromV2(typeString: $0.type, isFolder: true) == sectionType
@@ -252,10 +232,8 @@ class MyFilesViewModel: FilesViewModel {
                 handler(.error(message: error?.localizedDescription))
 
             default:
-                // Terminal failsafe of the whole root-discovery path — never drop the
-                // completion (a dropped handler hangs the caller's spinner, the exact
-                // VSP-1777 bug). `getRoot` is a `.data` request so only .json/.error fire
-                // today; this keeps "complete exactly once" structurally guaranteed.
+                // Terminal failsafe of the whole root-discovery path: never drop the completion, or the caller's
+                // spinner hangs. Keeps "complete exactly once" structurally guaranteed.
                 handler(.error(message: .errorMessage))
             }
         }
@@ -272,9 +250,8 @@ class MyFilesViewModel: FilesViewModel {
             return
         }
         
-        // Stela has no root-discovery route, so the V1 getRoot above stays as the
-        // bootstrap. When V2 is on, seed the navigation target (the My Files root) so
-        // navigateMin descends into it via /folders/{id}/children.
+        // Stela has no root-discovery route, so the V1 getRoot above stays the bootstrap. With V2 on,
+        // seed the navigation target so drill-in descends through `/children`.
         if usesStelaNavigation {
             v2NavigationTarget = FileModel(model: myFilesFolder)
         }

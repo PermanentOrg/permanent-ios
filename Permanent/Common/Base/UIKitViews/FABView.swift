@@ -15,9 +15,8 @@ class FABView: UIView {
     
     weak var delegate: FABViewDelegate?
 
-    /// True while `setVisibility(hidden: false)`'s slide-in is in flight, so a repeat call
-    /// (e.g. the next `updateFABViewVisibility()` when a folder fetch lands) leaves the
-    /// running animation alone instead of cutting it short. Exposed for tests.
+    /// True while the slide-in is in flight, so a repeat show call leaves the running animation alone
+    /// instead of cutting it short. Exposed for tests.
     private(set) var isAnimatingIn = false
 
     /// The throwaway snapshot currently sliding out (see `setVisibility`), kept only so a
@@ -176,27 +175,15 @@ class FABView: UIView {
     
     // MARK: - Visibility
 
-    /// Single entry point for showing/hiding the FAB (plus button + checklist sub-button).
-    ///
-    /// Showing SLIDES the buttons up from below the screen edge, which is how they read as
-    /// arriving from the bottom-right corner they live in. This matters now that the FAB is
-    /// genuinely hidden while the user picks a copy/move paste destination: before that it
-    /// stayed on screen throughout, so there was no transition at all and every show path was
-    /// a bare `isHidden = false`.
-    ///
-    /// Hiding is immediate and resets `transform`, so an interrupted slide can never leave the
-    /// FAB parked off-screen. `isHidden` is assigned synchronously in every branch, so callers
-    /// (and tests) can read it back straight after the call.
+    /// The one entry point for showing and hiding the FAB. Showing slides up from below the edge;
+    /// hiding is immediate and resets `transform`, so an interrupted slide can't park it off-screen.
     func setVisibility(hidden: Bool, animated: Bool = true) {
         if hidden {
             isAnimatingIn = false
             guard !isHidden else { return }
 
-            // `isHidden` is set IMMEDIATELY — callers (and tests) treat it as the synchronous
-            // source of truth, and a hidden view can't animate anyway. To still show motion on
-            // the way out, slide a throwaway snapshot down past the bottom edge. That keeps the
-            // exit symmetrical with the slide-in without deferring `isHidden` behind an
-            // animation, which would have made every reader stale for a quarter second.
+            // `isHidden` is set immediately, since callers treat it as the synchronous truth. Motion comes
+            // from sliding a throwaway snapshot out, rather than deferring `isHidden` behind an animation.
             if animated, let superview = superview, let snapshot = snapshotView(afterScreenUpdates: false) {
                 snapshot.frame = frame
                 superview.addSubview(snapshot)
@@ -219,18 +206,13 @@ class FABView: UIView {
         exitSnapshot?.removeFromSuperview()
         exitSnapshot = nil
 
-        // Restore alpha on EVERY show path, including the early returns below. Callers used
-        // to fade alpha to 0 as their own hide animation, so a show that only cleared
-        // `isHidden` handed back a fully transparent FAB — present, tappable-looking to
-        // code, invisible on screen. Any competing fade is cancelled first, otherwise its
-        // completion lands after this and zeroes alpha again.
+        // Restore alpha on every show path, including the early returns: a caller that faded alpha to 0
+        // leaves an invisible-but-present FAB. Cancel any competing fade, or it re-zeroes alpha after.
         layer.removeAnimation(forKey: "opacity")
         alpha = 1
 
-        // A slide is already running: let it finish untouched. This branch is load-bearing —
-        // `updateFABViewVisibility()` fires again a few hundred ms later when the post-paste
-        // folder refetch lands, and re-asserting the transform there cut the animation short,
-        // which is why the buttons appeared to snap into place.
+        // A slide is already running, so let it finish untouched. Load-bearing: the post-paste refetch
+        // fires this again, and re-asserting the transform cuts the animation short.
         if isAnimatingIn { return }
 
         guard isHidden else {
@@ -254,9 +236,8 @@ class FABView: UIView {
         }
     }
 
-    /// How far down to park the FAB so it starts fully below its container's bottom edge.
-    /// Falls back to the view's own height when it has no superview (e.g. in unit tests),
-    /// which keeps the maths harmless rather than producing a wild offset.
+    /// How far to park the FAB below its container's bottom edge. Falls back to the view's own height
+    /// with no superview, which keeps the maths harmless rather than wild.
     private var offscreenSlideDistance: CGFloat {
         guard let superview = superview else { return bounds.height }
         return max(superview.bounds.maxY - frame.minY, bounds.height)

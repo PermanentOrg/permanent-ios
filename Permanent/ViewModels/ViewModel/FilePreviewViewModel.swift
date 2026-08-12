@@ -51,11 +51,8 @@ class FilePreviewViewModel: ViewModelInterface {
     /// Stela V2 getRecordById, with the legacy V1 getRecord as an automatic failsafe.
     private let usesStelaDetail: Bool
 
-    /// Extends the V2 record READ to records outside the current archive. Set by the public
-    /// gallery, where you browse a FOREIGN archive whose records are public — the same
-    /// bearer-only credentials already list that archive's folder children on V2, so there is
-    /// no reason the record read should need V1. Read only: writes (patch/copy) stay
-    /// own-archive regardless, and the gallery is pinned read-only anyway.
+    /// Extends the V2 record read to foreign archives, for the public gallery — the same bearer-only
+    /// credentials already list that archive's children. Reads only; writes stay own-archive.
     private let allowsForeignDetail: Bool
 
     init(file: FileModel, usesStelaDetail: Bool = false, allowsForeignDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
@@ -108,12 +105,8 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
-    /// The 256px THUMBNAIL failed. Unlike a full-res failure this is not terminal: the
-    /// record fetch → full-res load runs in parallel and can still succeed, so while it
-    /// is pending we downgrade to the no-thumbnail loading state (S5) instead of painting
-    /// the failure card — otherwise a transient thumbnail blip flashes "Couldn't load
-    /// image." for the second it takes the full-res to land. The genuine failure/offline
-    /// outcome is still reported by the full-res or record-fetch callbacks.
+    /// A thumbnail failure is not terminal — the full-res load runs in parallel — so downgrade to the
+    /// no-thumbnail loading state rather than flash a failure card. The full-res reports the truth.
     func thumbnailLoadDidFail(error: Error?) {
         guard imagePreviewState == .loadingThumbnail else { return }
         if reachability.isConnected {
@@ -152,13 +145,8 @@ class FilePreviewViewModel: ViewModelInterface {
         }
         #endif
 
-        // Stela V2 detail with the legacy V1 fetch as an automatic failsafe. Own-archive
-        // records on any screen, plus foreign records where the caller says the read is
-        // public (`allowsForeignDetail` — the gallery). Shared-with-me records still go to
-        // V1: those are authorized server-side via share membership, which the bearer-only
-        // V2 read can't carry. The failsafe makes a wrong guess cheap — a rejected V2 read
-        // silently becomes the V1 read, costing one request, because record reads are
-        // idempotent (unlike copy, which is why copy has no fallback).
+        // V2 detail with V1 as an automatic failsafe: own-archive records, plus foreign ones the caller
+        // says are public. Shared-with-me stays on V1, authorized server-side via share membership.
         if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file) || allowsForeignDetail {
             getRecordV2(file: file, then: handler)
             return
@@ -179,11 +167,8 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
-    /// Fetches the record via Stela GET /api/v2/records/{id}, maps it into the legacy
-    /// `RecordVO` (so all detail/preview/download consumers are unchanged), and falls
-    /// back to the V1 fetch on any error, decode failure, or a payload that lacks a
-    /// usable file (download URL + contentType — `loadRecord()` requires BOTH, so a
-    /// thin V2 response never degrades the preview to a blank screen).
+    /// Fetches the record via V2 and maps it into the legacy `RecordVO`, so consumers are unchanged.
+    /// Falls back to V1 on any error or a payload thin enough to blank the preview.
     private func getRecordV2(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
         let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: String(file.recordId), shareToken: ""))
         operation.execute(in: APIRequestDispatcher()) { [weak self] result in
@@ -230,27 +215,21 @@ class FilePreviewViewModel: ViewModelInterface {
     /// preview presenter — per-record ownership is checked separately, see below).
     var isStelaEnabled: Bool { usesStelaDetail }
 
-    /// True when the record belongs to the user's currently selected archive. Foreign/
-    /// shared records (Shares, public archive, share-link) carry a different or absent
-    /// (-1) archiveId and must stay on V1, whose bearer-token + server-side share
-    /// membership authorizes them; indeterminate ownership falls to V1.
+    /// True when the record is in the session's selected archive. A foreign or shared record carries
+    /// a different or absent archiveId and stays on V1; unknown ownership also falls to V1.
     private func isInCurrentArchive(_ file: FileModel) -> Bool {
         guard let currentArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return false }
         return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
 
-    /// Publish eligibility for the V2 copy route: flag on, a saved record (not a folder),
-    /// and owned by the current archive — foreign/shared records must publish via the V1
-    /// relocate, since the bearer-only V2 copy would be rejected and copy has NO V1
-    /// fallback (it is not idempotent).
+    /// Publish eligibility for the V2 copy: flag on, a saved record, own archive. A foreign record
+    /// must use the V1 relocate, since copy has no fallback and the bearer-only call would fail.
     var canPublishViaStelaCopy: Bool {
         isStelaEnabled && !file.type.isFolder && file.recordId > 0 && isInCurrentArchive(file)
     }
 
-    /// Publishes/copies the record into `destinationFolderId` via Stela
-    /// POST /records/{id}/copies. Copy is NOT idempotent, so this is flag-SELECT:
-    /// callers invoke it only when `isStelaEnabled`, and must NOT fall back to V1 on
-    /// error (a mis-read success would otherwise create a duplicate copy).
+    /// Copies the record into `destinationFolderId` via V2. Copy is not idempotent, so callers must
+    /// not fall back to V1 on error — a mis-read success would duplicate the copy.
     func copyRecordV2(destinationFolderId: String, completion: @escaping (Error?) -> Void) {
         let apiOperation = APIOperation(RecordV2Endpoint.copyRecord(recordId: String(file.recordId), destinationFolderId: destinationFolderId))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -267,18 +246,13 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
-    // Test seams for resolvePublicRootFolderIdV2 (mirror MyFilesViewModel's archives/children
-    // seams). NOTE: the two fetch wrappers below duplicate MyFilesViewModel's — a candidate
-    // for consolidation into a shared Stela-root resolver once both paths are committed.
+    // Test seams for `resolvePublicRootFolderIdV2`. The two wrappers below duplicate
+    // `MyFilesViewModel`'s and are a candidate for a shared root resolver.
     var archivesFetchV2Request: ((@escaping (Result<[ArchiveV2Data], Error>) -> Void) -> Void)?
     var rootChildrenFetchV2Request: ((String, @escaping (Result<[FolderChildV2Data], Error>) -> Void) -> Void)?
 
-    /// Resolves the current archive's PUBLIC-root folder id via the Stela archives search —
-    /// the VSP-1787 sibling of My Files root discovery: GET /api/v2/archives → match by
-    /// `archiveNbr` → `rootFolderId` → its `type.folder.root.public` child. Returns nil on
-    /// ANY failure (no archive, network error, archive not listed, missing/empty rootFolderId,
-    /// no public-root child, bad id) so publish falls back to the V1 `getPublicRoot`
-    /// destination lookup. The returned id feeds `copyRecordV2`'s `destinationFolderId`.
+    /// Resolves the archive's public-root folder id through the archives search, matching by
+    /// `archiveNbr`. Nil on any failure, so publish falls back to the V1 `getPublicRoot` lookup.
     func resolvePublicRootFolderIdV2(completion: @escaping (String?) -> Void) {
         guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr, !archiveNbr.isEmpty else {
             completion(nil)
@@ -382,19 +356,8 @@ class FilePreviewViewModel: ViewModelInterface {
         downloader = nil
     }
     
-    /// The file to play/preview: always the ORIGINAL upload.
-    ///
-    /// This briefly preferred `file.format.converted` for A/V. That was a regression: the
-    /// Archivematica-normalised derivative is not guaranteed to carry a playable audio track or to
-    /// be muxed for progressive streaming, so video played silently and stalled while buffering.
-    /// The original is also the higher-fidelity file, which matters in an archival product.
-    ///
-    /// The version before that probed `AVAsset(url:).isPlayable` synchronously on a REMOTE url to
-    /// decide, which blocks the main thread (`fileVO()` is called on main from `loadRecord`). Both
-    /// are avoidable: play the original, and if AVPlayer reports it cannot be loaded, retry with
-    /// `convertedAVFileVO()` — see `FilePreviewViewController`'s `.failed` handling. That keeps the
-    /// main thread free, costs nothing in the common case, and only pays a retry when the original
-    /// genuinely will not play.
+    /// Always the original upload: the normalised derivative may carry no playable audio track, and
+    /// probing which to use blocks main. An unplayable original retries via `convertedAVFileVO()`.
     func fileVO() -> FileVO? {
         recordVO?.recordVO?.fileVOS?.first
     }
@@ -406,15 +369,8 @@ class FilePreviewViewModel: ViewModelInterface {
         return recordVO?.recordVO?.fileVOS?.first(where: { $0.format == "file.format.converted" })
     }
     
-    /// The Archivematica-generated PDF rendition of this record, when it has one.
-    ///
-    /// Document types (spreadsheets, presentations, …) cannot be rendered inline by the
-    /// preview's web view: WebKit refuses the original's MIME type and turns the navigation
-    /// into a download, so nothing is ever displayed. This access copy is a real PDF that
-    /// PDFKit renders directly.
-    ///
-    /// Preview only, deliberately separate from `fileVO()` — that stays on the original so
-    /// Download and `fileName()` keep giving the user the file they actually uploaded.
+    /// The PDF rendition, for document types WebKit refuses to render inline and turns into a
+    /// download. Preview only: `fileVO()` stays on the original, so Download gives the real file.
     func pdfAccessCopyURL() -> URL? {
         guard let accessCopy = recordVO?.recordVO?.fileVOS?.first(where: {
             $0.type == "type.file.pdf.pdf" && $0.format == "file.format.archivematica.access"
@@ -451,13 +407,8 @@ class FilePreviewViewModel: ViewModelInterface {
     } 
     
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
-        // Stela V2 PATCH handles name / description / location edits — all idempotent
-        // (the server updates the record's fields, and its existing location row in place).
-        // DATE stays on V1: the record PATCH exposes only the EDTF `displayTime` column,
-        // not the `displaydt` timestamp the "Date" row displays, so a V2 date edit would
-        // not reflect. The V1 failsafe covers any V2 miss. Own-archive records only —
-        // same scoping as the read path: a foreign/shared record's bearer-only PATCH
-        // would just burn a doomed round-trip before the V1 failsafe re-applies.
+        // V2 PATCH covers name, description and location, which are idempotent. Date stays on V1: the
+        // PATCH exposes only the EDTF column, not the timestamp the Date row shows. Own archive only.
         if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
             updateV2(file: file, name: name, description: description, location: location, completion: completion)
             return

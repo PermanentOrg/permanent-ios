@@ -49,10 +49,8 @@ class SessionTests: XCTestCase {
     }
     
     func testSaveSession_NoSelectedArchive_RestoresInsteadOfThrowing() throws {
-        // A session can legitimately have no selected archive (no-archive accounts,
-        // fresh signup before the default archive is assigned). Restore must not
-        // throw: `encode(to:)` writes null for a nil archive, and a non-optional
-        // decode used to fail here — force-logging those users out on every launch.
+        // A session can legitimately have no selected archive, and `encode(to:)` writes null for one — so
+        // a required decode throws on restore and force-logs those accounts out every launch.
         let session = PermSession(token: token)
         session.account = accountVO
         session.selectedArchive = nil
@@ -76,11 +74,9 @@ class SessionTests: XCTestCase {
         XCTAssertNil(try sut.savedSession())
     }
 
-    // MARK: - Session-expiry presentation guard (H4)
-    // The old `current is AuthenticationViewController` guard could never trip (`current` is
-    // always the NavigationController wrapper), so repeated 401s re-ran dismiss + setRoot +
-    // alert. These pin the corrected predicate: dedupe while in flight, suppress when already
-    // on login, present otherwise.
+    // MARK: - Session-expiry presentation guard
+    // `current` is always the navigation wrapper, never the auth controller, so a naive type check
+    // never trips and every repeated 401 re-runs the whole flow. Pins the corrected predicate.
 
     @MainActor
     func testShouldPresentSessionExpiry_AlreadyPresenting_Suppresses() {

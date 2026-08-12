@@ -108,9 +108,8 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             folderId: folder.folderId,
             folderLinkId: folder.folderLinkId,
             name: folder.name,
-            // Only report a count once the listing has actually loaded — an
-            // in-flight `files` is empty, and the Live Activity would rather show
-            // no count than a wrong one.
+            // Only report a count once the listing has loaded: an in-flight
+            // `files` is empty, and no count beats a wrong one.
             itemCount: destination.isLoading ? nil : destination.files.count,
             isShared: isSharedWorkspace
         )

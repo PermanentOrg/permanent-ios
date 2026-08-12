@@ -447,9 +447,8 @@ class PublicProfilePageViewModel: ViewModelInterface {
             return
         }
         
-        // Always use update operation for basic profile item since it contains the archive name
-        // and cannot be deleted. Even if both full name and nickname are empty, we should
-        // update with empty values rather than attempting to delete.
+        // Always update, never delete: the basic profile item carries the archive name, so even two empty
+        // values are written as empty rather than removing the item.
         modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
             if result {
                 if self.basicProfileItem?.profileItemId == nil {

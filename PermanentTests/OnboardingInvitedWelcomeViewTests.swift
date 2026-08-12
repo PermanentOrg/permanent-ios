@@ -91,7 +91,7 @@ final class OnboardingInvitedWelcomeViewTests: XCTestCase {
         XCTAssertFalse(newArchiveCalled)
     }
 
-    // MARK: - All-accepted onboarding lockout (F1)
+    // MARK: - All-accepted onboarding lockout
 
     /// The user reached onboarding with archives ALL already accepted and no archive
     /// selected → adopt the first accepted one so "Next" can enable.
@@ -161,9 +161,8 @@ final class OnboardingInvitedWelcomeViewTests: XCTestCase {
         XCTAssertNil(vm.archiveToAdoptOnAppear())   // already selected → nothing to adopt
     }
 
-    /// Installs a minimal session carrying the given selected archive. The container is
-    /// always built first with a nil session (see makeContainer), so nothing here needs a
-    /// full account — `archiveToAdoptOnAppear` only reads `session.selectedArchive`.
+    /// Installs a minimal session carrying the given archive. No full account is needed, since
+    /// `archiveToAdoptOnAppear` only reads `session.selectedArchive`.
     private func setSession(selectedArchive: ArchiveVOData?) {
         let session = PermSession(token: "t")
         session.selectedArchive = selectedArchive

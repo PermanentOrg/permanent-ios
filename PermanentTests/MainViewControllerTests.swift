@@ -100,9 +100,8 @@ final class MainViewControllerTests: XCTestCase {
     }
 
     // MARK: - FAB visibility across select mode
-    // The + button is gated on archive permissions, but the RESTORE paths used to un-hide
-    // it unconditionally. The reported repro: open a viewer-role archive, tap Select, then
-    // deselect — the create/upload FAB appeared on an archive the user cannot write to.
+    // The + button is gated on archive permissions, so a restore path that un-hides unconditionally
+    // shows an upload button on a viewer-role archive.
 
     /// Wires just the outlets the select-mode handlers touch. Returns strong refs —
     /// controller outlets are weak.
@@ -167,10 +166,8 @@ final class MainViewControllerTests: XCTestCase {
     }
 
     func testUpdateFABViewVisibility_RestoresAlpha_NotJustIsHidden() {
-        // The FAB menu used to hide itself by fading alpha to 0 and setting isHidden. The
-        // permission gate only manages isHidden, so the FAB came back present-but-invisible
-        // — the "+ button never returns after an upload action" report. Showing it must
-        // restore alpha on every path, including when the view was left visible-but-clear.
+        // The permission gate only manages `isHidden`, so a hide that also faded alpha leaves the FAB
+        // present-but-invisible. Showing must restore alpha on every path.
         let vm = PermissionAwareMyFilesViewModel()
         vm.testArchivePermissions = [.read, .create, .upload]
         let (vc, retained) = makeSelectModeHarness(vm)
@@ -186,9 +183,8 @@ final class MainViewControllerTests: XCTestCase {
     }
 
     func testUpdateFABViewVisibility_RestoresAlpha_WhenNotHidden() {
-        // The hide sets isHidden in an animation completion, so a fast restore can land
-        // while isHidden is still false and alpha already 0 — that early-return path has to
-        // reset alpha too.
+        // The hide sets `isHidden` in an animation completion, so a fast restore lands with `isHidden`
+        // still false and alpha already 0 — that early-return path must reset alpha too.
         let vm = PermissionAwareMyFilesViewModel()
         vm.testArchivePermissions = [.read, .create, .upload]
         let (vc, retained) = makeSelectModeHarness(vm)
@@ -327,12 +323,8 @@ final class MainViewControllerTests: XCTestCase {
     
     func testClearButtonSelectorDisablesSelectingAndRestoresUI() {
         let vc = MainViewController()
-        // Permission-aware mock WITH write access: the FAB restore below is only correct
-        // for a writable archive. (A bare MyFilesViewModel has no session, so its
-        // permissions are [.read] — this test used to assert the FAB reappearing in that
-        // state, which was precisely the permission leak fixed by routing the restore
-        // through updateFABViewVisibility. The viewer case is covered by
-        // testDeselect_ViewerArchive_DoesNotRevealFAB.)
+        // Permission-aware mock with write access, since the restore below is only correct for a writable
+        // archive. A bare view model has no session and reads as `[.read]`.
         let vm = PermissionAwareMyFilesViewModel()
         vm.testArchivePermissions = [.read, .create, .upload]
         vc.viewModel = vm

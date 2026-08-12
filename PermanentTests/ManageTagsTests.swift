@@ -12,11 +12,8 @@ import KeychainSwift
 class ManageTagsTests: XCTestCase {
     var sut: ManageTagsViewModel!
 
-    /// Captured so tearDown can put the process-wide session back. createMockSession() below
-    /// installs a session whose account is AccountVOData.mock() ("Mock User"); leaving it behind
-    /// leaked into unrelated tests — it is what made
-    /// OnboardingContainerViewModelTests.testInit_NilCredentials_DefaultState see "Mock User"
-    /// instead of "". Previously masked by the suite's live-network 401s nulling the session.
+    /// Captured so tearDown restores the process-wide session: the mock installed below carries a mock
+    /// account, and leaving it behind leaks that name into unrelated tests.
     private var previousSession: PermSession?
 
     override func setUp() {

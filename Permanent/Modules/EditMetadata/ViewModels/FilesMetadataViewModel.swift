@@ -138,9 +138,8 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
 
-    /// Fetches the record via Stela GET /api/v2/records/{id} and maps it into the legacy
-    /// `RecordVO` so the metadata editor is unchanged. Returns nil on any error/decode
-    /// failure so the caller falls back to the V1 fetch.
+    /// Fetches the record via V2 and maps it into the legacy `RecordVO`, so the metadata editor is
+    /// unchanged. Nil on any failure, so the caller falls back to V1.
     private func getRecordV2(file: FileModel) async -> RecordVO? {
         return await withCheckedContinuation { continuation in
             let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: String(file.recordId), shareToken: ""))
@@ -165,9 +164,8 @@ class FilesMetadataViewModel: ObservableObject {
     }
     
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
-        // Stela V2 (flag-gated): fan out one PATCH /records/{id} {description} per record,
-        // with the V1 batch as an automatic failsafe. Records only — if the selection has
-        // any folder or unsaved record, the whole batch takes V1 (records-only V2 route).
+        // One PATCH per record, with the V1 batch as an automatic failsafe. Records only: any folder or
+        // unsaved record in the selection sends the whole batch to V1.
         if FeatureFlags.useStelaNavigation,
            selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
             selectedFiles.patchEachRecordToV2(fieldsFor: { _ in ["description": description] }) { [weak self] succeeded in
@@ -346,9 +344,8 @@ class FilesMetadataViewModel: ObservableObject {
         let date = dateFormatter.date(from: selectedFiles.first?.createdDT ?? "") ?? Date()
 
         let dateFormatterChanged = DateFormatter()
-        // Was "yyyy-dd-MM" — day and month were swapped, so e.g. Oct 9 displayed as
-        // Sep 10. Display-only (the metadata "date" row title). en_US_POSIX keeps the year
-        // Gregorian on non-Gregorian-calendar devices.
+        // Display-only, for the metadata date row. `en_US_POSIX` keeps the year Gregorian on devices
+        // set to a non-Gregorian calendar.
         dateFormatterChanged.locale = Locale(identifier: "en_US_POSIX")
         dateFormatterChanged.dateFormat = "yyyy-MM-dd hh:mm a"
 

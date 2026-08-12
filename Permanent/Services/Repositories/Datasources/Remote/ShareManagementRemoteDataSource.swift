@@ -282,10 +282,8 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
     }
     
     func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
-        // We need the shareLinkId to get V2 data, but this method signature expects a FileModel
-        // This is a limitation of the current interface - ideally we'd have a separate method
-        // that takes shareLinkId directly. For now, return nil to indicate V2 data not available
-        // from this method signature.
+        // V2 data needs a shareLinkId, which this signature doesn't carry — so it reports unavailable.
+        // A separate method taking the id directly would fix it.
         handler(nil, nil)
     }
     

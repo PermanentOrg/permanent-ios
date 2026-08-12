@@ -7,19 +7,13 @@
 
 import SwiftUI
 
-/// The expanded island at minimum height — 26268:46410. Used for the statuses the
-/// design does not give a folder card to (paused, processing, completed, failed): brand
-/// mark, an emphasised status word with a de-emphasised count, and the ring.
-///
-/// Figma draws this frame's content vertically centred in an 86pt box that the sensor
-/// housing overlaps, which cannot render. Here it sits below the housing instead, so the
-/// row reads slightly lower and taller than the frame — everything inside it matches.
+/// The expanded island at minimum height, for the statuses with no folder card. The design
+/// centres it in a box the sensor housing overlaps, so it sits lower here than drawn.
 struct UploadPillRow: View {
     let display: UploadActivityDisplay
 
-    /// "**Uploading** • 4 of 6" — 26268:46411. The emphasised status word and the
-    /// de-emphasised count are one string carrying two fonts and two colours, so they
-    /// sit on a shared baseline.
+    /// "**Uploading** • 4 of 6" — one string with two fonts and colours, so they share a
+    /// baseline.
     private var label: AttributedString {
         var word = AttributedString(display.statusWord)
         word.font = UploadActivityStyle.headerEmphasisFont
@@ -39,9 +33,8 @@ struct UploadPillRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(label)
                         .tracking(UploadActivityStyle.headerTracking)
-                    // Only paused has something for the user to do, so only paused gets a
-                    // hint. It mirrors the Lock Screen's "Tap to resume" so the two
-                    // presentations say the same thing.
+                    // Only paused has anything to act on, and it mirrors the Lock Screen's
+                    // wording so the two presentations say the same thing.
                     if let hint = display.hint {
                         Text(hint)
                             .font(UploadActivityStyle.detailFont)
@@ -68,7 +61,7 @@ struct UploadPillRow: View {
 }
 
 #if DEBUG
-/// 374 × 86 is the design's frame; the insets stand in for the real island's own.
+/// 374 × 86 is the design's size; the insets stand in for the real island's own.
 #Preview("Pill row — 374×86") {
     UploadPillRow(display: .previewPaused)
         .padding(.top, UploadActivityStyle.Pill.verticalPadding)

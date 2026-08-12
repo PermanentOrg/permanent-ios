@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-/// "Uploading to Permanent" on the left, "3 of 5" on the right — 26269:50897 in the
-/// expanded island, 26269:50896 on the Lock Screen. Identical in both.
+/// "Uploading to Permanent" on the left, "3 of 5" on the right. Identical in the expanded
+/// island and on the Lock Screen.
 struct ActivityHeaderRow: View {
     let title: String
     let trailing: String
@@ -26,10 +26,8 @@ struct ActivityHeaderRow: View {
         .font(UploadActivityStyle.headerFont)
         .tracking(UploadActivityStyle.headerTracking)
         .lineLimit(1)
-        // Figma pins this row to 22pt (`h-[22px]` on 26269:50898); SwiftUI's own line
-        // height for 17pt is ~20.3, which left the Lock Screen banner 3pt short of its
-        // 160pt. `minHeight` rather than `height` so the row still grows at larger
-        // accessibility text sizes instead of clipping.
+        // Pinned to 22pt; SwiftUI's own ~20.3 leaves the banner 3pt short of 160pt.
+        // `minHeight`, not `height`, so the row still grows at larger text sizes.
         .frame(minHeight: UploadActivityStyle.headerLineHeight)
     }
 }

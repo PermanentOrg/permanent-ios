@@ -28,11 +28,8 @@ class PermSession: Codable {
     }
     var account: AccountVOData!
 
-    /// Setting `selectedArchive` mirrors the value into App Group shared
-    /// UserDefaults via `SharedSelectedArchiveStore` so the ShareExtension
-    /// can fall back to this snapshot when the keychain session is unavailable.
-    /// `didSet` does not fire during decoding, so the keychain → in-memory
-    /// hydration path is unaffected.
+    /// Setting this mirrors it into App-Group defaults, so the ShareExtension has a fallback when the
+    /// keychain session is unavailable. `didSet` doesn't fire while decoding, so hydration is unaffected.
     var selectedArchive: ArchiveVOData? {
         didSet { SharedSelectedArchiveStore.write(selectedArchive) }
     }
@@ -52,10 +49,8 @@ class PermSession: Codable {
         token = try container.decode(String.self, forKey: .token)
         
         account = try container.decode(AccountVOData.self, forKey: .account)
-        // decodeIfPresent: `encode(to:)` writes null when no archive is selected
-        // (no-archive accounts, fresh signup before the default archive lands) —
-        // a non-optional decode here threw on restore and force-logged those
-        // users out on every launch.
+        // `decodeIfPresent`, because `encode(to:)` writes null when no archive is selected — a required
+        // decode throws on restore and force-logs those accounts out on every launch.
         selectedArchive = try container.decodeIfPresent(ArchiveVOData.self, forKey: .selectedArchive)
         
         selectedFiles = try container.decodeIfPresent([FileModel].self, forKey: .selectedFiles)
@@ -79,10 +74,8 @@ class PermSession: Codable {
     }
 }
 
-/// Mirrors the host app's currently-selected archive into App Group
-/// shared UserDefaults so the ShareExtension has a fallback when the
-/// keychain session is missing or doesn't carry a `selectedArchive`
-/// (e.g. fresh install of the extension after a recent host login).
+/// Mirrors the host's selected archive into App-Group defaults, so the ShareExtension has a
+/// fallback when the keychain session is missing or carries no archive.
 enum SharedSelectedArchiveStore {
     static func write(_ archive: ArchiveVOData?) {
         let key = Constants.Keys.StorageKeys.sharedSelectedArchiveKey

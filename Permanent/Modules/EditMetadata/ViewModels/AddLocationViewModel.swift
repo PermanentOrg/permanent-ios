@@ -129,9 +129,8 @@ class AddLocationViewModel: ObservableObject {
     
     func update(completion: @escaping ((Bool) -> Void)) {
         isLoading = true
-        // Stela V2 (flag-gated): fan out one PATCH /records/{id} {location} per record,
-        // with the V1 batch as an automatic failsafe. Records only. `geomapLatLong` (which
-        // resolves the LocnVO on coordinate selection) stays V1 and is untouched.
+        // One PATCH per record, with the V1 batch as an automatic failsafe. Records only, and the
+        // coordinate lookup stays on V1.
         if FeatureFlags.useStelaNavigation,
            let locnVO = locnVO,
            selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {

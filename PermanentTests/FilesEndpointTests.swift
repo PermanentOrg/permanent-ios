@@ -104,10 +104,8 @@ final class FilesEndpointTests: XCTestCase {
     }
 
     // MARK: - 401 force-logout exemption contract (ignoreErrors)
-    // Reads are exempt: a bearer-only fetch of a foreign/shared item legitimately 401s,
-    // and the V1 failsafe still surfaces a genuine session expiry. Writes must KEEP the
-    // expiry signal — a regression to `true` on patch/copy would let an expired session
-    // fail silently with no re-login prompt (copy has no V1 fallback at all).
+    // Reads are exempt, since a bearer-only fetch of a foreign item legitimately 401s. Writes must
+    // keep the signal, or an expired session fails silently with no re-login prompt.
 
     func testV2AuthExemption_ReadsExempt_WritesKeepExpirySignal() {
         XCTAssertTrue(RecordV2Endpoint.getRecordById(recordId: "1", shareToken: nil).ignoreErrors)
@@ -118,9 +116,8 @@ final class FilesEndpointTests: XCTestCase {
     }
 
     // MARK: - NetworkLogger body capping
-    // Bodies are stringified on the dispatcher's completion thread (currently main), so
-    // the logger must never render more than maxBodyLength bytes of a payload, and a
-    // truncated/non-UTF-8 body must degrade gracefully rather than drop the log line.
+    // Bodies stringify on the dispatcher's completion thread, so the logger must never exceed
+    // `maxBodyLength`, and a truncated or non-UTF-8 body must degrade rather than drop the line.
 
     func testNetworkLoggerBody_UnderCap_RendersFullString() {
         let body = #"{"ok":true}"#.data(using: .utf8)!
@@ -514,10 +511,8 @@ final class FilesEndpointTests: XCTestCase {
         func downloadTask(with request: URLRequest, fileName: String, progressHandler: ProgressHandler?, completion: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? { nil }
     }
 
-    /// Pins the "callbacks arrive on main" guarantee at the dispatcher layer: even though the
-    /// URLSession completion (and therefore the JSON parse) now runs on a background queue, the
-    /// dispatcher must re-deliver the OperationResult on the main thread. Fails if the `deliver`
-    /// main-hop in APIRequestDispatcher.handleJsonTaskResponse is removed.
+    /// Pins the callbacks-arrive-on-main guarantee: the URLSession completion and JSON parse run on a
+    /// background queue, so the dispatcher must re-deliver the result on main.
     func testDispatcher_DeliversResultOnMain_EvenWhenSessionFiresOffMain() {
         let session = BackgroundFiringSession(cannedData: Data(#"{"isSuccessful":true}"#.utf8))
         let dispatcher = APIRequestDispatcher(networkSession: session)

@@ -7,12 +7,8 @@
 
 import XCTest
 
-/// Walks through each option of the Settings (right side) menu — including the
-/// sub-options inside Storage and Login & Security — to exercise the
-/// `viewDidLoad`/init paths of every destination view controller. Each option
-/// presents a modal that we dismiss best-effort before returning to Private
-/// Files and opening Settings again for the next option. The goal is
-/// reachable-code coverage — not deep interaction with each destination screen.
+/// Walks every Settings menu option, including the Storage and Login & Security sub-options, to
+/// exercise each destination's load path. Coverage of reachable code, not deep interaction.
 class SettingsMenuNavigationUITests: BaseUITestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -87,9 +83,8 @@ class SettingsMenuNavigationUITests: BaseUITestCase {
         loginPage.waitForExistence()
     }
 
-    /// Opens settings, runs the supplied action on the menu, then dismisses
-    /// whatever ends up on top. Settings disappears as soon as a top-level
-    /// option is tapped, so each visit is independent.
+    /// Opens Settings, runs the action, then dismisses whatever ends up on top. Settings closes as
+    /// soon as a top-level option is tapped, so each visit is independent.
     private func visit(privateFilesPage: PrivateFilesPage,
                        _ tapOption: (SettingsMenuPage) -> Void) {
         privateFilesPage.toggleRightSideMenu()
@@ -107,9 +102,8 @@ class SettingsMenuNavigationUITests: BaseUITestCase {
         sleep(2)
     }
 
-    /// Taps a sub-option (Add storage, Change password, …) and immediately
-    /// dismisses the pushed/presented screen so we return to the parent menu
-    /// (Storage or Login & Security) ready for the next sub-option.
+    /// Taps a sub-option and immediately dismisses the screen it opens, returning to the parent menu
+    /// ready for the next one.
     private func walkSubOption(_ option: XCUIElement) {
         XCTAssertTrue(option.waitForExistence(timeout: 10),
                       "Expected sub-option to be visible: \(option)")

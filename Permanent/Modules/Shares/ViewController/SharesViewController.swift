@@ -191,13 +191,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self.collectionView.setContentOffset(.zero, animated: false)
             self.refreshControl.endRefreshing()
 
-            // Only fetch if this screen is actually on screen. Fetching while hidden is what made
-            // the list render blank: the archive switch auto-dismisses the settings sheet, so Shares
-            // reappears at the same time as the response lands, and a `reloadData()` that runs with
-            // no window leaves its cells un-laid-out. Racing that transition is unwinnable, so don't
-            // enter it — `loadedArchiveId` still points at the previous archive, which makes
-            // `syncSharesForCurrentArchive` fetch on the way in, with a spinner, on a screen that is
-            // already visible.
+            // Only fetch while on screen: a `reloadData()` with no window leaves cells un-laid-out and the
+            // list renders blank. `loadedArchiveId` still points at the old archive, so it refetches later.
             guard self.viewIfLoaded?.window != nil else { return }
             self.getShares(shouldShowSpinner: true)
         }
@@ -212,9 +207,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
         overlayView.frame = view.bounds
 
-        // The view can return to a window without an appear callback (non-fullscreen sheet
-        // dismissal), but layout always runs — so flush any relayout deferred from an off-window
-        // reload here. See `loadedArchiveId` for why this is checked rather than assumed.
+        // A non-fullscreen sheet dismissal can return the view to a window with no appear callback, but
+        // layout always runs — so flush any relayout deferred from an off-window reload here.
         if needsCollectionViewReloadOnAppear, viewIfLoaded?.window != nil {
             needsCollectionViewReloadOnAppear = false
             collectionView.reloadData()
@@ -287,25 +281,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
     }
     
-    /// The archive the currently displayed shares were loaded for, and whether the last reload ran
-    /// while this screen was off-window.
-    ///
-    /// Two separate failures produced the same "blank Shares list, not even an empty-state message"
-    /// report, and both are lifecycle-dependent, so both are handled by checking state on the way in
-    /// rather than by trusting a notification to arrive at a convenient moment:
-    ///
-    /// - The archive-change refresh lands while the archives sheet covers Shares, so `reloadData()`
-    ///   runs on a collection view with no window and its cells are never laid out. A device trace
-    ///   showed `viewModels=3 cvItems=3 bgViewNil=true` on a screen rendering nothing — and
-    ///   `bgViewNil` is why there was no message either: the data was not empty, so the empty view
-    ///   was correctly absent.
-    /// - Whether `viewWillAppear` even fires on the way back depends on how the sheet was dismissed
-    ///   and on its presentation style, so a flag set at notification time can be missed entirely.
-    ///
-    /// Comparing `loadedArchiveId` against the session is immune to both: if what is on screen
-    /// belongs to a different archive than the one now selected, it is refetched, no matter which
-    /// lifecycle callbacks ran. `viewDidLayoutSubviews` flushes a pending relayout for the case
-    /// where the view returns to a window without an appear callback.
+    /// Which archive the displayed shares belong to. Comparing it against the session on the way in
+    /// is immune to whichever lifecycle callbacks ran, unlike a flag set when a notification arrives.
     private var loadedArchiveId: Int?
     private var needsCollectionViewReloadOnAppear = false
 
@@ -761,9 +738,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         viewModel?.selectedFiles = []
         viewModel?.isSelecting = false
-        // Restore the FAB through the permission gate, never unconditionally: leaving
-        // select mode in a folder you can only view must NOT conjure the create/upload
-        // button (the gate reads isSelecting, so this must run after the reset above).
+        // Restore the FAB through the permission gate, never unconditionally: leaving select mode in a
+        // view-only folder must not conjure an upload button. Must run after the reset above.
         updateFAB()
         collectionView.reloadData()
     }
@@ -1255,9 +1231,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self.hideSpinner()
             switch status {
             case .success:
-                // Stamp what is now on screen, so `syncSharesForCurrentArchive` can tell whether it
-                // still matches the selected archive. Only on success: a failed refresh leaves the
-                // previous archive's data visible, and claiming otherwise would suppress the retry.
+                // Stamp what is on screen so the sync can tell whether it still matches the selected archive.
+                // Only on success: a failed refresh leaves the old data up, and lying would suppress the retry.
                 self.loadedArchiveId = self.sessionArchiveId
                 self.refreshCollectionView {
                     self.scrollToFileIfNeeded()
@@ -1347,10 +1322,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
                 switch status {
                 case .success:
-                    // Refetch instead of inserting the SOURCE models: a copy creates a
-                    // NEW record server-side, so the inserted row would carry the
-                    // ORIGINAL's ids — deleting/renaming "the copy" would hit the
-                    // original record (data loss). A move can change link ids too.
+                    // Refetch rather than insert the source models: a copy is a new server record, so the inserted
+                    // row would carry the original's ids and deleting "the copy" would delete the original.
                     self.floatingActionIsland?.showDoneCheckmark() {
                         self.dismissFloatingActionIsland({ [weak self] in
                             self?.fabView?.setVisibility(hidden: false)
@@ -1474,9 +1447,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     private func handleProgress(forFile file: FileModel, withValue value: Float) {
-        // Downloads are a serial FIFO in the downloads section (0), so the active item is always
-        // at row 0. The previous lookup used the file's index in `viewModels` (the synced
-        // section), which pointed at the wrong cell — or none. Mirror MainViewController.
+        // Downloads are a serial FIFO in section 0, so the active item is always at row 0. The file's
+        // index in `viewModels` belongs to the synced section and points at the wrong cell.
         guard let downloadingCell = collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? FileCollectionViewCell
         else {
             return
@@ -1524,7 +1496,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         viewModel?.uploadFiles(files, completion: completion)
     }
 
-    /// Guard 0: same semantics as `MainViewController.checkDuplicatesThenUpload`.
+    /// The pre-upload duplicate check — same semantics as `MainViewController`'s.
     /// See that doc-comment for full behaviour notes.
     private func checkDuplicatesThenUpload(
         files: [FileInfo],
@@ -1656,9 +1628,8 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
 
         guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
 
-        // Paste-destination mode is navigation-only (same rationale as MainViewController):
-        // tap a folder to drill into it; items can't be (re)selected while the relocate
-        // selection is fixed to the items being copied/moved.
+        // Paste-destination mode is navigation-only: the relocate selection is fixed to the items being
+        // copied, so a tap only drills into a folder.
         if viewModel.isSelectingDestination {
             guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
             viewModel.v2NavigationTarget = file
@@ -1680,9 +1651,8 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         } else {
 
             if file.type.isFolder {
-                // Seed the V2 forward-nav target so Stela drill-in engages and its children
-                // inherit this folder's accessRole (see SharedFilesViewModel.v2ChildContext).
-                // Nil when the flag is off / no V2 → navigateMin falls through to V1 safely.
+                // Seed the V2 forward-nav target so drill-in engages and children inherit this folder's
+                // accessRole. Nil falls through to V1 safely.
                 viewModel.v2NavigationTarget = file
                 let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
                 navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
@@ -1733,9 +1703,8 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                         headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
                     }
                 }
-                // A title-less button still occupies a tappable area, so in paste-destination
-                // mode hide it outright — otherwise tapping where "Select" used to be silently
-                // re-enters multi-select and lets items be reselected instead of navigating.
+                // A title-less button is still tappable, so hide it outright in paste mode — otherwise tapping
+                // where Select used to be silently re-enters multi-select.
                 headerView.rightButton.isHidden = viewModel?.isSelectingDestination ?? false
 
                 headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton()) }
@@ -1918,9 +1887,8 @@ extension SharesViewController: FABViewDelegate {
         
         present(hostingController, animated: true)
         
-        // Hide the FAB through the same API that shows it (see MainViewController) — a
-        // hand-faded alpha is not undone by the permission gate, so the FAB returned
-        // invisible after any menu action.
+        // Hide the FAB through the same API that shows it: the permission gate only manages `isHidden`,
+        // so a hand-faded alpha leaves it invisible after any menu action.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.fabView.setVisibility(hidden: true)
         }
@@ -2038,9 +2006,8 @@ extension SharesViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    /// Destination folder for an upload, carrying the name, item count and access
-    /// level that the upload Live Activity's folder card shows. Anything reached
-    /// through Shares sits in the Shared workspace.
+    /// Upload destination for the Live Activity's folder card. Anything reached through
+    /// Shares sits in the Shared workspace.
     private func uploadDestination(_ folder: FileModel) -> FolderInfo {
         FolderInfo(
             folderId: folder.folderId,

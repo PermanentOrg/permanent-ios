@@ -12,7 +12,7 @@ import SwiftUI
 struct UploadActivityLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: UploadActivityAttributes.self) { context in
-            // LOCK SCREEN / BANNER — 26269:50826
+            // LOCK SCREEN / BANNER
             UploadLockScreenBanner(display: display(for: context))
                 .modifier(BannerBackground())
                 .widgetURL(folderURL(for: context))
@@ -21,11 +21,8 @@ struct UploadActivityLiveActivity: Widget {
             let model = display(for: context)
             let deepLink = folderURL(for: context)
             return DynamicIsland {
-                // EXPANDED — the whole design is a full-width block, and `.bottom`
-                // is the only region that spans the island's full width (leading,
-                // center and trailing share the row the sensor housing sits in).
-                // Wrapped in a Link because the outer .widgetURL only covers the
-                // compact and minimal presentations.
+                // `.bottom` is the only full-width region; the others share the
+                // sensor-housing row. `Link` because `.widgetURL` skips expanded.
                 DynamicIslandExpandedRegion(.bottom) {
                     Link(destination: deepLink) {
                         if model.showsFolderCard {
@@ -36,12 +33,11 @@ struct UploadActivityLiveActivity: Widget {
                     }
                 }
             } compactLeading: {
-                // COMPACT LEADING — 26268:46381, the brand mark
+                // COMPACT LEADING — the brand mark
                 BrandMark(height: UploadActivityStyle.Compact.markHeight)
             } compactTrailing: {
-                // COMPACT TRAILING — 26268:46387, the progress ring. The glyph matters most
-                // here: collapsed, the arc is the only signal, and a paused arc is
-                // indistinguishable from a running one.
+                // The glyph matters most collapsed: the arc is the only signal,
+                // and a paused arc looks identical to a running one.
                 UploadProgressRing(
                     progress: model.progress,
                     metrics: .compact,
@@ -62,9 +58,8 @@ struct UploadActivityLiveActivity: Widget {
 
     // MARK: - Display model
 
-    /// Resolves the activity's state into the strings and accents the design calls
-    /// for. Every presentation reads from this, so the Lock Screen and the Dynamic
-    /// Island can't drift apart.
+    /// Resolves state into strings and accents. Every presentation reads this, so the
+    /// banner and the island cannot drift apart.
     private func display(for context: ActivityViewContext<UploadActivityAttributes>) -> UploadActivityDisplay {
         let state = context.state
         let status = effectiveStatus(context)
@@ -132,9 +127,8 @@ struct UploadActivityLiveActivity: Widget {
             ringTint: UploadActivityStyle.ringTint(for: status),
             ringGlyph: ringGlyph,
             hint: hint,
-            // Only the uploading state gets the folder card; the design's
-            // minimum-height pill covers the rest. Overridable in DEBUG so either
-            // layout can be inspected on device — see `expandedLayoutOverride`.
+            // Only uploading gets the folder card; the pill covers the rest.
+            // Overridable in DEBUG to inspect either on device.
             showsFolderCard: UploadActivityStyle.expandedLayout(for: status) == .folderCard
         )
     }

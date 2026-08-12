@@ -6,38 +6,8 @@
 
 import SwiftUI
 
-/// A SwiftUI view that represents a customizable toggle switch with configurable dimensions.
-/// 
-/// This view creates a toggle switch that:
-/// - Can be customized with specific width and height
-/// - Automatically scales to maintain proper proportions
-/// - Includes smooth spring animation when toggled
-/// - Wraps the toggle in a button for improved tap target size
-/// 
-/// The view is designed for use in settings, preferences, or any interface where
-/// users need to toggle between two states. It maintains a consistent look while
-/// allowing size customization to fit different design requirements.
-/// 
-/// - Parameters:
-///   - isOn: Binding to a Boolean value that determines the toggle's state
-///   - height: The height of the toggle (defaults to 20 points)
-///   - width: The width of the toggle (defaults to 36 points)
-///
-/// # Example Usage
-/// ```swift
-/// // Basic usage with default size
-/// CustomToggleView(isOn: $someToggleState)
-///
-/// // Custom sized toggle
-/// CustomToggleView(
-///     isOn: $someToggleState,
-///     height: 24,
-///     width: 44
-/// )
-/// ```
-///
-/// The view automatically handles proper scaling and touch target sizing
-/// to ensure a good user experience regardless of the specified dimensions.
+/// A toggle scaled to an arbitrary width and height, wrapped in a button so the tap target stays
+/// usable at small sizes.
 
 struct CustomToggleView: View {
     @Binding var isOn: Bool

@@ -33,9 +33,8 @@ class SessionKeychainHandler {
 
     func saveSession(_ session: PermSession) throws {
         let authData = try JSONEncoder().encode(session)
-        // KeychainSwift.set deletes-then-adds internally, but returns false on a failed
-        // write. Ignoring that silently drops the session (user looks logged in this run,
-        // but is logged out on next launch) — surface it so callers can react.
+        // `KeychainSwift.set` returns false on a failed write, and ignoring that silently drops the
+        // session — the user looks logged in until the next launch.
         guard keychain.set(authData, forKey: Self.keychainAuthDataKey) else {
             throw SessionKeychainError.writeFailed
         }
@@ -46,13 +45,8 @@ class SessionKeychainHandler {
     }
 }
 
-/// Probes the keychain at runtime to discover the access group iOS assigns
-/// the calling process by default — i.e. the first entry of the process's
-/// `keychain-access-groups` entitlement, resolved to `<TEAMID>.<group>`.
-///
-/// We need the resolved string so the host app and ShareExtension can set
-/// `KeychainSwift.accessGroup` *explicitly* and converge on the same physical
-/// keychain item regardless of iOS default-group quirks.
+/// Discovers the access group iOS assigns this process by default, resolved to `<TEAMID>.<group>`,
+/// so the app and extension can set it explicitly and converge on the same keychain item.
 enum KeychainAccessGroupResolver {
     private static let probeAccount = "_PermanentAccessGroupProbe"
     private static var cached: String?
