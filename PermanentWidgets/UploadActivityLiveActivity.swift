@@ -65,7 +65,10 @@ struct UploadActivityLiveActivity: Widget {
         let status = effectiveStatus(context)
         let progress = min(max(state.overallProgress, 0), 1)
         let percentText = "\(Int(progress * 100))%"
-        let counter = "\(state.completedCount) of \(state.totalFiles)"
+        // Counts finished files, except while processing: every file's bytes are up by then, so
+        // "n of n" is the honest reading and the count would otherwise stall a file short.
+        let counted = status == .processing ? state.totalFiles : state.completedCount
+        let counter = "\(counted) of \(state.totalFiles)"
 
         let headerTitle: String
         let fileLine: String
@@ -135,13 +138,12 @@ struct UploadActivityLiveActivity: Widget {
 
     // MARK: - Helpers
 
-    /// Treat a stale `.uploading` activity as `.paused` for visual purposes, so
-    /// Dynamic Island accents match the Lock Screen's paused state.
+    /// A stale in-progress activity reads as `.paused`, matching the Lock Screen. Covers
+    /// `.processing` too: nothing is landing, so "Finishing up…" would claim work that has stopped.
     private func effectiveStatus(_ context: ActivityViewContext<UploadActivityAttributes>) -> UploadActivityAttributes.UploadStatus {
-        if context.state.status == .uploading && context.isStale {
-            return .paused
-        }
-        return context.state.status
+        let status = context.state.status
+        let inProgress = status == .uploading || status == .processing
+        return inProgress && context.isStale ? .paused : status
     }
 
     private func folderURL(for context: ActivityViewContext<UploadActivityAttributes>) -> URL {

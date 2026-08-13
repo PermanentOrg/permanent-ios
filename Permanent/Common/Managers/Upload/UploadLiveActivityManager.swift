@@ -56,6 +56,7 @@ class UploadLiveActivityManager {
     private let minProgressPushDelta: Double = 0.01
     private var lastPushedProgress: Double = 0.0
     private var lastPushedFileName: String = ""
+    private var lastPushedStatus: UploadActivityAttributes.UploadStatus = .uploading
 
     /// Whether a Live Activity is currently active.
     var isActive: Bool { currentActivity != nil }
@@ -93,9 +94,13 @@ class UploadLiveActivityManager {
         let runningActivities = Activity<UploadActivityAttributes>.activities
         let snapshot = loadSnapshot()
 
-        // An activity stuck in `.processing` is a leftover from the old processing-timer path, and by
-        // then every file has completed — so flip it to `.completed` and let it dismiss.
-        let stuckProcessing = runningActivities.filter { $0.content.state.status == .processing && $0.activityState != .ended }
+        // A `.processing` activity the snapshot does not name is an orphan with all bytes sent, so
+        // end it completed. One it does name is mid-registration and must reach the reattach below.
+        let stuckProcessing = runningActivities.filter {
+            $0.content.state.status == .processing
+                && $0.activityState != .ended
+                && $0.id != snapshot?.activityId
+        }
         for activity in stuckProcessing {
             let finalState = UploadActivityAttributes.ContentState(
                 currentFileIndex: activity.content.state.totalFiles,
@@ -295,23 +300,30 @@ class UploadLiveActivityManager {
         let displayProgress = max(overallProgress, lastReportedProgress)
         lastReportedProgress = displayProgress
 
-        // Skip pushes that wouldn't visibly change the Lock Screen. Moving to a
-        // new file and reaching 100% always push; see `minProgressPushDelta`.
+        let status: UploadActivityAttributes.UploadStatus = isAwaitingRegistration
+            ? .processing
+            : .uploading
+
+        // Skip pushes that would not visibly change the Lock Screen. The status test is load-bearing:
+        // the 0.99 ceiling means the 100% branch never fires, so `.processing` would be throttled away.
         let fileChanged = fileName != lastPushedFileName
+        let statusChanged = status != lastPushedStatus
         guard fileChanged
+                || statusChanged
                 || displayProgress >= 1.0
                 || displayProgress - lastPushedProgress >= minProgressPushDelta
         else { return }
 
         lastPushedProgress = displayProgress
         lastPushedFileName = fileName
+        lastPushedStatus = status
 
         let state = UploadActivityAttributes.ContentState(
             currentFileIndex: min(fileIndex, totalFiles),
             totalFiles: totalFiles,
             currentFileName: fileName,
             overallProgress: displayProgress,
-            status: .uploading,
+            status: status,
             completedCount: completedFiles,
             failedCount: failedFiles,
             folderItemCount: displayedFolderItemCount
@@ -328,6 +340,9 @@ class UploadLiveActivityManager {
         } else {
             failedFiles += 1
         }
+        // This file's bytes are now in `completedFiles`, so clear the fraction or it counts twice,
+        // over-reporting the bar and tripping `.processing` a file early.
+        currentFileProgress = 0
         persistSnapshot()
 
         // Check if all files have been processed
@@ -427,7 +442,11 @@ class UploadLiveActivityManager {
             folderItemCount: displayedFolderItemCount
         )
 
-        let dismissDelay: TimeInterval = status == .completed ? 120 : 30
+        // A success has nothing left to read once the checkmark has been seen, so it goes as soon
+        // as the hold is over. A failure lingers, since the counts are the only report of it.
+        let dismissal: ActivityUIDismissalPolicy = status == .completed
+            ? .immediate
+            : .after(Date().addingTimeInterval(30))
         let hold = completionHoldInterval
 
         // Park the activity in the finishing slot and clear live state FIRST, so a new upload
@@ -446,7 +465,7 @@ class UploadLiveActivityManager {
             try? await Task.sleep(for: .seconds(hold))
             await activity.end(
                 .init(state: finalState, staleDate: nil),
-                dismissalPolicy: .after(Date().addingTimeInterval(dismissDelay))
+                dismissalPolicy: dismissal
             )
             await MainActor.run { self?.releaseFinishingActivity(activity) }
         }
@@ -543,15 +562,23 @@ class UploadLiveActivityManager {
     // MARK: - Private
 
     private func calculateOverallProgress() -> Double {
-        guard totalFiles > 0 else { return 0.0 }
+        UploadProgressMath.displayed(
+            completedFiles: completedFiles,
+            failedFiles: failedFiles,
+            currentFileProgress: currentFileProgress,
+            totalFiles: totalFiles
+        )
+    }
 
-        // Cap below 100% while any file is in flight: a file whose bytes are all uploaded isn't done
-        // until its registration lands, and "100%" beside "3 of 4" looks finished when it isn't.
-        let processed = completedFiles + failedFiles
-        guard processed < totalFiles else { return 1.0 }
-
-        let raw = (Double(completedFiles) + currentFileProgress) / Double(totalFiles)
-        return min(raw, 0.99)
+    /// True once every byte is uploaded but registrations have not all landed. Reported as
+    /// `.processing` so a long registration reads as work rather than a stall at 99%.
+    private var isAwaitingRegistration: Bool {
+        UploadProgressMath.isAwaitingRegistration(
+            completedFiles: completedFiles,
+            failedFiles: failedFiles,
+            currentFileProgress: currentFileProgress,
+            totalFiles: totalFiles
+        )
     }
 
     private func resetState() {
@@ -563,6 +590,7 @@ class UploadLiveActivityManager {
         lastReportedProgress = 0.0
         lastPushedProgress = 0.0
         lastPushedFileName = ""
+        lastPushedStatus = .uploading
         folderBaseItemCount = nil
         clearSnapshot()
     }
