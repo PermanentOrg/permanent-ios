@@ -154,27 +154,30 @@ platform :ios do
       increment_build_number({ build_number: latest_release + 1 })
     end
     
+    # match suffixes a profile's name when the canonical one is taken, so never hardcode names
+    profile_mapping = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+
     update_code_signing_settings(
         targets: ["Permanent"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive",
+        profile_name: profile_mapping["org.permanent.PermanentArchive"],
         code_sign_identity: "Apple Distribution"
     )
-    
+
     update_code_signing_settings(
         targets: ["PushExtension"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive.PushExtension",
+        profile_name: profile_mapping["org.permanent.PermanentArchive.PushExtension"],
         code_sign_identity: "Apple Distribution"
     )
-    
+
     update_code_signing_settings(
         targets: ["ShareExtension"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive.ShareExtension",
+        profile_name: profile_mapping["org.permanent.PermanentArchive.ShareExtension"],
         code_sign_identity: "Apple Distribution"
     )
 
@@ -182,7 +185,7 @@ platform :ios do
         targets: ["PermanentWidgetsExtension"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive.Widgets",
+        profile_name: profile_mapping["org.permanent.PermanentArchive.Widgets"],
         code_sign_identity: "Apple Distribution"
     )
 
