@@ -101,14 +101,8 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
         }
         .onDisappear {
             if #available(iOS 26.0, *) {
-                // On iOS 26, the global UINavigationBar.appearance() proxy set in our init
-                // bleeds into SwiftUI NavigationStack views (e.g. the Settings sheet) because
-                // toolbarBackground no longer overrides the proxy per-instance. Fully clear
-                // the proxy to transparent when this view disappears so any subsequently
-                // opened NavigationStack gets a clean, transparent nav bar.
-                // UIKit screens (Legacy Planning, main file browser) set isTranslucent = false
-                // explicitly in styleNavBar() / NavigationController.viewDidLoad, so they are
-                // not affected by resetting it to true here.
+                // On iOS 26 the global navigation-bar appearance proxy bleeds into SwiftUI NavigationStacks,
+                // since `toolbarBackground` no longer overrides it per instance — so clear it on disappear.
                 let transparent = UINavigationBarAppearance()
                 transparent.configureWithTransparentBackground()
                 UINavigationBar.appearance().standardAppearance = transparent

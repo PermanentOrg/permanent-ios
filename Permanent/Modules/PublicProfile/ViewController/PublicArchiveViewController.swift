@@ -324,9 +324,8 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     }
     
     func handleLocalArchiveDataUpdate(_ updatedArchive: ArchiveVOData) {
-        // Called when current archive's profile data is updated (local changes only)
-        // Updates UI without scrolling or session changes
-        // Update title with new archive name
+        // Local profile changes only: refreshes the title and UI without scrolling or touching the
+        // session.
         let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: updatedArchive.fullName ?? "")
         self.title = newTitle
         

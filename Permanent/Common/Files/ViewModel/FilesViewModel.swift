@@ -34,17 +34,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var navigationStack: [FileModel] = []
     var uploadQueue: [FileInfo] = []
 
-    /// Whether this screen routes folder navigation through the Stela V2 endpoint.
-    /// Default OFF (this base class hardcodes `false`). The opted-in workspaces override
-    /// this to `FeatureFlags.useStelaNavigation`: `MyFilesViewModel`, `PublicFilesViewModel`
-    /// (via inheritance), `SearchFilesViewModel`, `SharedFilesViewModel`, and
-    /// `PublicArchiveViewModel`. Everything else inherits `false` and stays on V1.
-    ///
-    /// The V2 `/children` payload carries no per-child accessRole, so each opted-in
-    /// workspace declares how to stamp one via `v2ChildContext(enteredFolder:)` — the
-    /// archive role by default, inherited-from-the-entered-folder for Shared. The Public
-    /// Gallery instead pins `archivePermissions`/`archiveAccessRole` themselves to
-    /// read-only, so the V1 failsafe cannot disagree with the V2 listing.
+    /// Whether this screen routes folder navigation through Stela V2. Off here; opted-in workspaces
+    /// override it and declare per-child roles via `v2ChildContext(enteredFolder:)`.
     var usesStelaNavigation: Bool { false }
 
     /// The folder a forward V2 navigation is heading into (the tapped item / resolved
@@ -55,15 +46,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// it on the main thread and report `.superseded` (see `getFolderChildrenV2`).
     private var childrenFetchGeneration = 0
 
-    /// Injection seam for the V2 children fetch used by navigation (same idiom as
-    /// SharesViewController.getSharesRequest). Tests inject outcomes to pin the
-    /// supersede/retry policy in `navigateV2` without network.
+    /// Injection seam for the V2 children fetch. Tests pin the supersede/retry policy in
+    /// `navigateV2` by returning outcomes, with no network.
     var childrenFetchV2Request: ((String, @escaping (ChildrenFetchOutcome) -> Void) -> Void)?
 
-    /// The folder whose children the in-flight V2 fetch is listing, captured by
-    /// `navigateV2`. Lets `getFolderChildrenV2` derive per-child context via
-    /// `v2ChildContext(enteredFolder:)` — Shared inherits this folder's accessRole
-    /// onto its children (the V2 `/children` payload carries no per-child role).
+    /// The folder the in-flight V2 fetch is listing, so `getFolderChildrenV2` can derive per-child
+    /// context. Shared inherits this folder's accessRole, since the payload carries none.
     private var v2EnteredFolder: FileModel?
 
     var downloadQueue: [FileModel] = []
@@ -92,12 +80,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return AccessRole.roleForValue(currentArchive?.accessRole)
     }
 
-    /// The `(permissions, accessRole)` to stamp on each child produced by the V2
-    /// `/folders/{id}/children` listing. Base uses the archive-level role — correct for
-    /// My Files / Public / Search, where a single archive role governs every item in the
-    /// (owned) workspace. Shared overrides this to INHERIT the entered folder's role,
-    /// because a shared folder's contents come back with no per-child role of their own.
-    /// Called on the main thread by `getFolderChildrenV2` (reads main-only session state).
+    /// The `(permissions, accessRole)` to stamp on each V2 child. Base uses the archive role; Shared
+    /// inherits the entered folder's. Called on main, since it reads session state.
     func v2ChildContext(enteredFolder: FileModel?) -> (permissions: [Permission], accessRole: AccessRole) {
         return (archivePermissions, archiveAccessRole)
     }
@@ -256,64 +240,44 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
-    /// Exponential-backoff schedule for the post-upload thumbnail-ready
-    /// polling. Each value is the wait BEFORE the next fire. Four fires total
-    /// span ~45 s of polling, which covers server-side thumbnail processing
-    /// for typical media without flooding the API with linear-interval polls.
-    /// Empty array → no polling.
+    /// Backoff schedule for post-upload thumbnail polling; each value is the wait before the next
+    /// fire, spanning ~45 s in four fires. Empty disables polling.
     static let thumbnailPollIntervals: [TimeInterval] = [3, 6, 12, 24]
 
-    /// Cadence of the post-paste/post-upload thumbnail poll (MainViewController.
-    /// scheduleNextThumbnailPoll). The server processes fresh copies SLOWLY — on staging
-    /// even the access-copy thumbnail can take minutes — so poll gently but persistently.
+    /// Cadence of the post-paste and post-upload thumbnail poll. The server processes fresh copies
+    /// slowly — minutes, sometimes — so this polls gently but persistently.
     static let thumbnailPollInterval: TimeInterval = 10
     /// Hard cap on consecutive polls (~5 minutes at 10s) so a folder whose records
     /// legitimately never produce a thumbnail can't refetch forever.
     static let thumbnailPollMaxRuns = 30
 
-    /// Cadence used while the pasted rows themselves are still MISSING. That's a
-    /// read-after-write race against the server's commit, which usually clears within a
-    /// second — polling it at `thumbnailPollInterval` made a pasted file take ~10s to show up.
+    /// Cadence while the pasted rows are still missing — a read-after-write race that usually clears
+    /// within a second. At `thumbnailPollInterval` a pasted file took ~10s to appear.
     static let pastedItemsPollInterval: TimeInterval = 1
     /// How many polls stay on the fast cadence before falling back to the slow one, so a row
     /// that never arrives doesn't hammer the server (5 × 1s ≈ 5s of quick re-checks).
     static let pastedItemsFastRuns = 5
 
-    /// Cadence while an item is mid copy/move (`status` "copying"/"moving"). Those items are
-    /// not tappable until the server finishes, and a V1 folder copy takes tens of seconds —
-    /// staging-measured: the copied folder row appeared 9s after the request and only flipped
-    /// to "ok" 15s later. Polling that at `thumbnailPollInterval` left the folder
-    /// un-enterable long enough to look broken; polling it at `pastedItemsPollInterval` would
-    /// hammer the server for the whole copy.
+    /// Cadence while an item is mid copy or move, which blocks tapping it and takes tens of seconds.
+    /// Slower would look broken; faster would hammer the server for the whole copy.
     static let transientStatePollInterval: TimeInterval = 2
 
-    /// True while any listed item is still being processed server-side: mid copy/move
-    /// (`thumbStatus` .copying/.moving), or a RECORD with no thumbnail source at all —
-    /// the fresh-Stela-copy shape (create-record-copy returns null thumbUrl* and its
-    /// access-copy 256 lands minutes later). Gates the thumbnail poll: while true the
-    /// folder keeps refetching every `thumbnailPollInterval`, bounded by
-    /// `thumbnailPollMaxRuns`; once everything settles the chain ends.
+    /// True while a listed item is still processing server-side: mid copy/move, or a record with no
+    /// thumbnail source yet. Gates the poll, bounded by `thumbnailPollMaxRuns`.
     var hasItemsAwaitingProcessing: Bool {
         hasItemsInTransientState || viewModels.contains { file in
             !file.type.isFolder && (file.thumbnailURL ?? "").isEmpty
         }
     }
 
-    /// True while a listed item is mid copy/move server-side (`status` "copying"/"moving").
-    /// Such items are deliberately NOT tappable (`FileModel.canBeAccessed`), so this is a
-    /// wait the user is actively blocked on — and it clears in seconds to tens of seconds,
-    /// unlike the thumbnail wait, which takes minutes. Drives the middle poll cadence.
+    /// True while an item is mid copy or move. Those are not tappable, so the user is blocked — and
+    /// it clears in seconds, unlike the thumbnail wait. Drives the middle poll cadence.
     var hasItemsInTransientState: Bool {
         viewModels.contains { $0.thumbStatus == .copying || $0.thumbStatus == .moving }
     }
 
-    /// How many items the destination folder must list before a paste counts as landed, and
-    /// the folder that expectation belongs to. A relocate is committed ASYNCHRONOUSLY
-    /// server-side, so the refetch fired straight after it can still return the PRE-paste
-    /// listing. `hasItemsAwaitingProcessing` cannot detect that: it inspects the items that
-    /// ARE listed, and a MOVED record arrives with its thumbnails already in place — so for a
-    /// move the item count is the only signal that works. Keyed to the folder id, so
-    /// navigating elsewhere makes the expectation inert.
+    /// Items the destination must list before a paste counts as landed, keyed to its folder so
+    /// navigating away makes it inert. A moved record arrives with thumbnails, so count is the signal.
     private(set) var expectedItemCount: Int?
     private(set) var expectedItemCountFolderId: Int?
 
@@ -356,16 +320,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    /// Injection seam for the single-record Stela V2 copy (VSP-1789), mirroring
-    /// `childrenFetchV2Request`. Tests pin the partition + aggregation policy without a
-    /// dispatcher by returning per-record success/failure. Production leaves it nil.
+    /// Injection seam for the single-record V2 copy. Tests pin the partition and aggregation policy
+    /// by returning per-record outcomes; production leaves it nil.
     var copyRecordV2Request: ((_ recordId: String, _ destinationFolderId: String, _ completion: @escaping (Bool) -> Void) -> Void)?
 
-    /// A record is eligible for the idempotent Stela V2 copy (POST /records/{id}/copies)
-    /// only when the flag is on, it is a SAVED record (not a folder — there is no V2
-    /// folder-copy route), and it lives in the CURRENT archive. A foreign/shared record
-    /// would be rejected on the bearer-only V2 call, so it stays on V1 (same gate as
-    /// `FilePreviewViewModel.canPublishViaStelaCopy`). Internal so tests can pin it.
+    /// Eligible for the idempotent V2 copy only when the flag is on, it is a saved record, and it is
+    /// in the current archive — the bearer-only V2 call would reject a foreign one.
     func isEligibleForStelaCopy(_ file: FileModel) -> Bool {
         guard usesStelaNavigation, !file.type.isFolder, file.recordId > 0,
               let currentArchiveId = currentArchive?.archiveID else { return false }
@@ -378,17 +338,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
             return
         }
 
-        // VSP-1789: the COPY action prefers the idempotent Stela V2 copy endpoint for
-        // own-archive records. The legacy V1 copy is NOT idempotent — a failed copy can
-        // orphan invisible files that keep consuming the member's storage. V2 copy has NO
-        // V1 failsafe (a mis-read success would silently duplicate the copy), so it is
-        // flag-SELECT per record: eligible records go V2, while folders and foreign
-        // records (no V2 route) stay on the V1 batch. MOVE is untouched.
-        //
-        // A non-positive destination folderId (e.g. a degenerate getPublicRoot result whose
-        // folderVO carries a nil folderID) is NOT a valid V2 target — since copy has no V1
-        // failsafe, posting "-1" would just fail. Route the whole copy through V1 in that
-        // case, mirroring the `folderId > 0` guard on the FilePreview/FileDetails publish path.
+        // COPY prefers the idempotent V2 endpoint per eligible record, since a failed V1 copy orphans
+        // invisible files that still consume storage. A non-positive destination id is not a V2 target.
         if fileAction == .copy, destination.folderId > 0 {
             let v2Records = files.filter { isEligibleForStelaCopy($0) }
             if !v2Records.isEmpty {
@@ -401,12 +352,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         performV1Relocate(files: files, to: destination, then: handler)
     }
 
-    /// Copies `v2Records` one at a time through Stela V2 and `v1Rest` through the V1 batch,
-    /// aggregating into one `ServerResponse` (`.success` only if EVERY copy succeeded).
-    /// V2 copies run serially and best-effort — a single failure never aborts the rest, and
-    /// there is NO V2→V1 fallback (copy is not idempotent). Serial execution also avoids a
-    /// data race on `errors`. The caller refetches the destination afterwards, so a partial
-    /// success still reflects the true server state. Clears selection on the main thread.
+    /// Copies eligible records through V2 serially and the rest through the V1 batch, reporting
+    /// `.success` only if every one succeeded. No V2→V1 fallback, since copy is not idempotent.
     private func copyViaStela(v2Records: [FileModel], v1Rest: [FileModel], to destination: FileModel, then handler: @escaping ServerResponse) {
         let destinationFolderId = String(destination.folderId)
         Task {
@@ -544,9 +491,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     func publish(files: [FileModel], then handler: @escaping ServerResponse) {
         fileAction = .copy
         guard let archiveNbr = currentArchive?.archiveNbr else {
-            // Always complete (and clear the copy state) so the caller's spinner is
-            // dismissed. A bare `return` here previously stranded MainViewController's
-            // spinner (it only hides it in the handler) with fileAction stuck at .copy.
+            // Always complete and clear the copy state: the caller only hides its spinner in the handler,
+            // so a bare `return` strands it with fileAction stuck at `.copy`.
             fileAction = .none
             handler(.error(message: .errorMessage))
             return
@@ -659,9 +605,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
 
     func removeFromQueue(_ position: Int) {
-        // `position` comes from a captured cell index; the queue can shrink between render
-        // and tap (an upload finishing removes its item), so guard before subscripting to
-        // avoid an index-out-of-range crash.
+        // `position` is a captured cell index and the queue can shrink between render and tap, so
+        // guard before subscripting.
         guard queueItemsForCurrentFolder.indices.contains(position) else { return }
         UploadManager.shared.cancelUpload(fileId: queueItemsForCurrentFolder[position].id)
     }
@@ -733,19 +678,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     #if DEBUG
-    /// Records which navigation path actually served the last folder load — "v2" when the
-    /// Stela path succeeded, "v1" when the legacy path ran (as the primary path or as the
-    /// failsafe). UI parity tests read this (surfaced on the Files collection view) so a
-    /// "V2" run can't silently pass on the V1 failsafe. DEBUG-only; no Release behavior.
+    /// Which path served the last folder load, so a parity test cannot silently pass on the V1
+    /// failsafe while claiming V2. DEBUG-only, with no Release behaviour.
     static var lastNavigationSource = "none"
     #endif
 
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
-        // Stela V2 path (Private Files only, gated by `usesStelaNavigation`), with the
-        // legacy V1 call kept as an automatic failsafe on any error or anomaly.
-        // Forward navigation consumes a one-shot target set by the caller (the tapped
-        // item / resolved root). Entries that don't set one — e.g. deep links and
-        // saved universal links — leave it nil and safely fall through to V1.
+        // V2 path where `usesStelaNavigation` allows it, with V1 as an automatic failsafe. Forward
+        // navigation consumes a one-shot target; entries that set none (deep links) fall through to V1.
         let v2Target = backNavigation ? navigationStack.last : v2NavigationTarget
         if !backNavigation { v2NavigationTarget = nil }
         if usesStelaNavigation,
@@ -757,16 +697,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
     }
 
-    /// One V2 navigation attempt, with the supersede policy applied:
-    /// - committed → done (append the target on forward navigation).
-    /// - failed    → V1 failsafe (this fetch was the NEWEST, so no ordering hazard).
-    /// - superseded, forward → retry once: a background refresh that raced the user's
-    ///   tap must not eat the navigation ("tap does nothing"); the retry claims the
-    ///   newest generation and wins. If superseded twice, give up quietly.
-    /// - superseded, back/refresh → complete `.success` WITHOUT touching data: the
-    ///   superseding fetch repaints this folder anyway; the caller just needs its
-    ///   completion (hide spinner / endRefreshing). Never V1-failsafe a superseded
-    ///   fetch — its out-of-order V1 response could overwrite the newer listing.
+    /// One V2 navigation attempt: committed → done, failed → V1 failsafe, superseded-forward →
+    /// retry once, superseded-back → complete quietly. Never V1-failsafe a superseded fetch.
     private func navigateV2(target: FileModel, params: NavigateMinParams, backNavigation: Bool, retriesLeft: Int, then handler: @escaping ServerResponse) {
         // Record the folder being entered so `getFolderChildrenV2` can derive per-child
         // context from it (Shared inherits this folder's role onto its children).
@@ -797,11 +729,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    /// Overridable (rather than private) so tests can observe that the V1 leg was taken
-    /// without standing up the network — same seam as `MyFilesViewModel.performV1GetRoot`.
-    /// Driving the real request from a unit test is not harmless: on a logged-in simulator
-    /// it carries a Bearer token, and a 401 reply posts `sessionExpiredNotificationName`,
-    /// which logs out asynchronously and clears the session later tests read.
+    /// Overridable so tests can observe the V1 leg without the network. A real request carries a
+    /// Bearer token, and its 401 logs out asynchronously and clears the session later tests read.
     func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
         #if DEBUG
         // Reached either as the primary V1 path (flag off) or as the V2 failsafe.
@@ -830,43 +759,29 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     // MARK: - Stela V2 navigation (Private Files)
 
-    /// Outcome of a single V2 children fetch. `superseded` is distinct from `failed`
-    /// on purpose: a superseded fetch committed nothing (a newer fetch owns the final
-    /// state) and must be completed QUIETLY — running the V1 failsafe for it would
-    /// reintroduce the exact out-of-order overwrite the generation guard prevents.
+    /// Outcome of one V2 children fetch. `superseded` is distinct from `failed` on purpose: it
+    /// committed nothing, and V1-failsafing it would reintroduce the out-of-order overwrite.
     enum ChildrenFetchOutcome {
         case committed
         case superseded
         case failed(message: String?)
     }
 
-    /// Fetches a folder's children via the Stela `/folders/{id}/children` endpoint,
-    /// maps them into `FileModel`s (archive-derived permissions), applies the active
-    /// sort client-side (the endpoint has no sort param), and replaces `viewModels`.
-    /// Reports `.failed` on any failure or corruption so the caller can fall back to
-    /// V1, and `.superseded` when a newer fetch took over. The completion is ALWAYS
-    /// called exactly once — a dropped completion leaves the caller's spinner/refresh
-    /// control waiting forever (the "tap does nothing" bug this replaces).
+    /// Lists a folder's children via V2, sorts client-side (the endpoint has no sort param) and
+    /// replaces `viewModels`. The completion always runs exactly once, or the spinner hangs.
     func getFolderChildrenV2(folderId: String, completion: @escaping (ChildrenFetchOutcome) -> Void) {
         // Request the whole folder in a single page (see FolderV2Endpoint.maxChildrenPageSize).
         let apiOperation = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize))
 
-        // Snapshot the per-child context and sort on the calling (main) thread so the
-        // decode/map/sort can run off-main without touching main-only view-model state.
-        // Base context is archive-derived; Shared overrides it to inherit the entered
-        // folder's role (the V2 payload has no per-child accessRole).
+        // Snapshot the per-child context and sort on main, so the decode, map and sort can run off-main
+        // without touching main-only view-model state.
         let context = v2ChildContext(enteredFolder: v2EnteredFolder)
         let permissions = context.permissions
         let accessRole = context.accessRole
         let sortOption = activeSortOption
 
-        // Staleness guard: decodes run on a CONCURRENT queue, so two in-flight fetches
-        // (e.g. a silent refresh overlapping a folder tap, or a sort change mid-flight)
-        // could land out of order and a stale result would overwrite the newer listing.
-        // Only the newest request may commit. Superseded fetches commit NOTHING but do
-        // report `.superseded` — dropping their completion entirely (the old behavior)
-        // left the superseded caller's spinner/refresh control waiting forever.
-        // Touched on main only.
+        // Staleness guard: decodes run concurrently, so only the newest request may commit or a stale
+        // result overwrites a newer listing. Superseded fetches commit nothing but still complete.
         childrenFetchGeneration += 1
         let generation = childrenFetchGeneration
 
@@ -884,18 +799,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
             }
             switch result {
             case .json(let response, _):
-                // Re-decode (JSONSerialization + Codable) over the unbounded page, plus the
-                // per-item map and sort, run off-main. NOTE: this is a partial win — the
-                // dispatcher already parsed the raw body on the main thread before this
-                // callback (APINetworkSession hops completions to main), so a residual
-                // main-thread cost remains for very large folders.
+                // Re-decode, map and sort off-main. A partial win only: the dispatcher already parsed the raw
+                // body on main before this callback, so a residual cost remains for very large folders.
                 DispatchQueue.global(qos: .userInitiated).async {
                     guard
                         let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder),
-                        // `items == nil` (missing/renamed key on an otherwise-decodable 2xx
-                        // body) is a contract failure, NOT an empty folder — every field of
-                        // FolderChildrenV2Response is optional, so only a PRESENT-but-empty
-                        // array means "verified empty". Anything else → V1 failsafe.
+                        // `items == nil` on an otherwise-decodable 2xx is a contract failure, not an empty folder —
+                        // only a present-but-empty array means verified empty. Anything else falls back to V1.
                         let items = model.items
                     else {
                         DispatchQueue.main.async { resolve(.failed(message: .errorMessage), nil) }
@@ -904,14 +814,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     var mapped: [FileModel] = []
                     for item in items {
                         let file = FileModel(model: item, permissions: permissions, accessRole: accessRole)
-                        // Sanity gate on the SOURCE item's kind (the field that actually received
-                        // the id): a write-critical id that resolved to the -1 sentinel is a
-                        // contract break — bail so the caller falls back to V1 rather than render
-                        // items whose move/delete/rename would target id -1. folderLinkId is
-                        // checked for BOTH kinds: every retained V1 write (delete, move, share)
-                        // keys on it, and a missing one silently becomes -1 in the FileModel init.
-                        // archiveNo is checked too: retained V1 writes (rename/move/batch edit)
-                        // send it, and a missing `archiveNumber` silently becomes archiveNbr "".
+                        // A write-critical id that resolved to the -1 sentinel is a contract break, so bail to V1 rather
+                        // than render items whose move or delete would target -1. Same for a missing archiveNo.
                         let hasBadId = (item.isFolder ? file.folderId <= 0 : file.recordId <= 0) || file.folderLinkId <= 0 || file.archiveNo.isEmpty
                         if hasBadId {
                             DispatchQueue.main.async { resolve(.failed(message: .errorMessage), nil) }
@@ -934,18 +838,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    /// Client-side ordering matching the six server sort options. Stela's `/children`
-    /// sorts by the folder's stored setting and takes no sort param, so the active
-    /// option is applied here. Parity with server collation is verified during the
-    /// staging shadow window.
+    /// Client-side ordering matching the six server sort options, applied here because `/children`
+    /// sorts by the folder's stored setting and takes no sort param.
     func sortedByActiveOption(_ items: [FileModel]) -> [FileModel] {
         return FilesViewModel.sorted(items, by: activeSortOption)
     }
 
-    /// Static so it can run off the main thread (see `getFolderChildrenV2`). For the
-    /// date/type options the sort key is precomputed once per item and the decorated
-    /// pairs are sorted (Swift's sort is stable), instead of recomputing the key —
-    /// notably `parseSortDate`'s two DateFormatter attempts — on every comparison.
+    /// Static so it can run off-main. Date and type options precompute the sort key once per item
+    /// and sort decorated pairs, rather than re-parsing dates on every comparison.
     static func sorted(_ items: [FileModel], by option: SortOption) -> [FileModel] {
         switch option {
         case .nameAscending:  return items.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
@@ -965,16 +865,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    // Parses a Stela date (records: displayDate, folders: displayTimestamp) into a
-    // comparable Date, so a mixed folder/record listing sorts chronologically regardless
-    // of raw-string format. Missing/unparseable dates sort oldest.
-    //
-    // Stela emits several shapes across endpoints (see ShareItemLinkSettingsViewModel):
-    //   • "2025-10-09T08:35:55Z"       — ISO8601, no fractional seconds
-    //   • "2025-10-09T08:35:55.000Z"   — ISO8601 with fractional seconds (JS toISOString)
-    //   • "2025-10-09 08:35:55+00"     — Postgres timestamptz (space separator, "+00" offset)
-    //   • "2025-10-09T08:35:55"        — zone-less local
-    // Each is tried in turn; anything unrecognized sorts as .distantPast.
+    // Four formatters because Stela emits ISO8601 with and without fractional seconds, Postgres
+    // timestamptz, and zone-less local. Each is tried in turn; anything else sorts oldest.
     private static let sortDateISO = ISO8601DateFormatter()
     private static let sortDateISOFractional: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
@@ -992,9 +884,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        // Anchor to UTC like the other three formatters: zone-less Stela timestamps are
-        // server-UTC, and a device-local parse would skew mixed-format listings by the
-        // device's UTC offset (same convention as ShareItemLinkSettingsViewModel).
+        // Anchor to UTC like the other three: zone-less timestamps are server-UTC, and a device-local
+        // parse would skew a mixed-format listing by the device's offset.
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         return formatter
     }()
@@ -1081,32 +972,15 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
-    /// True when the record belongs to the archive the SESSION currently has selected.
-    ///
-    /// Deliberately reads `AuthenticationManager.shared.session?.selectedArchive` rather
-    /// than `currentArchive`: subclasses override `currentArchive` to mean the archive being
-    /// VIEWED (`PublicArchiveViewModel` returns the foreign archive being browsed), so
-    /// comparing against it would report "own archive" for someone else's records.
-    /// Mirrors `FilePreviewViewModel.isInCurrentArchive`. Indeterminate ownership (no
-    /// session, or an absent `-1` archiveId) answers false, i.e. falls to V1.
+    /// True when the record belongs to the session's selected archive. Reads the session, not
+    /// `currentArchive`, which subclasses override to the archive being viewed. Unknown → false.
     func isInSessionArchive(_ file: FileModel) -> Bool {
         guard let sessionArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return false }
         return file.archiveId > 0 && file.archiveId == sessionArchiveId
     }
 
-    /// Whether a record rename may take the Stela `PATCH /records/{id}` route.
-    ///
-    /// OWN-ARCHIVE ONLY. `patchRecord` is sent bearer-only — `RecordV2Endpoint` attaches no
-    /// share token — so a shared-with-me record (which lives in a FOREIGN archive) would be
-    /// rejected. The rename itself would still land, because the V2 arm falls back to
-    /// `performV1Rename`, but `patchRecord` is NOT exempt from the 401 handler
-    /// (`ignoreErrors == false`, and `/api/v2/records` is not a non-critical path), so a 401
-    /// would post `sessionExpiredNotificationName` and log the user out for renaming a file
-    /// they were legitimately allowed to rename. Foreign records take V1, whose server-side
-    /// share membership authorizes them.
-    ///
-    /// Extracted from `rename` so both the positive and the negative case are unit-testable
-    /// without issuing a request.
+    /// Whether a rename may take `PATCH /records/{id}`. Own archive only: the call is bearer-only and
+    /// not exempt from the 401 handler, so a foreign record would log the user out for a legal rename.
     func canRenameViaStelaPatch(_ file: FileModel, newName: String) -> Bool {
         return usesStelaNavigation
             && !file.type.isFolder          // folder rename has no V2 route
@@ -1116,9 +990,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
 
     func rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
-        // Record rename → Stela PATCH /records/{id} (own archive only) with V1 as an
-        // automatic failsafe; renaming to the same name is idempotent so re-applying is
-        // harmless. Folder rename has no V2 route and stays on V1.
+        // Record rename goes through V2 with V1 as an automatic failsafe, which is safe because renaming
+        // to the same name is idempotent. Folder rename has no V2 route.
         if let newName = name, canRenameViaStelaPatch(file, newName: newName) {
             let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: ["displayName": newName]))
             apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in

@@ -89,9 +89,8 @@ struct ParentFolderV2: Model {
 
 struct FolderPathsV2: Model {
     let names: [String]?
-    // Added in stela PR #773 — the full breadcrumb trail (every ancestor's
-    // folder_link id and archive number), so navigation context is data, not a
-    // hand-maintained stack.
+    // The full breadcrumb trail — every ancestor's folder-link id and archive number — so navigation
+    // context is data rather than a hand-maintained stack.
     let folderLinkIds: [String]?
     let archiveNumbers: [String]?
 }
@@ -152,11 +151,8 @@ struct FolderChildV2Data: Model {
     let files: [FileV2Data]?
     let archive: FolderArchiveV2?
 
-    // --- Fields the wire carries NESTED for folders (flat for records) ---
-    // On the wire, a record child sends parentFolderId/parentFolderLinkId and
-    // thumbUrl* FLAT, while a folder child nests them under `parentFolder` and
-    // `thumbnailUrls`. The bare JSONDecoder does not flatten, so we decode both
-    // shapes and resolve flat-then-nested below.
+    // A record child sends parent ids and thumb URLs flat; a folder child nests them. `JSONDecoder`
+    // does not flatten, so both shapes are decoded and resolved flat-then-nested below.
     let parentFolder: ParentFolderV2?
     let thumbnailUrls: ThumbnailUrlsV2?
     // Folders date themselves via displayTimestamp; records use displayDate.
@@ -178,32 +174,23 @@ struct FolderChildV2Data: Model {
     // Resolve the flat (record) field first, then the nested (folder) field.
     var resolvedParentFolderId: String? { parentFolderId ?? parentFolder?.id }
     var resolvedParentFolderLinkId: String? { parentFolderLinkId ?? parentFolder?.folderLinkId }
-    // `thumbnailUrls.256` is the Archivematica access-copy thumbnail — small, and BLANK for
-    // HEIC (its HEIC→JPEG thumbnail generation produces nothing). It must NOT be preferred
-    // over the Permanent `.thumb.wNNN` renditions, and never used for HEIC (white square).
-    // But it IS a valid LAST resort for the list/grid slots (VSP-1566 lineage: use a 256
-    // thumb over nothing): a Stela COPY (POST /records/{id}/copies) currently gets NO
-    // `.thumb.wNNN` renditions at all (backend gap) — the access copy is the only
-    // thumbnail a fresh copy has, so without this fallback copies render as permanent
-    // placeholders. The 256 blur slot keeps flat `thumbnail256` only (preview behavior
-    // unchanged; a copy's preview blur comes through the 200 slot instead).
+    // The access copy is a valid last resort for list and grid slots, since a Stela copy has no
+    // `.thumb.wNNN` renditions at all — but never for HEIC, whose access copy is blank.
     var resolvedThumb256: String? { thumbnail256 }
     var resolvedThumb200: String? { thumbUrl200 ?? thumbnailUrls?.url200 ?? accessCopyThumb256 }
     var resolvedThumb500: String? { thumbUrl500 ?? thumbnailUrls?.url500 ?? accessCopyThumb256 }
     var resolvedThumb1000: String? { thumbUrl1000 ?? thumbnailUrls?.url1000 }
     var resolvedThumb2000: String? { thumbUrl2000 ?? thumbnailUrls?.url2000 }
 
-    /// The Archivematica access-copy thumbnail, HEIC-guarded: nil for HEIC originals
-    /// (their access copies are blank — the July white-square bug), the real small
-    /// thumbnail for everything else.
+    /// The access-copy thumbnail, HEIC-guarded: nil for HEIC originals, whose access copies come
+    /// back blank, and the real small thumbnail for everything else.
     private var accessCopyThumb256: String? {
         guard !isHEICOriginal, let url = thumbnailUrls?.url256, !url.isEmpty else { return nil }
         return url
     }
 
-    /// True when the ORIGINAL file is HEIC/HEIF — detected from `files[]` (the original's
-    /// granular `type`), with the upload/download filename extension as fallback for
-    /// listings that omit `files`.
+    /// True when the original is HEIC or HEIF, from the granular `type` in `files[]`, falling back
+    /// to the filename extension for listings that omit it.
     var isHEICOriginal: Bool {
         if files?.originalFileIsHEIC == true { return true }
         let name = (uploadFileName ?? downloadName ?? "").lowercased()
@@ -218,10 +205,8 @@ struct FolderChildV2Data: Model {
 
 // MARK: - String → Int boundary (Stela ids are numeric-as-string; convert here only)
 
-/// The single detection point for the "Stela opaque ids are numeric" assumption.
-/// Apply ONLY to the six opaque ids (folderId/recordId/folderLinkId/archiveId/
-/// parentFolderId/parentFolderLinkId) — never to `archiveNumber`, which is a
-/// dash/alpha string (e.g. "0001-test") and stays a String end to end.
+/// The one detection point for "Stela opaque ids are numeric". Only for the six opaque ids —
+/// never `archiveNumber`, which is a dash-and-alpha string and stays a String end to end.
 enum StelaIdBoundary {
     static func logNonNumeric(value: String, field: String, itemId: String?) {
         // Non-fatal in production; surfaces loudly in DEBUG/staging via the assertion
@@ -252,10 +237,8 @@ struct FileV2Data: Model {
 }
 
 extension Array where Element == FileV2Data {
-    /// True when the ORIGINAL upload (format `file.format.original`) is HEIC/HEIF — the
-    /// type whose Archivematica access-copy thumbnail comes back blank. Used to exclude
-    /// `thumbnailUrls.256` from the thumbnail fallbacks for those files only (see
-    /// FolderChildV2Data.resolvedThumb200 / RecordV2Data.preferredThumbnailURL).
+    /// True when the original upload is HEIC or HEIF, the type whose access-copy thumbnail comes back
+    /// blank. Excludes `thumbnailUrls.256` from the fallbacks for those files only.
     var originalFileIsHEIC: Bool {
         contains { file in
             guard (file.format ?? "").contains("original") else { return false }

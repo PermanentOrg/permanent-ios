@@ -54,9 +54,8 @@ class UploadFilesUITests: BaseUITestCase {
         detailsPage.selectDetailsTab()
         detailsPage.selectInfoTab()
 
-        // Closing FileDetails cascades through the delegate chain and also
-        // dismisses the underlying FilePreview — both modal screens go away
-        // and we land back on Private Files.
+        // Closing details cascades through the delegate chain and dismisses the preview under it, so
+                // both modals go and we land back on Private Files.
         detailsPage.close()
 
         privateFilesPage.waitForExistence()

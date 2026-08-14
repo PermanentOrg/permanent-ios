@@ -35,11 +35,8 @@ extension Int {
 }
 
 extension Int64 {
-    /// File size in the app's canonical style — a period decimal separator regardless of
-    /// device locale, matching the Figma spec ("4 MB", "2.8 MB") and the Storage screen.
-    /// Mirrors `ByteCountFormatter`'s `.file` style (1000-based units; whole numbers show
-    /// no decimal, fractional show one) but pins number formatting to en_US_POSIX so a
-    /// comma-locale device can no longer render "2,8 MB". Returns "" for non-positive sizes.
+    /// File size in the app's canonical style — "4 MB", "2.8 MB" — with 1000-based units and a period
+    /// separator pinned to `en_US_POSIX`, so a comma-locale device can't render "2,8 MB".
     var readableFileSize: String {
         guard self > 0 else { return "" }
 

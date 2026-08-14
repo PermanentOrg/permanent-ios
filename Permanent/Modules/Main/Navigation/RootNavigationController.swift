@@ -26,10 +26,8 @@ class RootNavigationController: UINavigationController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Re-apply instance-level appearance on iOS 26 every time a modal is dismissed
-        // over this navigation controller. styleNavBar() is only called once in viewDidLoad,
-        // so this ensures the nav bar stays dark blue after any proxy resets from
-        // CustomNavigationView.onDisappear during Liquid Glass transition evaluations.
+        // Re-apply the instance appearance after every modal dismissal: `styleNavBar()` runs once, so a
+        // SwiftUI view clearing the global proxy on disappear would otherwise strip the bar's colour.
         configureNavigationBarAppearance()
     }
     

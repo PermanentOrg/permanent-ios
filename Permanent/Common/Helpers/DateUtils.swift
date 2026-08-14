@@ -18,10 +18,8 @@ open class DateUtils {
         return fileTimestampString(for: Date())
     }
 
-    /// Testable core of `fileTimestamp`. 24-hour `HH` (not 12-hour `hh`): a 12-hour timestamp
-    /// with no AM/PM marker collides (1:30 PM and 1:30 AM both render "013000"), silently
-    /// overwriting an earlier capture. en_US_POSIX keeps it Gregorian on non-Gregorian-calendar
-    /// devices.
+    /// Testable core of `fileTimestamp`. 24-hour `HH`, because a 12-hour stamp with no AM/PM marker
+    /// collides and overwrites an earlier capture. `en_US_POSIX` keeps it Gregorian everywhere.
     static func fileTimestampString(for date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -29,15 +27,8 @@ open class DateUtils {
         return formatter.string(from: date)
     }
 
-    /// Single source of truth for a record's user-facing date — "Sept. 16, 2023" per the
-    /// Figma spec (abbreviated month + period + non-padded day + year). Accepts either a
-    /// full ISO timestamp ("2018-03-30T19:14:18.000Z") or an already-truncated
-    /// "yyyy-MM-dd": both are normalized with `String.dateOnly` first, so the milliseconds
-    /// and timezone that broke the old per-view-model formatters (which parsed with
-    /// "yyyy-MM-dd'T'HH:mm:ss" and fell through to showing the raw ISO string) no longer
-    /// matter. Parsing uses en_US_POSIX for stability; display uses en_US so the month
-    /// abbreviation ("Sept.") and separators stay consistent regardless of device locale.
-    /// Returns "" for nil / empty / the "-" placeholder.
+    /// The one source of a record's user-facing date, e.g. "Sept. 16, 2023". Takes a full ISO stamp or
+    /// a bare date; parses with `en_US_POSIX` and displays with `en_US`, so device locale can't shift it.
     static func displayDate(from raw: String?) -> String {
         guard let raw = raw, raw != "-" else { return "" }
         let dateOnly = raw.dateOnly
@@ -54,20 +45,16 @@ open class DateUtils {
         return display.string(from: date)
     }
 
-    /// Parses the backend's ISO timestamps (e.g. "2018-03-30T19:14:18.000Z") into a `Date`,
-    /// tolerating the presence or absence of fractional seconds and a timezone. The old
-    /// per-cell `"yyyy-MM-dd'T'HH:mm:ss"` parser silently failed on the ".000Z" suffix,
-    /// which left the metadata Date field blank. Interprets zone-less input as GMT (matching
-    /// the previous cell behavior). Returns nil for empty / "-" / unparseable input.
+    /// Parses the backend's ISO timestamps, with or without fractional seconds and a timezone; a
+    /// fixed-format parser silently fails on the ".000Z" suffix. Zone-less input is read as GMT.
     static func date(fromISO raw: String?) -> Date? {
         guard let raw = raw, !raw.isEmpty, raw != "-" else { return nil }
 
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        // Stela emits several shapes across endpoints (mirrors FilesViewModel.parseSortDate):
-        // ISO with/without fractional seconds, the Postgres timestamptz form with a space
-        // separator and hour-only "+00" offset (lowercase `x`), and zone-less/date-only.
+        // Stela emits several shapes: ISO with and without fractional seconds, Postgres timestamptz with
+        // a space separator and hour-only offset, and zone-less or date-only.
         for pattern in ["yyyy-MM-dd'T'HH:mm:ss.SSSZ",
                         "yyyy-MM-dd'T'HH:mm:ssZ",
                         "yyyy-MM-dd HH:mm:ss.SSSx",

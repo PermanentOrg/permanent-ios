@@ -235,9 +235,8 @@ class FileCollectionViewCell: UICollectionViewCell {
             case .synced:
                 fileImageView.contentMode = .scaleAspectFill
                 if let fileURL = URL(string: model.thumbnailURL) {
-                    // .retryFailed: a single transient CDN failure would otherwise put the
-                    // URL on SDWebImage's session-wide blacklist, leaving this item's
-                    // thumbnail permanently blank until app restart.
+                    // `.retryFailed`, because one transient CDN failure otherwise blacklists the URL session-wide and
+                    // leaves this thumbnail blank until restart.
                     fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder, options: [.retryFailed])
                 } else {
                     activityIndicator.startAnimating()
@@ -302,15 +301,8 @@ class FileCollectionViewCell: UICollectionViewCell {
         progressView.setProgress(value, animated: true)
     }
     
-    /// A visible-but-empty arranged subview still costs the enclosing stack its 5pt spacing.
-    /// `sharingInfoStackView` is only populated for `sharedFile` rows, and no call site
-    /// currently passes `sharedFile: true`, so on every row that 5pt was being taken from the
-    /// file name and date labels for nothing. Derived from the arranged subviews rather than
-    /// hardcoded so the stack reappears by itself whenever it does have content.
-    ///
-    /// Not a fix for clipped descenders: VSP-1823 investigated that and found the labels
-    /// render identical glyph ink at 70pt, 74pt and a 120pt row, so nothing was being cut.
-    /// This reclaims dead space; it does not change what the text looks like.
+    /// A visible-but-empty arranged subview still costs the stack its spacing, and this one is only
+    /// populated for shared rows. Derived from the subviews, so it reappears by itself with content.
     private func syncSharingInfoVisibility() {
         sharingInfoStackView.isHidden = sharingInfoStackView.arrangedSubviews.isEmpty
     }

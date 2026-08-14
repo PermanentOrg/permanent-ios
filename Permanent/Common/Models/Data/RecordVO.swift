@@ -111,31 +111,15 @@ extension RecordVOData {
         resolvedThumbnail256 ?? nonEmpty(thumbURL500) ?? nonEmpty(thumbURL200) ?? nonEmpty(thumbURL1000) ?? nonEmpty(thumbURL2000)
     }
 
-    /// `thumbnail256` on the V1 payload is the Archivematica access-copy thumbnail
-    /// (`/access_copies/…/thumbnails/….jpg`), which comes back blank for a HEIC original.
-    /// Preferring it unconditionally painted the file-type placeholder on every HEIC photo in a
-    /// listing while the `.thumb.wNNN` renditions sitting beside it in the same payload were
-    /// perfectly good — `thumbStatus` is `ok` and the full-res preview always loaded, which is
-    /// what made this look like a backend gap rather than a client one.
-    ///
-    /// Mirrors the V2 guard (`RecordV2Data.accessCopyThumb256` / `isHEICOriginal`) added for the
-    /// same payload quirk; V2 only ever reached it via `thumbnailUrls.256`, so the V1 field of
-    /// the same name was left unguarded. Deliberately narrow: only HEIC skips the 256, so every
-    /// non-HEIC record keeps the exact source it resolved before.
-    ///
-    /// Internal, not private: `FileModel.thumbnailURL256` must be built from this rather than the
-    /// raw field, because `FileModel.preferredThumbnailURL` tries the 256 slot FIRST and that slot
-    /// feeds the full-screen preview's blurred placeholder. Assigning the raw field there would
-    /// fix listings and leave the preview blurring a blank image — the white-square bug. Named to
-    /// match `RecordV2Data.resolvedThumbnail256`, which plays the identical role on V2.
+    /// V1's `thumbnail256` IS the access copy, blank for a HEIC original, so only HEIC skips it and
+    /// every other record keeps its existing source. Internal, because `FileModel` must build from this.
     var resolvedThumbnail256: String? {
         guard !isHEICOriginal else { return nil }
         return nonEmpty(thumbnail256)
     }
 
-    /// True when the ORIGINAL upload was HEIC/HEIF. V1 carries no granular `files[]` type, so
-    /// this is a filename-extension test only — the V2 model checks `files[].originalFileIsHEIC`
-    /// first and falls back to this same suffix check.
+    /// True when the original upload was HEIC or HEIF. V1 carries no granular type, so this is a
+    /// filename-extension test only; the V2 model checks the type first.
     var isHEICOriginal: Bool {
         let name = (uploadFileName ?? "").lowercased()
         return name.hasSuffix(".heic") || name.hasSuffix(".heif")

@@ -282,10 +282,8 @@ struct CancelUploadsConfirmationView: View {
     }
 }
 
-/// Wrapper used when presenting PublicFolderUpload confirmation from UIKit via UIHostingController.
-/// Starts hidden and animates in on appear so the sheet slides up (not fades in).
-/// onDismiss is called before the upload action so that the hosting controller is fully
-/// removed before the action presents another view controller.
+/// Hosts the public-folder upload confirmation from UIKit, starting hidden so the sheet slides up
+/// rather than fades. Dismisses before the action runs, so the host is gone before it presents.
 struct PublicFolderUploadConfirmationView: View {
     @State private var isPresented = false
     let onConfirm: () -> Void

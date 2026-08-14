@@ -69,12 +69,8 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
             self.handleError(completionBlock)
             return
         }
-        // Re-authenticating is only possible when onboarding was entered with typed
-        // credentials (fresh signup). Entering with a RESTORED session (biometric
-        // unlock, no-archive account) leaves these empty — and login() destroys the
-        // current session via logout() before attempting, so an empty-credential
-        // login would strip a valid session and strand the user. In that case
-        // refresh the existing session instead.
+        // Re-authenticating needs typed credentials, which a restored session doesn't have — and `login()`
+        // logs out first, so an empty-credential attempt would strip a valid session. Refresh instead.
         if containerViewModel.username.isEmpty || containerViewModel.password.isEmpty {
             AuthenticationManager.shared.syncSession { status in
                 if status == .success {

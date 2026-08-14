@@ -10,9 +10,8 @@ import SwiftUI
 import CoreImage
 import CoreImage.CIFilterBuiltins
 
-/// Full-screen overlay rendering the image preview loading / failure states (VSP-1768, Figma node 24502-17330).
-/// The blur is a gaussian-blurred copy of the thumbnail, aspect-fitted like the photo beneath,
-/// so letterbox areas around the image stay black (per design); it never touches the image itself.
+/// Full-screen overlay for the image preview's loading and failure states. The blur is a copy of
+/// the thumbnail, aspect-fitted like the photo beneath, so letterbox areas stay black.
 class ImagePreviewStateOverlayView: UIView {
     var onRetryTapped: (() -> Void)?
     /// Selects the noun in the failed-load copy: "Couldn't load image" for photos,
@@ -25,19 +24,18 @@ class ImagePreviewStateOverlayView: UIView {
     private let messageCard = UIView()
     private let iconImageView = UIImageView()
     private let messageLabel = UILabel()
-    // Gradient loader composited with the `screen` blend mode per the Figma component
-    // (Circles/Spinner-Two-Circles uses mix-blend-screen), which lightens it against
-    // the blurred photo beneath — reads as the "semi-transparent white" loader from S2.
+    // The loader composites with the `screen` blend mode, which lightens it against the blurred
+    // photo beneath and reads as a semi-transparent white.
     private let spinnerHost = UIHostingController(rootView: GradientSemiCirclesLoaderView(frameWidth: 48, frameHeight: 48))
 
     private var sourceImage: UIImage?
     private var spinnerDelayWorkItem: DispatchWorkItem?
-    /// Resting opacity of the loader. Over photos the screen blend already makes it read
-    /// as soft/translucent at full alpha; on the light neutral background screen blend
-    /// vanishes, so a reduced alpha gives the same melted-into-the-glow look instead.
+    /// Resting opacity of the loader. Over a photo the screen blend keeps it soft at full alpha; over
+    /// the light neutral background the blend vanishes, so a lower alpha stands in.
     private var spinnerTargetAlpha: CGFloat = 1
 
-    /// The loader appears only when the full image hasn't arrived within this interval (S2).
+    /// The loader appears only when the full image hasn't arrived within this interval, so a fast
+    /// load never flashes a spinner.
     static let spinnerAppearanceDelay: TimeInterval = 0.5
     /// Blur + loader fade-out duration once the full image is rendered (S3/S4).
     static let fadeOutDuration: TimeInterval = 0.5
@@ -138,9 +136,8 @@ class ImagePreviewStateOverlayView: UIView {
     }
 
     @objc private func overlayTapped() {
-        // Acknowledge the tap with a quick press animation on the card — gives the user
-        // visual feedback even when the retry can't proceed (e.g. still offline) or fails
-        // again immediately.
+        // Acknowledge the tap with a press animation, so there is feedback even when the retry can't
+        // proceed or fails again immediately.
         if !messageCard.isHidden {
             UIView.animate(withDuration: 0.12, delay: 0, options: [.allowUserInteraction], animations: {
                 self.messageCard.transform = CGAffineTransform(scaleX: 0.94, y: 0.94)
@@ -196,7 +193,7 @@ class ImagePreviewStateOverlayView: UIView {
             noThumbnailBackground.isHidden = hasThumbnail
             updateSpinnerBlend(overPhoto: hasThumbnail)
             messageCard.isHidden = true
-            // S2: the loader appears only when the full image hasn't arrived within 500 ms,
+            // The loader appears only when the full image hasn't arrived within 500 ms,
             // so fast loads never flash a spinner.
             spinnerHost.view.isHidden = true
             let workItem = DispatchWorkItem { [weak self] in
@@ -234,10 +231,8 @@ class ImagePreviewStateOverlayView: UIView {
         spinnerHost.view.alpha = spinnerTargetAlpha
     }
 
-    /// Over photo blur the loader uses screen blending (per the Figma component) at full
-    /// alpha — the blend keeps it soft. On the light neutral background screen blending
-    /// vanishes, so the loader instead drops to a lower alpha to melt into the logo glow,
-    /// matching the translucent feel of the photo loader.
+    /// Over photo blur, screen blending at full alpha keeps the loader soft. Over the light neutral
+    /// background the blend vanishes, so a lower alpha melts it into the logo glow instead.
     private func updateSpinnerBlend(overPhoto: Bool) {
         spinnerHost.view.layer.compositingFilter = overPhoto ? "screenBlendMode" : nil
         spinnerTargetAlpha = overPhoto ? 1 : 0.5
@@ -248,9 +243,8 @@ class ImagePreviewStateOverlayView: UIView {
     // placeholder appears within a frame or two of the thumbnail.
     private static let blurContext = CIContext()
 
-    /// Gaussian-blurs an image off the main thread. With `softEdges` false the edges are
-    /// clamped so the blur stays full-bleed (photo placeholders); with `softEdges` true the
-    /// blur fades out into transparency beyond the original bounds (logo glow).
+    /// Blurs an image off the main thread. `softEdges` false clamps the edges for a full-bleed photo
+    /// placeholder; true fades into transparency past the bounds, for the logo glow.
     private static func blurred(_ image: UIImage?, radius: Double = 24, softEdges: Bool = false, completion: @escaping (UIImage?) -> Void) {
         guard let image = image, let ciImage = CIImage(image: image) else {
             completion(nil)

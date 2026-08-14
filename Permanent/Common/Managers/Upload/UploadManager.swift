@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Network
 import UIKit
 import os.log
 
@@ -21,11 +22,8 @@ class UploadManager {
     
     var timer: Timer?
     
-    // Track registerRecord timing for dynamic concurrency adjustment.
-    // Cap of 10 is the upper bound — the dynamic throttle scales back down
-    // when registerRecord avg time exceeds 6 s (2× the optimal threshold),
-    // so a slow server keeps us at 3-5. Threshold of 3 s only ramps up when
-    // the API is genuinely fast.
+    // registerRecord timings driving the dynamic concurrency throttle: it ramps up under 3 s and
+    // scales back over 6 s, so a slow server settles at 3-5 rather than the cap of 10.
     private var recentRegisterTimes: [TimeInterval] = []
     private let minConcurrentUploads = 1
     private let maxConcurrentUploads = 10
@@ -36,9 +34,24 @@ class UploadManager {
     private let logger = Logger(subsystem: "com.permanent.ios", category: "UploadManager")
     private let flowLogger = Logger(subsystem: "com.permanent.ios", category: "UploadFlow")
 
-    /// True for `URLError`s caused by connectivity loss / handoff, not server
-    /// faults. Such failures shouldn't burn retry attempts — they'll recover
-    /// when the device is back online.
+    // MARK: - Reachability
+
+    /// Watches the network so the queue parks instead of retrying while offline, where
+    /// failures return in microseconds and the failure handler re-queues uncapped.
+    private let pathMonitor = NWPathMonitor()
+    private let pathMonitorQueue = DispatchQueue(label: "com.permanent.ios.upload.reachability")
+
+    /// Defaults to `true` so a monitor that has not reported yet can never block uploads.
+    /// Only a `.unsatisfied` path sets it false.
+    private var isNetworkAvailable = true
+
+    /// Coalesces `refreshQueue()` so no caller can spin it. Leading edge — the first call
+    /// still runs immediately.
+    private var refreshThrottle = RefreshThrottle(minInterval: 1.0)
+    private let refreshThrottleLock = NSLock()
+
+    /// True for `URLError`s from connectivity loss or handoff, not server faults. These must not
+    /// burn retry attempts, since they recover on their own.
     static func isTransientNetworkError(_ error: Error?) -> Bool {
         guard let urlError = error as? URLError else { return false }
         switch urlError.code {
@@ -54,10 +67,8 @@ class UploadManager {
     init() {
         uploadQueue.maxConcurrentOperationCount = defaultConcurrentUploads
 
-        // Add to the MAIN runloop in .common mode explicitly. `scheduledTimer` uses
-        // RunLoop.current — if UploadManager.shared is first accessed on a background thread,
-        // the 30s fallback timer would be scheduled on a runloop that never runs and never fire.
-        // .common also keeps it firing during scroll tracking.
+        // Main runloop in `.common` explicitly: `scheduledTimer` uses RunLoop.current, so a first
+        // access off-main would schedule on a runloop that never runs. `.common` survives scrolling.
         let refreshTimer = Timer(timeInterval: 30, target: self, selector: #selector(refreshQueue), userInfo: nil, repeats: true)
         RunLoop.main.add(refreshTimer, forMode: .common)
         timer = refreshTimer
@@ -85,27 +96,48 @@ class UploadManager {
                                               name: UIApplication.didEnterBackgroundNotification,
                                               object: nil)
 
+        startReachabilityMonitoring()
+
         logger.info("🔼 UploadManager initialized with \(self.uploadQueue.maxConcurrentOperationCount, privacy: .public) concurrent uploads")
     }
 
+    /// Suspends the queue with no route, so operations cannot start and fail instantly.
+    /// Resumes via `refreshQueue()`, which also knows about the failed-auth suspend.
+    private func startReachabilityMonitoring() {
+        pathMonitor.pathUpdateHandler = { [weak self] path in
+            guard let self = self else { return }
+            let available = path.status == .satisfied
+            DispatchQueue.main.async {
+                guard available != self.isNetworkAvailable else { return }
+                self.isNetworkAvailable = available
+
+                if available {
+                    self.flowLogger.info("🔼 [NETWORK] Route available — resuming upload queue")
+                    self.refreshQueue()
+                } else {
+                    self.flowLogger.info("🔼 [NETWORK] No route — suspending upload queue; \(self.uploadQueue.operationCount, privacy: .public) operation(s) parked")
+                    self.uploadQueue.isSuspended = true
+                }
+            }
+        }
+        pathMonitor.start(queue: pathMonitorQueue)
+    }
+
     @objc private func appDidEnterBackground() {
-        // Throttle concurrency while iOS is giving us limited runtime via
-        // `beginBackgroundTask`. 3 keeps a reasonable upload pace without
-        // burning the budget on too many parallel Phase 1/3 API calls.
+        // Throttled because `beginBackgroundTask` runtime is limited: 3 keeps a reasonable pace
+        // without spending the budget on parallel Phase 1/3 API calls.
         uploadQueue.maxConcurrentOperationCount = 3
         logger.info("🔼 App entered background — limiting to 3 concurrent uploads")
 
-        // Ask iOS to wake us later so the queue can keep draining once the
-        // foreground beginBackgroundTask budget expires. Host-app only —
-        // BGTaskScheduler is unavailable in app extensions.
+        // Ask iOS to wake us so the queue keeps draining after the foreground budget expires.
+        // Host app only: BGTaskScheduler is unavailable in app extensions.
         #if !APP_EXTENSION
         BackgroundUploadDrainTask.schedule()
         #endif
     }
 
-    /// True while any operation is still in-flight or any file remains in the
-    /// persisted queue. Drives whether we should keep a BGProcessingTask wake
-    /// request pending.
+    /// True while an operation is in-flight or a file remains in the persisted queue. Drives
+    /// whether a BGProcessingTask wake request stays pending.
     var hasPendingWork: Bool {
         if uploadQueue.operations.contains(where: { !$0.isFinished }) { return true }
         if let saved: [FileInfo] = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey),
@@ -123,6 +155,7 @@ class UploadManager {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+        pathMonitor.cancel()
     }
     
     @objc private func handleRegisterRecordTiming(_ notification: Notification) {
@@ -215,28 +248,26 @@ class UploadManager {
                 }
 
                 if model.results[0].data?[0].accountVO?.spaceLeft ?? 0 > filesSize {
-                    // Light, immediate UI work on main: stamp the queue owner
-                    // and start the Live Activity so the user gets visible
-                    // confirmation right away.
+                    // Light UI work on main: stamp the queue owner and start the Live Activity, so the user
+                    // gets visible confirmation right away.
                     DispatchQueue.main.async {
                         UserDefaults.standard.set(accountId, forKey: Constants.Keys.StorageKeys.uploadQueueOwnerAccountIdKey)
 
                         let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
-                        let folderLinkId = files.first?.folder.folderLinkId ?? 0
+                        let destination = files.first?.folder
                         UploadLiveActivityManager.shared.startActivity(
                             totalFiles: files.count,
                             firstFileName: files.first?.name ?? "",
                             archiveNo: archiveNo,
-                            folderLinkId: folderLinkId
+                            folderLinkId: destination?.folderLinkId ?? 0,
+                            folderName: destination?.name ?? "",
+                            folderItemCount: destination?.itemCount,
+                            folderIsShared: destination?.isShared
                         )
                     }
 
-                    // File-system prep (saveFile from contents / tmp→durable
-                    // move) on a background queue so the spinner can keep
-                    // animating. Critically: NO `uploadFilesKey` access here —
-                    // all UserDefaults read/write happens on main only, which
-                    // serializes us against the 30 s `refreshQueue` timer and
-                    // avoids the lost-update race that hit at 900-file scale.
+                    // File-system prep off-main so the spinner keeps animating. No `uploadFilesKey` access here:
+                    // UserDefaults is main-only, which serializes against the 30 s timer and avoids a lost update.
                     DispatchQueue.global(qos: .userInitiated).async {
                         let fileHelper = FileHelper()
                         for file in files {
@@ -278,10 +309,8 @@ class UploadManager {
         }
     }
     
-    /// File-system prep only (writes in-memory bytes to disk; moves tmp files
-    /// to durable storage). Does NOT touch `uploadFilesKey` — the caller is
-    /// responsible for persistence and must do it on main to avoid racing the
-    /// 30 s `refreshQueue` timer.
+    /// File-system prep only: writes bytes to disk and moves tmp files to durable storage. Does not
+    /// touch `uploadFilesKey` — the caller persists, on main, to avoid racing the 30 s timer.
     private func prepareFileForUpload(_ file: FileInfo, fileHelper: FileHelper) {
         if let fileContents = file.fileContents {
             file.url = fileHelper.saveFile(fileContents, named: file.id, withExtension: "jpeg", isDownload: false) ?? URL(fileURLWithPath: "")
@@ -302,18 +331,39 @@ class UploadManager {
         }
     }
     
-    @objc
-    func refreshQueue() {
-        if uploadQueue.isSuspended, PermSession.currentSession != nil {
+    /// Throttled entry point. The work itself is `performRefreshQueue()`; this only decides
+    /// whether to run it now, once more shortly, or not at all. See `RefreshThrottle`.
+    @objc func refreshQueue() {
+        refreshThrottleLock.lock()
+        let decision = refreshThrottle.request(now: ProcessInfo.processInfo.systemUptime)
+        refreshThrottleLock.unlock()
+
+        switch decision {
+        case .runNow:
+            performRefreshQueue()
+        case .alreadyScheduled:
+            break
+        case .schedule(let delay):
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self = self else { return }
+                self.refreshThrottleLock.lock()
+                self.refreshThrottle.pendingRunFired(now: ProcessInfo.processInfo.systemUptime)
+                self.refreshThrottleLock.unlock()
+                self.performRefreshQueue()
+            }
+        }
+    }
+
+    private func performRefreshQueue() {
+        // Network-aware on purpose: without it, the 30 s timer and every foreground would
+        // undo the offline suspend.
+        if uploadQueue.isSuspended, PermSession.currentSession != nil, isNetworkAvailable {
             logger.info("🔼 Session restored — resuming upload queue")
             uploadQueue.isSuspended = false
         }
 
-        // If a different account is now logged in than the one that owned the
-        // persisted upload queue, wipe the queue. Otherwise we'd silently
-        // upload User A's files into User B's archive (the server might
-        // accept the call with the new bearer token but the folderLinkId
-        // belongs to User A).
+        // Wipe the queue when a different account is logged in than the one that owned it: the
+        // folderLinkId still belongs to the old account, so the files would land in the wrong archive.
         if let currentAccountId = PermSession.currentSession?.account?.accountID {
             let ownerKey = Constants.Keys.StorageKeys.uploadQueueOwnerAccountIdKey
             if let ownerAccountId = UserDefaults.standard.object(forKey: ownerKey) as? Int,
@@ -333,30 +383,20 @@ class UploadManager {
 
         do {
             let selectedArchive = PermSession.currentSession?.selectedArchive
-            // Coordinated (cross-process) read, deliberately on the calling thread:
-            // it must complete before the enqueue below and stays ordered ahead of
-            // the main-queue block at the end of refreshQueue that touches the app's
-            // own persisted queue. The read is a small metadata decode and, in the
-            // common no-pending-shares case, hits an absent file with no contention.
+            // Cross-process read on the calling thread on purpose: it must complete before the enqueue
+            // below. Small metadata decode, and usually an absent file with no contention.
             let extensionUploads = try ExtensionUploadManager.shared.savedFiles()
             let selectedArchiveUploads = extensionUploads.filter({ $0.archiveId == selectedArchive?.archiveID })
             
             if selectedArchiveUploads.isEmpty == false {
                 logger.info("🔼 Found \(selectedArchiveUploads.count, privacy: .public) files from extension to upload")
 
-                // Clear the shared App-Group store only AFTER upload(files:) has durably
-                // persisted the queue (it persists asynchronously, deep in a dispatch).
-                // Clearing synchronously here lost the files if the app was killed in the
-                // gap — removed from the extension store but never enqueued. Clear on
-                // success only: on failure the files stay put and re-upload next launch.
+                // Clear the App-Group store only after `upload(files:)` has durably persisted the queue, which
+                // it does asynchronously. On failure the files stay put and re-upload next launch.
                 upload(files: selectedArchiveUploads) { [weak self] success in
                     guard success else { return }
-                    // Run the coordinated (cross-process) clear off the main thread:
-                    // this completion is delivered on main and the write barrier can
-                    // briefly block on the extension's own coordination. The clear has
-                    // no ordering dependency — it just drops the now-enqueued files
-                    // from the shared store; if the app dies first they stay put and
-                    // are re-enqueued (and deduped) next launch.
+                    // Cross-process clear off-main: this completion arrives on main and the write barrier can block
+                    // on the extension's coordination. No ordering dependency — a crash just re-enqueues and dedupes.
                     DispatchQueue.global(qos: .utility).async {
                         do {
                             try ExtensionUploadManager.shared.clearSavedFiles(selectedArchiveUploads)
@@ -399,7 +439,7 @@ class UploadManager {
                 if !removedIds.isEmpty {
                     savedFiles?.removeAll { removedIds.contains($0.id) }
                     urlsUpdated = true
-                    // Notify the LA that these files were silently dropped so
+                    // Notify the Live Activity that these files were silently dropped so
                     // its totalFiles counter doesn't wait forever on phantoms.
                     for _ in removedIds {
                         UploadLiveActivityManager.shared.fileCancelled()
@@ -410,9 +450,8 @@ class UploadManager {
                 }
             }
 
-            // Remove files that were already successfully uploaded (duplicate prevention).
-            // This handles the case where registerRecord succeeded but the app was force-quit
-            // before the main-queue cleanup could remove the file from the persisted queue.
+            // Duplicate prevention for the case where registerRecord succeeded but the app was force-quit
+            // before the cleanup removed the file from the persisted queue.
             let completedIds = UserDefaults.standard.stringArray(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey) ?? []
             if !completedIds.isEmpty, let files = savedFiles {
                 let duplicateIds = files.filter { completedIds.contains($0.id) }.map(\.id)
@@ -426,34 +465,24 @@ class UploadManager {
                     }
                     savedFiles?.removeAll(where: { duplicateIds.contains($0.id) })
                     try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
-                    // Notify the LA — these files were "completed" elsewhere
-                    // but our counter doesn't know about them. fileCancelled
-                    // decrements totalFiles so the LA isn't stuck waiting.
+                    // These completed elsewhere, so the counter never saw them. `fileCancelled` decrements
+                    // totalFiles so the Live Activity isn't left waiting.
                     for _ in duplicateIds {
                         UploadLiveActivityManager.shared.fileCancelled()
                     }
                 }
             }
             
-            // Clear the completed + in-flight sets + folder cache when no
-            // files remain. Otherwise stale Phase 3 in-flight markers would
-            // trigger unnecessary navigateMin lookups on the next batch.
+            // Clear the completed and in-flight sets and the folder cache once nothing remains, or stale
+            // Phase 3 markers trigger needless navigateMin lookups next batch.
             if savedFiles?.isEmpty != false {
                 Self.clearCompletedFileIds()
                 Self.clearPhase3InFlightIds()
                 self.clearFolderListingCache()
             }
             
-            // Only count operations that are still live — finished ones can linger
-            // in the queue briefly and would otherwise block retries by colliding
-            // on `file.id`. Also skip files still being drained from a legacy
-            // background URLSession session (one-time migration after the bg
-            // pipeline was removed).
-            // INVARIANT: exactly one live UploadOperation per file.id. This dedup is what
-            // makes the UNLOCKED Guard A/B check-then-act in UploadOperation safe
-            // (isFileAlreadyCompleted / wasPhase3Attempted → markPhase3InFlight): with a single
-            // live op per id, those per-id checks have no concurrent writer for the same id.
-            // Do not remove this dedup, and do not introduce a second concurrent op for one id.
+            // INVARIANT: exactly one live UploadOperation per `file.id`, which is what leaves the unlocked
+            // duplicate-prevention checks in `UploadOperation` no concurrent writer for a given id.
             let uploadNames = uploadQueue.operations.filter { !$0.isFinished }.compactMap(\.name)
             let drainingBackgroundFileIds = Set(BackgroundUploadMetadata.loadAll().map(\.fileInfoId))
             for file in savedFiles ?? [] where uploadNames.contains(file.id) == false && !drainingBackgroundFileIds.contains(file.id) {
@@ -463,11 +492,8 @@ class UploadManager {
                         savedFiles?.removeAll(where: { $0.id == file.id })
 
                         if (error as? UploadError) == .cancelled {
-                            // User cancel: cancelUpload / cancelAll already removed the file and
-                            // updated the Live Activity (fileCancelled / cancelActivity). Skip the
-                            // completed-accounting so the cancel isn't ALSO counted as a success
-                            // (double-count). Fall through to the didUploadFile notification so the
-                            // UI still refreshes.
+                            // A user cancel already removed the file and updated the Live Activity, so skip the completed
+                            // accounting or it double-counts. Still fall through to didUploadFile so the UI refreshes.
                         } else if error == nil {
                             FileHelper().deleteFile(at: file.url)
 
@@ -497,9 +523,8 @@ class UploadManager {
                             let maxRetries = 3
                             let isTransientNetworkError = Self.isTransientNetworkError(error)
 
-                            // Network errors don't count toward the retry cap — they recover
-                            // when connectivity does. Use a longer backoff to give the network
-                            // time to stabilise (Wi-Fi/cellular handoff can take 5–30s).
+                            // Network errors don't count toward the retry cap, since they recover when connectivity does.
+                            // Longer backoff because a Wi-Fi/cellular handoff can take 5-30s to settle.
                             if isTransientNetworkError {
                                 self.flowLogger.error("🔼 [HANDLER] NETWORK file=\(file.name, privacy: .public) id=\(file.id, privacy: .public) error=\(error?.localizedDescription ?? "unknown", privacy: .public) — re-queuing without counting retry")
                                 if var savedFiles = savedFiles {
@@ -508,10 +533,14 @@ class UploadManager {
                                 } else {
                                     try? PreferencesManager.shared.setCustomObject([file], forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                                 }
-                                // Re-queue synchronously — the new background URLSession task
-                                // will park itself via `waitsForConnectivity` until the network
-                                // is back, which works correctly even if iOS suspends us next.
-                                self.refreshQueue()
+                                // Only re-queue with a route: Phase 1/3 has no `waitsForConnectivity` and transient errors
+                                // bypass the retry cap, so offline this spins. The file is already persisted above.
+                                if self.isNetworkAvailable {
+                                    self.refreshQueue()
+                                } else {
+                                    self.uploadQueue.isSuspended = true
+                                    self.flowLogger.info("🔼 [HANDLER] No route — parking \(file.name, privacy: .public) until connectivity returns instead of re-queuing")
+                                }
                             } else {
                                 file.retryCount += 1
 
@@ -547,21 +576,25 @@ class UploadManager {
             if didRefresh {
                 logger.info("🔼 Refreshed upload queue with new files")
                 
-                // Start a new Live Activity only when re-queuing after app relaunch
-                // (i.e. no activity exists yet). If one already exists (from upload(files:)),
-                // don't double-count by calling startActivity again.
+                // Only start an activity when re-queuing after relaunch, where none exists yet. Calling
+                // startActivity again over a live one double-counts.
                 if !UploadLiveActivityManager.shared.isActive {
                     let reQueuedOps = uploadQueue.operations
                         .compactMap { $0 as? UploadOperation }
                         .filter { !$0.isFinished && !$0.isCancelled }
                     if !reQueuedOps.isEmpty {
                         let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
-                        let folderLinkId = reQueuedOps.first?.file.folder.folderLinkId ?? 0
+                        // Folder detail rides on the persisted queue, so a re-queue
+                        // after relaunch still fills the card.
+                        let destination = reQueuedOps.first?.file.folder
                         UploadLiveActivityManager.shared.startActivity(
                             totalFiles: reQueuedOps.count,
                             firstFileName: reQueuedOps.first?.file.name ?? "",
                             archiveNo: archiveNo,
-                            folderLinkId: folderLinkId
+                            folderLinkId: destination?.folderLinkId ?? 0,
+                            folderName: destination?.name ?? "",
+                            folderItemCount: destination?.itemCount,
+                            folderIsShared: destination?.isShared
                         )
                     }
                 }
@@ -593,11 +626,8 @@ class UploadManager {
     func cancelAll() {
         logger.info("🔼 Cancelling all uploads")
 
-        // Read the persisted queue BEFORE clearing it so we can delete the
-        // backing files on disk. Operations in `uploadQueue.operations` are a
-        // subset of the persisted list — anything that was queued but never
-        // got an UploadOperation (e.g. files added during a backgrounded
-        // window) would otherwise leak forever.
+        // Read the persisted queue before clearing it, to delete the backing files. `uploadQueue`
+        // is only a subset — anything queued without an operation would leak on disk forever.
         let persistedFiles: [FileInfo] = (try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)) ?? []
         let inFlightFiles = uploadQueue.operations.compactMap { ($0 as? UploadOperation)?.file }
 
@@ -639,10 +669,8 @@ class UploadManager {
     
     // MARK: - Duplicate Upload Prevention
 
-    /// Serializes the read-modify-write of the completed / in-flight marker sets. These are
-    /// mutated from concurrent upload-operation threads (markPhase3InFlight runs on the
-    /// OperationQueue) and from main-dispatched API completions; without this lock two threads
-    /// can interleave read→append→write and lose an update.
+    /// Serializes read-modify-write on the completed and in-flight marker sets, which are mutated
+    /// from both operation threads and main-dispatched completions. Without it, updates are lost.
     private static let markerLock = NSLock()
 
     /// Marks a file as completed immediately when registerRecord succeeds.
@@ -658,10 +686,8 @@ class UploadManager {
         defaults.synchronize()
     }
 
-    /// In-flight duplicate prevention: returns true if `fileId` has already had
-    /// a successful registerRecord. UploadOperation checks this at the start of
-    /// Phase 3 so a re-queued operation (e.g. after a network handoff) doesn't
-    /// create a duplicate archive record for a file that already finished.
+    /// True once `fileId` has had a successful registerRecord. Checked at the start of Phase 3 so a
+    /// re-queued operation cannot create a second archive record for a finished file.
     static func isFileAlreadyCompleted(fileId: String) -> Bool {
         let completedIds = UserDefaults.standard.stringArray(forKey: Constants.Keys.StorageKeys.completedUploadFileIdsKey) ?? []
         return completedIds.contains(fileId)
@@ -690,24 +716,11 @@ class UploadManager {
     }
 
     // MARK: - Phase 3 in-flight tracking
-    //
-    // Closes the "server-completed registerRecord but client lost the response"
-    // duplicate window. A file is marked in-flight just before registerRecord is
-    // issued and only removed on a successful 200. If the request errored (network
-    // or otherwise) the entry stays in-flight; subsequent retries consult
-    // `fetchFolderContents` to see whether the server already has the record
-    // before re-issuing the call (Guard B), and an end-of-batch verification pass
-    // does one final reconciliation against the destination folder.
+    // Closes the "server completed registerRecord but the client lost the response" duplicate window:
+    // marked before the call, cleared only on a 200, then reconciled by the retry and batch verifier.
 
-    /// Stored per entry under `inflightPhase3FileIdsKey` (JSON-encoded array).
-    /// Carries enough metadata (name + size + createdDT + folder context) for
-    /// the end-of-batch verifier to look the record up via `navigateMin` even
-    /// after the underlying `FileInfo` has been dropped from `uploadFilesKey`.
-    ///
-    /// `fileSize` is the canonical match key — it round-trips through the
-    /// server exactly (numeric, no formatting). `createdDT` is kept for
-    /// diagnostics and as a tiebreaker; it does NOT match exactly because the
-    /// server normalises the timezone form when storing/returning it.
+    /// Persisted under `inflightPhase3FileIdsKey`, carrying enough metadata for the verifier to find
+    /// the record after `FileInfo` is gone. `fileSize` is the match key; `createdDT` is not exact.
     struct Phase3InFlightEntry: Codable {
         let fileId: String
         let fileName: String
@@ -715,9 +728,8 @@ class UploadManager {
         let fileSize: Int64
         let folderLinkId: Int
         let archiveNo: String
-        /// Stela numeric folder id for the V2 dedupe listing. Optional for Codable
-        /// back-compat: entries persisted by an older app version decode this as nil,
-        /// and the verifier then falls back to the V1 listing (folderId ≤ 0 → V1).
+        /// Stela numeric folder id for the V2 dedupe listing. Optional for Codable back-compat: an
+        /// older entry decodes nil and the verifier falls back to V1.
         let folderId: Int?
     }
 
@@ -768,14 +780,8 @@ class UploadManager {
 
     // MARK: - End-of-batch verification
 
-    /// Walks the in-flight Phase 3 entries and reconciles each against the
-    /// destination folder. For entries whose record *is* present, marks the
-    /// file completed (correcting any earlier false-negative). For entries
-    /// whose record is *not* present, accepts the failure (drops from the
-    /// in-flight set). On API failure of any folder lookup, the corresponding
-    /// entries are left intact for the next batch's verification pass.
-    ///
-    /// Completion: `(found, missed)` counts so the LA can correct its display.
+    /// Reconciles each in-flight Phase 3 entry against the destination folder: present → mark
+    /// completed, absent → accept the failure, lookup failed → leave for the next pass.
     func verifyInterruptedUploads(completion: @escaping (_ found: Int, _ missed: Int) -> Void) {
         let entries = Self.phase3InFlightEntries()
         guard !entries.isEmpty else {
@@ -800,9 +806,8 @@ class UploadManager {
             fetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, folderId: folderId) { [weak self] items in
                 guard let self = self else { group.leave(); return }
                 guard let items = items else {
-                    // navigateMin failed for this folder — leave entries
-                    // alone so the next verification pass can retry. Do not
-                    // remove from the in-flight set, do not adjust counts.
+                    // navigateMin failed for this folder, so leave the entries alone for the next pass:
+                    // don't drop them from the in-flight set and don't adjust counts.
                     for entry in groupEntries {
                         self.flowLogger.warning("🔼 [VERIFY] SKIPPED file=\(entry.fileName, privacy: .public) — folder fetch unreachable, entry retained")
                     }
@@ -817,13 +822,12 @@ class UploadManager {
 
                     if isInFolder {
                         if alreadyCompleted {
-                            // Entry left behind by a successful retry (Fix 3).
-                            // No LA correction needed — already counted as
-                            // success inline. Just clean up the marker.
+                            // Left behind by a successful retry, which already counted it inline. No Live Activity
+                            // correction needed — just clean up the marker.
                             self.flowLogger.info("🔼 [VERIFY] FOUND file=\(entry.fileName, privacy: .public) — already counted as success, cleanup only")
                         } else {
                             // File was counted as failed inline but server
-                            // actually has it. Correct the LA.
+                            // actually has it. Correct the Live Activity.
                             self.flowLogger.info("🔼 [VERIFY] FOUND file=\(entry.fileName, privacy: .public) — correcting LA (was counted as failed)")
                             Self.markFileAsCompleted(fileId: entry.fileId)
                             lock.lock(); found += 1; lock.unlock()
@@ -852,18 +856,8 @@ class UploadManager {
     private var folderListingCache: [Int: (timestamp: Date, items: [ItemVO])] = [:]
     private let folderCacheTTL: TimeInterval = 10
 
-    /// Fetches the destination folder's contents so the Phase 3 retry path can
-    /// check whether the server already has the record. Results are cached for
-    /// 10 s so a burst of retrying ops doesn't fan out into N navigateMin calls.
-    ///
-    /// Completion contract:
-    /// - `nil`  → the `navigateMin` call itself failed (network, server, decode).
-    ///           Callers MUST NOT proceed to call `registerRecord` — they don't
-    ///           know whether the server has the record. Re-queue instead.
-    /// - `[]`   → folder is verified empty.
-    /// - `[…]`  → folder contains these items.
-    ///
-    /// The cache is only populated on a non-nil response.
+    /// The destination folder's contents, so a Phase 3 retry can tell whether the record already
+    /// exists. `nil` means the lookup failed — re-queue, never registerRecord. Cached 10 s.
     func fetchFolderContents(archiveNo: String, folderLinkId: Int, folderId: Int, completion: @escaping ([ItemVO]?) -> Void) {
         folderCacheLock.lock()
         if let cached = folderListingCache[folderLinkId],
@@ -876,14 +870,8 @@ class UploadManager {
         folderCacheLock.unlock()
 
         #if !APP_EXTENSION
-        // Stela V2 listing (flag-gated): one GET /folders/{id}/children instead of the
-        // two-step V1 chain, adapted into the same [ItemVO] currency so the matcher and
-        // all callers are unchanged. CRITICAL: on ANY error/decode failure fall back to
-        // V1 — a V2 miss must NEVER surface as `[]` (empty = "verified no duplicate" would
-        // green-light a duplicate upload). Only a V1 failure yields `nil` (→ re-queue).
-        // Owned-archive only: a destination shared from a foreign archive stays on V1 —
-        // the V2 read is bearer-only (no share token) and a foreign 401 would otherwise
-        // risk a forced logout mid-upload (same scoping as the record detail read).
+        // Flag-gated V2 listing, adapted to the same [ItemVO] currency. Any V2 failure falls back to V1,
+        // since `[]` would green-light a duplicate; own-archive only, as the bearer-only read 401s foreign.
         let currentArchiveNbr = PermSession.currentSession?.selectedArchive?.archiveNbr
         if FeatureFlags.useStelaNavigation, folderId > 0,
            !archiveNo.isEmpty, archiveNo == currentArchiveNbr {
@@ -892,15 +880,11 @@ class UploadManager {
                 guard let self = self else { completion(nil); return }
                 switch result {
                 case .json(let response, _):
-                    // Decode + per-item adaptation over an unbounded page is heavy — run it
-                    // off-main (the dispatcher delivers this completion on the main thread),
-                    // mirroring FilesViewModel.getFolderChildrenV2. Completion hops back to
-                    // main to match the V1 path's delivery queue.
+                    // Decode and per-item adaptation over an unbounded page is heavy, and the dispatcher delivers
+                    // on main. Hops back to main so the completion queue matches the V1 path.
                     DispatchQueue.global(qos: .userInitiated).async {
-                        // `items == nil` (missing/renamed key on an otherwise-decodable 2xx
-                        // body) is a contract failure, NOT an empty folder — every field of
-                        // FolderChildrenV2Response is optional, so only a PRESENT-but-empty
-                        // array may mean "verified empty". Anything else → V1 failsafe.
+                        // `items == nil` on an otherwise-decodable 2xx is a contract failure, not an empty folder —
+                        // only a present-but-empty array means verified empty. Anything else falls back to V1.
                         guard let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder),
                               let children = model.items else {
                             DispatchQueue.main.async {
@@ -925,21 +909,11 @@ class UploadManager {
         performV1FetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, completion: completion)
     }
 
-    /// Legacy V1 two-step listing (navigateMin → getLeanItems). Retained as the automatic
-    /// failsafe behind the V2 path above, and used directly when the flag is off or in the
-    /// ShareExtension (which has no V2 path). Same completion contract as the caller.
+    /// The V1 two-step listing, kept as the automatic failsafe behind V2 and used directly when the
+    /// flag is off or from the ShareExtension. Same completion contract as the caller.
     private func performV1FetchFolderContents(archiveNo: String, folderLinkId: Int, completion: @escaping ([ItemVO]?) -> Void) {
-        // Two-step chain — same pattern the file browser uses.
-        //
-        // Step 1 — `navigateMin` returns the folder skeleton + a list of child
-        // `folder_linkId`s but the child `uploadFileName` / `size` fields come
-        // back as `nil` (it's a minimal endpoint).
-        //
-        // Step 2 — `getLeanItems` takes those `folder_linkId`s and returns the
-        // hydrated records with `uploadFileName` + `size` populated. That's
-        // what we need to match against for duplicate detection — the server
-        // rewrites `displayName` from EXIF, but `uploadFileName` is preserved
-        // verbatim from `RegisterRecordParams.filename`.
+        // `navigateMin` returns child linkIds with nil names and sizes, so `getLeanItems` hydrates them.
+        // Dedupe matches `uploadFileName`, which survives verbatim; the server rewrites displayName.
         let navigateMinParams: NavigateMinParams = (archiveNo, folderLinkId, nil)
         let navigateMinOp = APIOperation(FilesEndpoint.navigateMin(params: navigateMinParams))
         navigateMinOp.execute(in: APIRequestDispatcher()) { [weak self] result in
@@ -987,10 +961,8 @@ class UploadManager {
         }
     }
 
-    /// Drops the cached listing for a specific folder. Called from
-    /// `UploadOperation` right after a successful `registerRecord` so that the
-    /// next reader gets a fresh listing rather than a snapshot from before
-    /// this file's record was committed.
+    /// Drops one folder's cached listing, right after a successful `registerRecord`, so the next
+    /// reader sees the new record rather than a pre-commit snapshot.
     func invalidateFolderListingCache(folderLinkId: Int) {
         folderCacheLock.lock()
         folderListingCache.removeValue(forKey: folderLinkId)

@@ -5,8 +5,8 @@
 //  Created by Lucian Cerbu on 29.05.2026.
 //
 //  Centralises the "is this picked file already a record in the destination
-//  folder?" lookup used by Guard B (per-retry navigateMin check), the
-//  end-of-batch verifier, and Guard 0 (pre-upload existence check).
+//  folder?" lookup used by the per-retry folder-existence check, the
+//  end-of-batch verifier, and the pre-upload duplicate prompt.
 //
 //  Match key, in priority order:
 //   1. `uploadFileName` exact equality — the server preserves this verbatim
@@ -24,13 +24,8 @@
 import Foundation
 
 extension Array where Element == ItemVO {
-    /// Returns the first record whose `uploadFileName` matches `name` exactly,
-    /// or whose `displayName` matches `name` with its extension stripped.
-    ///
-    /// When `size` is supplied and the candidate record also has a positive
-    /// `size`, the two byte counts must match; otherwise name match alone is
-    /// sufficient. Zero or nil on either side is treated as "unknown" so we
-    /// fall back to the name-only behaviour for legacy records.
+    /// The first record matching `name` on `uploadFileName`, or on `displayName` with its extension
+    /// stripped. `size` must agree when both sides have one; unknown on either side means name-only.
     func record(forUploadName name: String, size: Int64? = nil) -> ItemVO? {
         let stripped = (name as NSString).deletingPathExtension
         return first { item in
@@ -47,11 +42,8 @@ extension Array where Element == ItemVO {
 
 #if !APP_EXTENSION
 extension FolderChildV2Data {
-    /// Adapts a Stela V2 child record into the minimal `ItemVO` the dedupe matcher
-    /// reads (uploadFileName / displayName / size) so a V2 folder listing flows through
-    /// the existing `ItemVO` matcher unchanged. All ItemVO fields are optional, so the
-    /// partial decode always succeeds for a well-formed child; returns nil otherwise and
-    /// callers drop nils. Fenced out of the ShareExtension target (which has no V2 path).
+    /// Adapts a V2 child into the minimal `ItemVO` the dedupe matcher reads, so a V2 listing flows
+    /// through it unchanged. Nil for a child that won't decode; callers drop nils.
     func toMatchableItemVO() -> ItemVO? {
         var payload: [String: Any] = [:]
         if let uploadFileName = uploadFileName { payload["uploadFileName"] = uploadFileName }
@@ -62,11 +54,8 @@ extension FolderChildV2Data {
 }
 
 extension Array where Element == FolderChildV2Data {
-    /// The production dedupe pipeline over a V2 children listing: records only
-    /// (dedupe matches files, never subfolders), adapted into the matcher's
-    /// `[ItemVO]` currency. Lives here so `UploadManager.fetchFolderContents`
-    /// and the unit tests exercise the SAME pipeline instead of each
-    /// re-implementing the filter + adapt expression.
+    /// The dedupe pipeline over a V2 listing: records only, since dedupe matches files and never
+    /// subfolders. Here so production and the tests exercise the same expression.
     func toMatchableItemVOs() -> [ItemVO] {
         filter { !$0.isFolder }.compactMap { $0.toMatchableItemVO() }
     }
@@ -74,15 +63,9 @@ extension Array where Element == FolderChildV2Data {
 #endif
 
 extension UploadManager {
-    /// Identifies which of the picked files already have a record in the
-    /// destination folder. Drives the Guard 0 pre-upload prompt so the user
-    /// can choose to skip duplicates, override, or cancel before any bytes
-    /// are uploaded.
-    ///
-    /// - Returns: empty list when no duplicates exist, OR when the folder
-    ///   fetch itself fails. Falling through on fetch failure is intentional:
-    ///   we don't want to block the user behind a transient network error
-    ///   when we cannot determine whether duplicates exist.
+    /// Which of the picked files already exist in the destination, driving the pre-upload prompt.
+    /// - Returns: empty when there are no duplicates, and also when the fetch itself fails — a
+    ///   transient network error must not block the upload behind an unanswerable question.
     func findExistingRecords(
         archiveNo: String,
         folderLinkId: Int,

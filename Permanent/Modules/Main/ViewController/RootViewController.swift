@@ -25,12 +25,8 @@ class RootViewController: UIViewController {
     /// sessionExpired) doesn't stack alerts or reset the root repeatedly.
     private var isPresentingSessionExpired = false
 
-    /// Whether a session-expired notification should drive the user to login. Returns
-    /// false if that flow is already in flight, or if we're already on the login screen
-    /// (`current` is the NavigationController wrapping an AuthenticationViewController).
-    /// Static + hierarchy-based so it is unit-testable. Note: `current` is NEVER itself an
-    /// AuthenticationViewController — the old `current is AuthenticationViewController`
-    /// guard could never trip, so every repeated 401 re-ran the whole flow.
+    /// Whether a session-expired notification should route to login: false while that flow is in
+    /// flight or already on it. `current` is the wrapping navigation controller, never the auth one.
     static func shouldPresentSessionExpiry(current: UIViewController?, alreadyPresenting: Bool) -> Bool {
         guard !alreadyPresenting else { return false }
         if (current as? UINavigationController)?.viewControllers.first is AuthenticationViewController {
@@ -126,9 +122,8 @@ class RootViewController: UIViewController {
 
                     let alert = UIAlertController(title: "Session expired".localized(), message: "Your session has expired, please login again.".localized(), preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: nil))
-                    // Clear the guard once the flow has landed: `current` now wraps the
-                    // login screen, so shouldPresentSessionExpiry blocks further 401s until
-                    // the user re-authenticates and the root changes away from login.
+                    // Clear the guard once the flow lands: `current` now wraps the login screen, so further 401s stay
+                    // blocked until the user re-authenticates.
                     self.present(alert, animated: true) { self.isPresentingSessionExpired = false }
                 }
             }

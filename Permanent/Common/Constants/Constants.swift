@@ -12,36 +12,11 @@ typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
-/// In-app feature flags — compile-time switches with no server-side Remote Config.
-/// Flip the value here and ship a build to change behavior. In Release these are
-/// immutable `let`s (truly no runtime toggle); in DEBUG they are `var`s solely so
-/// unit tests can pin a flag deterministically (each test must defer-restore it).
+/// Compile-time switches, with no server-side Remote Config: flip a value and ship a build.
+/// Immutable `let`s in Release; `var`s in DEBUG only so tests can pin them and defer-restore.
 enum FeatureFlags {
-    /// Master switch for the Stela V2 path: folder navigation on My Files, Public Files,
-    /// and Search drill-in, plus record detail read/edit/publish (own-archive records on
-    /// every screen) and the upload dedupe listing. V1 remains an automatic failsafe on
-    /// every gated path except publish (owned-records-only by gate), so OFF is always
-    /// safe. Changing it requires an app release (no Remote Config).
-    // OFF in EVERY build, staging included. The 1.16.0 release ships with the V2 navigation
-    // migration deferred, so a tester on the Firebase build has to see the same V1 paths
-    // production runs — a staging build defaulting to V2 means nobody can validate what
-    // actually ships.
-    //
-    // This inverts the previous `APIEnvironment.defaultEnv == .staging` default. That default
-    // existed for a good reason: DEV-Release (no DEBUG) had silently pinned to the Release
-    // `let false`, so QA was testing the OLD V1 paths while the tickets said Stela — VSP-1789
-    // got a bug report against the very V1 copy behavior it replaces. That was correct while
-    // the epic was in flight. With the epic deferred the same reasoning points the other way:
-    // the default should follow whatever is shipping, and V1 is shipping.
-    //
-    // Not a one-way door. `--forceStelaNavigation` still flips it at launch on any DEBUG *or*
-    // STAGING build (see `AppDelegate`), so the epic can be exercised on a Firebase build
-    // without a code change. When the epic resumes, restore
-    // `APIEnvironment.defaultEnv == .staging` below.
-    //
-    // The `#if` still earns its keep even with both arms `false`: DEBUG/STAGING needs a `var`
-    // for that launch-arg override and for tests (which pin it explicitly and defer-restore),
-    // while Release stays an immutable `let` with no runtime path to flip it.
+    /// Master switch for the Stela V2 path, with V1 as an automatic failsafe everywhere except publish.
+    /// Off in every build while the migration is deferred; `--forceStelaNavigation` flips it at launch.
     #if DEBUG || STAGING_ENVIRONMENT
     static var useStelaNavigation = false
     #else
@@ -202,9 +177,8 @@ extension Constants.Keys.StorageKeys {
     static let uploadQueueOwnerAccountIdKey = "uploadQueueOwnerAccountIdKey"
     static let completedUploadFileIdsKey = "completedUploadFileIdsKey"
     static let inflightPhase3FileIdsKey = "inflightPhase3FileIdsKey"
-    /// JSON-encoded snapshot of `PermSession.selectedArchive`, written by the
-    /// host app on archive change / session load and read by the ShareExtension
-    /// as a fallback when the keychain session lacks a selectedArchive.
+    /// Snapshot of `PermSession.selectedArchive`, written by the host on archive change and read by
+    /// the ShareExtension when the keychain session carries none.
     static let sharedSelectedArchiveKey = "sharedSelectedArchiveKey"
     static let shareURLToken = "shareURLTokenStorageKey"
     static let publicURLToken = "publicURLTokenKey"

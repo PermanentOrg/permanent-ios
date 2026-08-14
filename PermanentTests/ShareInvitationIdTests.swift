@@ -9,13 +9,8 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// VSP-1800: "Send again" and "Revoke" post the invite id recovered from a pending
-/// invitation's `shareID`. These cover the id surviving the round trip from `/invite/share`
-/// into the stored row and back out, and staying recoverable across a refetch.
-///
-/// Serialized because `ShareItemViewModel.init` calls `loadInitialData()`, which issues a
-/// network request against process-global auth state. Running these concurrently lets one
-/// test's late completion land in another's `sharedArchives`.
+/// Covers the invite id surviving into a pending row's `shareID` and back out, across a refetch.
+/// Serialized: the view model's init issues a request, so a late completion lands in another test.
 @MainActor
 @Suite(.serialized)
 struct ShareInvitationIdTests {

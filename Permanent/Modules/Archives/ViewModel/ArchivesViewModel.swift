@@ -22,19 +22,8 @@ class ArchivesViewModel: ViewModelInterface {
         return allArchives.filter({ $0.status == ArchiveVOData.Status.pending })
     }
 
-    /// The archives to keep from an account-archives response: deduped by id, with only
-    /// `.unknown` (unparseable status) dropped.
-    ///
-    /// PENDING archives are RETAINED. `pendingArchives` above filters this same collection
-    /// for `.pending`, so excluding them during parsing made that property — and with it
-    /// the "Pending Archives" section and its Accept/Decline buttons — permanently empty:
-    /// an invitation showed on the web and could not be accepted on iOS at all. The archive
-    /// switcher is unaffected because it reads `selectableArchives`, which requires `.ok`.
-    ///
-    /// Static and internal so the filter is unit-testable without a network call. The
-    /// version this replaces lived inside the request completion and was unreachable from
-    /// a test, which is why four passing `pendingArchives` tests never caught the bug —
-    /// they all assigned `allArchives` directly, bypassing this step.
+    /// The archives to keep: deduped by id, dropping only an unparseable status. Pending ones are
+    /// retained, since `pendingArchives` filters this same collection and drives Accept/Decline.
     static func usableArchives(from accountArchives: [ArchiveVO]?) -> [ArchiveVOData] {
         var archiveMap: [Int: ArchiveVOData] = [:]
 

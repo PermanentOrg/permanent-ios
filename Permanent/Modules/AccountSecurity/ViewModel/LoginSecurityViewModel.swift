@@ -19,17 +19,14 @@ class LoginSecurityViewModel: ObservableObject {
     @Published var twoFactorBadgeStatus: SecurityBadgeStatus? = nil
     @Published var twoFactorMethods: [TwoFactorMethod] = []
     
-    /// Initializes the view model and sets up initial state
-    /// - Checks the current two-factor authentication status
-    /// - Sets up biometric authentication toggle state
+    /// Checks the current two-factor status and seeds the biometric toggle.
     init() {
         checkTwoFactorStatus()
         isSecurityToggleOn = getAuthToggleStatus()
     }
     
-    /// Checks the current status of two-factor authentication by fetching
-    /// the user's IDP methods from the server.
-    /// Updates the UI state based on the server response.
+    /// Fetches the user's identity-provider methods to determine two-factor status, then updates the
+    /// UI state.
     func checkTwoFactorStatus() {
         let operation = APIOperation(AuthenticationEndpoint.getIDPUser)
         

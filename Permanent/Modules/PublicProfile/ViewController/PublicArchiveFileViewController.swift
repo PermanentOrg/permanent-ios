@@ -66,13 +66,8 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         
         collectionView.refreshControl = refreshControl
-        // The 6pt side gutters belong to the LAYOUT (sectionInset), not to the scroll view
-        // (contentInset). contentInset is re-resolved whenever the view re-enters the
-        // window — e.g. returning from the .fullScreen file preview, which UIKit removes
-        // the presenting view for — and the flow layout can prepare against a momentarily
-        // zero inset. That cached pass lays every row out from x=0, so the grid renders 6pt
-        // to the left with a doubled right margin until a scroll forces re-preparation.
-        // sectionInset is baked into the item frames, so it cannot be lost that way.
+        // The side gutters belong to `sectionInset`, not `contentInset`: the latter is re-resolved when the
+        // view re-enters the window, and the layout can cache a pass against a momentarily zero inset.
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
@@ -206,12 +201,8 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
 
         viewModel?.getRoot(then: { [weak self] status in
             guard let self = self else { return }
-            // Opening a foreign public archive fires several authenticated fetches at once
-            // on a cold connection; the first attempt can fail transiently (cold TLS or a
-            // momentary token/CSRF gap) yet succeed on retry. Retry the root load exactly
-            // once before surfacing a non-actionable error alert. Passing the one-shot as a
-            // parameter (rather than stored state) scopes it to THIS load, so a later load
-            // still gets its own retry.
+            // Opening a foreign archive fires several authenticated fetches on a cold connection, where the
+            // first can fail transiently. Retry once; the flag is a parameter so each load gets its own.
             if case .error = status, !isRetry {
                 self.getRootFolder(isRetry: true)
                 return
@@ -269,12 +260,8 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // Horizontal layout: |-6-cell-6-cell-6-|, derived from the collection view's own
-        // width rather than UIScreen so a narrower container or a re-resolved inset can't
-        // push the two-up fit over the edge and collapse the grid to one column. Flooring
-        // leaves sub-point slack instead of the exact-fit knife edge the old
-        // `UIScreen.main.bounds.width / 2 - 9` produced.
-        // Vertical size: 39 = the old (W/2 + 30) height minus the (W/2 - 9) width.
+        // Two-up, derived from the collection view's own width rather than the screen's, so a narrower
+        // container can't push the fit over the edge. Floored, to leave slack instead of an exact fit.
         let layout = collectionViewLayout as? UICollectionViewFlowLayout
         let sideGutters = (layout?.sectionInset.left ?? 6) + (layout?.sectionInset.right ?? 6)
         let interitem = layout?.minimumInteritemSpacing ?? 6

@@ -32,10 +32,9 @@ final class SearchFilesViewModelTests: XCTestCase {
         )
     }
 
-    // MARK: - Tag filter invariant (H1: tag tap during search must not crash the tag cell)
-    // The cell's inner collection view is driven by `filteredTags`. Selecting a tag resets
-    // `searchQuery` (its didSet), which changes `filteredTags.count`; the cell must full-reload,
-    // not reloadItems(at:), against that changed count. These pin the view-model side of the invariant.
+    // MARK: - Tag filter invariant
+    // Selecting a tag resets `searchQuery`, which changes `filteredTags.count` — so the cell must
+    // full-reload rather than reload items against a changed count. Pins the view-model side.
 
     private func makeTag(_ name: String, id: Int) -> TagVOData {
         TagVOData(name: name, status: nil, tagId: id, type: nil, createdDT: nil, updatedDT: nil)

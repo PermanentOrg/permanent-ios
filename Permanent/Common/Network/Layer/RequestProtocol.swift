@@ -113,9 +113,8 @@ extension RequestProtocol {
         guard method == .get, let parameters = parameters as? [String: Any?] else {
             return nil
         }
-        // Convert parameters to query items. Unwrap the optional first — String(describing:)
-        // of an `Any?` yields "Optional(5)" / "nil" literals in the query string; map the
-        // wrapped value instead and pass nil through (URLQueryItem.value is String?).
+        // Unwrap before describing: `String(describing:)` of an `Any?` puts "Optional(5)" in the query
+        // string. Map the wrapped value and pass nil through instead.
         return parameters.map { (key: String, value: Any?) -> URLQueryItem in
             return URLQueryItem(name: key, value: value.map { String(describing: $0) })
         }

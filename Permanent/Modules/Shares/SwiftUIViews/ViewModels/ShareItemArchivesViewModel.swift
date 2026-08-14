@@ -227,9 +227,8 @@ extension ShareItemViewModel {
                         self.isLoadingArchives = false
 
                         if error != nil {
-                            // If folder API fails, it might actually be a record - try V2 record API,
-                            // but only ONCE per cycle (fetchRecordV2 bridges back here, so an
-                            // unguarded bridge would loop forever when both endpoints fail).
+                            // A failed folder fetch may mean the item is a record, so try the record endpoint — once per
+                            // cycle only, since it bridges back here and would otherwise loop forever.
                             if !self.attemptedV2FolderLinkRecovery,
                                let v2Data = self.shareLinkV2Data,
                                let itemId = v2Data.itemId,
@@ -284,9 +283,8 @@ extension ShareItemViewModel {
                         self.isLoadingArchives = false
 
                         if error != nil {
-                            // If V1 record API fails, try V2 record API — but only ONCE per
-                            // cycle (fetchRecordV2 bridges back here; an unguarded bridge loops
-                            // forever when both endpoints keep failing).
+                            // Fall through to the V2 record endpoint once per cycle only: it bridges back here, so an
+                            // unguarded retry loops forever when both keep failing.
                             if !self.attemptedV2FolderLinkRecovery,
                                let v2Data = self.shareLinkV2Data,
                                let itemId = v2Data.itemId,
@@ -422,9 +420,8 @@ extension ShareItemViewModel {
 
             let trimmedName = pending.name?.trimmingCharacters(in: .whitespacesAndNewlines)
             let displayName = (trimmedName?.isEmpty == false) ? trimmedName! : email
-            // An id that does not parse means we have no invitation to act on. Leaving shareID
-            // nil keeps that visible to Send again / Revoke, which previously fell back to -1
-            // and so addressed invite id 1 — a real, unrelated invitation.
+            // An unparseable id means there is no invitation to act on, so leave `shareID` nil and keep that
+            // visible — a -1 fallback addressed invite id 1, a real and unrelated invitation.
             let inviteId = Int(pending.id ?? "").flatMap { $0 > 0 ? $0 : nil }
 
             let account = AccountVOData(
@@ -486,12 +483,8 @@ extension ShareItemViewModel {
         }
     }
 
-    /// Keeps a locally captured invite id alive across a refetch.
-    ///
-    /// The V2-derived row wins the email dedupe below, so a pending share that carries no usable
-    /// id of its own would otherwise erase the id captured from `/invite/share` — and Send again
-    /// and Revoke would go dead again on the next refresh. Where both rows describe the same
-    /// invitation (same email), graft the local id onto the V2 row.
+    /// Grafts a locally captured invite id onto the V2 row for the same email. The V2 row wins the
+    /// dedupe below, so without this Send again and Revoke go dead on the next refresh.
     private func preservingLocalInviteId(for invitedShare: ShareVOData) -> ShareVOData {
         guard invitedShare.shareID == nil,
               let email = invitedShare.accountVO?.primaryEmail?.lowercased(),

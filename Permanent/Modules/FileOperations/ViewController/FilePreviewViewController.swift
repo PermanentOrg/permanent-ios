@@ -26,10 +26,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileModel!
 
-    /// Gates the record DETAIL read to Stela V2 getRecordById (with a V1 failsafe).
-    /// Follows the in-app flag on every preview presenter — the view model further
-    /// restricts V2 to records in the user's own archive and auto-falls back to V1 on
-    /// any error/thin payload, so no presenter needs to override this default.
+    /// Gates the record detail read to V2 `getRecordById`, with a V1 failsafe. The view model further
+    /// restricts V2 to own-archive records, so no presenter needs to override this.
     var usesStelaDetail: Bool = FeatureFlags.useStelaNavigation
     /// Set by the public gallery: its records live in a FOREIGN archive but are public, so
     /// the V2 read applies there too. See FilePreviewViewModel.allowsForeignDetail.
@@ -68,30 +66,24 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareLinkViewModel.didUpdateSharesNotifName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateShares(_:)), name: ShareItemViewModel.didUpdateSharesNotifName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onReachabilityChanged(_:)), name: ReachabilityManager.reachabilityDidChangeNotifName, object: nil)
-        // NOTE: the .playback audio session is activated lazily in activatePlaybackAudioSession()
-        // only when actually presenting audio/video — previewing an image or PDF must not
-        // interrupt the user's background music.
+        // The `.playback` session is activated lazily, only for audio and video: previewing an image
+        // or PDF must not interrupt the user's background music.
     }
 
-    /// True once this preview activated the shared .playback session (A/V or misc-webview).
-    /// Gates the deinit deactivation so image/PDF previews — which never touched the session —
-    /// don't poke it on teardown.
+    /// True once this preview activated the shared `.playback` session. Gates the deinit
+    /// deactivation, so an image or PDF preview doesn't poke a session it never touched.
     private var didActivatePlaybackAudioSession = false
 
     /// One-shot: the A/V original failed to load and we retried with the converted rendition.
     /// Without this the retry would re-enter the same `.failed` handler and loop.
     private var didFallBackToConvertedAV = false
 
-    /// Set by a coordinating pager (FilePreviewListViewController) that owns the shared audio
-    /// session across its cached pages. When non-nil, this controller does NOT deactivate the
-    /// session in deinit — the pager deactivates once on its own teardown. Otherwise a cached
-    /// page evicted under memory pressure would silence the page that's actually playing.
-    /// Standalone previews (no pager) leave this nil and self-deactivate as before.
+    /// Set by a pager that owns the audio session across its cached pages. Non-nil means this
+    /// controller must not deactivate in deinit, or an evicted page silences the playing one.
     var onDidActivatePlaybackAudioSession: (() -> Void)?
 
-    /// Switch the shared audio session to playback, for previews that can play media (A/V and
-    /// misc/webview). Called from the video/audio/misc load paths; released in deinit (standalone)
-    /// or by the coordinating pager, so other apps' audio resumes afterward.
+    /// Switches the shared session to playback, for previews that can play media. Released in deinit
+    /// or by the pager, so other apps' audio resumes afterwards.
     private func activatePlaybackAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
@@ -106,11 +98,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     deinit {
         NotificationCenter.default.removeObserver(self)
         stopObservingPlayerItem()
-        // Only SELF-deactivate for a standalone preview. When a pager coordinates the session
-        // (onDidActivatePlaybackAudioSession set), the pager deactivates once on its own teardown
-        // — a cached page's deinit must NOT deactivate here, or it would silence another page
-        // that's still playing (NSCache eviction while swiping mixed media). Also only if we
-        // actually activated it (image/PDF previews never did).
+        // Only self-deactivate a standalone preview, and only if we activated it. Under a pager, a
+        // cached page's deinit deactivating here would silence another page that is still playing.
         if didActivatePlaybackAudioSession, onDidActivatePlaybackAudioSession == nil {
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         }
@@ -147,9 +136,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         if isViewLoaded {
             activityIndicator.startAnimating()
             if file.type == .audio {
-                // Audio goes straight from black + spinner to the blurred QuickTime
-                // artwork (loadAudio) — no neutral glow, and no thumbnail either
-                // (it is a file-type icon, not content).
+                // Audio goes straight from black and a spinner to the blurred QuickTime artwork: no neutral
+                // glow, and no thumbnail, which would be a file-type icon rather than content.
                 thumbnailImageView.isHidden = true
             } else {
                 if let url = URL(string: file.preferredThumbnailURL) {
@@ -160,12 +148,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     }
                 }
                 if file.type != .image {
-                    // Videos show the blurred-frame placeholder from the first frame; other
-                    // non-image files load behind the neutral placeholder (logo + loader,
-                    // S5 style), since document thumbnails are file-type icons and blurring
-                    // an icon reads as a glowing blob. FileModel.type is unreliable for
-                    // videos, so the filename extension is consulted too — loadVideo
-                    // remains the authoritative upgrade for anything missed here.
+                    // Videos blur their first frame; other non-image files use the neutral placeholder, since
+                    // blurring a file-type icon reads as a glowing blob. `type` is unreliable, so extension too.
                     activityIndicator.stopAnimating()
                     if isLikelyVideoFile {
                         imageStateOverlay.render(.loadingFullRes(hasThumbnail: file.preferredThumbnailURL != nil))
@@ -222,7 +206,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
 
-    // MARK: - Image preview state handling (VSP-1768)
+    // MARK: - Image preview state handling
 
     private func setupImageStateOverlay() {
         imageStateOverlay.translatesAutoresizingMaskIntoConstraints = false
@@ -244,7 +228,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 self?.imageStateOverlay.render(state)
             }
         }
-        // Non-image types drive the overlay directly (the VM state machine stays .idle
+        // Non-image types drive the overlay directly (the view model's state machine stays .idle
         // for them) — syncing it here would hide the placeholder rendered in loadVM.
         if file.type == .image, let state = viewModel?.imagePreviewState {
             imageStateOverlay.render(state)
@@ -263,28 +247,21 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         nonImageAwaitingReconnect = false
         imageStateOverlay.render(.idle)
         recordLoaded = false
-        // Drop the cached record. Replaying it fails identically — a document waiting on its
-        // PDF rendition only recovers once a FRESH fetch reports the new file — which made
-        // Retry a dead end for exactly the case most likely to be retried (a just-uploaded
-        // document whose access copy is still being generated).
+        // Drop the cached record: replaying it fails identically, and a document waiting on its PDF
+        // rendition only recovers once a fresh fetch reports the new file.
         viewModel?.recordVO = nil
         loadVM()
     }
 
-    /// Branded failure/offline card for non-image previews (images run through the view
-    /// model's state machine). Offline shows the "You're offline" card and waits for
-    /// reconnect to auto-retry; an online failure shows the tap-to-retry card. Replaces
-    /// the generic storyboard errorLabel/retryButton for video/audio/document previews.
+    /// Failure and offline card for non-image previews, which have no view-model state machine.
+    /// Offline waits for reconnect and auto-retries; an online failure offers tap-to-retry.
     private func showPreviewLoadFailure() {
         activityIndicator.stopAnimating()
         thumbnailImageView.isHidden = true
         let connected = ReachabilityManager.shared.isConnected
         nonImageAwaitingReconnect = !connected
-        // Match the backdrop loadVM() chose for this file type, or the preview flips between
-        // two different looks every time you retry. Photos and videos keep their blur (the
-        // image itself / the first frame); documents stay on the neutral field, which is what
-        // their loading state shows — a "not ready yet" document should look like it is still
-        // loading, not like a different screen.
+        // Match the backdrop `loadVM()` chose, or the preview flips between two looks on every retry.
+        // A "not ready yet" document should still look like it is loading, not like another screen.
         let hasBlur = previewBlurAvailable && (file.type == .image || isLikelyVideoFile)
         imageStateOverlay.render(connected ? .failed(hasThumbnail: hasBlur)
                                            : .offline(hasThumbnail: hasBlur))
@@ -412,19 +389,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 self.loadPDF(withURL: downloadURL)
 
             default:
-                // Documents have no inline renderer on this path: WebKit refuses the
-                // original's MIME type (.ods, .xls) and converts the navigation into a
-                // download, which fails the load with WebKitErrorDomain 102 and rendered
-                // nothing. Archivematica generates a PDF access copy for exactly this case,
-                // and PDFKit displays it without involving WebKit at all. Preview only —
-                // `fileVO()` stays on the original so Download and the displayed filename
-                // still give the user the file they uploaded.
+                // WebKit refuses spreadsheet MIME types and turns the navigation into a download, rendering
+                // nothing — so preview the PDF access copy through PDFKit. Download still gets the original.
                 if let accessCopyURL = self.viewModel?.pdfAccessCopyURL() {
                     self.loadPDF(withURL: accessCopyURL)
                 } else {
-                    // No rendition available: still prefer the inline url, since
-                    // `downloadURL` carries `response-content-disposition=attachment` and
-                    // therefore guarantees the download path rather than a render.
+                    // No rendition available, but still prefer the inline URL: `downloadURL` carries an
+                    // `attachment` content disposition and so guarantees a download rather than a render.
                     self.loadMisc(withURL: fileVO.fileURL.flatMap { URL(string: $0) } ?? downloadURL)
                 }
             }
@@ -495,20 +466,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 return
             }
 
-            // Swap the full-res image AND recompute its fitted geometry atomically, THEN start
-            // the blur fade. This ordering matters: previously the full-res was cross-dissolved
-            // into the image view (setting `imageView.image`) while `newImageLoaded()` — which
-            // runs sizeToFit()/setZoomScale() — was deferred to the 0.3s transition completion,
-            // and `fullResDidLoad()` fired immediately at the crossfade start. So for 0.3s the
-            // sharp image rendered in the STALE thumbnail geometry (which, for the first page,
-            // was computed against a not-yet-final scrollView frame during preload) while the
-            // blur was already fading and revealing it — the image appeared smaller than full
-            // width and then "zoomed" up when the geometry finally corrected. Applying the
-            // geometry instantly here, beneath the still-opaque overlay, and only then calling
-            // fullResDidLoad() (which fades the blur), removes the intermediate small render:
-            // the blur only lifts once the image is already at its final fitted size. The
-            // overlay's own 0.5s fade provides the blur→sharp transition, so the image-view
-            // crossfade it used to do is redundant here (it happened behind the opaque blur).
+            // Swap the image and recompute its geometry atomically beneath the opaque overlay, and only
+            // then fade the blur — otherwise the sharp image renders in stale geometry and appears to zoom.
             previewVC.imageView.image = image
             previewVC.newImageLoaded()
             self?.viewModel?.fullResDidLoad()
@@ -541,7 +500,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
 
     /// QA hook: launch with `--forceNoThumbnail` to pretend the record has no 256px thumbnail,
-    /// exercising S5 (neutral placeholder + spinner).
+    /// exercising the neutral-placeholder loading state (logo, glow and spinner).
     var debugForceNoThumbnail: Bool {
         CommandLine.arguments.contains("--forceNoThumbnail")
     }
@@ -610,13 +569,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     pdfView.autoScales = true
 
                     pdfView.translatesAutoresizingMaskIntoConstraints = false
-                    // Insert behind the loading overlay (like image/video/web) so the
-                    // overlay's fade-out cross-dissolves into the document. addSubview
-                    // would place it on top, hiding the fade and snapping the spinner away.
+                    // Insert behind the loading overlay so its fade-out cross-dissolves into the document;
+                    // `addSubview` would cover the fade and snap the spinner away.
                     view.insertSubview(pdfView, at: 0)
-                    // Hide the storyboard thumbnail (loaded with the doc's 256px preview in
-                    // loadVM) — otherwise it floats on top of the scrolling document, since
-                    // pdfView now sits at the back. Matches how the image path hides it.
+                    // Hide the storyboard thumbnail, or it floats over the scrolling document now that the
+                    // PDF view sits at the back.
                     thumbnailImageView.isHidden = true
 
                     pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
@@ -677,10 +634,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         activityIndicator.stopAnimating()
     }
 
-    /// Initial play affordance over the embedded player — its own controls stay
-    /// hidden until the first tap, leaving the video looking like a still image.
-    /// Dark circular backdrop matches the state card (black @ 32%) for contrast
-    /// over bright footage.
+    /// Initial play affordance, because the player's own controls stay hidden until the first tap
+    /// and the video otherwise looks like a still. Dark backdrop for contrast over bright footage.
     private lazy var videoPlayButton: UIButton = {
         let button = UIButton(type: .custom)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -712,11 +667,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func loadAudio(withURL url: URL, contentType: String) {
         activatePlaybackAudioSession()
         loadAV(withURL: url, contentType: contentType)
-        // Audio has no frames for isReadyForDisplay. Its "content" is the player's
-        // built-in QuickTime artwork: keep it hidden behind an opaque cover, snapshot
-        // it through the cover, show the snapshot blurred (same blur-to-sharp story
-        // as photos), then drop the cover as the blur fades out — the artwork is
-        // never visible sharp before the blur.
+        // Audio has no frames for `isReadyForDisplay`, so snapshot the player's QuickTime artwork
+        // behind an opaque cover and blur the snapshot — the artwork is never sharp before the blur.
         audioRevealStarted = false
         let cover = UIView()
         cover.backgroundColor = .black
@@ -775,18 +727,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         view.insertSubview(videoPlayer!.view, at: 0)
         videoPlayer!.didMove(toParent: self)
 
-        // The blurred placeholder stays up while the player prepares. isReadyForDisplay
-        // tracks the moment the first video frame can render — the same moment the
-        // player's own loading indicator goes away — unlike status/likelyToKeepUp,
-        // which both fire mid-buffering. It never fires for audio-only items.
+        // `isReadyForDisplay` is the moment the first frame can render, unlike `status` or
+        // `likelyToKeepUp`, which fire mid-buffering. It never fires for audio-only items.
         readyForDisplayObservation = videoPlayer!.observe(\.isReadyForDisplay, options: [.initial, .new]) { [weak self] playerVC, _ in
             guard playerVC.isReadyForDisplay else { return }
             DispatchQueue.main.async {
                 self?.imageStateOverlay.render(.loaded)
-                // AVPlayerViewController offers no public API to surface its control
-                // overlay without a tap (verified: showsPlaybackControls toggling and
-                // muted play/pause nudges do nothing on iOS 26) — show our own play
-                // affordance instead; the native controls take over once playback starts.
+                // `AVPlayerViewController` has no public API to surface its controls without a tap, so show
+                // our own affordance; the native controls take over once playback starts.
                 self?.showVideoPlayButton()
             }
         }
@@ -813,18 +761,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     /// A non-image preview is parked in the offline state, awaiting reconnect to auto-retry.
     private var nonImageAwaitingReconnect = false
 
-    // NOTE: a bounded "wait for the PDF rendition" retry loop was tried here and removed.
-    // Archivematica generates the access copy asynchronously, so a document opened seconds
-    // after upload genuinely has nothing to render — but holding the loading state and
-    // re-fetching traded one honest card for a minute-long spinner, and re-rendering the
-    // placeholder on each cycle flashed the grey `noThumbnailBackground` over the black
-    // letterbox. The failure card is immediate and truthful, and Retry now re-fetches the
-    // record (see retryPreviewLoad), so one tap picks the rendition up as soon as it lands.
+    // Do not add a "wait for the PDF rendition" retry loop here: it trades one honest failure card
+    // for a minute-long spinner. Retry re-fetches the record, which picks the rendition up.
 
-    /// Snapshots the player's QuickTime artwork and runs the blur-to-sharp reveal.
-    /// drawHierarchy(afterScreenUpdates: true) moves windowless views into a temporary
-    /// window — forbidden for child VC views and a crash — so for pages the pager
-    /// preloaded offscreen, the reveal waits for viewDidAppear.
+    /// Snapshots the player's artwork and runs the blur-to-sharp reveal. `drawHierarchy` crashes on
+    /// windowless child-controller views, so an offscreen preloaded page waits for `viewDidAppear`.
     private func startAudioBlurRevealIfPossible() {
         // Both the loadAudio timer and the viewDidAppear deferred path can call this;
         // run the reveal exactly once to avoid a double snapshot / re-blur flicker.
@@ -876,16 +817,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func loadMisc(withURL url: URL) {
-        // Misc files render in a WKWebView that may hold playable media (audio/video elements,
-        // or a media file the server mis-typed as miscellaneous). Activate the playback session
-        // so that media is audible and ignores the ring/silent switch — matching the behaviour
-        // every preview had before activation became A/V-scoped.
+        // A misc file's web view may hold playable media, or be a media file the server mis-typed.
+        // Activate the playback session so it is audible and ignores the ring/silent switch.
         activatePlaybackAudioSession()
         let webView = setupWebView()
 
-        // WKWebView.load(URLRequest) cannot render file:// URLs (it silently shows a blank
-        // loading state) — a downloaded local misc file must go through loadFileURL. Remote
-        // URLs still use a normal request.
+        // `WKWebView.load(URLRequest)` silently blanks on `file://` URLs, so a downloaded local file
+        // must go through `loadFileURL`. Remote URLs still use a normal request.
         if url.isFileURL {
             webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
         } else {
@@ -1046,10 +984,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 self.stopObservingPlayerItem()
                 self.removeVideoPlayer()
 
-                // The original could not be loaded — retry once with the converted rendition
-                // before declaring failure. This replaces the synchronous `AVAsset.isPlayable`
-                // probe that used to pick between them on the main thread: the common case now
-                // costs nothing, and only a genuinely unplayable original pays for a retry.
+                // Retry once with the converted rendition before declaring failure. Cheaper than a synchronous
+                // `AVAsset.isPlayable` probe on main: only a genuinely unplayable original pays anything.
                 if !self.didFallBackToConvertedAV,
                    let converted = self.viewModel?.convertedAVFileVO(),
                    let url = URL(string: converted.downloadURL) {
@@ -1138,9 +1074,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { [weak self] url, error in
                 guard let self = self else { return }
 
-                // Dismiss the "Downloading…" ALERT specifically — the previous `self.dismiss`
-                // tore down the whole preview screen when the cancel tap had already dismissed
-                // the alert (self.dismiss then targeted the preview's own presentation).
+                // Dismiss the alert specifically: `self.dismiss` tears down the whole preview screen once the
+                // cancel tap has already dismissed the alert.
                 preparingAlert.dismiss(animated: true) {
                     if self.didCancelDownload {
                         return
@@ -1222,9 +1157,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
 
-        // VSP-1787 sibling: an own-archive record that publishes via the V2 copy resolves its
-        // public-workspace destination through the Stela archives search (no V1 getPublicRoot).
-        // On ANY resolution failure, fall back to the V1 getPublicRoot destination lookup.
+        // An own-archive record publishing via the V2 copy resolves its public destination through the
+        // archives search. Any resolution failure falls back to the V1 getPublicRoot lookup.
         if viewModel?.canPublishViaStelaCopy == true {
             viewModel?.resolvePublicRootFolderIdV2 { [weak self] publicRootFolderId in
                 guard let self = self else { return }
@@ -1240,10 +1174,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         publishViaV1PublicRoot(onPublishResult: onPublishResult)
     }
 
-    /// Legacy destination lookup, kept as the failsafe for the V2 public-root path: V1
-    /// getPublicRoot → V2 copyRecordV2 (own-archive records) or V1 relocate (folders /
-    /// foreign records). A -1 destination folderId (getPublicRoot omitted folderID) routes
-    /// to relocate rather than posting "-1".
+    /// The V1 destination lookup, kept as the failsafe for the V2 public-root path. A -1 folderId
+    /// routes to relocate rather than posting "-1".
     private func publishViaV1PublicRoot(onPublishResult: @escaping (Error?) -> Void) {
         guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr else {
             hideSpinner()
@@ -1286,12 +1218,8 @@ extension FilePreviewViewController: WKNavigationDelegate {
         showPreviewLoadFailure()
     }
 
-    /// `didFail navigation:` only fires once a response has been committed. A load that dies
-    /// BEFORE that — most importantly one WebKit converts into a download, which is what an
-    /// `attachment` Content-Disposition does (WebKitErrorDomain 102,
-    /// FrameLoadInterruptedByPolicyChange) — reports through this callback instead. With it
-    /// unimplemented, neither completion path ran for spreadsheets and the preview sat on its
-    /// loading overlay forever instead of offering the failure/retry card.
+    /// `didFail navigation:` only fires after a response is committed, so a load WebKit turns into
+    /// a download reports here instead. Unimplemented, spreadsheets hung on the loading overlay.
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         webView.removeFromSuperview()
         showPreviewLoadFailure()

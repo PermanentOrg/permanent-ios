@@ -24,6 +24,9 @@ struct UploadActivityAttributes: ActivityAttributes {
         var completedCount: Int
         /// Number of files that failed
         var failedCount: Int
+        /// Items the destination folder holds right now. Here, not in the attributes, because
+        /// it changes as files land. `nil` when unknown — the card omits the count.
+        var folderItemCount: Int?
     }
 
     enum UploadStatus: String, Codable, Hashable {
@@ -40,4 +43,10 @@ struct UploadActivityAttributes: ActivityAttributes {
     var archiveNo: String
     /// Folder link ID for deep-link navigation to the upload folder
     var folderLinkId: Int
+    /// Destination folder name. Immutable for a batch, so it belongs here, not in
+    /// `ContentState`. Empty when unknown — the card drops the title line.
+    var folderName: String
+    /// Shared workspace rather than Private; drives the badge. `nil` when unknown and never
+    /// defaulted to `false`, which would wrongly claim who can see the upload.
+    var folderIsShared: Bool?
 }

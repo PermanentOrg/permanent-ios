@@ -9,9 +9,8 @@ import Foundation
 import UIKit
 import os.log
 
-// Extension-safe wrapper for UIApplication.shared access.
-// UIApplication.shared is unavailable in app extensions, so we access it
-// indirectly to avoid compile-time errors when this file is compiled for extensions.
+// `UIApplication.shared` is unavailable in app extensions, so reach it indirectly to keep this
+// file compiling for both targets.
 private func extensionSafeApplication() -> UIApplication? {
     let selector = NSSelectorFromString("sharedApplication")
     guard UIApplication.responds(to: selector) else { return nil }
@@ -43,11 +42,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     var destinationUrl: String!
     var fields: [String: String]!
     var createdDT: String!
-    /// Populated in Phase 2 (`uploadFileDataToS3`) once the byte count is
-    /// known. Used by Phase 3 / Guard B as the duplicate-prevention match key
-    /// (matched against `ItemVO.size` returned by `navigateMin`). Size is
-    /// numeric and round-trips through the server exactly, unlike `createdDT`
-    /// which is reformatted server-side.
+    /// Byte count from Phase 2, used by the folder-existence check below as its match key. Size is
+    /// numeric and round-trips exactly, unlike `createdDT`, which the server reformats.
     var phase2FileSize: Int64?
     
     var progress: Double = 0
@@ -95,12 +91,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     private var operationStartTime: Date?
     private var phaseStartTime: Date?
 
-    /// iOS keeps giving the app foreground execution for ~30s after backgrounding, then
-    /// suspends it; a suspended URLSession task can end up stalled. We only want to
-    /// restart a call that was actually at risk of that — i.e. the app was backgrounded
-    /// long enough to be suspended — NOT a healthy upload that is merely slow while the
-    /// app stayed in the foreground. Threshold sits just under the background-execution
-    /// budget. Pure/static so it is unit-testable without app-lifecycle plumbing.
+    /// Just under the ~30s background-execution budget, so only a call at real risk of suspension
+    /// restarts — not a healthy upload that is merely slow in the foreground.
     static let staleBackgroundThreshold: TimeInterval = 25
     static func shouldRestartStaleCall(backgroundedFor duration: TimeInterval?, hasActiveTask: Bool) -> Bool {
         guard hasActiveTask, let duration = duration else { return false }
@@ -128,9 +120,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
             return
         }
         
-        // Request background execution time so the upload can finish if the app
-        // is briefly backgrounded (~30s). When this expires, we only end the
-        // background task — we do NOT cancel in-flight operations.
+        // Buy background time so a briefly backgrounded upload can finish. On expiry only the
+        // background task ends; in-flight operations are not cancelled.
         if let app = extensionSafeApplication() {
             backgroundTaskId = app.beginBackgroundTask(withName: "UploadFile-\(file.id)") { [weak self] in
                 guard let self = self else { return }
@@ -168,10 +159,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     }
 
     private func restartStaleAPICallIfNeeded() {
-        // Only restart a call that iOS may have suspended during a long background
-        // stint. Previously this fired for ANY operation older than 10s of TOTAL
-        // wall-clock, so a legitimately slow foreground upload got cancelled and
-        // its progress thrown away on every app resume.
+        // Only restart a call iOS may have suspended during a long background stint. Keying on total
+        // wall-clock instead would cancel a legitimately slow foreground upload on every resume.
         let backgroundDuration = backgroundedAt.map { Date().timeIntervalSince($0) }
         backgroundedAt = nil
         let hasActiveTask = getPresignedURLOperation != nil || foregroundUploadTask != nil || registerRecordOperation != nil
@@ -190,10 +179,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     }
     
     override func finish() {
-        // Single terminal log per file so we can trace the success path too.
-        // Failures already log via `[PHASE N FAILED]`; skips via `[PHASE 3 SKIP]`.
-        // This line is the silent-success complement, so for a 100-file batch
-        // every file has exactly one outcome line in Console.app.
+        // The silent-success complement to the failure and skip logs, so every file in a batch has
+        // exactly one outcome line.
         if error == nil {
             flowLogger.info("🔼 [OK] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) t=\(self.elapsed, privacy: .public)s")
         }
@@ -240,10 +227,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         registerRecordOperation?.cancel()
         foregroundUploadTask?.cancel()
 
-        // The multipart body temp file (app-group container) is normally removed in the
-        // upload completion, but that handler early-returns on `isCancelled` before its
-        // cleanup runs — so remove it here too, otherwise every cancelled upload leaks its
-        // temp body file until the container is purged.
+        // The upload completion normally removes the multipart temp file, but it early-returns on
+        // `isCancelled` before that — so remove it here too, or every cancelled upload leaks one.
         if let tempPath = foregroundTempFileURL {
             try? FileManager.default.removeItem(at: tempPath)
             foregroundTempFileURL = nil
@@ -352,9 +337,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
             finish()
             return
         }
-        // Cache the byte count so Phase 3 can use it as the duplicate-prevention
-        // match key (server's ItemVO.size round-trips numerically, unlike
-        // createdDT which gets timezone-normalised).
+        // Cache the byte count as Phase 3's duplicate-prevention match key: it round-trips numerically,
+        // unlike `createdDT`, which the server timezone-normalises.
         phase2FileSize = Int64(fileSize)
         contentLength += fileSize
 
@@ -400,11 +384,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
 
         var buffer = [UInt8](repeating: 0, count: 1024 * 64)
 
-        // Copies a whole input stream into the output, returning false on ANY read
-        // or write error. `read` returning -1 (I/O error — e.g. an iCloud-evicted
-        // source file) must NOT be treated as EOF, and short/failed writes (disk
-        // full) must not be ignored: either would silently upload a truncated body
-        // that then gets REGISTERED as a healthy record.
+        // False on any read or write error: a `read` of -1 is not EOF, and a short write is not a
+        // success. Either would upload a truncated body that then registers as a healthy record.
         func copyStream(_ input: InputStream, into output: OutputStream) -> Bool {
             while input.hasBytesAvailable {
                 let bytesRead = input.read(&buffer, maxLength: buffer.count)
@@ -461,10 +442,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         }
         outputStream.close()
 
-        // All uploads run through the foreground URLSession. iOS gives the app
-        // ~30s of runtime via beginBackgroundTask after backgrounding; uploads
-        // that exceed that pause until the user reopens the app (LA shows the
-        // orange "Upload Paused — tap to resume" state).
+        // Everything runs through the foreground session, so an upload exceeding the ~30s background
+        // budget pauses until the user reopens the app. The Live Activity says so.
         foregroundTempFileURL = tempURL
         let task = Self.foregroundSession.uploadTask(with: uploadRequest, fromFile: tempURL) { [weak self] _, response, error in
             guard let self = self, !self.isCancelled else { return }
@@ -526,9 +505,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     }
 
     private func registerRecord() {
-        // Guard A: in-memory dedup. If this operation already finished Phase 3
-        // successfully in the current process (re-queued mid-flight), skip the
-        // API call entirely.
+        // In-memory dedup: if this operation already finished Phase 3 in this process,
+        // skip the API call entirely.
         if UploadManager.isFileAlreadyCompleted(fileId: file.id) {
             flowLogger.info("🔼 [PHASE 3 SKIP] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) already registered — in-memory dedup")
             handler(nil)
@@ -536,25 +514,15 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
             return
         }
 
-        // Guard B: if a previous attempt for this file got as far as issuing
-        // registerRecord but didn't return success to the client (server may
-        // still have created the record while the response was lost in
-        // transit — common during Wi-Fi/cellular handoff), list the
-        // destination folder and look for a matching record by name +
-        // millisecond-precise createdDT. If found, the server already has it
-        // and a fresh call would create a duplicate.
+        // A previous attempt may have reached registerRecord without the response getting back,
+        // so list the destination and look for the record. If it is there, a fresh call would duplicate.
         if UploadManager.wasPhase3Attempted(fileId: file.id) {
             let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
             UploadManager.shared.fetchFolderContents(archiveNo: archiveNo, folderLinkId: file.folder.folderLinkId, folderId: file.folder.folderId) { [self] items in
                 guard !isCancelled else { return }
 
-                // Fix 2: if navigateMin itself failed, we have NO idea whether
-                // the server already has this record. Falling through to a
-                // fresh `registerRecord` is exactly what creates the duplicate
-                // we're trying to prevent. Defer instead — re-queue as a
-                // transient network error so the next retry can try Guard B
-                // again. The retry doesn't count against the 3-attempt cap
-                // (it goes through `isTransientNetworkError`).
+                // A failed navigateMin means we don't know whether the server has the record, and falling
+                // through to registerRecord is what creates the duplicate. Defer as a transient error instead.
                 guard let items = items else {
                     flowLogger.error("🔼 [PHASE 3 FAILED] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) — Guard B navigateMin unreachable, deferring")
                     let urlError = URLError(.networkConnectionLost)
@@ -564,10 +532,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                     return
                 }
 
-                // Shared matcher: `uploadFileName` exact, with stripped
-                // `displayName` as fallback, and `size` as a tiebreaker. See
-                // `ItemVOMatching.swift` for the full rationale behind the
-                // key choice.
+                // Shared matcher: `uploadFileName` exact, stripped `displayName` as fallback, `size` as the
+                // tiebreaker. `ItemVOMatching` explains the key choice.
                 if items.record(forUploadName: file.name, size: resolvedFileSize()) != nil {
                     flowLogger.info("🔼 [PHASE 3 SKIP] file=\(self.file.name, privacy: .public) id=\(self.file.id, privacy: .public) found in folder — server already has it (folder-existence-check)")
                     UploadManager.markFileAsCompleted(fileId: file.id)
@@ -584,11 +550,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         doRegisterRecord()
     }
 
-    /// Returns the file's byte count for use as the duplicate-prevention match
-    /// key. Prefers the Phase-2-cached value (already on disk's perspective when
-    /// we built the upload body); falls back to a fresh `resourceValues` read
-    /// for any pathological path that skipped Phase 2 (shouldn't happen — we
-    /// only reach Phase 3 after Phase 2 success).
+    /// The byte count used as the duplicate-prevention match key. Prefers the Phase 2 value and
+    /// falls back to a fresh read, for a path that somehow reached Phase 3 without it.
     private func resolvedFileSize() -> Int64 {
         if let cached = phase2FileSize { return cached }
         if let fs = (try? file.url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize {
@@ -598,17 +561,12 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     }
 
     private func doRegisterRecord() {
-        // Capture retry-or-first-attempt BEFORE marking. After API success the
-        // in-flight marker is removed only for first attempts — for retries
-        // it must persist so the end-of-batch verifier can confirm there
-        // isn't a leftover duplicate from an earlier attempt that the server
-        // processed without acknowledging.
+        // Capture retry-or-first-attempt before marking: on success the marker is only cleared for a
+        // first attempt, since a retry needs the verifier to check for a leftover duplicate.
         let wasRetry = UploadManager.wasPhase3Attempted(fileId: file.id)
 
-        // Mark in-flight BEFORE the API call so that if the response is lost
-        // mid-flight, the next retry takes the folder-existence-check path
-        // (Guard B) and the end-of-batch verifier has the metadata it needs
-        // to look this record up via navigateMin. Idempotent.
+        // Mark in-flight before the call, so a lost response still routes the next retry through
+        // the folder-existence check and leaves the verifier metadata to find the record. Idempotent.
         let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
         let fileSizeBytes = resolvedFileSize()
         UploadManager.markPhase3InFlight(entry: UploadManager.Phase3InFlightEntry(
@@ -658,10 +616,8 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                         // success we missed, so safe to drop the marker.
                         UploadManager.removePhase3InFlight(fileId: self.file.id)
                     }
-                    // Invalidate the cached folder listing so the next reader
-                    // gets a fresh navigateMin response that includes this
-                    // newly-registered record (prevents stale-empty reads
-                    // from triggering a duplicate-creating fall-through).
+                    // Invalidate the cached listing so the next reader sees this new record — a stale-empty read
+                    // would fall through and create a duplicate.
                     UploadManager.shared.invalidateFolderListingCache(folderLinkId: self.file.folder.folderLinkId)
                     handler(nil)
                     finish()
@@ -676,7 +632,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
             case .error(let error, _):
                 flowLogger.error("🔼 [PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s network error: \(error?.localizedDescription ?? "unknown", privacy: .public)")
                 // Leave in-flight marker — the lost response is *exactly* the
-                // case we want the next retry to catch via Guard B.
+                // case the next retry should catch via its folder-existence check.
                 if let urlError = error as? URLError {
                     self.error = urlError
                     handler(urlError)

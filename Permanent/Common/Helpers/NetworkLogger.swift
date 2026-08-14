@@ -41,12 +41,8 @@ class NetworkLogger {
         /// Whether to log request/response bodies
         var logBodies: Bool = true
 
-        /// Maximum number of body bytes rendered. Bodies are stringified on the dispatcher's
-        /// completion thread (currently main), so this is not unbounded — a multi-megabyte
-        /// listing would stall the UI just to be logged. 1 MB is far above any real API
-        /// response here (the largest, a full folder listing, is tens of KB) while still
-        /// bounding the pathological case. Staging only: `environmentRestriction` keeps all
-        /// of this out of production, and `logBodies` is off there regardless.
+        /// Cap on rendered body bytes: stringifying happens on the dispatcher's completion thread, so an
+        /// unbounded body would stall the UI just to be logged. Far above any real response here.
         var maxBodyLength: Int = 1_000_000
     }
     
@@ -72,9 +68,8 @@ class NetworkLogger {
         configuration.isEnabled = false
     }
     
-    /// Enable verbose network logging (all levels, request/response bodies included).
-    /// For internal/staging builds only — bodies are stringified on the dispatcher's
-    /// completion thread and may contain user data, so production must not use this.
+    /// Verbose logging, bodies included. Internal builds only: bodies stringify on the dispatcher's
+    /// completion thread and may contain user data.
     static func enableLogging() {
         NetworkLogger.configuration.logLevel = .debug
         NetworkLogger.configuration.environmentRestriction = nil // Log in all environments
@@ -128,28 +123,16 @@ class NetworkLogger {
         }
     }
 
-    /// Renders a body for logging, capped at `maxBodyLength` bytes so a large payload
-    /// never pays a full stringify (this runs on the dispatcher's completion thread —
-    /// currently main). A truncated or non-UTF-8 body degrades to replacement
-    /// characters instead of silently dropping the log line.
+    /// Renders a body for logging, capped at `maxBodyLength` so a large payload never pays a full
+    /// stringify. Truncated or non-UTF-8 bytes degrade to replacement characters, not a dropped line.
     static func loggableBody(_ body: Data) -> String {
         let cap = configuration.maxBodyLength
         guard body.count > cap else { return String(decoding: body, as: UTF8.self) }
         return String(decoding: body.prefix(cap), as: UTF8.self) + " … [truncated \(body.count - cap) of \(body.count) bytes]"
     }
 
-    /// Emits the body as ONE unbroken line, via stdout rather than os_log.
-    ///
-    /// os_log hard-truncates any individual message at roughly 1 KB, so a real response body
-    /// cannot go through `logger` at all — it used to lose its tail with no marker, which is
-    /// what hid the `getAllArchives` response and made a server payload look incomplete.
-    /// Splitting it across numbered lines fixed the loss but left the JSON in pieces, so it
-    /// could not be copied into a formatter. stdout has no per-message cap: Xcode's console
-    /// shows the whole body as a single entry you can select, copy and paste as-is.
-    ///
-    /// Staging only — `isLoggingEnabled` gates every caller and `logBodies` is off in
-    /// production. Note this is deliberately NOT visible to `log stream`, which only carries
-    /// os_log; use Xcode's console, or `simctl launch --console`, to read bodies.
+    /// One unbroken line via stdout, because os_log truncates a message near 1 KB and drops the tail
+    /// silently. Not visible to `log stream` as a result — read bodies in Xcode's console.
     private static func logBody(_ label: String, _ body: Data) {
         print("\(label): \(loggableBody(body))")
     }

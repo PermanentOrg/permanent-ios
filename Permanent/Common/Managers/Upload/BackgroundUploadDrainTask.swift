@@ -31,9 +31,8 @@ enum BackgroundUploadDrainTask {
         logger.info("🔼 [BG-DRAIN] registered identifier=\(identifier, privacy: .public)")
     }
 
-    /// Submit a wake request. Called when the app backgrounds and after each
-    /// successful upload that leaves more work pending, so iOS always has a
-    /// request queued while there's something to drain.
+    /// Submits a wake request, on backgrounding and after any upload that leaves work pending, so iOS
+    /// always has one queued while there is something to drain.
     static func schedule() {
         guard UploadManager.shared.hasPendingWork else {
             logger.info("🔼 [BG-DRAIN] queue empty — not scheduling")
@@ -86,13 +85,8 @@ enum BackgroundUploadDrainTask {
         // `beginBackgroundTask`, so per-file work composes within the wake.
         UploadManager.shared.refreshQueue()
 
-        // Drain loop: poll the queue every second, completing as soon as the
-        // queue is idle. Cap at 25 s so we always return well before iOS
-        // reclaims our budget. If files are still in-flight at the cap, the
-        // next wake will pick up where we left off — but at least we don't
-        // suspend the process *while* a Phase 2/3 task is mid-call (which
-        // would orphan the URLSession.shared task and risk a duplicate
-        // registerRecord on retry).
+        // Poll until the queue is idle, capped well below the budget so the next wake resumes rather than
+        // the process suspending mid-call, which would orphan the task and risk a duplicate record.
         DispatchQueue.global(qos: .background).async {
             let deadline = Date().addingTimeInterval(25)
             while Date() < deadline {

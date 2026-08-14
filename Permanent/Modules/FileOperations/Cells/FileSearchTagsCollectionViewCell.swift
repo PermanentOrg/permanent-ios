@@ -13,9 +13,8 @@ class FileSearchTagsCollectionViewCell: UICollectionViewCell {
 
     var viewModel: SearchFilesViewModel?
 
-    /// Stored so it can be removed — a block observer with a strong capture is retained
-    /// (with everything it captures) by NotificationCenter until explicitly removed, so
-    /// each reused/reconfigured cell would otherwise leak and keep reloading a dead view.
+    /// Stored so it can be removed: NotificationCenter retains a block observer and everything it
+    /// captures, so each reconfigured cell would leak and keep reloading a dead view.
     private var didChangeQueryObserver: NSObjectProtocol?
 
     override func awakeFromNib() {
@@ -72,9 +71,8 @@ extension FileSearchTagsCollectionViewCell: UICollectionViewDataSource, UICollec
                 viewModel?.selectedTagVOs.append(tag)
             }
 
-            // Full reload, not reloadItems(at:): mutating selectedTagVOs resets the
-            // view model's searchQuery, which changes filteredTags.count — a partial
-            // reload against a changed item count crashes with NSInternalInconsistencyException.
+            // Full reload, not `reloadItems(at:)`: mutating the selection resets the search query and so
+            // changes the item count, which a partial reload treats as inconsistent and crashes on.
             collectionView.reloadData()
         }
     }
@@ -89,9 +87,8 @@ extension FileSearchTagsCollectionViewCell: UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        // Read filteredTags (the data source used by numberOfItems/cellForItem), NOT the
-        // unfiltered tagVOs — indexing the wrong array desynced sizing from the layout and
-        // could read out of bounds when a query is active.
+        // Read `filteredTags`, the data source the layout uses — indexing the unfiltered array desyncs
+        // sizing and can go out of bounds while a query is active.
         if let filtered = viewModel?.filteredTags, filtered.indices.contains(indexPath.row) {
             let tag = filtered[indexPath.row]
             let isChecked = viewModel?.selectedTagVOs.map({ $0.name ?? "" }).contains(tag.name) ?? false

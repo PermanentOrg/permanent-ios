@@ -6,15 +6,7 @@
 
 import SwiftUI
 
-/// A view that displays a badge with a text and a color.
-/// - Parameters:
-///    - badgeText: The text to be displayed on the badge.
-///    - badgeColor: The color of the badge.
-///    - Returns: View
-///  Example:
-///  ```
-///  NewBadgeView(badgeText: "New", badgeColor: .blue)
-///  ```
+/// A small text badge in the given colour.
 
 struct NewBadgeView: View {
     var badgeText: String

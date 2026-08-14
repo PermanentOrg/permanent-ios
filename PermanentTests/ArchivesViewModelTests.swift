@@ -62,9 +62,8 @@ final class ArchivesViewModelTests: XCTestCase {
     }
 
     // MARK: - usableArchives (the parsing step that feeds allArchives)
-    // The pendingArchives tests below all assign `allArchives` directly, so none of them
-    // exercised parsing — which is exactly where a `status != .pending` filter was dropping
-    // invitations. The web showed a pending viewer archive that iOS could not accept at all.
+    // The tests below assign `allArchives` directly and so skip parsing — which is exactly where a
+    // status filter can drop pending invitations, leaving them unacceptable on iOS.
 
     func testUsableArchives_KeepsPending_SoInvitationsAreAcceptable() {
         let parsed = ArchivesViewModel.usableArchives(from: [

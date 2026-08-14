@@ -225,16 +225,12 @@ class SettingsScreenViewModel: ObservableObject {
     }
     
     func logout(then handler: @escaping ServerResponse) {
-        // User-initiated sign-out: cancel any in-flight uploads and tear down
-        // their Live Activity. Done here (not in AuthenticationManager.logout)
-        // so transient auth flows don't accidentally destroy upload work.
+        // User-initiated sign-out cancels in-flight uploads and their Live Activity. Here rather than in
+        // `logout()`, so a transient auth flow can't destroy upload work.
         UploadManager.shared.cancelAll()
 
-        // Revoke the token server-side FIRST — the request needs the still-valid
-        // bearer (destroying the session before this call sent /auth/logout
-        // unauthenticated, so the token was never actually revoked). Local
-        // teardown then happens in the completion on EVERY path, so the user is
-        // always signed out locally even when the network call fails.
+        // Revoke server-side first, since the request needs the still-valid bearer — tearing down the
+        // session first sends it unauthenticated. Local teardown then runs on every completion path.
         let logoutOperation = APIOperation(AuthenticationEndpoint.logout)
 
         logoutOperation.execute(in: APIRequestDispatcher()) { result in

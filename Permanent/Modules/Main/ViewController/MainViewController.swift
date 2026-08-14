@@ -51,11 +51,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         getRootFolder()
 
-        // Cold-launch path: if AppDelegate's willNavigateToFolderNotifName
-        // fired before our observer was registered (LA tap that woke the
-        // process), the persisted nav data tells us a deep-link is queued.
-        // Show the spinner immediately so the user has feedback during the
-        // settle delay + fetch.
+        // Cold launch: the notification can fire before this observer exists, so the persisted nav data
+        // is what says a deep link is queued. Spinner now, for feedback during the settle and fetch.
         if let _: NavigationDataForShareFolderLink = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink) {
             showSpinner()
         }
@@ -102,10 +99,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
                         queueUploadCount == 0 {
-                        // Kick the thumbnail poll chain: refetch the folder every 10s
-                        // until the new upload's server-side thumbnails land (the chain
-                        // stops on its own once the items settle — see
-                        // scheduleNextThumbnailPoll).
+                        // Kick the thumbnail poll chain: refetch until the upload's server-side thumbnails land.
+                        // The chain stops on its own once the items settle.
                         self?.viewModel?.timerRunCount = 0
                         self?.scheduleNextThumbnailPoll()
                     }
@@ -195,10 +190,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.navigationToShareFolderLink()
         }
 
-        // Spinner during the LA-tap → folder-open gap. AppDelegate posts this
-        // the instant it knows a deep-link navigation is queued, so the
-        // 1.0s settle delay + navigateMin fetch no longer looks like a freeze.
-        // Dismissed via the existing hideSpinner() in onFilesFetchCompletion.
+        // Spinner for the gap between a Live Activity tap and the folder opening, posted the instant a
+        // deep link is queued so the settle delay and fetch don't look like a freeze.
         NotificationCenter.default.addObserver(forName: AppDelegate.willNavigateToFolderNotifName, object: nil, queue: .main) { [weak self] _ in
             self?.showSpinner()
         }
@@ -211,9 +204,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             // Skip refresh while uploads are in progress to avoid resetting upload progress UI
             guard UploadManager.shared.uploadQueue.operationCount == 0 else { return }
             
-            // Skip refresh if a Live Activity is visible (active or recently ended).
-            // A tap on the Live Activity delivers a deep link that handles its own navigation.
-            // Refreshing here would race with it and could overwrite the deep link navigation.
+            // Skip the refresh while a Live Activity is visible: a tap on it delivers a deep link that
+            // navigates itself, and refreshing here would race with and overwrite that.
             if UploadLiveActivityManager.shared.hasVisibleActivity {
                 return
             }
@@ -435,18 +427,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         let hasCreatePermission = viewModel.archivePermissions.contains(.create)
         let hasUploadPermission = viewModel.archivePermissions.contains(.upload)
-        // Hide the create/upload FAB (and its checklist sub-button) while picking a copy/move
-        // destination — you're choosing where to paste, not adding new files here. Otherwise
-        // the FAB reappears on every navigation during paste mode.
+        // Hide the FAB while picking a paste destination — you are choosing where to paste, not adding
+        // files — or it reappears on every navigation during paste mode.
         let shouldShowFAB = hasCreatePermission && hasUploadPermission && !viewModel.isPickingImage
             && !viewModel.isSelectingDestination
             // Multi-select owns the screen while active; the FAB comes back via the
             // restore paths below, which all route through this gate.
             && !viewModel.isSelecting
 
-        // setVisibility fades the buttons back in (see FABView). Hiding them for paste mode
-        // created a real hide→show transition that previously never happened — the FAB used
-        // to stay on screen throughout, so an instant reveal now reads as a pop-in.
+        // `setVisibility` fades the buttons back in: paste mode created a real hide→show transition,
+        // and an instant reveal reads as a pop-in.
         fabView.setVisibility(hidden: !shouldShowFAB)
     }
     
@@ -672,9 +662,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         viewModel?.selectedFiles = []
         viewModel?.isSelecting = false
-        // Restore the FAB through the permission gate, never unconditionally: on a
-        // viewer-role archive, leaving select mode must NOT conjure the create/upload
-        // button (the gate reads isSelecting, so this must run after the reset above).
+        // Restore the FAB through the permission gate, never unconditionally: on a viewer-role archive,
+        // leaving select mode must not conjure an upload button. Must run after the reset above.
         updateFABViewVisibility()
         collectionView.reloadData()
     }
@@ -909,16 +898,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.uploadFiles(files, completion: completion)
     }
 
-    /// Guard 0: if any of the picked files already exist in `folder` by
-    /// `uploadFileName`, surface the conflict to the user before any bytes
-    /// leave the device. On `.skipDuplicates` we upload only the new ones;
-    /// on `.uploadAll` we proceed with all files (creating duplicates is
-    /// allowed for users who deliberately want a second copy); on `.cancel`
-    /// nothing is uploaded.
-    ///
-    /// Spinner contract: caller is responsible for showing the spinner before
-    /// this call and hiding it via `completion`. While the user is reading
-    /// the alert the spinner is hidden so it doesn't obscure the choice.
+    /// Surfaces a name conflict before any bytes leave the device. The caller shows the spinner and
+    /// hides it in `completion`; it is hidden while the alert is up so it can't obscure the choice.
     private func checkDuplicatesThenUpload(
         files: [FileInfo],
         in folder: FileModel,
@@ -1040,15 +1021,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             viewModel?.relocate(files: files, to: destination, then: { status in
                 switch status {
                 case .success:
-                    // Refetch instead of inserting the SOURCE models: a copy creates a
-                    // NEW record server-side, so the inserted row would carry the
-                    // ORIGINAL's ids — deleting/renaming "the copy" would hit the
-                    // original record (data loss). A move can change link ids too.
-                    //
-                    // The paste is committed ASYNCHRONOUSLY, so the first refetch can come
-                    // back without the new rows. Keep the island's SPINNER up until they are
-                    // actually on screen and only then show the ✓ — flashing "done" over a
-                    // list that still looks unchanged reads as "nothing happened".
+                    // Refetch rather than insert the source models: a copy is a new server record, so the inserted
+                    // row would carry the original's ids and deleting "the copy" would delete the original.
                     self.viewModel?.expectPastedItems(files, destination: destination)
                     self.settlePastedItems(attemptsLeft: MainViewController.pastedItemsSettleAttempts) { [weak self] in
                         self?.floatingActionIsland?.hideActivityIndicator()
@@ -1056,9 +1030,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                             self?.dismissFloatingActionIsland({ [weak self] in
                                 self?.fabView?.setVisibility(hidden: false)
                                 self?.viewModel?.isSelectingDestination = false
-                                // Fully exit selection mode: the single-file "⋯ → Copy" entry
-                                // keeps isSelecting on through the paste, and without this
-                                // reset the list re-renders with checkboxes after pasting.
+                                // Fully exit selection mode: the single-file Copy entry keeps `isSelecting` on through the
+                                // paste, so the list would re-render with checkboxes afterwards.
                                 self?.viewModel?.isSelecting = false
 
                                 // Hand any remaining wait (a copy's thumbnails, or rows that
@@ -1082,18 +1055,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
     }
 
-    /// How many times a successful paste re-fetches the destination, waiting for the pasted
-    /// rows to surface, before it gives up and completes anyway (the background poll keeps
-    /// looking). At `pastedItemsPollInterval` apiece this bounds the spinner to ~10s: record
-    /// copies land on the first attempt, but a V1 FOLDER copy is far slower — staging-measured
-    /// at 9s before its row even appeared, which a shorter ceiling gave up on, showing ✓ over
-    /// a destination that didn't contain the folder yet.
+    /// Refetch attempts before a paste completes anyway, bounding the spinner to ~10s. A record copy
+    /// lands first try, but a V1 folder copy needs most of that budget before its row appears.
     private static let pastedItemsSettleAttempts = 10
 
-    /// Refetches the destination folder until the rows a paste added are listed, then calls
-    /// `completion`. The server commits a relocate asynchronously, so attempt 1 often comes
-    /// back without them. Always completes — on success, on giving up, or if the user
-    /// navigated away (the expectation is keyed to its folder, so it reads as settled).
+    /// Refetches the destination until the pasted rows are listed, since the server commits a
+    /// relocate asynchronously. Always completes: on success, on giving up, or on navigating away.
     private func settlePastedItems(attemptsLeft: Int, then completion: @escaping () -> Void) {
         refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true, then: { [weak self] in
             guard let self = self, let viewModel = self.viewModel else {
@@ -1194,10 +1161,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 
         guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
 
-        // While picking a copy/move destination the list is navigation-only: tap a folder to
-        // enter it (to choose where to paste). Items cannot be (re)selected here — the
-        // selection set is fixed to the items being relocated until the user pastes/cancels,
-        // so a tap only drills into an eligible folder and does nothing on anything else.
+        // While picking a paste destination the list is navigation-only: the selection set is fixed to
+        // the items being relocated, so a tap only drills into an eligible folder.
         if viewModel.isSelectingDestination {
             guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
             viewModel.v2NavigationTarget = file
@@ -1292,9 +1257,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 } else {
                     headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
                 }
-                // A title-less button still occupies a tappable area, so in paste-destination
-                // mode hide it outright — otherwise tapping where "Select" used to be silently
-                // re-enters multi-select and lets items be reselected instead of navigating.
+                // A title-less button is still tappable, so hide it outright in paste mode — otherwise tapping
+                // where Select used to be silently re-enters multi-select.
                 headerView.rightButton.isHidden = viewModel?.isSelectingDestination ?? false
 
                 headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton())}
@@ -1314,21 +1278,15 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     
     @objc
     private func timerActions() {
-        // Re-arm only AFTER the refetch commits: the gate reads `viewModels`, so scheduling
-        // before the response lands tests the PREVIOUS generation of the list and can end the
-        // chain a poll early. Calls refreshCurrentFolder directly rather than
-        // pullToRefreshAction, whose invalidateTimer() exists so a MANUAL pull cancels the
-        // chain — a chain-driven refresh must not cancel itself.
+        // Re-arm only after the refetch commits: the gate reads `viewModels`, so scheduling earlier
+        // tests the previous list. Not via `pullToRefreshAction`, whose invalidate would cancel the chain.
         refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true, then: { [weak self] in
             self?.scheduleNextThumbnailPoll()
         })
     }
 
-    /// Polls the current folder every `thumbnailPollInterval` (10s — the server processes
-    /// pasted copies slowly; staging thumbnails can take minutes) while any listed item is
-    /// still awaiting server-side processing. The chain stops on its own when the folder
-    /// settles or the run cap (~5 min) is hit; navigation invalidates the pending fire,
-    /// and a manual pull-to-refresh cancels the chain via invalidateTimer.
+    /// Polls the current folder while any item is still processing server-side. Stops on its own
+    /// once the folder settles or the run cap is hit; navigation or a manual pull cancels it.
     private func scheduleNextThumbnailPoll() {
         guard let viewModel = viewModel else { return }
         guard viewModel.hasItemsAwaitingProcessing || viewModel.isAwaitingPastedItems else {
@@ -1341,12 +1299,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             return
         }
         viewModel.timerRunCount += 1
-        // Three different waits, three cadences — matched to how long each actually takes:
-        //   • rows still MISSING: a read-after-write race against the server's commit,
-        //     usually gone in ~1s (bounded, so a row that never arrives stops hammering);
-        //   • item mid copy/move: not tappable until the server finishes, seconds to tens
-        //     of seconds for a folder copy;
-        //   • everything else: the thumbnail settle, which genuinely takes minutes.
+        // Three waits, three cadences: a missing row is a ~1s commit race, an item mid copy/move takes
+        // seconds to tens of seconds, and the thumbnail settle genuinely takes minutes.
         let isRaceForMissingRows = viewModel.isAwaitingPastedItems
             && viewModel.timerRunCount <= FilesViewModel.pastedItemsFastRuns
         let interval: TimeInterval
@@ -1360,9 +1314,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         // Never stack chains: kill any pending fire before scheduling the next one.
         viewModel.timer?.invalidate()
         viewModel.timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
-            // Clear BEFORE refetching: the fired timer must read as "no pending chain",
-            // or pullToRefreshAction→invalidateTimer would zero the run count on every
-            // fire and the chain could never terminate (confirmed review finding).
+            // Clear before refetching, so the fired timer reads as "no pending chain" — otherwise
+            // `invalidateTimer` zeroes the run count on every fire and the chain never terminates.
             self?.viewModel?.timer = nil
             self?.timerActions()
         }
@@ -1539,10 +1492,8 @@ extension MainViewController: FABViewDelegate {
         
         present(hostingController, animated: true)
         
-        // Hide the FAB through the same API that shows it, so the two stay symmetrical.
-        // Hand-fading alpha here meant the restore had to undo alpha as well, and the
-        // permission gate (updateFABViewVisibility) only manages isHidden — so the FAB came
-        // back invisible after any menu action, e.g. starting or cancelling an upload.
+        // Hide the FAB through the same API that shows it: the permission gate only manages `isHidden`,
+        // so hand-fading alpha here left the FAB invisible after any menu action.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.fabView.setVisibility(hidden: true)
         }
@@ -1816,9 +1767,8 @@ extension MainViewController: FABActionSheetDelegate {
             menuItems.append(FileMenuViewModel.MenuItem(type: .copy, action: { [weak self] in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
-                    // Leave selection mode BEFORE building the paste island (parity with
-                    // the Move item below) — otherwise checkboxes stay up through paste
-                    // mode and reappear after the paste completes.
+                    // Leave selection mode before building the paste island, or checkboxes stay up through paste
+                    // mode and reappear afterwards.
                     self?.viewModel?.isSelecting = false
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
 
@@ -1975,16 +1925,28 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
+    /// Upload destination for the Live Activity's folder card. My Files is always Private;
+    /// the count is the listing on screen, which the activity adds completions to.
+    private func uploadDestination(_ folder: FileModel) -> FolderInfo {
+        FolderInfo(
+            folderId: folder.folderId,
+            folderLinkId: folder.folderLinkId,
+            name: folder.name,
+            itemCount: viewModel?.viewModels.count,
+            isShared: false
+        )
+    }
+
     private func processUpload(toFolder folder: FileModel, forURLS urls: [URL], loadInMemory: Bool = false) {
-        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
-        
+        let folderInfo = uploadDestination(folder)
+
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
         viewModel?.trackEvent(action: RecordEventAction.submit)
     }
 
     private func processUpload(toFolder folder: FileModel, selectedFiles: [SelectedUploadFile], loadInMemory: Bool = false) {
-        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
+        let folderInfo = uploadDestination(folder)
 
         let files = FileInfo.createFiles(from: selectedFiles, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
@@ -2031,15 +1993,15 @@ extension MainViewController: UIDocumentPickerDelegate {
             return showErrorAlert(message: .cannotUpload)
         }
 
-        // Dismiss the picker FIRST. Then move the file enumeration off the
-        // main thread — iCloud Drive URLs may trigger blocking file system
-        // I/O when reading attributes, which otherwise freezes the dismiss
-        // animation and makes the modal look stuck.
+        // Dismiss the picker first, then enumerate off-main: reading attributes on iCloud Drive URLs can
+        // block on file I/O and freeze the dismiss animation.
         controller.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
             self.showSpinner()
+            // Resolve the destination here, on main, where the view model's listing
+            // is safe to read — not inside the background block below.
+            let folderInfo = self.uploadDestination(currentFolder)
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                let folderInfo = FolderInfo(folderId: currentFolder.folderId, folderLinkId: currentFolder.folderLinkId)
                 let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: false)
                 DispatchQueue.main.async {
                     self?.checkDuplicatesThenUpload(files: files, in: currentFolder) { _ in

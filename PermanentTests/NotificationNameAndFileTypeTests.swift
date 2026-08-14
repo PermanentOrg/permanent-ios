@@ -50,12 +50,8 @@ final class NotificationNameAndFileTypeTests: XCTestCase {
     }
 
     // MARK: - FileType.fromV2 (Stela V2 `type` strings)
-    // The V2 /folders/{id}/children payload serializes FOLDER types as a pretty string
-    // ("public", "private-root", …) that does NOT match FileType's raw values, while
-    // RECORDS keep the legacy "type.record.*" raw string. Getting this wrong silently
-    // turns a folder into a record: `didSelectItemAt` keys the drill-in vs open-preview
-    // decision on `file.type.isFolder`, so a mis-mapped folder would open the file
-    // preview instead of navigating into it.
+    // V2 serializes folder types as a pretty string that doesn't match the raw values, while records
+    // keep theirs. Mis-mapping one silently opens a file preview instead of navigating into it.
 
     func testFromV2_FolderTypes_MapToFolderCases() {
         // "public" is the Public Gallery's case — the gallery is the first screen whose

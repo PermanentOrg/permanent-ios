@@ -8,9 +8,8 @@
 import Foundation
 import os.log
 
-/// Handles registerRecord calls for uploads that completed while the app was
-/// terminated. When the app relaunches and reconnects to the background session,
-/// this class picks up where the UploadOperation left off.
+/// Runs the registerRecord call for an upload that completed while the app was terminated, picking
+/// up where the operation left off once the session reconnects.
 enum BackgroundUploadCompletionHandler {
     private static let logger = Logger(subsystem: "com.permanent.ios", category: "BackgroundUploadCompletion")
     private static let maxRetries = 3

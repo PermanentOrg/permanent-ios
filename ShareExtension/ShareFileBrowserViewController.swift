@@ -26,9 +26,8 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
 
         edgesForExtendedLayout = []
 
-        // Leave the left bar button to UIKit so it auto-injects the standard
-        // back button (`<`) that pops to SelectWorkspaceViewController, which
-        // keeps its own Cancel (X) for full dismissal of the share extension.
+        // Leave the left bar button to UIKit so it injects the standard back button; the workspace picker
+        // keeps its own Cancel for dismissing the extension outright.
 
         viewModel?.loadRootFolder()
         
@@ -85,9 +84,8 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
     }
     
     func activateConstraints() {
-        // iOS 26's Liquid Glass nav bar floats with its own glass surface
-        // that extends a few points below where `view.topAnchor` lands, so
-        // the topmost child view ends up clipped without a small cushion.
+        // The iOS 26 glass nav bar extends a few points below where `view.topAnchor` lands, so the
+        // topmost child clips without a small cushion.
         let topPadding: CGFloat
         if #available(iOS 26.0, *) {
             topPadding = 12

@@ -408,9 +408,8 @@ class FilesEndpointPayloads {
         if let date = params.date {
             let dateFormatter = DateFormatter()
             dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-            // Serialize in UTC to match how the value is read back (all displayDT readers
-            // parse it as UTC). Without this the formatter used the device timezone, so the
-            // saved time was shifted by the device's UTC offset.
+            // Serialize in UTC to match how every reader parses it back; the device timezone shifts the saved
+            // time by its own offset.
             dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
 

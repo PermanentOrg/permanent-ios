@@ -21,10 +21,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     
     var selectedMenuOption: DrawerOption = .files
 
-    /// Block-based observer tokens — must be removed explicitly or NotificationCenter
-    /// keeps both the block (and anything it captures) and the subscription alive
-    /// forever, so every drawer rebuilt on logout/login would leak and keep mutating
-    /// its dead table view.
+    /// Block observer tokens, which must be removed explicitly: NotificationCenter keeps the block and
+    /// its captures alive, so each drawer rebuilt on logout would leak and mutate a dead table view.
     private var observerTokens: [NSObjectProtocol] = []
 
     private var tableViewData: [LeftDrawerSection: [DrawerOption]] = [
@@ -115,10 +113,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
 
             guard let archiveSetingsWasPressed = self.viewModel?.archiveSetingsWasPressed else { return }
 
-            // Rebuild the section idempotently and reload it as a whole. The previous
-            // hardcoded insertRows/deleteRows threw NSInternalInconsistencyException
-            // whenever the data was already in the target state (double notification,
-            // stale instance) — reloadSections recomputes counts from the data source.
+            // Rebuild the section idempotently and reload it whole: hardcoded row inserts throw when the data
+            // is already in the target state, while `reloadSections` recomputes counts from the source.
             var section = self.tableViewData[LeftDrawerSection.archiveSettings] ?? []
             section.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags || $0 == DrawerOption.legacyPlanning })
             if archiveSetingsWasPressed {

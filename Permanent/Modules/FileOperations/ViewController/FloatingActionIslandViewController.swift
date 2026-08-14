@@ -276,9 +276,8 @@ class FloatingActionIslandViewController: UIViewController {
         widthConstraint = bgView.widthAnchor.constraint(equalToConstant: 32)
         let toolbarConstraints: [NSLayoutConstraint]
         if #available(iOS 26, *) {
-            // Inset the transparent toolbar 16pt from each pill edge so items
-            // don't clip. Also center at 44pt height — iOS 26 reserves bottom
-            // safe-area space in UIToolbar which shifts content up in a 64pt frame.
+            // Inset the transparent toolbar from each pill edge so items don't clip, and centre it at 44pt:
+            // iOS 26 reserves bottom safe-area space in a toolbar, shifting content up in a taller frame.
             toolbarConstraints = [
                 toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
                 toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -308,9 +307,8 @@ class FloatingActionIslandViewController: UIViewController {
         super.viewDidAppear(animated)
 
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
-            // On iOS 26 the toolbar is inset from the view edges, so toolbar.frame.width
-            // is narrower than the pill should be. Use view.frame.width so the bgView
-            // always expands to the full pill width regardless of toolbar insets.
+            // On iOS 26 the toolbar is inset from the view edges, so its width is narrower than the pill.
+            // Use the view's width, which is independent of those insets.
             self.widthConstraint.constant = self.view.frame.width
             self.view.layoutIfNeeded()
         }, completion: { _ in

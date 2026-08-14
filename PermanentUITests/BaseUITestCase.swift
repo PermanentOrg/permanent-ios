@@ -15,11 +15,8 @@ class BaseUITestCase: XCTestCase {
         app.launchArguments.append("--DiscardSession")
         app.launchArguments.append("--AddTextClearButton")
 
-        // Stela V2 A/B: pass `TEST_RUNNER_STELA_NAV=1` (force V2) or `=0` (force V1 failsafe)
-        // to xcodebuild; it reaches the runner here as `STELA_NAV`, and we forward it as a
-        // launch arg so the same UI test can run against both navigation paths. Absent → the
-        // build default, which is now V1 in every build (see `FeatureFlags.useStelaNavigation`);
-        // pass `=1` explicitly to exercise the deferred V2 epic.
+        // Pass `TEST_RUNNER_STELA_NAV=1` or `=0` to xcodebuild to force V2 or V1; it arrives here as
+        // `STELA_NAV` and is forwarded as a launch arg, so one suite covers both paths.
         if let stelaNav = ProcessInfo.processInfo.environment["STELA_NAV"] {
             app.launchArguments.append(stelaNav == "0" ? "--forceLegacyNavigation" : "--forceStelaNavigation")
         }

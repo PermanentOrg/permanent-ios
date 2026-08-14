@@ -11,11 +11,8 @@ class FileHelper {
     var defaultDirectoryURL: URL?
     var uploadDirectoryURL: URL?
 
-    /// Record-scoped download-cache name: prefixes a per-record subdirectory so two records
-    /// that share a display name can no longer collide in the flat Documents cache (which
-    /// previously let one record's downloaded bytes be previewed/shared as another's).
-    /// `recordId <= 0` falls back to the flat name, preserving prior behavior for folders /
-    /// identity-less callers. Writers and readers must both route through this.
+    /// Prefixes a per-record subdirectory, so two records sharing a display name can't collide in the
+    /// flat cache and be served as one another. Writers and readers must both route through this.
     static func recordScopedName(_ name: String, recordId: Int) -> String {
         recordId > 0 ? "\(recordId)/\(name)" : name
     }

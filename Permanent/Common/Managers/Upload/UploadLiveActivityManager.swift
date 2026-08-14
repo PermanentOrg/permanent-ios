@@ -21,6 +21,9 @@ struct UploadLiveActivitySnapshot: Codable {
     var lastReportedProgress: Double
     var archiveNo: String
     var folderLinkId: Int
+    /// Folder item count at batch start; completed files are added for display. Optional so a
+    /// snapshot from an older build still decodes rather than looking orphaned.
+    var folderBaseItemCount: Int?
 }
 
 class UploadLiveActivityManager {
@@ -38,32 +41,45 @@ class UploadLiveActivityManager {
     private var currentFileProgress: Double = 0.0
     private var lastReportedProgress: Double = 0.0
 
-    /// Throttle for `activity.update` pushes. `updateProgress` runs on every
-    /// URLSession progress callback — hundreds of times for a single large file —
-    /// and ActivityKit budgets updates per app, so pushing all of them risks iOS
-    /// silently throttling the activity and freezing the Lock Screen mid-upload.
-    /// A whole percent is the finest change the UI can actually render, so
-    /// anything smaller is spent budget for no visible gain. A change of file
-    /// always pushes, so the displayed name never lags behind the bytes.
+    // Set once when the batch starts, carried through every content update. `nil` when the
+    // caller can't say — the Share Extension never lists the destination.
+    private var folderBaseItemCount: Int?
+
+    /// Base count plus what has landed, shown live. `nil` when the base is unknown, so the
+    /// card omits it rather than undercount.
+    private var displayedFolderItemCount: Int? {
+        FolderItemCountMath.displayed(base: folderBaseItemCount, completedFiles: completedFiles)
+    }
+
+    /// ActivityKit budgets updates per app, and `updateProgress` fires hundreds of times per file, so
+    /// only whole-percent changes push. A change of file always pushes.
     private let minProgressPushDelta: Double = 0.01
     private var lastPushedProgress: Double = 0.0
     private var lastPushedFileName: String = ""
+    private var lastPushedStatus: UploadActivityAttributes.UploadStatus = .uploading
 
     /// Whether a Live Activity is currently active.
     var isActive: Bool { currentActivity != nil }
 
-    /// Whether any upload Live Activity is visible on the Lock Screen (active or recently ended).
-    /// Ended activities remain visible for up to 30 seconds before iOS removes them.
+    /// Whether any upload Live Activity is visible on the Lock Screen, active or recently ended.
+    /// An ended one stays until its dismissal policy runs out.
     var hasVisibleActivity: Bool {
         return !Activity<UploadActivityAttributes>.activities.isEmpty
     }
 
-    /// How long after the last update before iOS marks the activity as stale.
-    /// Matched to iOS's ~30s `beginBackgroundTask` budget: once the app gets
-    /// suspended, no more updates can land, so the LA goes stale almost
-    /// immediately and accurately shows "Upload Paused — tap to resume". When
-    /// the app is foregrounded again, the staleDate refreshes on the next
-    /// progress callback and the LA returns to its active state.
+    /// How long a finished batch stays **active** so the island can show its terminal state.
+    /// Ending immediately drops it from the island unseen; `.after(...)` only affects the banner.
+    private let completionHoldInterval: TimeInterval = 5
+
+    /// A terminal batch waiting out `completionHoldInterval`. Separate from `currentActivity`
+    /// so the manager looks idle to a new upload, yet can still end this one first.
+    private var finishingActivity: Activity<UploadActivityAttributes>?
+
+    /// The runtime bought for the hold, held here so the expiry handler can end its own assertion.
+    private var completionHoldToken: UIBackgroundTaskIdentifier = .invalid
+
+    /// Matched to the ~30s background-execution budget: once suspended, no update can land, so the
+    /// activity goes stale and truthfully reads as paused. Foregrounding refreshes it.
     private let staleInterval: TimeInterval = 30
 
     private init() {
@@ -75,26 +91,19 @@ class UploadLiveActivityManager {
 
     // MARK: - Launch Reconciliation
 
-    /// Call on app launch to either reattach to a Live Activity from a previous
-    /// session or end orphans that no longer correspond to in-flight uploads.
-    ///
-    /// Three cases:
-    /// 1. We have a persisted snapshot AND a matching running activity → reattach.
-    ///    In-memory counters are restored so `fileCompleted`/`updateProgress` from
-    ///    background URLSession callbacks keep the Live Activity in sync.
-    /// 2. No snapshot, but `BackgroundUploadMetadata` shows in-flight uploads →
-    ///    leave the activities alone. We can't update them (no counter state) but
-    ///    they stay visible until uploads finish or iOS marks them stale.
-    /// 3. No snapshot AND no in-flight metadata → truly orphaned, end them.
+    /// On launch, reattaches to a previous session's activity when a snapshot matches it, leaves
+    /// activities alone while metadata shows uploads in flight, and ends genuine orphans.
     func reconcileOnLaunch() {
         let runningActivities = Activity<UploadActivityAttributes>.activities
         let snapshot = loadSnapshot()
 
-        // One-shot migration cleanup: any activity stuck in `.processing` is a
-        // leftover from the old processing-timer code path. By the time an
-        // activity reaches `.processing`, all files have already completed, so
-        // flip it straight to `.completed` and let it dismiss.
-        let stuckProcessing = runningActivities.filter { $0.content.state.status == .processing && $0.activityState != .ended }
+        // A `.processing` activity the snapshot does not name is an orphan with all bytes sent, so
+        // end it completed. One it does name is mid-registration and must reach the reattach below.
+        let stuckProcessing = runningActivities.filter {
+            $0.content.state.status == .processing
+                && $0.activityState != .ended
+                && $0.id != snapshot?.activityId
+        }
         for activity in stuckProcessing {
             let finalState = UploadActivityAttributes.ContentState(
                 currentFileIndex: activity.content.state.totalFiles,
@@ -103,7 +112,8 @@ class UploadLiveActivityManager {
                 overallProgress: 1.0,
                 status: .completed,
                 completedCount: activity.content.state.completedCount,
-                failedCount: activity.content.state.failedCount
+                failedCount: activity.content.state.failedCount,
+                folderItemCount: activity.content.state.folderItemCount
             )
             logger.info("🔼 Migrating stuck .processing Live Activity id=\(activity.id, privacy: .public) to .completed")
             Task {
@@ -124,6 +134,13 @@ class UploadLiveActivityManager {
             failedFiles = snapshot.failedFiles
             currentFileName = snapshot.currentFileName
             lastReportedProgress = snapshot.lastReportedProgress
+            // Fall back to backing the count out of the live activity's own state
+            // when the snapshot predates this field.
+            folderBaseItemCount = FolderItemCountMath.recoveredBase(
+                snapshotBase: snapshot.folderBaseItemCount,
+                activityDisplayedCount: reattached.content.state.folderItemCount,
+                completedFiles: snapshot.completedFiles
+            )
 
             flowLogger.info("🔼 [LIVE ACTIVITY] Reattached id=\(reattached.id, privacy: .public) completed=\(self.completedFiles, privacy: .public)/\(self.totalFiles, privacy: .public) failed=\(self.failedFiles, privacy: .public)")
 
@@ -133,9 +150,8 @@ class UploadLiveActivityManager {
                 Task { await activity.end(nil, dismissalPolicy: .immediate) }
             }
 
-            // If counters already say the batch is finished, push the LA to its
-            // terminal state now — without this, the manager would sit waiting
-            // for a fileCompleted call that never comes.
+            // If the counters already say the batch is finished, push the terminal state now — otherwise
+            // the manager waits for a `fileCompleted` that never comes.
             if totalFiles > 0, completedFiles + failedFiles >= totalFiles {
                 endActivity()
             }
@@ -156,14 +172,10 @@ class UploadLiveActivityManager {
         logger.info("🔼 Found \(remainingActivities.count) stale Live Activities from previous session — ending them")
 
         for activity in remainingActivities {
-            let finalState = UploadActivityAttributes.ContentState(
-                currentFileIndex: 0,
-                totalFiles: 0,
-                currentFileName: "",
-                overallProgress: 0.0,
-                status: .failed,
-                completedCount: 0,
-                failedCount: 0
+            // Preserves an already-terminal state: a batch suspended mid-hold has no snapshot
+            // and looks like a zombie, but it finished.
+            let finalState = UploadActivityTerminalState.orphanFinalState(
+                existing: activity.content.state
             )
             Task {
                 await activity.end(
@@ -193,7 +205,8 @@ class UploadLiveActivityManager {
             currentFileName: currentFileName,
             lastReportedProgress: lastReportedProgress,
             archiveNo: archiveNo ?? existing?.archiveNo ?? activity.attributes.archiveNo,
-            folderLinkId: folderLinkId ?? existing?.folderLinkId ?? activity.attributes.folderLinkId
+            folderLinkId: folderLinkId ?? existing?.folderLinkId ?? activity.attributes.folderLinkId,
+            folderBaseItemCount: folderBaseItemCount
         )
         if let data = try? JSONEncoder().encode(snapshot) {
             UserDefaults.standard.set(data, forKey: snapshotStorageKey)
@@ -211,7 +224,15 @@ class UploadLiveActivityManager {
 
     // MARK: - Lifecycle
 
-    func startActivity(totalFiles: Int, firstFileName: String, archiveNo: String = "", folderLinkId: Int = 0) {
+    func startActivity(
+        totalFiles: Int,
+        firstFileName: String,
+        archiveNo: String = "",
+        folderLinkId: Int = 0,
+        folderName: String = "",
+        folderItemCount: Int? = nil,
+        folderIsShared: Bool? = nil
+    ) {
         let authInfo = ActivityAuthorizationInfo()
         flowLogger.info("🔼 [LIVE ACTIVITY] startActivity called — areActivitiesEnabled=\(authInfo.areActivitiesEnabled, privacy: .public) totalFiles=\(totalFiles, privacy: .public) currentActivity=\(self.currentActivity != nil, privacy: .public)")
 
@@ -219,6 +240,10 @@ class UploadLiveActivityManager {
             flowLogger.warning("🔼 [LIVE ACTIVITY] Live Activities are not enabled by the user")
             return
         }
+
+        // A previous batch may still be holding its terminal state for the island. End it now:
+        // two live activities would both be shown, and its counts belong to the old batch.
+        endFinishingActivityNow()
 
         // If there's already an active upload session, add to it instead
         if currentActivity != nil {
@@ -233,8 +258,15 @@ class UploadLiveActivityManager {
         self.currentFileProgress = 0.0
         self.lastPushedProgress = 0.0
         self.lastPushedFileName = ""
+        self.folderBaseItemCount = folderItemCount
 
-        let attributes = UploadActivityAttributes(sessionStartTime: Date(), archiveNo: archiveNo, folderLinkId: folderLinkId)
+        let attributes = UploadActivityAttributes(
+            sessionStartTime: Date(),
+            archiveNo: archiveNo,
+            folderLinkId: folderLinkId,
+            folderName: folderName,
+            folderIsShared: folderIsShared
+        )
         let initialState = UploadActivityAttributes.ContentState(
             currentFileIndex: 1,
             totalFiles: totalFiles,
@@ -242,7 +274,8 @@ class UploadLiveActivityManager {
             overallProgress: 0.0,
             status: .uploading,
             completedCount: 0,
-            failedCount: 0
+            failedCount: 0,
+            folderItemCount: displayedFolderItemCount
         )
 
         do {
@@ -270,25 +303,33 @@ class UploadLiveActivityManager {
         let displayProgress = max(overallProgress, lastReportedProgress)
         lastReportedProgress = displayProgress
 
-        // Skip pushes that wouldn't visibly change the Lock Screen. Moving to a
-        // new file and reaching 100% always push; see `minProgressPushDelta`.
+        let status: UploadActivityAttributes.UploadStatus = isAwaitingRegistration
+            ? .processing
+            : .uploading
+
+        // Skip pushes that would not visibly change the Lock Screen. The status test is load-bearing:
+        // the 0.99 ceiling means the 100% branch never fires, so `.processing` would be throttled away.
         let fileChanged = fileName != lastPushedFileName
+        let statusChanged = status != lastPushedStatus
         guard fileChanged
+                || statusChanged
                 || displayProgress >= 1.0
                 || displayProgress - lastPushedProgress >= minProgressPushDelta
         else { return }
 
         lastPushedProgress = displayProgress
         lastPushedFileName = fileName
+        lastPushedStatus = status
 
         let state = UploadActivityAttributes.ContentState(
             currentFileIndex: min(fileIndex, totalFiles),
             totalFiles: totalFiles,
             currentFileName: fileName,
             overallProgress: displayProgress,
-            status: .uploading,
+            status: status,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
 
         Task {
@@ -302,17 +343,15 @@ class UploadLiveActivityManager {
         } else {
             failedFiles += 1
         }
+        // This file's bytes are now in `completedFiles`, so clear the fraction or it counts twice,
+        // over-reporting the bar and tripping `.processing` a file early.
+        currentFileProgress = 0
         persistSnapshot()
 
         // Check if all files have been processed
         if completedFiles + failedFiles >= totalFiles {
-            // End-of-batch safety net: walk the Phase 3 in-flight set and
-            // reconcile against the destination folder. Catches the case where
-            // both the original registerRecord AND its inline Guard-B
-            // navigateMin retry were network-blocked, leaving a file counted
-            // as "failed" here even though the server actually has the
-            // record. We adjust counts before ending the activity so the
-            // user sees the corrected numbers.
+            // End-of-batch safety net: reconcile the in-flight set against the destination, for files
+            // counted failed whose record the server actually has. Counts are corrected before ending.
             UploadManager.shared.verifyInterruptedUploads { [weak self] found, _ in
                 guard let self = self else { return }
                 if found > 0 {
@@ -323,9 +362,8 @@ class UploadLiveActivityManager {
                 self.endActivity()
             }
         } else if isBatchActuallyEmpty() {
-            // Self-heal: counter says we're not done, but the upload pipeline
-            // is fully drained. Some file was silently filtered out somewhere
-            // without notifying us. End the activity rather than wait forever.
+            // Self-heal: the counter says unfinished but the pipeline is drained, so a file was filtered
+            // out silently. End the activity rather than wait forever.
             flowLogger.info("🔼 [LIVE ACTIVITY] Self-heal — queue and savedFiles empty but counter says \(self.completedFiles, privacy: .public)+\(self.failedFiles, privacy: .public) < \(self.totalFiles, privacy: .public). Forcing end.")
             totalFiles = completedFiles + failedFiles
             endActivity()
@@ -340,7 +378,8 @@ class UploadLiveActivityManager {
                 overallProgress: displayProgress,
                 status: .uploading,
                 completedCount: completedFiles,
-                failedCount: failedFiles
+                failedCount: failedFiles,
+                folderItemCount: displayedFolderItemCount
             )
             Task {
                 await currentActivity?.update(.init(state: state, staleDate: Date() + staleInterval))
@@ -348,9 +387,8 @@ class UploadLiveActivityManager {
         }
     }
 
-    /// True when there are no executing upload operations AND no files left
-    /// in the persisted upload queue. Used as a safety net to recover from
-    /// silent-removal bugs that would otherwise leave the LA waiting forever.
+    /// True when no operation is executing and the persisted queue is empty. A safety net for
+    /// silent-removal bugs that would otherwise leave the activity waiting forever.
     private func isBatchActuallyEmpty() -> Bool {
         let activeOps = UploadManager.shared.uploadQueue.operations.contains { !$0.isFinished && !$0.isCancelled }
         if activeOps { return false }
@@ -360,10 +398,8 @@ class UploadLiveActivityManager {
 
     func addFilesToBatch(count: Int) {
         totalFiles += count
-        // Rescale the high-water mark against the new total. Without this,
-        // an old `lastReportedProgress` from a smaller batch would lock the
-        // progress bar at an inflated percentage (e.g. 37%) until the actual
-        // ratio catches up.
+        // Rescale the high-water mark against the new total, or a `lastReportedProgress` from a smaller
+        // batch locks the bar at an inflated percentage until the real ratio catches up.
         lastReportedProgress = totalFiles > 0
             ? Double(completedFiles) / Double(totalFiles)
             : 0
@@ -379,7 +415,8 @@ class UploadLiveActivityManager {
             overallProgress: overallProgress,
             status: .uploading,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
         Task {
             await currentActivity?.update(.init(state: state, staleDate: Date() + staleInterval))
@@ -404,22 +441,108 @@ class UploadLiveActivityManager {
             overallProgress: 1.0,
             status: status,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
 
-        let dismissDelay: TimeInterval = status == .completed ? 120 : 30
-        Task {
-            await activity.end(
-                .init(state: finalState, staleDate: nil),
-                dismissalPolicy: .after(Date().addingTimeInterval(dismissDelay))
-            )
-        }
+        // A failure keeps its banner for a while, since the counts are the whole message.
+        let failureLinger: TimeInterval = 30
+        let hold = completionHoldInterval
 
+        // Park the activity in the finishing slot and clear live state FIRST, so a new upload
+        // arriving during the hold finds an idle manager and a reference it can dispose of.
+        endFinishingActivityNow()
+        finishingActivity = activity
         currentActivity = nil
         resetState()
+
+        // Only hold when the runtime to finish it can be bought: a suspended app never reaches the
+                // `end()` below, which leaves the banner up for hours. Otherwise let iOS time the dismissal.
+        guard let holdToken = beginCompletionHold() else {
+            Task {
+                await activity.end(
+                    .init(state: finalState, staleDate: nil),
+                    dismissalPolicy: .after(Date().addingTimeInterval(status == .completed ? hold : failureLinger))
+                )
+                await MainActor.run { self.releaseFinishingActivity(activity) }
+            }
+            return
+        }
+
+        Task { [weak self] in
+            await activity.update(
+                .init(state: finalState, staleDate: Date().addingTimeInterval(hold + 30))
+            )
+            try? await Task.sleep(for: .seconds(hold))
+            await activity.end(
+                .init(state: finalState, staleDate: nil),
+                dismissalPolicy: status == .completed
+                    ? .immediate
+                    : .after(Date().addingTimeInterval(failureLinger))
+            )
+            await MainActor.run {
+                self?.releaseFinishingActivity(activity)
+                self?.endCompletionHold(holdToken)
+            }
+        }
+    }
+
+    /// Buys the runtime the hold needs. `nil` where that is impossible — an extension, or a refused
+        /// assertion — and the caller then ends the activity immediately instead.
+    private func beginCompletionHold() -> UIBackgroundTaskIdentifier? {
+#if APP_EXTENSION
+        return nil
+#else
+        // The handler dismisses the activity if iOS reclaims the time early, and must end its own
+                // assertion: an app that lets an expired one stand is terminated.
+        completionHoldToken = UIApplication.shared.beginBackgroundTask(
+            withName: "UploadActivityCompletionHold"
+        ) { [weak self] in
+            guard let self = self else { return }
+            self.logger.warning("🔼 Completion hold expired — dismissing the held activity now")
+            self.endFinishingActivityNow()
+            self.endCompletionHold(self.completionHoldToken)
+        }
+        return completionHoldToken == .invalid ? nil : completionHoldToken
+#endif
+    }
+
+    private func endCompletionHold(_ token: UIBackgroundTaskIdentifier) {
+#if !APP_EXTENSION
+        guard token != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(token)
+        if completionHoldToken == token { completionHoldToken = .invalid }
+#endif
+    }
+
+    /// Ends a held terminal-state activity right now. Called when a new batch starts, so the
+    /// previous batch's checkmark never sits alongside a fresh upload.
+    private func endFinishingActivityNow() {
+        if let activity = finishingActivity {
+            finishingActivity = nil
+            logger.info("🔼 Ending held terminal activity early — a new batch is starting")
+            Task { await activity.end(nil, dismissalPolicy: .immediate) }
+        }
+
+        // Already ended but still on screen while its dismissal policy runs out: untracked by the
+        // slot above, so dismiss it here or the old banner sits beside the new batch's.
+        for activity in Activity<UploadActivityAttributes>.activities where activity.activityState == .ended {
+            Task { await activity.end(nil, dismissalPolicy: .immediate) }
+        }
+    }
+
+    /// Clears the slot only if it still holds this activity; a newer batch may already have
+    /// replaced it via `endFinishingActivityNow()`.
+    private func releaseFinishingActivity(_ activity: Activity<UploadActivityAttributes>) {
+        if finishingActivity?.id == activity.id {
+            finishingActivity = nil
+        }
     }
 
     func cancelActivity() {
+        // A cancel should clear any held terminal state too — the user asked for it gone.
+        endFinishingActivityNow()
+
         guard let activity = currentActivity else { return }
 
         logger.info("🔼 Cancelling upload Live Activity")
@@ -467,7 +590,8 @@ class UploadLiveActivityManager {
             overallProgress: displayProgress,
             status: .uploading,
             completedCount: completedFiles,
-            failedCount: failedFiles
+            failedCount: failedFiles,
+            folderItemCount: displayedFolderItemCount
         )
 
         logger.info("🔼 App entering foreground — refreshing Live Activity state")
@@ -489,19 +613,23 @@ class UploadLiveActivityManager {
     // MARK: - Private
 
     private func calculateOverallProgress() -> Double {
-        guard totalFiles > 0 else { return 0.0 }
+        UploadProgressMath.displayed(
+            completedFiles: completedFiles,
+            failedFiles: failedFiles,
+            currentFileProgress: currentFileProgress,
+            totalFiles: totalFiles
+        )
+    }
 
-        // The batch is only ever 100% once every file has actually finished
-        // (completed or failed). A file whose *bytes* have all uploaded isn't
-        // "done" until its server-side registration lands — so while any file is
-        // still in flight we cap below 100%. Without this, the current file's
-        // byte progress fills its slot to 1.0 and the bar reads "100%" next to
-        // e.g. "3 of 4", which looks finished while the upload is still working.
-        let processed = completedFiles + failedFiles
-        guard processed < totalFiles else { return 1.0 }
-
-        let raw = (Double(completedFiles) + currentFileProgress) / Double(totalFiles)
-        return min(raw, 0.99)
+    /// True once every byte is uploaded but registrations have not all landed. Reported as
+    /// `.processing` so a long registration reads as work rather than a stall at 99%.
+    private var isAwaitingRegistration: Bool {
+        UploadProgressMath.isAwaitingRegistration(
+            completedFiles: completedFiles,
+            failedFiles: failedFiles,
+            currentFileProgress: currentFileProgress,
+            totalFiles: totalFiles
+        )
     }
 
     private func resetState() {
@@ -513,6 +641,8 @@ class UploadLiveActivityManager {
         lastReportedProgress = 0.0
         lastPushedProgress = 0.0
         lastPushedFileName = ""
+        lastPushedStatus = .uploading
+        folderBaseItemCount = nil
         clearSnapshot()
     }
 }

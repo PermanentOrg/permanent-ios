@@ -17,12 +17,8 @@ class OnboardingInvitedWelcomeViewModel: ObservableObject {
         self.containerViewModel = containerViewModel
     }
 
-    /// True only for the F1 lockout state: every invitation is already accepted (so no
-    /// `.pending` row shows an "Accept" button that could enable "Next"), and there is an
-    /// accepted archive to proceed with — either already current, or an `.ok` archive we can
-    /// adopt. While a `.pending` invite remains we return false and leave the screen alone:
-    /// the Accept button is the intended path, and auto-adopting there would silently switch
-    /// the user's current archive without consent. Pure + side-effect-free (unit-testable).
+    /// True only when every invitation is already accepted, so no Accept button exists to enable Next.
+    /// False while any invite is pending, since auto-adopting would switch archives without consent.
     func shouldEnableNextForAcceptedArchive() -> Bool {
         guard !containerViewModel.allArchives.contains(where: { $0.status == .pending })
         else { return false }
@@ -30,9 +26,8 @@ class OnboardingInvitedWelcomeViewModel: ObservableObject {
             || containerViewModel.allArchives.contains(where: { $0.status == .ok })
     }
 
-    /// The already-accepted (`.ok`) archive to adopt as current — only when the lockout
-    /// state holds AND no archive is selected yet. Nil when one is already current (nothing
-    /// to change server-side; just enable "Next") or none qualifies. Pure/unit-testable.
+    /// The accepted archive to adopt, only when the lockout state holds and none is selected yet. Nil
+    /// when one is already current, where there is nothing to change server-side.
     func archiveToAdoptOnAppear() -> ArchiveVOData? {
         guard shouldEnableNextForAcceptedArchive(),
               AuthenticationManager.shared.session?.selectedArchive == nil,
@@ -43,13 +38,8 @@ class OnboardingInvitedWelcomeViewModel: ObservableObject {
             .first(where: { $0.archiveVO?.archiveID == firstAccepted.archiveID })?.archiveVO
     }
 
-    /// Fixes the all-accepted onboarding lockout: when every invitation is already accepted
-    /// there is no Accept button to flip `isArchiveAccepted`, so "Next" stays disabled. If a
-    /// current archive is already selected (e.g. adopted on a previous appearance of this
-    /// screen, which rebuilds a fresh view model), just enable "Next". Otherwise adopt the
-    /// first accepted archive as current (the same server change + local update the archive
-    /// switcher performs), then enable "Next" on success. No-op while a `.pending` invite
-    /// remains, once accepted, or while a request is in flight.
+    /// Breaks the all-accepted lockout, where no Accept button exists to enable Next: enables it when
+    /// an archive is already current, otherwise adopts the first accepted one and then enables it.
     func activateExistingAcceptedArchiveIfNeeded() {
         guard !isArchiveAccepted, !isLoading, shouldEnableNextForAcceptedArchive() else { return }
 

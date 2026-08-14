@@ -12,334 +12,138 @@ import SwiftUI
 struct UploadActivityLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: UploadActivityAttributes.self) { context in
-            // LOCK SCREEN / BANNER VIEW
-            lockScreenView(context: context)
+            // LOCK SCREEN / BANNER
+            UploadLockScreenBanner(display: display(for: context))
+                .modifier(BannerBackground())
                 .widgetURL(folderURL(for: context))
+                .activitySystemActionForegroundColor(UploadActivityStyle.primaryLabel)
         } dynamicIsland: { context in
-            let status = effectiveStatus(context)
-            let progressTint: Color = (status == .paused ? .orange : .blue)
+            let model = display(for: context)
             let deepLink = folderURL(for: context)
             return DynamicIsland {
-                // EXPANDED DYNAMIC ISLAND — wrap each region in a Link so taps
-                // anywhere in the expanded presentation open the upload folder
-                // (the outer .widgetURL only covers compact + minimal).
-                DynamicIslandExpandedRegion(.leading) {
-                    Link(destination: deepLink) {
-                        Image(systemName: expandedIcon(for: status))
-                            .foregroundColor(expandedIconColor(for: status))
-                            .font(.title2)
-                    }
-                }
-                DynamicIslandExpandedRegion(.center) {
-                    Link(destination: deepLink) {
-                        expandedCenterView(context: context)
-                    }
-                }
-                DynamicIslandExpandedRegion(.trailing) {
-                    Link(destination: deepLink) {
-                        Text("\(context.state.completedCount)/\(context.state.totalFiles)")
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .monospacedDigit()
-                    }
-                }
+                // `.bottom` is the only full-width region; the others share the
+                // sensor-housing row. `Link` because `.widgetURL` skips expanded.
                 DynamicIslandExpandedRegion(.bottom) {
-                    if status == .uploading || status == .paused || status == .processing {
-                        Link(destination: deepLink) {
-                            ProgressView(value: context.state.overallProgress)
-                                .tint(progressTint)
+                    Link(destination: deepLink) {
+                        if model.showsFolderCard {
+                            UploadExpandedCard(display: model)
+                        } else {
+                            UploadPillRow(display: model)
                         }
                     }
                 }
             } compactLeading: {
-                // COMPACT LEADING — icon
-                Image(systemName: compactIcon(for: status))
-                    .foregroundColor(compactIconColor(for: status))
+                // COMPACT LEADING — the brand mark
+                BrandMark(height: UploadActivityStyle.Compact.markHeight)
             } compactTrailing: {
-                // COMPACT TRAILING — percentage or status
-                compactTrailingView(context: context)
+                // The glyph matters most collapsed: the arc is the only signal,
+                // and a paused arc looks identical to a running one.
+                UploadProgressRing(
+                    progress: model.progress,
+                    metrics: .compact,
+                    tint: model.ringTint,
+                    glyph: model.ringGlyph
+                )
             } minimal: {
-                // MINIMAL — when competing with other Live Activities
-                Image(systemName: compactIcon(for: status))
-                    .foregroundColor(compactIconColor(for: status))
+                UploadProgressRing(
+                    progress: model.progress,
+                    metrics: .compact,
+                    tint: model.ringTint,
+                    glyph: model.ringGlyph
+                )
             }
             .widgetURL(deepLink)
         }
     }
 
-    // MARK: - Lock Screen View
+    // MARK: - Display model
 
-    @ViewBuilder
-    private func lockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        switch context.state.status {
+    /// Resolves state into strings and accents. Every presentation reads this, so the
+    /// banner and the island cannot drift apart.
+    private func display(for context: ActivityViewContext<UploadActivityAttributes>) -> UploadActivityDisplay {
+        let state = context.state
+        let status = effectiveStatus(context)
+        let progress = min(max(state.overallProgress, 0), 1)
+        let percentText = "\(Int(progress * 100))%"
+        // Counts finished files, except while processing: every file's bytes are up by then, so
+        // "n of n" is the honest reading and the count would otherwise stall a file short.
+        let counted = status == .processing ? state.totalFiles : state.completedCount
+        let counter = "\(counted) of \(state.totalFiles)"
+
+        let headerTitle: String
+        let fileLine: String
+        let fileDetail: String
+        let statusWord: String
+        // SF Symbol naming the state inside the ring, and a hint when there is something
+        // to do. Both nil while uploading: the moving arc says it, and there is no action.
+        var ringGlyph: String?
+        var hint: String?
+
+        switch status {
         case .uploading:
-            if context.isStale {
-                backgroundUploadingLockScreenView(context: context)
-            } else {
-                uploadingLockScreenView(context: context)
-            }
+            headerTitle = "Uploading to Permanent"
+            fileLine = state.currentFileName
+            fileDetail = percentText
+            statusWord = "Uploading"
         case .paused:
-            backgroundUploadingLockScreenView(context: context)
+            headerTitle = "Upload Paused"
+            fileLine = "Tap to resume"
+            fileDetail = percentText
+            statusWord = "Paused"
+            ringGlyph = "pause.fill"
+            hint = "Tap to resume"
         case .processing:
-            processingLockScreenView(context: context)
+            headerTitle = "Processing Uploaded Files"
+            fileLine = "Finishing up…"
+            fileDetail = percentText
+            statusWord = "Processing"
         case .completed:
-            completedLockScreenView(context: context)
+            headerTitle = "Upload Complete"
+            fileLine = "\(state.completedCount) file\(state.completedCount == 1 ? "" : "s") uploaded"
+            fileDetail = percentText
+            statusWord = "Complete"
+            ringGlyph = "checkmark"
         case .failed:
-            failedLockScreenView(context: context)
+            headerTitle = "Upload Issues"
+            fileLine = state.completedCount > 0
+                ? "\(state.completedCount) uploaded, \(state.failedCount) failed"
+                : "\(state.failedCount) file\(state.failedCount == 1 ? "" : "s") failed to upload"
+            // Progress reads 100% once the batch ends, which would be misleading
+            // next to a failure, so the count replaces it here.
+            fileDetail = "\(state.failedCount) failed"
+            statusWord = "Failed"
+            ringGlyph = "exclamationmark"
         }
-    }
 
-    @ViewBuilder
-    private func backgroundUploadingLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 12) {
-                Image(systemName: "pause.circle.fill")
-                    .foregroundColor(.orange)
-                    .font(.title2)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Upload Paused")
-                        .font(.headline)
-                    Text("\(context.state.completedCount) of \(context.state.totalFiles) uploaded — tap to resume")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .monospacedDigit()
-                }
-                Spacer()
-            }
-
-            ProgressView(value: context.state.overallProgress)
-                .tint(.orange)
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    private func uploadingLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: "arrow.up.circle.fill")
-                    .foregroundColor(.blue)
-                    .font(.headline)
-                Text("Uploading to Permanent")
-                    .font(.headline)
-                Spacer()
-                Text("\(context.state.completedCount) of \(context.state.totalFiles)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .monospacedDigit()
-            }
-
-            HStack {
-                Text(context.state.currentFileName)
-                    .font(.caption)
-                    .lineLimit(1)
-                    .foregroundColor(.secondary)
-                Spacer()
-                Text("\(Int(context.state.overallProgress * 100))%")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .monospacedDigit()
-            }
-
-            ProgressView(value: context.state.overallProgress)
-                .tint(.blue)
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    private func processingLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: "gearshape.circle.fill")
-                    .foregroundColor(.blue)
-                    .font(.headline)
-                Text("Processing Uploaded Files")
-                    .font(.headline)
-                Spacer()
-                Text("\(Int(context.state.overallProgress * 100))%")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .monospacedDigit()
-            }
-
-            Text("Processing \(context.state.completedCount) uploaded file\(context.state.completedCount == 1 ? "" : "s")…")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            ProgressView(value: context.state.overallProgress)
-                .tint(.blue)
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    private func completedLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
-                .font(.title2)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Upload Complete")
-                    .font(.headline)
-                Text("\(context.state.completedCount) file\(context.state.completedCount == 1 ? "" : "s") uploaded successfully")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            Spacer()
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    private func failedLockScreenView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.orange)
-                .font(.title2)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Upload Issues")
-                    .font(.headline)
-                if context.state.completedCount > 0 {
-                    Text("\(context.state.completedCount) uploaded, \(context.state.failedCount) failed")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text("\(context.state.failedCount) file\(context.state.failedCount == 1 ? "" : "s") failed to upload")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            Spacer()
-        }
-        .padding()
-    }
-
-    // MARK: - Dynamic Island Expanded Center
-
-    @ViewBuilder
-    private func expandedCenterView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        switch effectiveStatus(context) {
-        case .uploading:
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Uploading to Permanent")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                Text(context.state.currentFileName)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .lineLimit(1)
-            }
-        case .paused:
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Upload Paused")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                Text("\(context.state.completedCount)/\(context.state.totalFiles) — tap to resume")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-        case .processing:
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Processing uploaded files…")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                Text("\(context.state.completedCount) file\(context.state.completedCount == 1 ? "" : "s")")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-        case .completed:
-            Text("Upload Complete")
-                .font(.caption)
-                .fontWeight(.medium)
-        case .failed:
-            Text("\(context.state.failedCount) file\(context.state.failedCount == 1 ? "" : "s") failed")
-                .font(.caption)
-                .fontWeight(.medium)
-                .foregroundColor(.orange)
-        }
-    }
-
-    // MARK: - Compact Trailing
-
-    @ViewBuilder
-    private func compactTrailingView(context: ActivityViewContext<UploadActivityAttributes>) -> some View {
-        switch effectiveStatus(context) {
-        case .uploading:
-            Text("\(Int(context.state.overallProgress * 100))%")
-                .font(.caption2)
-                .fontWeight(.medium)
-                .monospacedDigit()
-        case .paused:
-            Text("\(Int(context.state.overallProgress * 100))%")
-                .font(.caption2)
-                .fontWeight(.medium)
-                .monospacedDigit()
-        case .processing:
-            Text("\(Int(context.state.overallProgress * 100))%")
-                .font(.caption2)
-                .fontWeight(.medium)
-                .monospacedDigit()
-        case .completed:
-            Image(systemName: "checkmark")
-                .foregroundColor(.green)
-                .font(.caption2)
-        case .failed:
-            Image(systemName: "exclamationmark")
-                .foregroundColor(.orange)
-                .font(.caption2)
-        }
+        return UploadActivityDisplay(
+            headerTitle: headerTitle,
+            counter: counter,
+            fileLine: fileLine,
+            fileDetail: fileDetail,
+            statusWord: statusWord,
+            pillDetail: " • \(counter)",
+            progress: progress,
+            folderName: context.attributes.folderName,
+            folderItemCount: state.folderItemCount,
+            folderIsShared: context.attributes.folderIsShared,
+            barFill: UploadActivityStyle.progressFill(for: status),
+            ringTint: UploadActivityStyle.ringTint(for: status),
+            ringGlyph: ringGlyph,
+            hint: hint,
+            // Only uploading gets the folder card; the pill covers the rest.
+            // Overridable in DEBUG to inspect either on device.
+            showsFolderCard: UploadActivityStyle.expandedLayout(for: status) == .folderCard
+        )
     }
 
     // MARK: - Helpers
 
-    /// Treat a stale `.uploading` activity as `.paused` for visual purposes,
-    /// so Dynamic Island icons match the Lock Screen's orange paused state.
+    /// A stale in-progress activity reads as `.paused`, matching the Lock Screen. Covers
+    /// `.processing` too: nothing is landing, so "Finishing up…" would claim work that has stopped.
     private func effectiveStatus(_ context: ActivityViewContext<UploadActivityAttributes>) -> UploadActivityAttributes.UploadStatus {
-        if context.state.status == .uploading && context.isStale {
-            return .paused
-        }
-        return context.state.status
-    }
-
-    private func expandedIcon(for status: UploadActivityAttributes.UploadStatus) -> String {
-        switch status {
-        case .uploading: return "arrow.up.circle.fill"
-        case .paused: return "pause.circle.fill"
-        case .processing: return "gearshape.circle.fill"
-        case .completed: return "checkmark.circle.fill"
-        case .failed: return "exclamationmark.triangle.fill"
-        }
-    }
-
-    private func expandedIconColor(for status: UploadActivityAttributes.UploadStatus) -> Color {
-        switch status {
-        case .uploading: return .blue
-        case .paused: return .orange
-        case .processing: return .blue
-        case .completed: return .green
-        case .failed: return .orange
-        }
-    }
-
-    private func compactIcon(for status: UploadActivityAttributes.UploadStatus) -> String {
-        switch status {
-        case .uploading: return "arrow.up.circle.fill"
-        case .paused: return "pause.circle.fill"
-        case .processing: return "gearshape.circle.fill"
-        case .completed: return "checkmark.circle.fill"
-        case .failed: return "exclamationmark.triangle.fill"
-        }
-    }
-
-    private func compactIconColor(for status: UploadActivityAttributes.UploadStatus) -> Color {
-        switch status {
-        case .uploading: return .blue
-        case .paused: return .orange
-        case .processing: return .blue
-        case .completed: return .green
-        case .failed: return .orange
-        }
+        let status = context.state.status
+        let inProgress = status == .uploading || status == .processing
+        return inProgress && context.isStale ? .paused : status
     }
 
     private func folderURL(for context: ActivityViewContext<UploadActivityAttributes>) -> URL {

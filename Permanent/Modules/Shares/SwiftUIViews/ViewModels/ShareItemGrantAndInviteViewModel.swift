@@ -352,9 +352,8 @@ extension ShareItemViewModel {
         if let existingIndex = sharedArchives.firstIndex(where: { $0.accountVO?.primaryEmail?.caseInsensitiveCompare(trimmedEmail) == .orderedSame }) {
             let existing = sharedArchives[existingIndex]
             if existing.status?.contains("invited") == true {
-                // Re-inviting the same address issues a fresh invite id that supersedes the old
-                // one, so the stored row has to be rebuilt around it — mutating accessRole alone
-                // would leave Send again / Revoke pointed at the superseded invitation.
+                // Re-inviting the same address issues a fresh id that supersedes the old one, so rebuild the row
+                // around it — mutating the role alone leaves Send again and Revoke on a dead invitation.
                 sharedArchives[existingIndex] = makeInvitedShareRow(
                     fullName: existing.accountVO?.fullName ?? fullName,
                     email: trimmedEmail,
@@ -374,12 +373,8 @@ extension ShareItemViewModel {
         shouldShowArchivesSection = !sharedArchives.isEmpty
     }
 
-    /// Builds the client-side row that stands in for a pending invitation until the next refetch.
-    ///
-    /// `inviteId` is the id `/invite/share` returned, and it is stored negated in `shareID`:
-    /// `inviteId(from:)` reads it back out, so this is what makes Send again and Revoke address
-    /// the real invitation. A non-positive id is stored as `nil` rather than a fabricated value,
-    /// so "no usable id" stays visible to those two actions instead of becoming a wrong target.
+    /// The client-side stand-in for a pending invitation until the next refetch. The invite id is
+    /// stored negated in `shareID`; a non-positive one becomes nil rather than a wrong target.
     func makeInvitedShareRow(fullName: String, email: String, role: AccessRole, inviteId: Int) -> ShareVOData {
         let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -461,11 +456,8 @@ extension ShareItemViewModel {
         editingInvitation = nil
     }
 
-    /// Recovers the invite id a pending-invitation row carries in its `shareID`.
-    ///
-    /// Only invitation rows encode an id this way. A locally granted archive also gets a
-    /// synthetic negative `shareID` but is not an invitation, so the status check is what keeps
-    /// it from being read as one and revoked against an unrelated invite.
+    /// Reads back the invite id a pending row carries in `shareID`. A locally granted archive also has
+    /// a synthetic negative id, so the status check is what stops it being revoked as an invitation.
     func inviteId(from shareVO: ShareVOData) -> Int? {
         guard shareVO.status?.contains("invited") == true else { return nil }
         guard let shareID = shareVO.shareID, shareID < 0 else { return nil }
@@ -575,11 +567,8 @@ extension ShareItemViewModel {
                     return
                 }
 
-                // A role change re-POSTs /invite/share, which issues a new invite id and
-                // supersedes the previous one. Rebuild the row so it carries the new id as well
-                // as the new role; otherwise re-opening Edit would resend or revoke a dead
-                // invitation. Matched by email, the stable identity of an invitation row —
-                // shareID is what is being replaced here, and may be nil on both sides.
+                // A role change re-posts the invite and supersedes the old id, so rebuild the row with both.
+                // Matched by email, the stable identity here, since `shareID` is what is being replaced.
                 let updatedRow = self.makeInvitedShareRow(
                     fullName: fullName,
                     email: email,

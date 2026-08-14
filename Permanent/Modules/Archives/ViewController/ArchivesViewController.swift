@@ -177,11 +177,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 tableView.reloadData()
                 
                 delegate?.archivesViewControllerDidChangeArchive(self)
-                // No `didChangeArchiveNotification` post here: `changeArchive` already routed
-                // through `setCurrentArchive`, which updates the session and posts it before this
-                // completion runs. Posting again fired every observer twice — on the Shares screen
-                // that started two overlapping `getShares` fetches, which rendered shared items
-                // twice or, depending on response order, not at all.
+                // No archive-change post here: `setCurrentArchive` already posted it before this completion runs,
+                // and posting twice starts two overlapping fetches that double or empty the Shares list.
             } else {
                 showAlert(title: .error, message: .errorMessage)
             }

@@ -8,10 +8,8 @@
 import Foundation
 
 class PublicFilesViewModel: MyFilesViewModel {
-    // Public Files reuses the inherited MyFilesViewModel V2 root discovery (VSP-1787 follow-up):
-    // it lands in the archive's PUBLIC root via GET /api/v2/archives → rootFolderId → the
-    // public-root child → /children, gated by useStelaNavigation, with V1 getPublicRoot as the
-    // automatic failsafe. Same owner workspace, archive-level permissions apply.
+    // Public Files reuses the inherited V2 root discovery, landing in the archive's public root with
+    // V1 `getPublicRoot` as the automatic failsafe. Same owner workspace, archive-level permissions.
 
     override var rootFolderName: String {
         return "Public Files".localized()
@@ -21,10 +19,8 @@ class PublicFilesViewModel: MyFilesViewModel {
     override var rootSectionType: FileType { .publicRootFolder }
     override var rootSectionFallbackDisplayName: String { "Public" }
 
-    /// V1 failsafe for Public Files root discovery — the legacy getPublicRoot bootstrap,
-    /// reached only when the V2 public-root resolution fails. Unlike the V2 path it does NOT
-    /// seed `v2NavigationTarget`, so it lists the root via V1 navigateMin, preserving today's
-    /// behavior.
+    /// The V1 failsafe for Public Files root discovery, reached only when V2 resolution fails. It does
+    /// not seed `v2NavigationTarget`, so the root lists via V1.
     override func performV1GetRoot(then handler: @escaping ServerResponse) {
         guard let archiveNbr = currentArchive?.archiveNbr else {
             handler(.error(message: .errorMessage))

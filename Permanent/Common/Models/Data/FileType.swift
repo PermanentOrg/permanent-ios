@@ -30,11 +30,8 @@ enum FileType: String, Codable {
         }
     }
 
-    /// Maps a Stela V2 `type` string to a `FileType`.
-    ///
-    /// Folders serialize a PRETTY type (`"private"`, `"private-root"`, …) that does
-    /// NOT match `FileType`'s raw values, so they must be mapped explicitly; records
-    /// keep the raw `"type.record.*"` string that `init(rawValue:)` understands.
+    /// Maps a V2 `type` string to a `FileType`. Folders serialize a pretty type that doesn't match the
+    /// raw values and must be mapped explicitly; records keep the raw string.
     static func fromV2(typeString: String?, isFolder: Bool) -> FileType {
         guard isFolder else {
             return FileType(rawValue: typeString ?? "") ?? .miscellaneous

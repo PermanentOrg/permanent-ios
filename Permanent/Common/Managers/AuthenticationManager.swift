@@ -156,10 +156,8 @@ class AuthenticationManager {
 
                 syncSession { [self] status in
                     if status == .success {
-                        // Clear the MFA session only after the whole flow succeeds. Clearing it
-                        // up front (before syncSession) bricked the 2FA screen on a transient
-                        // syncSession failure: the correct code was consumed, mfaSession was gone,
-                        // and any retry/"Resend code" then failed with a misleading error.
+                        // Clear the MFA session only after the whole flow succeeds: clearing it up front bricks the 2FA
+                        // screen on a transient failure, since the correct code is consumed and no retry can work.
                         mfaSession = nil
                         saveSession()
 
@@ -218,14 +216,8 @@ class AuthenticationManager {
     
     func logout() {
         authLogger.error("🔼 [AUTH] logout() called")
-        // NOTE: Intentionally NOT cancelling in-flight uploads here.
-        // `logout()` fires from multiple paths (biometric lockout, session-restore
-        // failures, app reinstall scenarios) — not just user-initiated sign-out.
-        // If we cancelled uploads here, a transient auth blip or debugger reinstall
-        // would silently destroy hours of upload work.
-        //
-        // Upload cancellation should only happen from the explicit "Sign Out"
-        // button path in SettingsScreenViewModel.
+        // Deliberately does NOT cancel in-flight uploads: `logout()` also fires on biometric lockout and
+        // session-restore failure, where cancelling would destroy hours of work. Only Sign Out cancels.
 
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
 
@@ -257,9 +249,8 @@ class AuthenticationManager {
                            let refreshedArchive = refreshedArchive,
                            currentArchive.archiveID == refreshedArchive.archiveID {
                             
-                            // CRITICAL FIX: Don't overwrite user's archive selection with server data
-                            // The user's local session contains their intended archive state
-                            // Check if server has different data
+                            // Don't overwrite the user's archive selection with server data: the local session holds what
+                            // they intended.
                             if currentArchive.fullName != refreshedArchive.fullName {
                                 print("🔴 ARCHIVE_DEBUG: ⚠️⚠️⚠️ ARCHIVE NAME MISMATCH DETECTED!")
                             } else {
