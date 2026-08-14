@@ -234,6 +234,36 @@ platform :ios do
           force_for_new_devices: true,
           force: true
           )
+
+    # regenerate the App Store profiles so they always embed the current manual distribution cert
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          force: true
+          )
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive.PushExtension",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          force: true
+          )
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive.ShareExtension",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          force: true
+          )
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive.Widgets",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          force: true
+          )
   end
 
 end
