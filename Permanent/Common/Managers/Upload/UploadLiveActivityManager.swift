@@ -61,19 +61,22 @@ class UploadLiveActivityManager {
     /// Whether a Live Activity is currently active.
     var isActive: Bool { currentActivity != nil }
 
-    /// Whether any upload Live Activity is visible on the Lock Screen (active or recently ended).
-    /// Ended activities remain visible for up to 30 seconds before iOS removes them.
+    /// Whether any upload Live Activity is visible on the Lock Screen, active or recently ended.
+    /// An ended one stays until its dismissal policy runs out.
     var hasVisibleActivity: Bool {
         return !Activity<UploadActivityAttributes>.activities.isEmpty
     }
 
     /// How long a finished batch stays **active** so the island can show its terminal state.
     /// Ending immediately drops it from the island unseen; `.after(...)` only affects the banner.
-    private let completionHoldInterval: TimeInterval = 4
+    private let completionHoldInterval: TimeInterval = 5
 
     /// A terminal batch waiting out `completionHoldInterval`. Separate from `currentActivity`
     /// so the manager looks idle to a new upload, yet can still end this one first.
     private var finishingActivity: Activity<UploadActivityAttributes>?
+
+    /// The runtime bought for the hold, held here so the expiry handler can end its own assertion.
+    private var completionHoldToken: UIBackgroundTaskIdentifier = .invalid
 
     /// Matched to the ~30s background-execution budget: once suspended, no update can land, so the
     /// activity goes stale and truthfully reads as paused. Foregrounding refreshes it.
@@ -442,11 +445,8 @@ class UploadLiveActivityManager {
             folderItemCount: displayedFolderItemCount
         )
 
-        // A success has nothing left to read once the checkmark has been seen, so it goes as soon
-        // as the hold is over. A failure lingers, since the counts are the only report of it.
-        let dismissal: ActivityUIDismissalPolicy = status == .completed
-            ? .immediate
-            : .after(Date().addingTimeInterval(30))
+        // A failure keeps its banner for a while, since the counts are the whole message.
+        let failureLinger: TimeInterval = 30
         let hold = completionHoldInterval
 
         // Park the activity in the finishing slot and clear live state FIRST, so a new upload
@@ -456,28 +456,79 @@ class UploadLiveActivityManager {
         currentActivity = nil
         resetState()
 
+        // Only hold when the runtime to finish it can be bought: a suspended app never reaches the
+                // `end()` below, which leaves the banner up for hours. Otherwise let iOS time the dismissal.
+        guard let holdToken = beginCompletionHold() else {
+            Task {
+                await activity.end(
+                    .init(state: finalState, staleDate: nil),
+                    dismissalPolicy: .after(Date().addingTimeInterval(status == .completed ? hold : failureLinger))
+                )
+                await MainActor.run { self.releaseFinishingActivity(activity) }
+            }
+            return
+        }
+
         Task { [weak self] in
-            // Keep it active so the island can render the terminal state. The staleDate covers
-            // iOS suspending us before the `end` below runs.
             await activity.update(
                 .init(state: finalState, staleDate: Date().addingTimeInterval(hold + 30))
             )
             try? await Task.sleep(for: .seconds(hold))
             await activity.end(
                 .init(state: finalState, staleDate: nil),
-                dismissalPolicy: dismissal
+                dismissalPolicy: status == .completed
+                    ? .immediate
+                    : .after(Date().addingTimeInterval(failureLinger))
             )
-            await MainActor.run { self?.releaseFinishingActivity(activity) }
+            await MainActor.run {
+                self?.releaseFinishingActivity(activity)
+                self?.endCompletionHold(holdToken)
+            }
         }
+    }
+
+    /// Buys the runtime the hold needs. `nil` where that is impossible — an extension, or a refused
+        /// assertion — and the caller then ends the activity immediately instead.
+    private func beginCompletionHold() -> UIBackgroundTaskIdentifier? {
+#if APP_EXTENSION
+        return nil
+#else
+        // The handler dismisses the activity if iOS reclaims the time early, and must end its own
+                // assertion: an app that lets an expired one stand is terminated.
+        completionHoldToken = UIApplication.shared.beginBackgroundTask(
+            withName: "UploadActivityCompletionHold"
+        ) { [weak self] in
+            guard let self = self else { return }
+            self.logger.warning("🔼 Completion hold expired — dismissing the held activity now")
+            self.endFinishingActivityNow()
+            self.endCompletionHold(self.completionHoldToken)
+        }
+        return completionHoldToken == .invalid ? nil : completionHoldToken
+#endif
+    }
+
+    private func endCompletionHold(_ token: UIBackgroundTaskIdentifier) {
+#if !APP_EXTENSION
+        guard token != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(token)
+        if completionHoldToken == token { completionHoldToken = .invalid }
+#endif
     }
 
     /// Ends a held terminal-state activity right now. Called when a new batch starts, so the
     /// previous batch's checkmark never sits alongside a fresh upload.
     private func endFinishingActivityNow() {
-        guard let activity = finishingActivity else { return }
-        finishingActivity = nil
-        logger.info("🔼 Ending held terminal activity early — a new batch is starting")
-        Task { await activity.end(nil, dismissalPolicy: .immediate) }
+        if let activity = finishingActivity {
+            finishingActivity = nil
+            logger.info("🔼 Ending held terminal activity early — a new batch is starting")
+            Task { await activity.end(nil, dismissalPolicy: .immediate) }
+        }
+
+        // Already ended but still on screen while its dismissal policy runs out: untracked by the
+        // slot above, so dismiss it here or the old banner sits beside the new batch's.
+        for activity in Activity<UploadActivityAttributes>.activities where activity.activityState == .ended {
+            Task { await activity.end(nil, dismissalPolicy: .immediate) }
+        }
     }
 
     /// Clears the slot only if it still holds this activity; a newer batch may already have
