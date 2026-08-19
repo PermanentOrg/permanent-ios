@@ -1,0 +1,23 @@
+Uploads now show a Live Activity on the Lock Screen and in the Dynamic Island.
+
+Please focus on:
+
+1. Single file. Start an upload and lock the device. The ring should fill, the file name and "1 of 1" should be right, and the destination folder name should match. The completed banner stays for about 20 seconds and then goes on its own.
+
+2. Multi-file batch. Upload 5 to 10 files. The counter should climb, progress should never go backwards, and it should not sit at 100% while files are still outstanding.
+
+3. Tapping the activity. Tap the Lock Screen banner, and separately the expanded Dynamic Island. The app should open to the folder the upload is going into, both when it was backgrounded and after a force quit.
+
+4. Offline pause and resume, on a real device. Start a batch of large files, turn on Airplane Mode mid-upload, and check the device does not get warm. Turn Airplane Mode off and uploads should resume on their own within about 30 seconds.
+
+5. Larger text and appearance. Raise Larger Text in Accessibility settings, and check light and dark mode over both a light and a dark wallpaper. Text should stay inside the banner and the Island.
+
+6. Sharing into the app. Share 2 to 3 photos from Photos into Permanent, pick a folder, then open the app. An upload and an activity should start. Files shared while the app is closed wait until it is next opened, by design.
+
+The Dynamic Island presentations need iPhone 14 Pro or later; on other devices only the Lock Screen banner exists. Live Activities must be enabled in Settings, under Permanent.
+
+Known, please do not file:
+- A file retrying on a bad connection keeps showing "uploading" instead of failing. Network retries are unlimited by design.
+- A paused queue and a stalled one look the same. There is no "waiting for connectivity" state yet.
+
+This build also carries a batch of fixes worth a quick pass: spreadsheet and document previews, the create button on view-only archives, accepting pending archive invitations, HEIC thumbnails, and Send again / Revoke on share invitations.

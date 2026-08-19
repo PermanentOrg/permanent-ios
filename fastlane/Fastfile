@@ -154,27 +154,30 @@ platform :ios do
       increment_build_number({ build_number: latest_release + 1 })
     end
     
+    # match suffixes a profile's name when the canonical one is taken, so never hardcode names
+    profile_mapping = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+
     update_code_signing_settings(
         targets: ["Permanent"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive",
+        profile_name: profile_mapping["org.permanent.PermanentArchive"],
         code_sign_identity: "Apple Distribution"
     )
-    
+
     update_code_signing_settings(
         targets: ["PushExtension"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive.PushExtension",
+        profile_name: profile_mapping["org.permanent.PermanentArchive.PushExtension"],
         code_sign_identity: "Apple Distribution"
     )
-    
+
     update_code_signing_settings(
         targets: ["ShareExtension"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive.ShareExtension",
+        profile_name: profile_mapping["org.permanent.PermanentArchive.ShareExtension"],
         code_sign_identity: "Apple Distribution"
     )
 
@@ -182,7 +185,7 @@ platform :ios do
         targets: ["PermanentWidgetsExtension"],
         use_automatic_signing: false,
         path: "Permanent.xcodeproj",
-        profile_name: "match AppStore org.permanent.PermanentArchive.Widgets",
+        profile_name: profile_mapping["org.permanent.PermanentArchive.Widgets"],
         code_sign_identity: "Apple Distribution"
     )
 
@@ -197,8 +200,14 @@ platform :ios do
               }
       )
 
+    # "What to Test" for testers, rewritten per release; the last commit is only a safety net
+    notes_path = ["fastlane/WhatToTest.txt", "WhatToTest.txt"].find { |path| File.exist?(path) }
+    test_notes = notes_path ? File.read(notes_path).strip : ""
+    test_notes = last_git_commit[:message] if test_notes.empty?
+
     #upload to TestFlight
-    upload_to_testflight(app_identifier: "org.permanent.PermanentArchive")
+    upload_to_testflight(app_identifier: "org.permanent.PermanentArchive",
+                         changelog: test_notes.to_s[0, 4000])
   end
 
   lane :update_devices do     
@@ -232,6 +241,36 @@ platform :ios do
           app_identifier: "org.permanent.permanent.staging.ShareExtension",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           force_for_new_devices: true,
+          force: true
+          )
+
+    # regenerate the App Store profiles so they always embed the current manual distribution cert
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          force: true
+          )
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive.PushExtension",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          force: true
+          )
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive.ShareExtension",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          force: true
+          )
+    match(type: "appstore",
+          readonly: false,
+          platform: "ios",
+          app_identifier: "org.permanent.PermanentArchive.Widgets",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           force: true
           )
   end

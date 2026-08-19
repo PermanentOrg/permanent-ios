@@ -294,6 +294,7 @@ GEM
 PLATFORMS
   arm64-darwin-22
   arm64-darwin-24
+  arm64-darwin-25
   x86_64-darwin-19
 
 DEPENDENCIES
@@ -304,4 +305,4 @@ DEPENDENCIES
   xcodeproj (~> 1.27.0)
 
 BUNDLED WITH
-   2.4.19
+   2.5.22
