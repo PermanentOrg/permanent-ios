@@ -200,8 +200,14 @@ platform :ios do
               }
       )
 
+    # "What to Test" for testers, rewritten per release; the last commit is only a safety net
+    notes_path = ["fastlane/WhatToTest.txt", "WhatToTest.txt"].find { |path| File.exist?(path) }
+    test_notes = notes_path ? File.read(notes_path).strip : ""
+    test_notes = last_git_commit[:message] if test_notes.empty?
+
     #upload to TestFlight
-    upload_to_testflight(app_identifier: "org.permanent.PermanentArchive")
+    upload_to_testflight(app_identifier: "org.permanent.PermanentArchive",
+                         changelog: test_notes.to_s[0, 4000])
   end
 
   lane :update_devices do     
