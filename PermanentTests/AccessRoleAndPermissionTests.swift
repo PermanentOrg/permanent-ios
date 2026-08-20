@@ -62,6 +62,29 @@ final class AccessRoleAndPermissionTests: XCTestCase {
         XCTAssertEqual(AccessRole.roleForValue("unknown"), .viewer)
     }
 
+    // MARK: - AccessRole roleForValue, Stela plain-word form
+
+    func testAccessRole_RoleForValue_StelaPlainWords() {
+        XCTAssertEqual(AccessRole.roleForValue("owner"), .owner)
+        XCTAssertEqual(AccessRole.roleForValue("manager"), .manager)
+        XCTAssertEqual(AccessRole.roleForValue("curator"), .curator)
+        XCTAssertEqual(AccessRole.roleForValue("editor"), .editor)
+        XCTAssertEqual(AccessRole.roleForValue("contributor"), .contributor)
+        XCTAssertEqual(AccessRole.roleForValue("viewer"), .viewer)
+    }
+
+    func testPermissions_ForStelaPlainWordOwner_GrantFullAccess() {
+        let permissions = ArchiveVOData.permissions(forAccessRole: "owner")
+        XCTAssertTrue(permissions.contains(.upload))
+        XCTAssertTrue(permissions.contains(.create))
+        XCTAssertTrue(permissions.contains(.delete))
+        XCTAssertTrue(permissions.contains(.ownership))
+    }
+
+    func testPermissions_ForStelaPlainWordViewer_StayReadOnly() {
+        XCTAssertEqual(ArchiveVOData.permissions(forAccessRole: "viewer"), [.read])
+    }
+
     func testAccessRole_RoleForValue_NilDefaultsToViewer() {
         XCTAssertEqual(AccessRole.roleForValue(nil), .viewer)
     }
