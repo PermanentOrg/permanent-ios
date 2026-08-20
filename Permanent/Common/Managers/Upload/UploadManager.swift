@@ -870,10 +870,10 @@ class UploadManager {
         folderCacheLock.unlock()
 
         #if !APP_EXTENSION
-        // Flag-gated V2 listing, adapted to the same [ItemVO] currency. Any V2 failure falls back to V1,
+        // V2 listing, adapted to the same [ItemVO] currency. Any V2 failure falls back to V1,
         // since `[]` would green-light a duplicate; own-archive only, as the bearer-only read 401s foreign.
         let currentArchiveNbr = PermSession.currentSession?.selectedArchive?.archiveNbr
-        if FeatureFlags.useStelaNavigation, folderId > 0,
+        if folderId > 0,
            !archiveNo.isEmpty, archiveNo == currentArchiveNbr {
             let op = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: String(folderId), shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize))
             op.execute(in: APIRequestDispatcher()) { [weak self] result in

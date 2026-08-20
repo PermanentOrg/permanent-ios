@@ -9,10 +9,6 @@ import Foundation
 
 class SearchFilesViewModel: FilesViewModel {
 
-    /// Search results come from V1, but drilling into a result folder can use V2 with the V1 failsafe.
-    /// The controller seeds the target on a folder tap; back and refresh use the navigation stack.
-    override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
-
     override var currentFolderIsRoot: Bool { return navigationStack.count == 0 }
     
     var searchTimer: Timer?

@@ -211,11 +211,7 @@ final class PublicArchiveViewModelTests: XCTestCase {
                        "FileModel must carry the V1 folderId through, or navigateMin's gate rejects the target")
     }
 
-    func testOnGetRootSuccess_FlagOn_HandsPublicRootToV2Children() throws {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
+    func testOnGetRootSuccess_HandsPublicRootToV2Children() throws {
         let (vm, requestedFolderId) = makeGalleryVM(outcome: .committed)
 
         var status: RequestStatus?
@@ -227,25 +223,9 @@ final class PublicArchiveViewModelTests: XCTestCase {
         XCTAssertTrue(vm.currentFolderIsRoot, "one entry deep is root for this screen")
     }
 
-    func testOnGetRootSuccess_FlagOff_NeverTouchesV2() throws {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
-        let (vm, requestedFolderId) = makeGalleryVM()
-        vm.onGetRootSuccess(try makeGetRootResponse()) { _ in }
-
-        XCTAssertNil(requestedFolderId(), "with the flag off the public root must list via V1")
-        XCTAssertEqual(vm.v1NavigateMinCallCount, 1, "the flag-off path must go through the V1 leg exactly once")
-    }
-
     func testOnGetRootSuccess_PublicRootWithoutFolderId_FallsThroughToV1() throws {
         // The V1 payload is all-optional, so a root with no folderId maps to -1 and the gate must reject
         // it rather than request `/folders/-1/children`. Seeding can only add an attempt, never break V1.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let (vm, requestedFolderId) = makeGalleryVM()
         vm.onGetRootSuccess(try makeGetRootResponse(folderId: "")) { _ in }
 
@@ -254,10 +234,6 @@ final class PublicArchiveViewModelTests: XCTestCase {
     }
 
     func testOnGetRootSuccess_MalformedResponse_ErrorsWithoutNavigating() throws {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let (vm, requestedFolderId) = makeGalleryVM()
         let empty = try decodeGetRoot(#"{"Results":[],"isSuccessful":true}"#)
 
@@ -302,10 +278,6 @@ final class PublicArchiveViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_DrillIn_CommittedAppendsAndLeavesRoot() throws {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let (vm, requestedFolderId) = makeGalleryVM(outcome: .committed)
         vm.navigationStack.append(try makeV2Folder(folderId: 42618))   // already at the public root
         vm.v2NavigationTarget = try makeV2Folder(folderId: 42668)
@@ -320,10 +292,6 @@ final class PublicArchiveViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_DrillIn_FailedFallsBackToV1WithoutNavigating() throws {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let (vm, requestedFolderId) = makeGalleryVM(outcome: .failed(message: "boom"))
         vm.v2NavigationTarget = try makeV2Folder(folderId: 42668)
 
@@ -442,11 +410,7 @@ final class PublicArchiveFileViewControllerTests: XCTestCase {
 
     // MARK: - V2 drill-in seeding (the ticket's deliverable)
 
-    func testDidSelectFolder_FlagOn_SeedsTargetAndListsViaV2Children() throws {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
+    func testDidSelectFolder_SeedsTargetAndListsViaV2Children() throws {
         let (vc, collectionView) = makeController()
         let vm = try XCTUnwrap(vc.viewModel)
 
@@ -469,26 +433,6 @@ final class PublicArchiveFileViewControllerTests: XCTestCase {
         XCTAssertNil(vm.v2NavigationTarget, "the forward target is one-shot and must be consumed")
     }
 
-    func testDidSelectFolder_FlagOff_NeverReachesV2() throws {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
-        let (vc, collectionView) = makeController()
-        let vm = try XCTUnwrap(vc.viewModel as? StubV1GalleryViewModel)
-
-        var didReachV2 = false
-        vm.childrenFetchV2Request = { _, completion in
-            didReachV2 = true
-            completion(.committed)
-        }
-
-        vm.viewModels = [try makeV2Folder(folderId: 42668)]
-        vc.collectionView(collectionView, didSelectItemAt: IndexPath(row: 0, section: 0))
-
-        XCTAssertFalse(didReachV2, "with the flag off the gallery must stay on the V1 two-step path")
-        XCTAssertEqual(vm.v1NavigateMinCallCount, 1, "the tap must still navigate, via the V1 leg")
-    }
 
     // The record branch of `didSelectItemAt` is deliberately untested here: it stands up the whole
     // preview stack and fires a real fetch. Covered at the view-model level instead.

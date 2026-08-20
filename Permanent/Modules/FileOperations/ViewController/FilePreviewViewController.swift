@@ -26,9 +26,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileModel!
 
-    /// Gates the record detail read to V2 `getRecordById`, with a V1 failsafe. The view model further
-    /// restricts V2 to own-archive records, so no presenter needs to override this.
-    var usesStelaDetail: Bool = FeatureFlags.useStelaNavigation
     /// Set by the public gallery: its records live in a FOREIGN archive but are public, so
     /// the V2 read applies there too. See FilePreviewViewModel.allowsForeignDetail.
     var allowsForeignStelaDetail: Bool = false
@@ -162,7 +159,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file,
-                                            usesStelaDetail: usesStelaDetail,
                                             allowsForeignDetail: allowsForeignStelaDetail)
             bindImagePreviewState()
 

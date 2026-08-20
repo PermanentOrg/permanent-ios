@@ -29,16 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UITextField.appearance().clearButtonMode = .always
         }
 
-        #if DEBUG || STAGING_ENVIRONMENT
-        // UI tests flip the V2 navigation flag at launch so one suite proves parity against both paths
-        // without a rebuild. Staging is included because the tester build is not a DEBUG build.
-        if CommandLine.arguments.contains("--forceStelaNavigation") {
-            FeatureFlags.useStelaNavigation = true
-        } else if CommandLine.arguments.contains("--forceLegacyNavigation") {
-            FeatureFlags.useStelaNavigation = false
-        }
-        #endif
-
         clearShareDeepLinks()
 
         initFirebase()

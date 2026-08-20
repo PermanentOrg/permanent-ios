@@ -16,12 +16,6 @@ class MyFilesViewModel: FilesViewModel {
     var isPickingImage: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
 
-    /// Private Files opts into V2 navigation via the in-app flag. Public Files inherits it and Search
-    /// overrides it, so the one flag switches all three.
-    override var usesStelaNavigation: Bool {
-        FeatureFlags.useStelaNavigation
-    }
-
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     
     override var selectedFiles: [FileModel]? {
@@ -70,13 +64,9 @@ class MyFilesViewModel: FilesViewModel {
     var rootSectionFallbackDisplayName: String { Constants.API.FileType.myFilesFolder }
 
     func getRoot(then handler: @escaping ServerResponse) {
-        // Stela V2 root discovery, gated by `useStelaNavigation`, with the V1
-        // bootstrap kept as the automatic failsafe on any error/anomaly.
-        if usesStelaNavigation {
-            getRootV2(then: handler)
-        } else {
-            performV1GetRoot(then: handler)
-        }
+        // Stela V2 root discovery, with the V1 bootstrap kept as the
+        // automatic failsafe on any error/anomaly.
+        getRootV2(then: handler)
     }
 
     /// Root discovery from Stela reads only: resolve the section root, seed it as the V2 target, then
@@ -250,11 +240,9 @@ class MyFilesViewModel: FilesViewModel {
             return
         }
         
-        // Stela has no root-discovery route, so the V1 getRoot above stays the bootstrap. With V2 on,
-        // seed the navigation target so drill-in descends through `/children`.
-        if usesStelaNavigation {
-            v2NavigationTarget = FileModel(model: myFilesFolder)
-        }
+        // Stela has no root-discovery route, so the V1 getRoot above stays the bootstrap. Seed the
+        // navigation target so drill-in descends through `/children`.
+        v2NavigationTarget = FileModel(model: myFilesFolder)
 
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)

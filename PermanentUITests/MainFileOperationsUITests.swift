@@ -15,14 +15,12 @@ class MainFileOperationsUITests: BaseUITestCase {
     override func tearDownWithError() throws {
     }
 
-    /// The navigation path this run should exercise. Default DEV-Debug is Stela V2;
-    /// `TEST_RUNNER_STELA_NAV=0` forces the V1 failsafe (see BaseUITestCase).
-    private var expectedNavSource: String {
-        ProcessInfo.processInfo.environment["STELA_NAV"] == "0" ? "v1" : "v2"
-    }
+    /// The navigation path this run should exercise. V2 is always tried first; V1 remains
+    /// only as the automatic failsafe, so a healthy run must load via V2.
+    private var expectedNavSource: String { "v2" }
 
-    /// Folder drill-in must give the same outcome on V2 and V1, and runs under both flag states. The
-    /// nav-source accessibility id proves which path ran, so V2 can't pass on the V1 failsafe.
+    /// Folder drill-in loads via Stela V2, with V1 as the automatic failsafe. The nav-source
+    /// accessibility id proves which path ran, so V2 can't pass on the V1 failsafe.
     func testFolderNavigationParity() throws {
         let accountEmail = uiTestCredentials.username
         let accountPassword = uiTestCredentials.password

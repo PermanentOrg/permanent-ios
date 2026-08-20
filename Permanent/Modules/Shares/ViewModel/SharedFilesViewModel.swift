@@ -11,10 +11,6 @@ class SharedFilesViewModel: FilesViewModel {
     static let didSelectFilesNotifName = NSNotification.Name("SharedFilesViewModel.didSelectFilesNotifName")
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
 
-    /// V2 drill-in for the Shared workspace, with V1 as the automatic failsafe. The Shared root still
-    /// loads via V1 `getShares`, as there is no V2 aggregate route.
-    override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
-
     /// The V2 payload carries no per-child accessRole, so each child takes the entered folder's role
     /// intersected with archive permissions. Fails closed to `.viewer`, so it can only under-grant.
     override func v2ChildContext(enteredFolder: FileModel?) -> (permissions: [Permission], accessRole: AccessRole) {

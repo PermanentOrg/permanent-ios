@@ -47,8 +47,7 @@ class MetadataEditFileNamesViewModel: ObservableObject {
         isLoading = true
         // One PATCH per record, with the V1 batch as an automatic failsafe. Records only, and only the
         // display name is sent.
-        if FeatureFlags.useStelaNavigation,
-           updatedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
+        if updatedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
             updatedFiles.patchEachRecordToV2(fieldsFor: { ["displayName": $0.name] }) { [weak self] succeeded in
                 if succeeded {
                     self?.isLoading = false

@@ -34,10 +34,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var navigationStack: [FileModel] = []
     var uploadQueue: [FileInfo] = []
 
-    /// Whether this screen routes folder navigation through Stela V2. Off here; opted-in workspaces
-    /// override it and declare per-child roles via `v2ChildContext(enteredFolder:)`.
-    var usesStelaNavigation: Bool { false }
-
     /// The folder a forward V2 navigation is heading into (the tapped item / resolved
     /// root). On back/refresh the target is taken from `navigationStack` instead.
     var v2NavigationTarget: FileModel?
@@ -324,10 +320,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// by returning per-record outcomes; production leaves it nil.
     var copyRecordV2Request: ((_ recordId: String, _ destinationFolderId: String, _ completion: @escaping (Bool) -> Void) -> Void)?
 
-    /// Eligible for the idempotent V2 copy only when the flag is on, it is a saved record, and it is
-    /// in the current archive — the bearer-only V2 call would reject a foreign one.
+    /// Eligible for the idempotent V2 copy only when it is a saved record and it is in
+    /// the current archive — the bearer-only V2 call would reject a foreign one.
     func isEligibleForStelaCopy(_ file: FileModel) -> Bool {
-        guard usesStelaNavigation, !file.type.isFolder, file.recordId > 0,
+        guard !file.type.isFolder, file.recordId > 0,
               let currentArchiveId = currentArchive?.archiveID else { return false }
         return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
@@ -684,12 +680,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
     #endif
 
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
-        // V2 path where `usesStelaNavigation` allows it, with V1 as an automatic failsafe. Forward
-        // navigation consumes a one-shot target; entries that set none (deep links) fall through to V1.
+        // V2 path with V1 as an automatic failsafe. Forward navigation consumes a one-shot
+        // target; entries that set none (deep links) fall through to V1.
         let v2Target = backNavigation ? navigationStack.last : v2NavigationTarget
         if !backNavigation { v2NavigationTarget = nil }
-        if usesStelaNavigation,
-           let target = v2Target,
+        if let target = v2Target,
            target.folderId > 0 {
             navigateV2(target: target, params: params, backNavigation: backNavigation, retriesLeft: 1, then: handler)
             return
@@ -982,8 +977,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Whether a rename may take `PATCH /records/{id}`. Own archive only: the call is bearer-only and
     /// not exempt from the 401 handler, so a foreign record would log the user out for a legal rename.
     func canRenameViaStelaPatch(_ file: FileModel, newName: String) -> Bool {
-        return usesStelaNavigation
-            && !file.type.isFolder          // folder rename has no V2 route
+        return !file.type.isFolder          // folder rename has no V2 route
             && file.recordId > 0
             && !newName.isEmpty
             && isInSessionArchive(file)
