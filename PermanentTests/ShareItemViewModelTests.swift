@@ -1286,17 +1286,6 @@ private class MockShareManagementRepository: ShareManagementRepository {
             }
         }
     }
-    
-    override func getShareLinkV2(file: FileModel, then completion: @escaping ShareLinkV2Handler) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            if self.shouldReturnLink {
-                let v2Data = self.createMockV2Data()
-                completion(v2Data, nil)
-            } else {
-                completion(nil, "No link found")
-            }
-        }
-    }
 
     override func getShareLinkV2(shareLinkId: String, then completion: @escaping ShareLinkV2Handler) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -1399,12 +1388,6 @@ private class ErrorShareManagementRepository: ShareManagementRepository {
             } else {
                 completion(nil, nil)
             }
-        }
-    }
-    
-    override func getShareLinkV2(file: FileModel, then completion: @escaping ShareLinkV2Handler) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            completion(nil, "V2 network error")
         }
     }
 }
