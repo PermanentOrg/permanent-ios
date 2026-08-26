@@ -301,44 +301,6 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertFalse(FileModel(model: decodeChildren(present)!.items![0], permissions: [.read], accessRole: .viewer).archiveNo.isEmpty)
     }
 
-    // MARK: - Stela capability matrix — which workspaces follow FeatureFlags.useStelaNavigation
-    // Pinned via the in-app constant so it stays deterministic; each test restores it in a defer.
-
-    func testStelaCapability_BaseStaysV1() {
-        // The base class hardcodes false: even with the flag forced ON, a bare
-        // FilesViewModel (and any subclass that doesn't opt in) must NOT migrate.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        XCTAssertFalse(FilesViewModel().usesStelaNavigation)
-    }
-
-    func testStelaCapability_FlagOn_OptedInWorkspacesFollowIt() {
-        // My Files, Public Files, Search, Shared drill-in, and the Public Gallery
-        // deliberately opt in; the base (and everything inheriting it) stays V1.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        XCTAssertTrue(MyFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(PublicFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(SearchFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(SharedFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(PublicArchiveViewModel().usesStelaNavigation)
-        XCTAssertFalse(FilesViewModel().usesStelaNavigation)
-    }
-
-    func testStelaCapability_FlagOff_EverythingStaysV1() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        XCTAssertFalse(MyFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(PublicFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(SearchFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(SharedFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(PublicArchiveViewModel().usesStelaNavigation)
-        XCTAssertFalse(FilesViewModel().usesStelaNavigation)
-    }
-
     // MARK: - Shared-workspace V2 per-child role inheritance (v2ChildContext)
     // The V2 /children payload has no per-child accessRole, so Shared inherits the entered folder's
     // role while base workspaces keep the archive role. Must fail closed (→ .viewer), never over-grant.
@@ -382,12 +344,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testV2ChildContext_PublicGalleryPinsViewerRegardlessOfEnteredFolder() throws {
-        // The pin is gated on the V2 flag and v2ChildContext reads through it, so set the flag here
-        // rather than inherit the scheme default, which differs between schemes.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let vm = PublicArchiveViewModel()
         // Seed an OWNER archive: with `currentArchive` nil the pin is indistinguishable from the
         // un-pinned base, so every assertion below would pass even with the override deleted.
@@ -411,10 +367,6 @@ final class FilesViewModelTests: XCTestCase {
     func testV2ChildContext_PublicGalleryIgnoresOwnerArchiveRole() throws {
         // Browsing your own archive through the gallery, where an un-pinned view would stamp owner
         // permissions onto every child. The one case where the pin narrows, and it is deliberate.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let ownerArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
         XCTAssertEqual(AccessRole.roleForValue(ownerArchive.accessRole), .owner,
                        "fixture must really be an owner archive, else this test proves nothing")
@@ -432,10 +384,6 @@ final class FilesViewModelTests: XCTestCase {
     func testPublicGallery_ArchiveRolePinnedSoTheV1FailsafeCannotDisagree() throws {
         // The pin lives on archivePermissions/archiveAccessRole, not just v2ChildContext, because the
         // V1 legs stamp children from those two — pinning one leg lets a V2 failure re-grant write.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let vm = PublicArchiveViewModel()
         vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
 
@@ -457,31 +405,6 @@ final class FilesViewModelTests: XCTestCase {
                       "sanity: owner really does imply .edit — else the assertions above are hollow")
         XCTAssertEqual(base.archiveAccessRole, AccessRole.roleForValue(base.currentArchive?.accessRole),
                        "the base class must keep deriving its role from the session archive")
-    }
-
-    func testPublicGallery_PinLiftsWhenStelaNavigationIsOff() throws {
-        // With V2 off there is one listing path, so the disagreement the pin prevents cannot arise.
-        // Keeping it would strip Share, Publish and editable metadata from your own archive.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
-        let vm = PublicArchiveViewModel()
-        vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
-
-        XCTAssertEqual(vm.archiveAccessRole, .owner,
-                       "with V2 nav off the gallery must fall back to the archive's real role")
-        XCTAssertTrue(vm.archivePermissions.contains(.edit),
-                      "your own archive browsed with V2 nav off keeps its write permissions")
-
-        // Lifting the pin must not over-grant on someone else's archive: a null/unknown
-        // accessRole already maps to .viewer, so the foreign case is unchanged either way.
-        let foreign = PublicArchiveViewModel()
-        foreign.currentArchive = try XCTUnwrap(decodeArchive(accessRole: ""))
-        XCTAssertEqual(foreign.archiveAccessRole, .viewer,
-                       "a foreign archive must stay read-only even with the pin lifted")
-        XCTAssertFalse(foreign.archivePermissions.contains(.edit),
-                       "lifting the pin must never grant write on a foreign archive")
     }
 
     // MARK: - Record rename: V2 PATCH is own-archive only
@@ -533,14 +456,9 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testCanRenameViaStelaPatch_ForeignRecordIsRejected() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             // The reported scenario: Shares → "Shared with me" → editor role → Rename.
             let shared = SharedFilesViewModel()
-            XCTAssertTrue(shared.usesStelaNavigation, "precondition: Shared opts into the flag")
             XCTAssertFalse(shared.canRenameViaStelaPatch(makeV2Record(archiveId: 2), newName: "new.jpg"),
                            "a shared-with-me record must not reach PATCH /records/{id}")
 
@@ -550,10 +468,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testCanRenameViaStelaPatch_OwnRecordIsAllowed() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             XCTAssertTrue(MyFilesViewModel().canRenameViaStelaPatch(makeV2Record(archiveId: 1), newName: "new.jpg"),
                           "own-archive renames must keep using V2 — the gate must not over-tighten")
@@ -561,10 +475,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testCanRenameViaStelaPatch_OtherGuardsStillHold() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             let vm = MyFilesViewModel()
             let own = makeV2Record(archiveId: 1)
@@ -574,9 +484,6 @@ final class FilesViewModelTests: XCTestCase {
                            "a record with no id must not be PATCHed")
             XCTAssertFalse(vm.canRenameViaStelaPatch(makeV2Folder(role: .owner), newName: "new"),
                            "folder rename has no V2 route")
-
-            FeatureFlags.useStelaNavigation = false
-            XCTAssertFalse(vm.canRenameViaStelaPatch(own, newName: "new.jpg"), "flag off means V1")
         }
     }
 
@@ -591,10 +498,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testRename_ForeignRecord_GoesStraightToV1() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             let vm = RenameSpyViewModel()
             var status: RequestStatus?
@@ -1165,21 +1068,14 @@ final class FilesViewModelTests: XCTestCase {
         return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
     }
 
-    /// Runs `body` with a session whose selected archive is the mock (archiveID 1) and the
-    /// Stela flag ON, restoring both afterwards.
+    /// Runs `body` with a session whose selected archive is the mock (archiveID 1),
+    /// restoring the previous session afterwards.
     private func withStelaSessionArchive(_ body: () -> Void) {
         let previousSession = AuthenticationManager.shared.session
-        let previousFlag = FeatureFlags.useStelaNavigation
         let session = PermSession(token: "test_token")
         session.selectedArchive = ArchiveVOData.mock() // archiveID 1
         AuthenticationManager.shared.session = session
-        FeatureFlags.useStelaNavigation = true
-        defer {
-            AuthenticationManager.shared.session = previousSession
-            // Restore what was there, not a literal: the ambient value is derived from APIEnvironment, so
-            // restoring a hardcoded false silently changed what every later test saw.
-            FeatureFlags.useStelaNavigation = previousFlag
-        }
+        defer { AuthenticationManager.shared.session = previousSession }
         body()
     }
 
@@ -1187,37 +1083,13 @@ final class FilesViewModelTests: XCTestCase {
         withStelaSessionArchive {
             let vm = MyFilesViewModel()
             XCTAssertTrue(vm.isEligibleForStelaCopy(makeV2Record(recordId: 100, archiveId: 1)),
-                          "own-archive saved record with the flag on is eligible")
+                          "own-archive saved record is eligible")
             XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2FolderTarget()),
                            "folders have no V2 copy route")
             XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2Record(recordId: 100, archiveId: 999)),
                            "a foreign-archive record would be rejected on the bearer-only V2 copy")
             XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2Record(recordId: 0, archiveId: 1)),
                            "an unsaved record (recordId 0) is not eligible")
-        }
-    }
-
-    func testIsEligibleForStelaCopy_FlagOff_False() {
-        let previousSession = AuthenticationManager.shared.session
-        let session = PermSession(token: "test_token")
-        session.selectedArchive = ArchiveVOData.mock()
-        AuthenticationManager.shared.session = session
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer {
-            AuthenticationManager.shared.session = previousSession
-            FeatureFlags.useStelaNavigation = previousFlag
-        }
-
-        XCTAssertFalse(MyFilesViewModel().isEligibleForStelaCopy(makeV2Record()),
-                       "flag off keeps every record on V1")
-    }
-
-    func testIsEligibleForStelaCopy_BaseViewModelNeverStela() {
-        withStelaSessionArchive {
-            // Base FilesViewModel returns usesStelaNavigation == false regardless of the flag.
-            XCTAssertFalse(FilesViewModel().isEligibleForStelaCopy(makeV2Record()),
-                           "workspaces that never opt into Stela keep copy on V1")
         }
     }
 
@@ -1936,9 +1808,6 @@ final class FilesViewModelTests: XCTestCase {
     private var navParams: NavigateMinParams { ("0001-test", 11, nil) }
 
     func testNavigateV2_Committed_AppendsTargetAndSucceeds() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.committed])
         let target = makeV2FolderTarget()
         vm.v2NavigationTarget = target
@@ -1952,9 +1821,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_ForwardSupersededOnce_RetriesAndWins() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .committed])
         let target = makeV2FolderTarget()
         vm.v2NavigationTarget = target
@@ -1968,9 +1834,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_ForwardSupersededTwice_CompletesQuietlyWithoutNavigating() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .superseded])
         vm.v2NavigationTarget = makeV2FolderTarget()
 
@@ -1983,9 +1846,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_BackOrRefreshSuperseded_CompletesQuietlyWithoutRetry() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded])
         let current = makeV2FolderTarget()
         vm.navigationStack.append(current)
@@ -2151,12 +2011,9 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    // --- getRoot end-to-end (flag ON): resolve → seed → V2 navigate ---
+    // --- getRoot end-to-end: resolve → seed → V2 navigate ---
 
-    func testGetRoot_StelaOn_SeedsMyFilesAndNavigatesV2() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
+    func testGetRoot_SeedsMyFilesAndNavigatesV2() {
         withMyFilesVM { vm in
             vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
             vm.rootChildrenFetchV2Request = { _, completion in
@@ -2171,25 +2028,6 @@ final class FilesViewModelTests: XCTestCase {
             XCTAssertEqual(status, .success)
             XCTAssertEqual(vm.navigationStack.last?.folderId, 600, "landed inside the My Files folder via V2")
             XCTAssertNil(vm.v2NavigationTarget, "forward navigation consumes the one-shot target")
-        }
-    }
-
-    func testGetRoot_StelaOff_RoutesToV1WithoutV2Discovery() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        withMyFilesVM { vm in
-            var archivesFetched = false
-            var childrenFetched = false
-            vm.archivesFetchV2Request = { _ in archivesFetched = true }
-            vm.rootChildrenFetchV2Request = { _, _ in childrenFetched = true }
-
-            // Router decision is synchronous; the V1 branch's network call is fire-and-forget
-            // and not awaited (we only assert the routing, so this stays non-flaky).
-            vm.getRoot { _ in }
-
-            XCTAssertFalse(archivesFetched, "flag OFF must not enter V2 root discovery")
-            XCTAssertFalse(childrenFetched, "flag OFF must not enter V2 root discovery")
         }
     }
 
@@ -2343,10 +2181,7 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    func testPublicFiles_getRoot_StelaOn_SeedsPublicRootAndNavigatesV2() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
+    func testPublicFiles_getRoot_SeedsPublicRootAndNavigatesV2() {
         withPublicFilesVM { vm in
             vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
             vm.rootChildrenFetchV2Request = { _, completion in

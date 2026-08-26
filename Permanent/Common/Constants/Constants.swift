@@ -12,18 +12,6 @@ typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
-/// Compile-time switches, with no server-side Remote Config: flip a value and ship a build.
-/// Immutable `let`s in Release; `var`s in DEBUG only so tests can pin them and defer-restore.
-enum FeatureFlags {
-    /// Master switch for the Stela V2 path, with V1 as an automatic failsafe everywhere except publish.
-    /// Off in every build while the migration is deferred; `--forceStelaNavigation` flips it at launch.
-    #if DEBUG || STAGING_ENVIRONMENT
-    static var useStelaNavigation = false
-    #else
-    static let useStelaNavigation = false
-    #endif
-}
-
 struct Font { }
 
 struct TextFontStyle {

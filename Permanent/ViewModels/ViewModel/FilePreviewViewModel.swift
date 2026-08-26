@@ -47,16 +47,11 @@ class FilePreviewViewModel: ViewModelInterface {
 
     private var recordFetchAttempts = 0
 
-    /// When true (My Files with the Stela flag on), record detail is fetched via the
-    /// Stela V2 getRecordById, with the legacy V1 getRecord as an automatic failsafe.
-    private let usesStelaDetail: Bool
-
     /// Extends the V2 record read to foreign archives, for the public gallery — the same bearer-only
     /// credentials already list that archive's children. Reads only; writes stay own-archive.
     private let allowsForeignDetail: Bool
 
-    init(file: FileModel, usesStelaDetail: Bool = false, allowsForeignDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
-        self.usesStelaDetail = usesStelaDetail
+    init(file: FileModel, allowsForeignDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
         self.allowsForeignDetail = allowsForeignDetail
         self.tagsRepository = tagsRepository
         self.reachability = reachability
@@ -147,7 +142,7 @@ class FilePreviewViewModel: ViewModelInterface {
 
         // V2 detail with V1 as an automatic failsafe: own-archive records, plus foreign ones the caller
         // says are public. Shared-with-me stays on V1, authorized server-side via share membership.
-        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file) || allowsForeignDetail {
+        if file.recordId > 0, isInCurrentArchive(file) || allowsForeignDetail {
             getRecordV2(file: file, then: handler)
             return
         }
@@ -211,10 +206,6 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
-    /// Whether this preview opted into the Stela V2 path (the in-app flag; set on every
-    /// preview presenter — per-record ownership is checked separately, see below).
-    var isStelaEnabled: Bool { usesStelaDetail }
-
     /// True when the record is in the session's selected archive. A foreign or shared record carries
     /// a different or absent archiveId and stays on V1; unknown ownership also falls to V1.
     private func isInCurrentArchive(_ file: FileModel) -> Bool {
@@ -222,10 +213,10 @@ class FilePreviewViewModel: ViewModelInterface {
         return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
 
-    /// Publish eligibility for the V2 copy: flag on, a saved record, own archive. A foreign record
+    /// Publish eligibility for the V2 copy: a saved record in the own archive. A foreign record
     /// must use the V1 relocate, since copy has no fallback and the bearer-only call would fail.
     var canPublishViaStelaCopy: Bool {
-        isStelaEnabled && !file.type.isFolder && file.recordId > 0 && isInCurrentArchive(file)
+        !file.type.isFolder && file.recordId > 0 && isInCurrentArchive(file)
     }
 
     /// Copies the record into `destinationFolderId` via V2. Copy is not idempotent, so callers must
@@ -409,7 +400,7 @@ class FilePreviewViewModel: ViewModelInterface {
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
         // V2 PATCH covers name, description and location, which are idempotent. Date stays on V1: the
         // PATCH exposes only the EDTF column, not the timestamp the Date row shows. Own archive only.
-        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
+        if file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
             updateV2(file: file, name: name, description: description, location: location, completion: completion)
             return
         }
