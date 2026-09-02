@@ -16,11 +16,36 @@ typealias VoidAction = () -> Void
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
 
 enum PublicRootRequestStatus: Equatable {
-    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
-        return true
-    }
     case success(folder: FolderVOData?)
     case error(message: String?)
+
+    /// `FolderVOData` is not `Equatable`, so a success compares by the folder's identity fields.
+    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
+        switch (lhs, rhs) {
+        case (.success(let lhsFolder), .success(let rhsFolder)):
+            return lhsFolder?.folderID == rhsFolder?.folderID && lhsFolder?.folderLinkID == rhsFolder?.folderLinkID
+        case (.error(let lhsMessage), .error(let rhsMessage)):
+            return lhsMessage == rhsMessage
+        default:
+            return false
+        }
+    }
+
+    /// Maps the V1 `getPublicRoot` result. Every case completes, so the caller's spinner always clears.
+    init(operationResult: OperationResult) {
+        switch operationResult {
+        case .json(let response, _):
+            guard let model: GetRootResponse = JSONHelper.convertToModel(from: response), model.isSuccessful == true else {
+                self = .error(message: .errorMessage)
+                return
+            }
+            self = .success(folder: model.results?.first?.data?.first?.folderVO)
+        case .error(let error, _):
+            self = .error(message: error?.localizedDescription)
+        case .file:
+            self = .error(message: .errorMessage)
+        }
+    }
 }
 
 enum CheckboxState {
@@ -45,6 +70,16 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Injection seam for the V2 children fetch. Tests pin the supersede/retry policy in
     /// `navigateV2` by returning outcomes, with no network.
     var childrenFetchV2Request: ((String, @escaping (ChildrenFetchOutcome) -> Void) -> Void)?
+
+    /// Test seam for the Stela archives fetch behind root discovery and publish. Production leaves it nil.
+    var archivesFetchV2Request: ((@escaping (Result<[ArchiveV2Data], Error>) -> Void) -> Void)?
+
+    /// Test seam for the raw children fetch behind root discovery. Distinct from `getFolderChildrenV2`,
+    /// which commits to `viewModels`; this only returns the decoded items.
+    var rootChildrenFetchV2Request: ((String, @escaping (Result<[FolderChildV2Data], Error>) -> Void) -> Void)?
+
+    /// Test seam for the V1 `getPublicRoot` lookup, the publish failsafe. Production leaves it nil.
+    var publicRootV1Request: ((_ archiveNbr: String, _ completion: @escaping (PublicRootRequestStatus) -> Void) -> Void)?
 
     /// The folder the in-flight V2 fetch is listing, so `getFolderChildrenV2` can derive per-child
     /// context. Shared inherits this folder's accessRole, since the payload carries none.
@@ -484,6 +519,26 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
+    /// Resolves an archive section root from Stela reads only, as a navigation or publish target.
+    /// Nil on any failure so the caller falls back to V1. A write destination passes no display-name fallback.
+    func resolveSectionRootTargetV2(sectionType: FileType, fallbackDisplayName: String?, completion: @escaping (FileModel?) -> Void) {
+        let resolver = SectionRootResolverV2(fetchArchives: archivesFetchV2Request, fetchChildren: rootChildrenFetchV2Request)
+        resolver.resolve(sectionType: sectionType, fallbackDisplayName: fallbackDisplayName, archiveNbr: currentArchive?.archiveNbr) { [weak self] sectionChild in
+            guard let self = self, let sectionChild = sectionChild else {
+                completion(nil)
+                return
+            }
+            let model = FileModel(model: sectionChild, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
+            // Guard the ids navigation and its failsafe key on: a -1 sentinel id or an empty archiveNo is a
+            // contract break, so return nil rather than hand back a target with a bad id.
+            guard model.folderId > 0, model.folderLinkId > 0, !model.archiveNo.isEmpty else {
+                completion(nil)
+                return
+            }
+            completion(model)
+        }
+    }
+
     func publish(files: [FileModel], then handler: @escaping ServerResponse) {
         fileAction = .copy
         guard let archiveNbr = currentArchive?.archiveNbr else {
@@ -494,20 +549,29 @@ class FilesViewModel: NSObject, ViewModelInterface {
             return
         }
 
-        getPublicRoot(archiveNbr: archiveNbr, then: { status in
-            switch status {
-            case .success(let folder):
-                if let rootFolder = folder {
-                    let publicRoot = FileModel(model: rootFolder)
-                    self.relocate(files: files, to: publicRoot, then: handler)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
-            case .error(let message):
-                handler(.error(message: message))
+        // The public root from the Stela archives chain first; any resolution failure falls back to the
+        // V1 lookup. The copy step itself never falls back — see `relocate`.
+        resolveSectionRootTargetV2(sectionType: .publicRootFolder, fallbackDisplayName: nil) { [weak self] publicRoot in
+            guard let self = self else { handler(.error(message: .errorMessage)); return }
+            if let publicRoot = publicRoot {
+                self.relocate(files: files, to: publicRoot, then: handler)
+                return
             }
-        })
+            self.getPublicRoot(archiveNbr: archiveNbr) { status in
+                switch status {
+                case .success(let folder):
+                    if let rootFolder = folder {
+                        self.relocate(files: files, to: FileModel(model: rootFolder), then: handler)
+                    } else {
+                        self.fileAction = .none
+                        handler(.error(message: .errorMessage))
+                    }
+                case .error(let message):
+                    self.fileAction = .none
+                    handler(.error(message: message))
+                }
+            }
+        }
     }
     
     func cancelDownload() {
@@ -728,7 +792,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Bearer token, and its 401 logs out asynchronously and clears the session later tests read.
     func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
         #if DEBUG
-        // Reached either as the primary V1 path (flag off) or as the V2 failsafe.
+        // Reached as the V2 failsafe, or directly by entries that set no V2 target (deep links).
         FilesViewModel.lastNavigationSource = "v1"
         #endif
         let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
@@ -1041,29 +1105,15 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
+    /// The V1 public-root lookup, kept as the publish failsafe. Uses the injected seam in tests.
     func getPublicRoot(archiveNbr: String, then handler: @escaping (PublicRootRequestStatus) -> Void) {
+        if let injected = publicRootV1Request {
+            injected(archiveNbr, handler)
+            return
+        }
         let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: archiveNbr))
-        
         apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-                
-                if model.isSuccessful == true {
-                    handler(.success(folder: model.results?.first?.data?.first?.folderVO))
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
-            }
+            handler(PublicRootRequestStatus(operationResult: result))
         }
     }
     
