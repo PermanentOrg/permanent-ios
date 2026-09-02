@@ -19,12 +19,11 @@ class DonateViewController: BaseViewController<DonateViewModel> {
     @IBOutlet weak var contextLabel: UILabel!
     
     let applePayButton: PKPaymentButton = PKPaymentButton(paymentButtonType: .plain, paymentButtonStyle: .black)
+    /// The whole-dollar amount the open Apple Pay sheet shows; Stela is asked for exactly this.
+    private var pendingAmountInUSD = 0
     
-    static var invalidCharacterSet: CharacterSet = {
-        var characterSet = CharacterSet.decimalDigits
-        characterSet.insert(charactersIn: ".")
-        return characterSet.inverted
-    }()
+    /// Whole dollars only: Stela prices storage in integer USD, so the field takes digits and nothing else.
+    static let invalidCharacterSet: CharacterSet = CharacterSet.decimalDigits.inverted
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,6 +64,15 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        // The number pad has no Done key, so a tap anywhere else dismisses it. Buttons still get their taps.
+        let dismissKeyboardTap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        dismissKeyboardTap.cancelsTouchesInView = false
+        view.addGestureRecognizer(dismissKeyboardTap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -128,18 +136,19 @@ class DonateViewController: BaseViewController<DonateViewModel> {
     }
     
     @objc func applePayButtonPressed(_ sender: Any) {
-        let amount = NSDecimalNumber(string: donateTextField.text)
-        guard amount != 0 else {
+        let amountInUSD = viewModel?.wholeDollarAmount(from: donateTextField.text) ?? 0
+        guard amountInUSD > 0 else {
             showErrorAlert(message: "Invalid amount selected".localized())
             return
         }
+        pendingAmountInUSD = amountInUSD
         
         let merchantIdentifier = "merchant.org.permanent.permanentarchive"
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: "US", currency: "USD")
         
         // Configure the line items on the payment request
         paymentRequest.paymentSummaryItems = [
-            PKPaymentSummaryItem(label: "Permanent Legacy Foundation", amount: amount)
+            PKPaymentSummaryItem(label: "Permanent Legacy Foundation", amount: NSDecimalNumber(value: amountInUSD))
         ]
         
         // Initialize an STPApplePayContext instance
@@ -181,21 +190,11 @@ extension DonateViewController: UITextFieldDelegate {
         
         var shouldChangeCharacters = true
         
-        // Do not allow characters other than decimals and dot
+        // Digits only; this also filters a pasted decimal point.
         if string.rangeOfCharacter(from: Self.invalidCharacterSet)?.isEmpty == false {
             shouldChangeCharacters = false
         }
         
-        // Do not allow two dots
-        if textField.text?.range(of: ".")?.isEmpty == false && string.range(of: ".")?.isEmpty == false {
-            shouldChangeCharacters = false
-        }
-
-        // Do not allow dot as first character
-        if textField.text?.isEmpty == false && string.range(of: ".")?.isEmpty == false {
-            shouldChangeCharacters = false
-        }
-
         guard let textAfterReplacing = (textField.text as NSString?)?.replacingCharacters(in: range, with: string) else {
             return false
         }
@@ -246,11 +245,13 @@ extension DonateViewController: UITextFieldDelegate {
 // MARK: - ApplePayContextDelegate
 extension DonateViewController: ApplePayContextDelegate {
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
-        let selectedAmount = Int(floor((Double(donateTextField.text!) ?? 0) * 100))
-        
-        viewModel?.createPaymentIntent(amount: selectedAmount, { clientSecret in
+        guard let viewModel else {
+            completion(nil, nil)
+            return
+        }
+        viewModel.createStoragePurchase(amountInUSD: pendingAmountInUSD) { clientSecret in
             completion(clientSecret, nil)
-        })
+        }
     }
     
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPApplePayContext.PaymentStatus, error: Error?) {

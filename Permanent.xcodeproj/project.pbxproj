@@ -396,6 +396,7 @@
 		5E7B9BAC2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B9B2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift */; };
 		5E7B9BAD2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B9C2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift */; };
 		5E7B9BAE2FB1300200C1D3D0 /* DonateViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B9D2FB1300200C1D3D0 /* DonateViewModelTests.swift */; };
+		615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */; };
 		5E7B9BAF2FB1300200C1D3D0 /* GiftStorageViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9BA02FB1300200C1D3D0 /* GiftStorageViewModelTests.swift */; };
 		5E7B9BBB2FB139DF00C1D3D0 /* OnboardingPathAndChartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9BB62FB139DF00C1D3D0 /* OnboardingPathAndChartTests.swift */; };
 		5E7B9BBC2FB139DF00C1D3D0 /* FilePreviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9BB32FB139DF00C1D3D0 /* FilePreviewViewModelTests.swift */; };
@@ -599,6 +600,7 @@
 		5EB0CEDE2FB4CC44002B8601 /* SettingsMenuNavigationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB0CEDD2FB4CC44002B8601 /* SettingsMenuNavigationUITests.swift */; };
 		5EB2D2362C245EEA0029D0DE /* OnboardingArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB2D2352C245EEA0029D0DE /* OnboardingArchive.swift */; };
 		5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */; };
+		7D8910FD6C14469790D035E1 /* StoragePurchaseResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E3387A37349B181125656 /* StoragePurchaseResponse.swift */; };
 		5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A452943403600277800 /* UIDeviceExtension.swift */; };
 		5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */; };
 		5EB503B52C04C9B600534F09 /* OnboardingWhatsImportantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB503B42C04C9B600534F09 /* OnboardingWhatsImportantView.swift */; };
@@ -1556,6 +1558,7 @@
 		5E7B9B9B2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedAndInviteViewModelTests.swift; sourceTree = "<group>"; };
 		5E7B9B9C2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayAndSequenceExtensionTests.swift; sourceTree = "<group>"; };
 		5E7B9B9D2FB1300200C1D3D0 /* DonateViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateViewModelTests.swift; sourceTree = "<group>"; };
+		C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingEndpointTests.swift; sourceTree = "<group>"; };
 		5E7B9B9E2FB1300200C1D3D0 /* EditMetadataViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMetadataViewModelTests.swift; sourceTree = "<group>"; };
 		5E7B9B9F2FB1300200C1D3D0 /* FABViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABViewModelTests.swift; sourceTree = "<group>"; };
 		5E7B9BA02FB1300200C1D3D0 /* GiftStorageViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftStorageViewModelTests.swift; sourceTree = "<group>"; };
@@ -1744,6 +1747,7 @@
 		5EB0CEDD2FB4CC44002B8601 /* SettingsMenuNavigationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMenuNavigationUITests.swift; sourceTree = "<group>"; };
 		5EB2D2352C245EEA0029D0DE /* OnboardingArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingArchive.swift; sourceTree = "<group>"; };
 		5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseGiftingModel.swift; sourceTree = "<group>"; };
+		D78E3387A37349B181125656 /* StoragePurchaseResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoragePurchaseResponse.swift; sourceTree = "<group>"; };
 		5EB45A452943403600277800 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBorderTextField.swift; sourceTree = "<group>"; };
 		5EB503B42C04C9B600534F09 /* OnboardingWhatsImportantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWhatsImportantView.swift; sourceTree = "<group>"; };
@@ -3665,6 +3669,7 @@
 				5E7B9B9B2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift */,
 				5E7B9B9C2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift */,
 				5E7B9B9D2FB1300200C1D3D0 /* DonateViewModelTests.swift */,
+				C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */,
 				5E7B9B9E2FB1300200C1D3D0 /* EditMetadataViewModelTests.swift */,
 				5E7B9B9F2FB1300200C1D3D0 /* FABViewModelTests.swift */,
 				5E7B9BA02FB1300200C1D3D0 /* GiftStorageViewModelTests.swift */,
@@ -3759,6 +3764,7 @@
 			children = (
 				5E7141442AFD25D5003952CD /* GiftingModel.swift */,
 				5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */,
+				D78E3387A37349B181125656 /* StoragePurchaseResponse.swift */,
 			);
 			path = Billing;
 			sourceTree = "<group>";
@@ -5639,6 +5645,7 @@
 				5E1DAFFB2D4D023100E13347 /* CustomEmailFieldView.swift in Sources */,
 				5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */,
 				5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */,
+				7D8910FD6C14469790D035E1 /* StoragePurchaseResponse.swift in Sources */,
 				5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
 				5E051C0E2B6C39E900274657 /* CustomBarProgressGradientStyle.swift in Sources */,
@@ -6190,6 +6197,7 @@
 				5E7B9BAD2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift in Sources */,
 				5E7B9BC72FB13D9000C1D3D0 /* FilePreviewViewModelTests.swift in Sources */,
 				5E7B9BAE2FB1300200C1D3D0 /* DonateViewModelTests.swift in Sources */,
+				615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */,
 				5E7B9BAF2FB1300200C1D3D0 /* GiftStorageViewModelTests.swift in Sources */,
 				5E7B9B7B2FB0D11B00C1D3D0 /* GiftStorageViewTests.swift in Sources */,
 				5E7B9B7C2FB0D11B00C1D3D0 /* ChecklistAndDialogViewTests.swift in Sources */,
