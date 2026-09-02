@@ -129,6 +129,7 @@ extension Constants.API {
 
 extension Constants.API.FileType {
     static let myFilesFolder = "My Files"
+    static let publicFilesFolder = "Public"
 
     static let typeFolderRootPrivate = "type.folder.root.private"
     static let typeFolderRootPublic = "type.folder.root.public"

@@ -50,14 +50,6 @@ class MyFilesViewModel: FilesViewModel {
         return .myFiles
     }
     
-    /// Test seam: overrides the Stela archives fetch so `getRootV2` can be driven without
-    /// network (mirrors `childrenFetchV2Request` / `AuthenticationManager.changeArchiveOverride`).
-    var archivesFetchV2Request: ((@escaping (Result<[ArchiveV2Data], Error>) -> Void) -> Void)?
-
-    /// Test seam for the raw children fetch `getRootV2` uses. Distinct from `getFolderChildrenV2`,
-    /// which commits to `viewModels`; this only returns the decoded items.
-    var rootChildrenFetchV2Request: ((String, @escaping (Result<[FolderChildV2Data], Error>) -> Void) -> Void)?
-
     /// The archive section-root this workspace lands in. `PublicFilesViewModel` overrides it and
     /// reuses the whole discovery path below.
     var rootSectionType: FileType { .privateRootFolder }
@@ -90,113 +82,14 @@ class MyFilesViewModel: FilesViewModel {
         resolveSectionRootTargetV2(sectionType: .privateRootFolder, fallbackDisplayName: Constants.API.FileType.myFilesFolder, completion: completion)
     }
 
-    /// Resolves any archive section-root from Stela reads only: the archive's `rootFolderId`, then the
-    /// child matching `sectionType`. Nil on any failure so the caller falls back to V1.
-    func resolveSectionRootTargetV2(sectionType: FileType, fallbackDisplayName: String, completion: @escaping (FileModel?) -> Void) {
-        guard let archiveNbr = currentArchive?.archiveNbr, !archiveNbr.isEmpty else {
-            completion(nil)
-            return
-        }
-        fetchArchivesV2 { [weak self] result in
-            guard let self = self else { completion(nil); return }
-            guard
-                case .success(let archives) = result,
-                let rootFolderId = archives.first(where: { $0.archiveNbr == archiveNbr })?.rootFolderId,
-                !rootFolderId.isEmpty
-            else {
-                completion(nil)
-                return
-            }
-            self.fetchRootChildrenV2(folderId: rootFolderId) { [weak self] childrenResult in
-                guard let self = self else { completion(nil); return }
-                guard
-                    case .success(let children) = childrenResult,
-                    let sectionChild = Self.sectionRootChild(in: children, sectionType: sectionType, fallbackDisplayName: fallbackDisplayName)
-                else {
-                    completion(nil)
-                    return
-                }
-                let model = FileModel(model: sectionChild, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
-                // Guard the ids navigation and its failsafe key on: a -1 sentinel id or an empty archiveNo is a
-                // contract break, so return nil rather than hand back a target with a bad id.
-                guard model.folderId > 0, model.folderLinkId > 0, !model.archiveNo.isEmpty else {
-                    completion(nil)
-                    return
-                }
-                completion(model)
-            }
-        }
-    }
-
-    /// Picks a section-root child among an archive root's children, matching the Stela `type` first
-    /// and the display name second — a safety net until every environment's `type` is confirmed.
-    static func sectionRootChild(in children: [FolderChildV2Data], sectionType: FileType, fallbackDisplayName: String) -> FolderChildV2Data? {
-        if let byType = children.first(where: {
-            $0.isFolder && FileType.fromV2(typeString: $0.type, isFolder: true) == sectionType
-        }) {
-            return byType
-        }
-        return children.first(where: {
-            $0.isFolder && $0.displayName == fallbackDisplayName
-        })
-    }
-
     /// The private-root ("My Files") child. Retained for existing tests and callers.
     static func privateRootChild(in children: [FolderChildV2Data]) -> FolderChildV2Data? {
         sectionRootChild(in: children, sectionType: .privateRootFolder, fallbackDisplayName: Constants.API.FileType.myFilesFolder)
     }
 
-    private func fetchArchivesV2(completion: @escaping (Result<[ArchiveV2Data], Error>) -> Void) {
-        if let injected = archivesFetchV2Request {
-            injected(completion)
-            return
-        }
-        let endpoint = ArchiveV2Endpoint.searchArchives(
-            callerMembershipRoles: ArchiveV2Endpoint.allMembershipRoles,
-            pageSize: ArchiveV2Endpoint.defaultPageSize
-        )
-        APIOperation(endpoint).execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: ArchivesV2Response = JSONHelper.decoding(from: response, with: ArchivesV2Response.decoder),
-                    let items = model.items
-                else {
-                    completion(.failure(APIError.parseError))
-                    return
-                }
-                completion(.success(items))
-            case .error(let error, _):
-                completion(.failure(error ?? APIError.unknown))
-            default:
-                completion(.failure(APIError.unknown))
-            }
-        }
-    }
-
-    private func fetchRootChildrenV2(folderId: String, completion: @escaping (Result<[FolderChildV2Data], Error>) -> Void) {
-        if let injected = rootChildrenFetchV2Request {
-            injected(folderId, completion)
-            return
-        }
-        let endpoint = FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize)
-        APIOperation(endpoint).execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder),
-                    let items = model.items
-                else {
-                    completion(.failure(APIError.parseError))
-                    return
-                }
-                completion(.success(items))
-            case .error(let error, _):
-                completion(.failure(error ?? APIError.unknown))
-            default:
-                completion(.failure(APIError.unknown))
-            }
-        }
+    /// Kept as the entry point tests and callers know; the selection rule lives in the shared resolver.
+    static func sectionRootChild(in children: [FolderChildV2Data], sectionType: FileType, fallbackDisplayName: String) -> FolderChildV2Data? {
+        SectionRootResolverV2.sectionRootChild(in: children, sectionType: sectionType, fallbackDisplayName: fallbackDisplayName)
     }
 
     /// V1 failsafe bootstrap. Overridable so `PublicFilesViewModel` can fall back to

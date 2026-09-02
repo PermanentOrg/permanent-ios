@@ -1643,6 +1643,110 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(vm.fileAction, .none, "the guard must reset fileAction so the copy state isn't left stuck")
     }
 
+    /// A V1 `getPublicRoot` folder carrying the identity fields publish and relocate key on.
+    private func makePublicRootVO(folderId: Int = 599, folderLinkId: Int = 703) -> FolderVOData? {
+        let json = #"{"folderId": \#(folderId), "folderLinkId": \#(folderLinkId), "archiveNbr": "0001-0004", "type": "type.folder.public"}"#
+        return try? FolderVOData.decoder.decode(FolderVOData.self, from: Data(json.utf8))
+    }
+
+    // MARK: - publish via the V2 public root
+    // The root comes from the Stela archives chain with V1 `getPublicRoot` as the failsafe. The copy
+    // step keeps its own routing: own-archive records via V2, folders via the V1 batch.
+
+    func testPublish_V2PublicRootResolves_CopiesRecordIntoThatChild() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            vm.publicRootV1Request = { _, _ in XCTFail("V2 resolved the public root, so the V1 lookup must not run") }
+            var copiedInto: [String] = []
+            vm.copyRecordV2Request = { _, destinationFolderId, completion in
+                copiedInto.append(destinationFolderId)
+                completion(true)
+            }
+            vm.relocateV1Request = { _, _, _ in XCTFail("an own-archive record copies via V2, not the V1 batch") }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2Record(recordId: 1, archiveId: 1)]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(copiedInto, ["599"], "the destination is the public-root child the V2 chain selected")
+            XCTAssertEqual(vm.fileAction, .none)
+        }
+    }
+
+    func testPublish_V2ResolutionFails_FallsBackToV1PublicRoot() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            // An archive list without the selected archive, so the V2 chain returns nil.
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"9999","rootFolderId":"500"}]}"#))) }
+            var v1Lookups = 0
+            vm.publicRootV1Request = { _, completion in
+                v1Lookups += 1
+                completion(.success(folder: self.makePublicRootVO()))
+            }
+            var copiedInto: [String] = []
+            vm.copyRecordV2Request = { _, destinationFolderId, completion in
+                copiedInto.append(destinationFolderId)
+                completion(true)
+            }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2Record(recordId: 1, archiveId: 1)]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(v1Lookups, 1, "the V1 lookup is the failsafe, and runs exactly once")
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(copiedInto, ["599"], "the V1 folder's id still routes the record through the V2 copy")
+        }
+    }
+
+    func testPublish_V1FailsafeFails_CompletesWithErrorAndResetsFileAction() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            vm.archivesFetchV2Request = { $0(.failure(APIError.unknown)) }
+            vm.publicRootV1Request = { _, completion in completion(.error(message: "boom")) }
+            vm.copyRecordV2Request = { _, _, _ in XCTFail("no destination, so nothing to copy") }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2Record(recordId: 1, archiveId: 1)]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .error(message: "boom"))
+            XCTAssertEqual(vm.fileAction, .none, "an error must not leave the copy state stuck")
+        }
+    }
+
+    func testPublish_Folder_UsesV1RelocateWithTheV2ResolvedDestination() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            vm.copyRecordV2Request = { _, _, _ in XCTFail("folders have no V2 copy route") }
+            var destinations: [FileModel] = []
+            vm.relocateV1Request = { _, destination, completion in
+                destinations.append(destination)
+                completion(.success)
+            }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2FolderTarget()]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(destinations.map { $0.folderLinkId }, [703], "the V1 batch keys on the public root's folderLinkId")
+        }
+    }
+
     // MARK: - delete edge case
 
     func testDelete_NilFiles_ReturnsError() {
@@ -1679,10 +1783,24 @@ final class FilesViewModelTests: XCTestCase {
 
     // MARK: - PublicRootRequestStatus
 
-    func testPublicRootRequestStatus_Equatable() {
-        let a = PublicRootRequestStatus.success(folder: nil)
-        let b = PublicRootRequestStatus.error(message: "fail")
-        XCTAssertEqual(a, b)
+    func testPublicRootRequestStatus_SuccessAndErrorAreNotEqual() {
+        let success = PublicRootRequestStatus.success(folder: nil)
+        let error = PublicRootRequestStatus.error(message: "fail")
+        XCTAssertNotEqual(success, error, "the operator used to return true for every pair")
+        XCTAssertEqual(success, .success(folder: nil))
+        XCTAssertEqual(error, .error(message: "fail"))
+        XCTAssertNotEqual(error, .error(message: "other"))
+        XCTAssertEqual(PublicRootRequestStatus.success(folder: makePublicRootVO()), .success(folder: makePublicRootVO()))
+        XCTAssertNotEqual(PublicRootRequestStatus.success(folder: makePublicRootVO()), .success(folder: nil))
+        XCTAssertNotEqual(PublicRootRequestStatus.success(folder: makePublicRootVO()), .success(folder: makePublicRootVO(folderId: 1)))
+    }
+
+    func testPublicRootRequestStatus_FromOperationResult_EveryCaseCompletes() {
+        // `.file` is the case the old `default: break` swallowed, leaving the publish spinner up forever.
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .file(nil, nil)), .error(message: .errorMessage))
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .error(nil, nil)), .error(message: nil))
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .json(nil, nil)), .error(message: .errorMessage))
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .json(["isSuccessful": false], nil)), .error(message: .errorMessage))
     }
 
     // MARK: - CheckboxState
@@ -2195,6 +2313,104 @@ final class FilesViewModelTests: XCTestCase {
             XCTAssertEqual(status, .success)
             XCTAssertEqual(vm.navigationStack.last?.folderId, 599, "landed inside the public root via V2")
             XCTAssertNil(vm.v2NavigationTarget, "forward navigation consumes the one-shot target")
+        }
+    }
+
+    // MARK: - Public Files V1 failsafe
+
+    /// Public Files with the V1 root leg stubbed. A real `getPublicRoot` carries a Bearer token whose
+    /// 401 logs out asynchronously and clears the session later tests read.
+    private final class StubV1PublicFilesViewModel: PublicFilesViewModel {
+        var v1GetRootCallCount = 0
+        var v1GetRootResult: RequestStatus = .success
+
+        override func performV1GetRoot(then handler: @escaping ServerResponse) {
+            v1GetRootCallCount += 1
+            handler(v1GetRootResult)
+        }
+    }
+
+    private func withStubbedV1PublicFilesVM(_ body: (StubV1PublicFilesViewModel) -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock() // archiveNbr "1001"
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        #if DEBUG
+        // A process-wide static, so a leftover value would make the assertions below pass vacuously.
+        FilesViewModel.lastNavigationSource = "none"
+        #endif
+        body(StubV1PublicFilesViewModel())
+    }
+
+    func testPublicFiles_getRoot_ArchiveMissingFromV2List_FallsBackToV1() {
+        withStubbedV1PublicFilesVM { vm in
+            // An archive list without the selected archive, so the rootFolderId lookup returns nil.
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"9999","rootFolderId":"500"}]}"#))) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(vm.v1GetRootCallCount, 1, "V2 resolution returned nil, so the V1 failsafe must run")
+            XCTAssertEqual(status, .success, "the failsafe's outcome is what the screen receives")
+            #if DEBUG
+            XCTAssertNotEqual(FilesViewModel.lastNavigationSource, "v2", "the failsafe must not report itself as V2")
+            #endif
+        }
+    }
+
+    func testPublicFiles_getRoot_NoPublicRootChild_FallsBackToV1() {
+        withStubbedV1PublicFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            // Root children carrying neither a public-root type nor the "Public" display name.
+            let json = #"""
+            { "items": [ { "folderId":"600", "displayName":"My Files", "type":"private-root",
+              "status":"ok", "folderLinkId":"702", "archiveNumber":"0001-0003" } ] }
+            """#
+            vm.rootChildrenFetchV2Request = { _, completion in completion(.success(self.decodeChildren(json)!.items!)) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(vm.v1GetRootCallCount, 1, "no public-root child to land in, so the V1 failsafe runs")
+            XCTAssertEqual(status, .success)
+        }
+    }
+
+    func testPublicFiles_getRoot_HealthyV2_MarksNavigationSourceV2AndSkipsFailsafe() {
+        withStubbedV1PublicFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(vm.v1GetRootCallCount, 0, "a healthy V2 chain must never reach the failsafe")
+            XCTAssertEqual(vm.navigationStack.last?.folderId, 599)
+            #if DEBUG
+            XCTAssertEqual(FilesViewModel.lastNavigationSource, "v2", "the value a device trace is read against")
+            #endif
+        }
+    }
+
+    func testPublicFiles_V1Failsafe_RequestFails_StillCallsCompletion() {
+        withPublicFilesVM { vm in
+            // The real V1 leg against the offline test session. The point is that the handler fires at
+            // all: a dropped completion leaves the caller's spinner up with no error.
+            let reported = expectation(description: "the V1 failsafe reports back")
+            var status: RequestStatus?
+            vm.performV1GetRoot { outcome in
+                status = outcome
+                reported.fulfill()
+            }
+            wait(for: [reported], timeout: 5)
+            guard case .error = status else {
+                return XCTFail("an offline V1 failsafe must surface an error, got \(String(describing: status))")
+            }
         }
     }
 }
