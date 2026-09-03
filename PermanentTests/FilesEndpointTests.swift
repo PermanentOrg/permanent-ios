@@ -49,6 +49,12 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertTrue(url.contains("api/v2/folders?folderIds[]=42"), url)
     }
 
+    func testFolderV2_GetById_SendsTheRequiredPageSize() {
+        // The server rejects the query without `pageSize` ("pageSize" is required, HTTP 400).
+        let url = FolderV2Endpoint.getFolderById(folderId: "42", shareToken: "").customURL ?? ""
+        XCTAssertTrue(url.hasSuffix("api/v2/folders?folderIds[]=42&pageSize=9999"), url)
+    }
+
     func testFolderV2_EmptyShareToken_ResolvesToNil() {
         // Private Files passes no share token → bearer-token auth only.
         XCTAssertNil(FolderV2Endpoint.getFolderChildren(folderId: "1", shareToken: "", pageSize: 1).shareToken)
