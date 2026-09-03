@@ -10,6 +10,8 @@ import Foundation
 enum BillingEndpoint {
     case claimPledge
     case giftStorage(gift: GiftingModel)
+    /// POST /api/v2/storage-purchases — Stela opens a Stripe PaymentIntent for `amountInUSD` whole dollars.
+    case purchaseStorage(amountInUSD: Int)
 }
 
 extension BillingEndpoint: RequestProtocol {
@@ -19,6 +21,8 @@ extension BillingEndpoint: RequestProtocol {
             return "/billing/claimpledge"
         case .giftStorage:
             return "/billing/giftStorage"
+        case .purchaseStorage:
+            return ""  // Not used - we use customURL
         }
     }
     
@@ -55,6 +59,8 @@ extension BillingEndpoint: RequestProtocol {
         switch self {
         case .giftStorage(let gift):
             return try? APIPayload<GiftingModel>.encoder.encode(gift)
+        case .purchaseStorage(let amountInUSD):
+            return try? JSONSerialization.data(withJSONObject: ["amountInUSD": amountInUSD])
         default: return nil
         }
     }
@@ -64,6 +70,8 @@ extension BillingEndpoint: RequestProtocol {
         switch self {
         case .giftStorage(_):
             return "\(endpointPath)api/v2/billing/gift"
+        case .purchaseStorage:
+            return "\(endpointPath)api/v2/storage-purchases"
         default : return nil
         }
     }
