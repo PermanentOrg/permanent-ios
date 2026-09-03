@@ -396,6 +396,8 @@
 		5E7B9BAC2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B9B2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift */; };
 		5E7B9BAD2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B9C2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift */; };
 		5E7B9BAE2FB1300200C1D3D0 /* DonateViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9B9D2FB1300200C1D3D0 /* DonateViewModelTests.swift */; };
+		9CBB9ACA108840A69B585109 /* UIViewControllerSpinnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */; };
+		13F57C8DB2DB4A4EB984A0BE /* FolderV2ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */; };
 		615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */; };
 		5E7B9BAF2FB1300200C1D3D0 /* GiftStorageViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9BA02FB1300200C1D3D0 /* GiftStorageViewModelTests.swift */; };
 		5E7B9BBB2FB139DF00C1D3D0 /* OnboardingPathAndChartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B9BB62FB139DF00C1D3D0 /* OnboardingPathAndChartTests.swift */; };
@@ -1558,6 +1560,8 @@
 		5E7B9B9B2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedAndInviteViewModelTests.swift; sourceTree = "<group>"; };
 		5E7B9B9C2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayAndSequenceExtensionTests.swift; sourceTree = "<group>"; };
 		5E7B9B9D2FB1300200C1D3D0 /* DonateViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateViewModelTests.swift; sourceTree = "<group>"; };
+		39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerSpinnerTests.swift; sourceTree = "<group>"; };
+		CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderV2ModelsTests.swift; sourceTree = "<group>"; };
 		C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingEndpointTests.swift; sourceTree = "<group>"; };
 		5E7B9B9E2FB1300200C1D3D0 /* EditMetadataViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMetadataViewModelTests.swift; sourceTree = "<group>"; };
 		5E7B9B9F2FB1300200C1D3D0 /* FABViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABViewModelTests.swift; sourceTree = "<group>"; };
@@ -3669,6 +3673,8 @@
 				5E7B9B9B2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift */,
 				5E7B9B9C2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift */,
 				5E7B9B9D2FB1300200C1D3D0 /* DonateViewModelTests.swift */,
+				39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */,
+				CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */,
 				C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */,
 				5E7B9B9E2FB1300200C1D3D0 /* EditMetadataViewModelTests.swift */,
 				5E7B9B9F2FB1300200C1D3D0 /* FABViewModelTests.swift */,
@@ -6197,6 +6203,8 @@
 				5E7B9BAD2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift in Sources */,
 				5E7B9BC72FB13D9000C1D3D0 /* FilePreviewViewModelTests.swift in Sources */,
 				5E7B9BAE2FB1300200C1D3D0 /* DonateViewModelTests.swift in Sources */,
+				9CBB9ACA108840A69B585109 /* UIViewControllerSpinnerTests.swift in Sources */,
+				13F57C8DB2DB4A4EB984A0BE /* FolderV2ModelsTests.swift in Sources */,
 				615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */,
 				5E7B9BAF2FB1300200C1D3D0 /* GiftStorageViewModelTests.swift in Sources */,
 				5E7B9B7B2FB0D11B00C1D3D0 /* GiftStorageViewTests.swift in Sources */,

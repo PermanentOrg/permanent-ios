@@ -111,6 +111,8 @@ class DownloadManagerGCD: Downloader {
         }
     }
     
+    /// Still V1: its consumers read the legacy `shareVOS` list, so moving it needs a FolderV2Data to
+    /// FolderVO adapter like `RecordV2Data.toRecordVOPayload()`. Stela does return pending shares to managers.
     func getFolder(_ file: FileDownloadInfo, then handler: @escaping GetFolderResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getFolder(itemInfo: (file.folderLinkId, file.parentFolderLinkId)))
         self.operation = apiOperation

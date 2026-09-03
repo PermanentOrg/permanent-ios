@@ -70,11 +70,13 @@ class SharedFilesViewModel: FilesViewModel {
 
         let apiOperation = APIOperation(ShareEndpoint.getShares)
 
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             DispatchQueue.main.async {
+                guard let self = self else { return handler(.error(message: .errorMessage)) }
                 // A superseded fetch must not touch published state: a newer request is already
-                // in flight and its response is the authoritative one.
-                guard generation == self.sharesRequestGeneration else { return }
+                // in flight and its response is the authoritative one. Still call back so the caller
+                // can release its spinner — a stranded spinner is worse than a redundant hide.
+                guard generation == self.sharesRequestGeneration else { return handler(.success) }
 
                 switch result {
                 case .json(let response, _):

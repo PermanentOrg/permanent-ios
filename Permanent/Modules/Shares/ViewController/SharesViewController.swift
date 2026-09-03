@@ -48,6 +48,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private var isGridView = false
     private var sortActionSheet: SortActionSheet?
     private var sharesRefreshRequestId = UUID()
+    /// Archive whose share list is loading right now, nil once it lands. A second fetch for the same archive
+    /// would supersede this one in the view model, and the spinner would then wait on the duplicate.
+    private var inFlightSharesArchiveId: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -300,13 +303,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private func syncSharesForCurrentArchive() {
         guard viewModel != nil else { return }
 
-        if loadedArchiveId != sessionArchiveId {
+        if Self.shouldFetchShares(loadedArchiveId: loadedArchiveId, sessionArchiveId: sessionArchiveId, inFlightArchiveId: inFlightSharesArchiveId) {
             getShares(shouldShowSpinner: true)
-        } else if needsCollectionViewReloadOnAppear {
+        } else if loadedArchiveId == sessionArchiveId, needsCollectionViewReloadOnAppear {
             needsCollectionViewReloadOnAppear = false
             collectionView.reloadData()
             configureCollectionViewBgView()
         }
+    }
+
+    /// The list needs a fetch when it shows another archive than the selected one and no fetch for the
+    /// selected archive is already in flight. `viewDidLoad` starts the first load; `viewWillAppear` must not repeat it.
+    static func shouldFetchShares(loadedArchiveId: Int?, sessionArchiveId: Int?, inFlightArchiveId: Int?) -> Bool {
+        loadedArchiveId != sessionArchiveId && inFlightArchiveId != sessionArchiveId
     }
 
     fileprivate func refreshCollectionView(_ completion: (() -> ())? = nil) {
@@ -1224,10 +1233,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
         let requestId = UUID()
         sharesRefreshRequestId = requestId
+        inFlightSharesArchiveId = sessionArchiveId
 
         runRequest({ status in
             guard self.sharesRefreshRequestId == requestId else { return }
 
+            self.inFlightSharesArchiveId = nil
             self.hideSpinner()
             switch status {
             case .success:
