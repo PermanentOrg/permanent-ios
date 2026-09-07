@@ -1861,8 +1861,13 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
 // MARK: - SortActionSheetDelegate
 extension SharesViewController: SortActionSheetDelegate {
     func didSelectOption(_ option: SortOption) {
-        viewModel?.activeSortOption = option
-        refreshCurrentFolder()
+        guard let viewModel = viewModel else { return }
+        if viewModel.currentFolder != nil { showSpinner() }
+        viewModel.saveSortOption(option) { [weak self] _ in
+            // The refresh's own guard would leave the spinner up if the folder is gone by now.
+            self?.hideSpinner()
+            self?.refreshCurrentFolder()
+        }
     }
 }
 

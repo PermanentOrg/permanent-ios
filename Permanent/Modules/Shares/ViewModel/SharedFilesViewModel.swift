@@ -20,6 +20,9 @@ class SharedFilesViewModel: FilesViewModel {
         return (intersection, inheritedRole)
     }
 
+    /// Another archive's folder: the role granted on it decides, not the session archive's.
+    override var canPersistSort: Bool { currentFolder?.permissions.contains(.edit) ?? false }
+
     var shareListType: ShareListType = .sharedByMe {
         didSet {
             viewModels = shareListType == .sharedByMe ? sharedByMeViewModels : sharedWithMeViewModels
@@ -152,6 +155,7 @@ class SharedFilesViewModel: FilesViewModel {
             navigationStack.append(file)
         }
         
+        adoptSavedSort(folderId: folderVO.folderID ?? -1, savedSort: SortOption(serverValue: folderVO.sort))
         let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, folderLinkId)
         getLeanItems(params: params, then: handler)
     }

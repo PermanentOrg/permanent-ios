@@ -64,6 +64,8 @@ struct FileModel: Equatable, Codable {
     
     var sharedByArchive: MinArchiveVO?
 
+    var savedSortOption: SortOption?
+
     init(model: FileInfo, archiveThumbnailURL: String? = nil, permissions: [Permission], thumbnailURL2000: String? = nil) {
         self.name = model.name
         self.date = DateUtils.currentDate
@@ -126,6 +128,7 @@ struct FileModel: Equatable, Codable {
     
     init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
+        self.savedSortOption = model.recordID == nil ? SortOption(serverValue: model.sort) : nil
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
@@ -227,6 +230,7 @@ struct FileModel: Equatable, Codable {
     
     init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
+        self.savedSortOption = SortOption(serverValue: model.sort)
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
@@ -272,6 +276,7 @@ struct FileModel: Equatable, Codable {
     
     init(model: FolderVOData) {
         self.name = model.displayName ?? "-"
+        self.savedSortOption = SortOption(serverValue: model.sort)
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
@@ -308,6 +313,7 @@ struct FileModel: Equatable, Codable {
     /// deliberately not read — and string ids convert at the `intId` boundary, except `archiveNo`.
     init(model: FolderChildV2Data, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
+        self.savedSortOption = model.isFolder ? SortOption(serverValue: model.sort) : nil
         // Records carry displayDate; folders carry displayTimestamp.
         let rawDate = model.displayDate ?? model.displayTimestamp ?? model.fileCreatedAt
         self.date = rawDate != nil ? rawDate!.dateOnly : "-"

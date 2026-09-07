@@ -165,6 +165,7 @@ struct FolderChildV2Data: Model {
     // Per-item access (folder/record both carry it under Stela). Unused on the
     // Private Files path (permissions are archive-derived) but decoded for reuse.
     let shares: [RecordShareV2]?
+    let sort: String?
 
     /// Returns true if this item is a folder (has folderId but no recordId)
     var isFolder: Bool {

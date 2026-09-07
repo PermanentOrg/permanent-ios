@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SortOption: Int, CaseIterable {
+enum SortOption: Int, CaseIterable, Codable {
 
     case nameAscending
     
@@ -41,5 +41,25 @@ enum SortOption: Int, CaseIterable {
         case .typeAscending: return "sort.type_asc"
         case .typeDescending: return "sort.type_desc"
         }
+    }
+
+    var stelaValue: String {
+        switch self {
+        case .dateAscending: return "date-ascending"
+        case .dateDescending: return "date-descending"
+        case .nameAscending: return "alphabetical-ascending"
+        case .nameDescending: return "alphabetical-descending"
+        case .typeAscending: return "type-ascending"
+        case .typeDescending: return "type-descending"
+        }
+    }
+
+    private static let byServerValue: [String: SortOption] = Dictionary(
+        uniqueKeysWithValues: allCases.flatMap { [($0.apiValue, $0), ($0.stelaValue, $0)] }
+    )
+
+    init?(serverValue: String?) {
+        guard let value = serverValue, let match = SortOption.byServerValue[value] else { return nil }
+        self = match
     }
 }

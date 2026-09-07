@@ -141,4 +141,15 @@ struct LegacyEndpointSurfaceTests {
         #expect(sendsV2(ShareLinksV2Endpoint.updateShareLink(shareLinkId: "5"), "share-links/5"))
         #expect(sendsV2(ShareLinksV2Endpoint.deleteShareLink(shareLinkId: "5"), "share-links/5"))
     }
+
+    // MARK: - Live on Stela V2 with a V1 failsafe
+
+    @Test("The folder sort write goes to V2, with the V1 save behind it")
+    func folderSortWriteIsV2WithAV1Failsafe() {
+        #expect(sendsV2(FolderV2Endpoint.patchFolder(folderId: "7", fields: ["sort": "date-ascending"]), "folders/7"))
+        // Stela's folder PATCH does not take `sort` yet, so the V1 save stays wired as the failsafe.
+        let failsafe = FilesEndpoint.sortFolder(params: (folderLinkId: 7, sortOption: .dateAscending))
+        #expect(failsafe.path == "/folder/sort")
+        #expect(failsafe.customURL == nil)
+    }
 }

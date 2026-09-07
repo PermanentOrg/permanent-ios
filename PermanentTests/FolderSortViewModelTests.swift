@@ -96,4 +96,36 @@ final class FolderSortViewModelTests: XCTestCase {
         XCTAssertEqual(SortOption.typeAscending.rawValue, 4)
         XCTAssertEqual(SortOption.typeDescending.rawValue, 5)
     }
+
+    // MARK: - SortOption server vocabularies
+    // V1 stores and takes `sort.alphabetical_asc`; Stela reads and (once it takes `sort`) writes
+    // `alphabetical-ascending`. A folder's saved sort must parse from either.
+
+    func testSortOption_StelaValues_MatchTheStelaEnum() {
+        XCTAssertEqual(SortOption.nameAscending.stelaValue, "alphabetical-ascending")
+        XCTAssertEqual(SortOption.nameDescending.stelaValue, "alphabetical-descending")
+        XCTAssertEqual(SortOption.dateAscending.stelaValue, "date-ascending")
+        XCTAssertEqual(SortOption.dateDescending.stelaValue, "date-descending")
+        XCTAssertEqual(SortOption.typeAscending.stelaValue, "type-ascending")
+        XCTAssertEqual(SortOption.typeDescending.stelaValue, "type-descending")
+    }
+
+    func testSortOption_StelaValues_AreUnique() {
+        let values = SortOption.allCases.map { $0.stelaValue }
+        XCTAssertEqual(Set(values).count, values.count)
+    }
+
+    func testSortOption_ServerValue_RoundTripsBothVocabularies() {
+        for option in SortOption.allCases {
+            XCTAssertEqual(SortOption(serverValue: option.apiValue), option, "V1 value of \(option)")
+            XCTAssertEqual(SortOption(serverValue: option.stelaValue), option, "Stela value of \(option)")
+        }
+    }
+
+    func testSortOption_ServerValue_UnknownOrMissing_IsNil() {
+        XCTAssertNil(SortOption(serverValue: nil))
+        XCTAssertNil(SortOption(serverValue: ""))
+        XCTAssertNil(SortOption(serverValue: "sort.something_new"))
+        XCTAssertNil(SortOption(serverValue: "Alphabetical-Ascending"), "matching is exact, like the server enums")
+    }
 }

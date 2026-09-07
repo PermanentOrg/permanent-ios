@@ -56,7 +56,10 @@ enum CheckboxState {
 
 class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileModel] = []
-    var navigationStack: [FileModel] = []
+    var navigationStack: [FileModel] = [] {
+        // No folder on screen, so the next folder entered adopts its saved sort even if it is the one just left.
+        didSet { if navigationStack.isEmpty { listedFolderId = nil } }
+    }
     var uploadQueue: [FileInfo] = []
 
     /// The folder a forward V2 navigation is heading into (the tapped item / resolved
@@ -87,6 +90,16 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     var downloadQueue: [FileModel] = []
     var activeSortOption: SortOption = .nameAscending
+
+    /// Re-listing this folder keeps the picker's choice; a different folder adopts its saved sort.
+    private var listedFolderId: Int?
+
+    /// Stela answered the sort PATCH with 400 this session: the field is not accepted yet.
+    static var stelaRejectsSortPatch = false
+
+    /// Test seams for the two sort writes: the Stela folder PATCH and its V1 `/folder/sort` failsafe.
+    var sortPatchV2Request: ((_ folderId: String, _ option: SortOption, _ completion: @escaping (Bool) -> Void) -> Void)?
+    var sortSaveV1Request: ((_ folderLinkId: Int, _ option: SortOption, _ completion: @escaping (Bool) -> Void) -> Void)?
     var uploadInProgress: Bool = false
     var downloadInProgress: Bool {
         downloader != nil
@@ -770,6 +783,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             guard let self = self else { handler(.error(message: .errorMessage)); return }
             switch outcome {
             case .committed:
+                self.adoptSavedSort(folderId: target.folderId, savedSort: target.savedSortOption)
                 if !backNavigation { self.navigationStack.append(target) }
                 #if DEBUG
                 FilesViewModel.lastNavigationSource = "v2"
@@ -826,8 +840,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         case failed(message: String?)
     }
 
-    /// Lists a folder's children via V2, sorts client-side (the endpoint has no sort param) and
-    /// replaces `viewModels`. The completion always runs exactly once, or the spinner hangs.
+    /// Lists a folder's children via V2, in the server's order when the folder's saved sort is the active
+    /// one, and replaces `viewModels`. The completion always runs exactly once, or the spinner hangs.
     func getFolderChildrenV2(folderId: String, completion: @escaping (ChildrenFetchOutcome) -> Void) {
         // Request the whole folder in a single page (see FolderV2Endpoint.maxChildrenPageSize).
         let apiOperation = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize))
@@ -837,7 +851,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         let context = v2ChildContext(enteredFolder: v2EnteredFolder)
         let permissions = context.permissions
         let accessRole = context.accessRole
-        let sortOption = activeSortOption
+        let sortOption = listingSort(for: v2EnteredFolder)
+        let savedSort = v2EnteredFolder?.savedSortOption
 
         // Staleness guard: decodes run concurrently, so only the newest request may commit or a stale
         // result overwrites a newer listing. Superseded fetches commit nothing but still complete.
@@ -882,9 +897,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
                         }
                         mapped.append(file)
                     }
-                    let sorted = FilesViewModel.sorted(mapped, by: sortOption)
+                    let ordered = FilesViewModel.ordered(mapped, activeSort: sortOption, savedSort: savedSort)
                     DispatchQueue.main.async {
-                        resolve(.committed, { self.viewModels = sorted })
+                        resolve(.committed, { self.viewModels = ordered })
                     }
                 }
 
@@ -897,10 +912,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    /// Client-side ordering matching the six server sort options, applied here because `/children`
-    /// sorts by the folder's stored setting and takes no sort param.
-    func sortedByActiveOption(_ items: [FileModel]) -> [FileModel] {
-        return FilesViewModel.sorted(items, by: activeSortOption)
+    /// Client-side sort is the failsafe for a folder whose saved sort is unknown or could not be changed.
+    static func ordered(_ items: [FileModel], activeSort: SortOption, savedSort: SortOption?) -> [FileModel] {
+        return savedSort == activeSort ? items : sorted(items, by: activeSort)
     }
 
     /// Static so it can run off-main. Date and type options precompute the sort key once per item
@@ -956,6 +970,110 @@ class FilesViewModel: NSObject, ViewModelInterface {
             ?? sortDatePlain.date(from: raw)
             ?? .distantPast
     }
+
+    // MARK: - Folder sort
+
+    func listingSort(for folder: FileModel?) -> SortOption {
+        guard let folder, folder.folderId != listedFolderId, let saved = folder.savedSortOption else {
+            return activeSortOption
+        }
+        return saved
+    }
+
+    func adoptSavedSort(folderId: Int, savedSort: SortOption?) {
+        if folderId != listedFolderId, let savedSort {
+            activeSortOption = savedSort
+        }
+        listedFolderId = folderId
+    }
+
+    /// The backend lets editor and above change a folder's sort.
+    var canPersistSort: Bool { archivePermissions.contains(.edit) }
+
+    /// The Stela PATCH is bearer-only and not exempt from the 401 force-logout, so it runs for the
+    /// session's own archive only, and not once Stela has rejected the field this session.
+    func canPatchSortViaStela(_ folder: FileModel) -> Bool {
+        return !FilesViewModel.stelaRejectsSortPatch && folder.folderId > 0 && isInSessionArchive(folder)
+    }
+
+    /// `true` means `/children` now comes back in this order.
+    func saveSortOption(_ option: SortOption, completion: @escaping (Bool) -> Void) {
+        activeSortOption = option
+        guard canPersistSort, let folder = currentFolder, folder.folderLinkId > 0 else {
+            completion(false)
+            return
+        }
+        let finish: (Bool) -> Void = { [weak self] saved in
+            if saved { self?.recordSavedSort(option, forFolderId: folder.folderId) }
+            completion(saved)
+        }
+        if canPatchSortViaStela(folder) {
+            patchSortV2(folderId: String(folder.folderId), option: option) { [weak self] patched in
+                if patched {
+                    finish(true)
+                } else {
+                    self?.saveSortV1(folderLinkId: folder.folderLinkId, option: option, completion: finish)
+                }
+            }
+        } else {
+            saveSortV1(folderLinkId: folder.folderLinkId, option: option, completion: finish)
+        }
+    }
+
+    private func recordSavedSort(_ option: SortOption, forFolderId folderId: Int) {
+        if let index = navigationStack.lastIndex(where: { $0.folderId == folderId }) {
+            navigationStack[index].savedSortOption = option
+        }
+    }
+
+    private func patchSortV2(folderId: String, option: SortOption, completion: @escaping (Bool) -> Void) {
+        if let injected = sortPatchV2Request {
+            injected(folderId, option, completion)
+            return
+        }
+        let apiOperation = APIOperation(FolderV2Endpoint.patchFolder(folderId: folderId, fields: ["sort": option.stelaValue]))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                completion(FilesViewModel.stelaResponseSavedSort(response, as: option))
+            case .error(let error, _):
+                if error as? APIError == .badRequest { FilesViewModel.stelaRejectsSortPatch = true }
+                completion(false)
+            default:
+                completion(false)
+            }
+        }
+    }
+
+    /// A 200 that ignored the field must not count, or the V1 failsafe is skipped.
+    static func stelaResponseSavedSort(_ response: Any, as option: SortOption) -> Bool {
+        let folder = (response as? [String: Any])?["data"] as? [String: Any]
+        return SortOption(serverValue: folder?["sort"] as? String) == option
+    }
+
+    private func saveSortV1(folderLinkId: Int, option: SortOption, completion: @escaping (Bool) -> Void) {
+        if let injected = sortSaveV1Request {
+            injected(folderLinkId, option, completion)
+            return
+        }
+        let apiOperation = APIOperation(FilesEndpoint.sortFolder(params: (folderLinkId, option)))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            guard case .json(let response, _) = result else {
+                completion(false)
+                return
+            }
+            completion(FilesViewModel.legacyResponseSavedSort(response, as: option))
+        }
+    }
+
+    static func legacyResponseSavedSort(_ response: Any, as option: SortOption) -> Bool {
+        guard let object = response as? [String: Any],
+              let model: NavigateMinResponse = JSONHelper.convertToModel(from: object),
+              model.isSuccessful == true
+        else { return false }
+        let echoed = model.results?.first?.data?.first?.folderVO?.sort
+        return echoed == nil || echoed == option.apiValue
+    }
     
     func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
         guard
@@ -994,6 +1112,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             navigationStack.append(file)
         }
         
+        adoptSavedSort(folderId: folderVO.folderID ?? -1, savedSort: SortOption(serverValue: folderVO.sort))
         let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, folderLinkId)
         getLeanItems(params: params, then: handler)
     }
