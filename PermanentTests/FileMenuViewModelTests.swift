@@ -901,6 +901,145 @@ final class FileMenuViewModelTests: XCTestCase {
 
     // MARK: - Helpers
 
+    // MARK: - Access role refresh (V2 first, V1 failsafe)
+
+    /// A shared folder with a real folderId, built from a V2 child so `folderId` is set.
+    private func makeSharedFolderModel(folderId: String = "55") -> FileModel {
+        let json = """
+        {"folderId": "\(folderId)", "displayName": "Shared", "type": "type.folder.private", "folderLinkId": "7", "archiveId": "3"}
+        """
+        let child = try! FolderChildV2Data.decoder.decode(FolderChildV2Data.self, from: Data(json.utf8))
+        var fm = FileModel(model: child, permissions: [.read], accessRole: .viewer)
+        fm.sharedByArchive = MinArchiveVO(name: "Family Archive", thumbnail: nil, shareStatus: "", shareId: 0, archiveID: 42, folderLinkID: nil, accessRole: nil)
+        return fm
+    }
+
+    private func folderResponse(accessRole: String?) -> Any {
+        var folder: [String: Any] = ["id": "55", "folderId": "55", "displayName": "Shared"]
+        if let accessRole { folder["accessRole"] = accessRole }
+        return ["items": [folder]]
+    }
+
+    func testFetchUpdatedAccessRole_SharedFolder_ReadsRoleFromV2() {
+        FileMenuViewModel.lastAccessRoleSource = "none"
+        let sut = FileMenuViewModel(fileViewModel: makeSharedFolderModel(), menuItems: [], showArchiveInfo: true, onDismiss: {})
+        var requestedFolderId: String?
+        sut.folderFetchV2Request = { folderId, completion in
+            requestedFolderId = folderId
+            completion(.json(self.folderResponse(accessRole: "editor"), nil))
+        }
+
+        sut.fetchUpdatedAccessRole()
+        let done = expectation(description: "main hop")
+        DispatchQueue.main.async { done.fulfill() }
+        wait(for: [done], timeout: 1.0)
+
+        XCTAssertEqual(requestedFolderId, "55")
+        XCTAssertEqual(sut.fileViewModel.accessRole, .editor)
+        XCTAssertEqual(sut.fileViewModel.permissions, ArchiveVOData.permissions(forAccessRole: "editor"))
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v2")
+    }
+
+    func testFetchUpdatedAccessRole_SharedFolder_V1RoleFormFromV2StillParses() {
+        let sut = FileMenuViewModel(fileViewModel: makeSharedFolderModel(), menuItems: [], showArchiveInfo: true, onDismiss: {})
+        sut.folderFetchV2Request = { _, completion in
+            completion(.json(self.folderResponse(accessRole: "access.role.curator"), nil))
+        }
+
+        sut.fetchUpdatedAccessRole()
+        let done = expectation(description: "main hop")
+        DispatchQueue.main.async { done.fulfill() }
+        wait(for: [done], timeout: 1.0)
+
+        XCTAssertEqual(sut.fileViewModel.accessRole, .curator)
+    }
+
+    func testFetchUpdatedAccessRole_SharedFolder_SameRole_LeavesPermissionsAlone() {
+        let sut = FileMenuViewModel(fileViewModel: makeSharedFolderModel(), menuItems: [], showArchiveInfo: true, onDismiss: {})
+        sut.folderFetchV2Request = { _, completion in
+            completion(.json(self.folderResponse(accessRole: "viewer"), nil))
+        }
+
+        sut.fetchUpdatedAccessRole()
+        let done = expectation(description: "main hop")
+        DispatchQueue.main.async { done.fulfill() }
+        wait(for: [done], timeout: 1.0)
+
+        XCTAssertEqual(sut.fileViewModel.accessRole, .viewer)
+        XCTAssertEqual(sut.fileViewModel.permissions, [.read])
+    }
+
+    func testFetchUpdatedAccessRole_SharedFolder_V2Error_FallsBackToV1() {
+        FileMenuViewModel.lastAccessRoleSource = "none"
+        let sut = FileMenuViewModel(fileViewModel: makeSharedFolderModel(), menuItems: [], showArchiveInfo: true, onDismiss: {})
+        sut.folderFetchV2Request = { _, completion in
+            completion(.error(APIError.unknown, nil))
+        }
+
+        sut.fetchUpdatedAccessRole()
+        let done = expectation(description: "main hop")
+        DispatchQueue.main.async { done.fulfill() }
+        wait(for: [done], timeout: 1.0)
+
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
+        XCTAssertEqual(sut.fileViewModel.accessRole, .viewer)
+    }
+
+    func testFetchUpdatedAccessRole_SharedFolder_V2WithoutRole_FallsBackToV1() {
+        FileMenuViewModel.lastAccessRoleSource = "none"
+        let sut = FileMenuViewModel(fileViewModel: makeSharedFolderModel(), menuItems: [], showArchiveInfo: true, onDismiss: {})
+        sut.folderFetchV2Request = { _, completion in
+            completion(.json(self.folderResponse(accessRole: nil), nil))
+        }
+
+        sut.fetchUpdatedAccessRole()
+        let done = expectation(description: "main hop")
+        DispatchQueue.main.async { done.fulfill() }
+        wait(for: [done], timeout: 1.0)
+
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
+    }
+
+    func testFetchUpdatedAccessRole_FolderWithoutFolderId_UsesV1Directly() {
+        FileMenuViewModel.lastAccessRoleSource = "none"
+        var fm = makeFolderModel()
+        fm.sharedByArchive = MinArchiveVO(name: "Family Archive", thumbnail: nil, shareStatus: "", shareId: 0, archiveID: 42, folderLinkID: nil, accessRole: nil)
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], showArchiveInfo: true, onDismiss: {})
+        var v2Called = false
+        sut.folderFetchV2Request = { _, _ in v2Called = true }
+
+        sut.fetchUpdatedAccessRole()
+
+        XCTAssertFalse(v2Called)
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
+    }
+
+    func testFetchUpdatedAccessRole_Record_UsesV1Directly() {
+        FileMenuViewModel.lastAccessRoleSource = "none"
+        var fm = makeFileModel()
+        fm.sharedByArchive = MinArchiveVO(name: "Family Archive", thumbnail: nil, shareStatus: "", shareId: 0, archiveID: 42, folderLinkID: nil, accessRole: nil)
+        let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], showArchiveInfo: true, onDismiss: {})
+        var v2Called = false
+        sut.folderFetchV2Request = { _, _ in v2Called = true }
+
+        sut.fetchUpdatedAccessRole()
+
+        XCTAssertFalse(v2Called)
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
+    }
+
+    func testFetchUpdatedAccessRole_NotShared_DoesNothing() {
+        FileMenuViewModel.lastAccessRoleSource = "none"
+        let sut = FileMenuViewModel(fileViewModel: makeFolderModel(), menuItems: [], showArchiveInfo: true, onDismiss: {})
+        var v2Called = false
+        sut.folderFetchV2Request = { _, _ in v2Called = true }
+
+        sut.fetchUpdatedAccessRole()
+
+        XCTAssertFalse(v2Called)
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "none")
+    }
+
     private func makeFileModel(name: String = "Test.pdf") -> FileModel {
         FileModel(
             name: name,

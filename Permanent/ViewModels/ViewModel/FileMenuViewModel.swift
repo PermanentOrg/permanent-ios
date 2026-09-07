@@ -238,96 +238,121 @@ class FileMenuViewModel: ObservableObject {
     }
     
     // MARK: - Access Role Update
+
+    /// Test seam for the V2 folder read behind the role refresh. Production leaves it nil.
+    var folderFetchV2Request: ((String, @escaping (OperationResult) -> Void) -> Void)?
+
+    #if DEBUG
+    /// Which path served the last role refresh, so a test cannot pass on the V1 failsafe while
+    /// claiming V2. DEBUG-only, with no Release behaviour.
+    static var lastAccessRoleSource = "none"
+    #endif
+
     func fetchUpdatedAccessRole() {
         guard showArchiveInfo, fileViewModel.sharedByArchive != nil else {
             return
         }
-        
+
+        // Folders read the caller's role from Stela. Records, and folders without a folderId, stay on V1.
+        if fileViewModel.type.isFolder, fileViewModel.folderId > 0 {
+            fetchFolderAccessRoleV2(folderId: String(fileViewModel.folderId))
+        } else {
+            fetchUpdatedAccessRoleV1()
+        }
+    }
+
+    /// GET /api/v2/folders?folderIds[]= carries the caller's effective role. Anything short of a decoded
+    /// role falls through to V1, so a V2 hiccup never leaves the badge stale.
+    private func fetchFolderAccessRoleV2(folderId: String) {
+        let fetch: (String, @escaping (OperationResult) -> Void) -> Void = folderFetchV2Request ?? { folderId, completion in
+            let operation = APIOperation(FolderV2Endpoint.getFolderById(folderId: folderId, shareToken: ""))
+            operation.execute(in: APIRequestDispatcher()) { completion($0) }
+        }
+
+        fetch(folderId) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+
+                guard case .json(let response, _) = result,
+                      let model: FolderV2Response = JSONHelper.decoding(from: response, with: FolderV2Response.decoder),
+                      let accessRole = model.items?.first?.accessRole else {
+                    self.fetchUpdatedAccessRoleV1()
+                    return
+                }
+
+                #if DEBUG
+                Self.lastAccessRoleSource = "v2"
+                #endif
+                self.applyAccessRole(accessRole)
+            }
+        }
+    }
+
+    private func fetchUpdatedAccessRoleV1() {
+        #if DEBUG
+        Self.lastAccessRoleSource = "v1"
+        #endif
+
         let itemInfo = (folderLinkId: fileViewModel.folderLinkId, parentFolderLinkId: fileViewModel.parentFolderLinkId)
-        
+
         let endpoint: FilesEndpoint
         if fileViewModel.type.isFolder {
             endpoint = FilesEndpoint.getFolder(itemInfo: itemInfo)
         } else {
             endpoint = FilesEndpoint.getRecord(itemInfo: itemInfo)
         }
-        
+
         let apiOperation = APIOperation(endpoint)
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             guard let self = self else { return }
-            
+
             DispatchQueue.main.async {
-                switch result {
-                case .json(let response, _):
-                    if self.fileViewModel.type.isFolder {
-                        guard let model: APIResults<FolderVO> = JSONHelper.decoding(
-                            from: response,
-                            with: APIResults<FolderVO>.decoder
-                        ),
-                        model.isSuccessful,
-                        let folderData = model.results.first?.data?.first?.folderVO else {
-                            return
-                        }
-                        
-                        var accessRoleString: String?
-                        if let accessVO = folderData.accessVO?.value as? [String: Any],
-                           let role = accessVO["accessRole"] as? String {
-                            accessRoleString = role
-                        } else if let role = folderData.accessRole {
-                            accessRoleString = role
-                        }
-                        
-                        guard let accessRoleString = accessRoleString else {
-                            return
-                        }
-                        
-                        let newAccessRole = AccessRole.roleForValue(accessRoleString)
-                        if self.fileViewModel.accessRole != newAccessRole {
-                            self.fileViewModel.accessRole = newAccessRole
-                            self.updatePermissions(forAccessRole: accessRoleString)
-                            self.regenerateMenuItemsAndAnimateHeight()
-                        }
-                    } else {
-                        guard let model: APIResults<RecordVO> = JSONHelper.decoding(
-                            from: response,
-                            with: APIResults<RecordVO>.decoder
-                        ),
-                        model.isSuccessful,
-                        let recordData = model.results.first?.data?.first?.recordVO else {
-                            return
-                        }
-                        
-                        var accessRoleString: String?
-                        if let accessVO = recordData.accessVO?.value as? [String: Any],
-                           let role = accessVO["accessRole"] as? String {
-                            accessRoleString = role
-                        } else if let role = recordData.accessRole {
-                            accessRoleString = role
-                        }
-                        
-                        guard let accessRoleString = accessRoleString else {
-                            return
-                        }
-                        
-                        let newAccessRole = AccessRole.roleForValue(accessRoleString)
-                        if self.fileViewModel.accessRole != newAccessRole {
-                            self.fileViewModel.accessRole = newAccessRole
-                            self.updatePermissions(forAccessRole: accessRoleString)
-                            self.regenerateMenuItemsAndAnimateHeight()
-                        }
+                guard case .json(let response, _) = result else { return }
+
+                let accessRoleString: String?
+                if self.fileViewModel.type.isFolder {
+                    guard let model: APIResults<FolderVO> = JSONHelper.decoding(from: response, with: APIResults<FolderVO>.decoder),
+                          model.isSuccessful,
+                          let folderData = model.results.first?.data?.first?.folderVO else {
+                        return
                     }
-                    
-                case .error:
-                    break
-                    
-                default:
-                    break
+                    accessRoleString = Self.accessRoleString(accessVO: folderData.accessVO, accessRole: folderData.accessRole)
+                } else {
+                    guard let model: APIResults<RecordVO> = JSONHelper.decoding(from: response, with: APIResults<RecordVO>.decoder),
+                          model.isSuccessful,
+                          let recordData = model.results.first?.data?.first?.recordVO else {
+                        return
+                    }
+                    accessRoleString = Self.accessRoleString(accessVO: recordData.accessVO, accessRole: recordData.accessRole)
+                }
+
+                if let accessRoleString {
+                    self.applyAccessRole(accessRoleString)
                 }
             }
         }
     }
-    
+
+    /// V1 sends the role either nested in `accessVO` or flat; the nested one wins when both are present.
+    private static func accessRoleString(accessVO: JSONAny?, accessRole: String?) -> String? {
+        if let accessVO = accessVO?.value as? [String: Any],
+           let role = accessVO["accessRole"] as? String {
+            return role
+        }
+        return accessRole
+    }
+
+    /// Shared tail of both reads: only a changed role touches permissions and the menu.
+    private func applyAccessRole(_ accessRoleString: String) {
+        let newAccessRole = AccessRole.roleForValue(accessRoleString)
+        guard fileViewModel.accessRole != newAccessRole else { return }
+
+        fileViewModel.accessRole = newAccessRole
+        updatePermissions(forAccessRole: accessRoleString)
+        regenerateMenuItemsAndAnimateHeight()
+    }
+
     private func updatePermissions(forAccessRole accessRoleString: String) {
         let newPermissions = ArchiveVOData.permissions(forAccessRole: accessRoleString)
         self.fileViewModel.permissions = newPermissions

@@ -498,6 +498,28 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertFalse(vc.fabView.isHidden, "deselect restores the FAB when permissions allow")
     }
 
+    // MARK: - First-open double fetch
+
+    func testShouldFetchShares_NothingLoaded_NothingInFlight_Fetches() {
+        XCTAssertTrue(SharesViewController.shouldFetchShares(loadedArchiveId: nil, sessionArchiveId: 42, inFlightArchiveId: nil))
+    }
+
+    func testShouldFetchShares_SameArchiveAlreadyInFlight_DoesNotFetchAgain() {
+        XCTAssertFalse(SharesViewController.shouldFetchShares(loadedArchiveId: nil, sessionArchiveId: 42, inFlightArchiveId: 42))
+    }
+
+    func testShouldFetchShares_OtherArchiveInFlight_FetchesTheSelectedOne() {
+        XCTAssertTrue(SharesViewController.shouldFetchShares(loadedArchiveId: 7, sessionArchiveId: 42, inFlightArchiveId: 7))
+    }
+
+    func testShouldFetchShares_SelectedArchiveAlreadyLoaded_DoesNotFetch() {
+        XCTAssertFalse(SharesViewController.shouldFetchShares(loadedArchiveId: 42, sessionArchiveId: 42, inFlightArchiveId: nil))
+    }
+
+    func testShouldFetchShares_ArchiveSwitchedAfterLoad_Fetches() {
+        XCTAssertTrue(SharesViewController.shouldFetchShares(loadedArchiveId: 7, sessionArchiveId: 42, inFlightArchiveId: nil))
+    }
+
     private func makeController() -> SharesViewController {
         let vc = SharesViewController()
         vc.viewModel = MockSharedFilesViewModel()

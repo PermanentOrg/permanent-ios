@@ -8,9 +8,16 @@
 import UIKit
 import SwiftUI
 
-private var spinnerView: UIView?
+private var spinnerViewKey: UInt8 = 0
 
 extension UIViewController {
+    /// One overlay per screen. A single shared slot let one screen's hide remove another screen's
+    /// overlay, or turn its show into a no-op, leaving a spinner nothing could dismiss.
+    private var spinnerView: UIView? {
+        get { objc_getAssociatedObject(self, &spinnerViewKey) as? UIView }
+        set { objc_setAssociatedObject(self, &spinnerViewKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    }
+
     func showSpinner(colored color: UIColor = .primary) {
         if spinnerView != nil {
             return
