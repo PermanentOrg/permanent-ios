@@ -119,6 +119,53 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertFalse(RecordV2Endpoint.copyRecord(recordId: "1", destinationFolderId: "2").ignoreErrors)
         XCTAssertTrue(FolderV2Endpoint.getFolderChildren(folderId: "1", shareToken: "", pageSize: 10).ignoreErrors)
         XCTAssertTrue(FolderV2Endpoint.getFolderById(folderId: "1", shareToken: "").ignoreErrors)
+        XCTAssertFalse(FolderV2Endpoint.patchFolder(folderId: "1", fields: ["sort": "date-ascending"]).ignoreErrors)
+    }
+
+    // MARK: - FolderV2Endpoint (Stela) — folder PATCH, the sort write
+
+    func testFolderV2_PatchFolder_UsesPatchOnThePluralRouteWithAFlatBody() throws {
+        let endpoint = FolderV2Endpoint.patchFolder(folderId: "42", fields: ["sort": SortOption.dateDescending.stelaValue])
+        XCTAssertEqual(endpoint.method, .patch)
+        XCTAssertTrue((endpoint.customURL ?? "").hasSuffix("api/v2/folders/42"), endpoint.customURL ?? "")
+        XCTAssertFalse((endpoint.customURL ?? "").contains("api/v2/folder/42"), "the singular alias is deprecated")
+        XCTAssertEqual(endpoint.headers?["Request-Version"], "2")
+        XCTAssertNil(endpoint.shareToken)
+
+        // Flat body with ONLY the edited field: the server rejects unknown keys.
+        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(endpoint.bodyData)) as? [String: Any])
+        XCTAssertEqual(body["sort"] as? String, "date-descending", "Stela takes its own sort vocabulary")
+        XCTAssertEqual(body.keys.count, 1)
+    }
+
+    func testFolderV2_Reads_StayGetWithoutABody() {
+        let children = FolderV2Endpoint.getFolderChildren(folderId: "1", shareToken: "", pageSize: 1)
+        let byId = FolderV2Endpoint.getFolderById(folderId: "1", shareToken: "")
+        XCTAssertEqual(children.method, .get)
+        XCTAssertEqual(byId.method, .get)
+        XCTAssertNil(children.bodyData)
+        XCTAssertNil(byId.bodyData)
+    }
+
+    // MARK: - V1 folder sort — the failsafe behind the folder PATCH
+
+    func testSortFolder_PathAndMethod() {
+        let endpoint = FilesEndpoint.sortFolder(params: (folderLinkId: 11, sortOption: .typeAscending))
+        XCTAssertEqual(endpoint.path, "/folder/sort")
+        XCTAssertEqual(endpoint.method, .post)
+        XCTAssertNil(endpoint.customURL, "a V1 call on the legacy host")
+    }
+
+    func testSortFolder_Payload_MirrorsTheWebClient() throws {
+        let endpoint = FilesEndpoint.sortFolder(params: (folderLinkId: 11, sortOption: .dateDescending))
+        let payload = try XCTUnwrap(endpoint.parameters as? [String: Any])
+        let requestVO = try XCTUnwrap(payload["RequestVO"] as? [String: Any])
+        let data = try XCTUnwrap(requestVO["data"] as? [[String: Any]])
+        XCTAssertEqual(data.count, 1)
+        let folderVO = try XCTUnwrap(data[0]["FolderVO"] as? [String: Any])
+        XCTAssertEqual(folderVO["folder_linkId"] as? Int, 11)
+        XCTAssertEqual(folderVO["sort"] as? String, "sort.display_date_desc", "V1 takes the V1 vocabulary")
+        XCTAssertEqual(folderVO.keys.count, 2, "folder_linkId and sort only, like the web client sends")
     }
 
     // MARK: - NetworkLogger body capping

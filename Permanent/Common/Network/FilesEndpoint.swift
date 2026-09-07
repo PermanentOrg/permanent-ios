@@ -21,6 +21,7 @@ typealias ItemPair = (files: [FileModel], destination: FileModel)
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
 typealias UpdateMultipleRecordsParams = (files: [FileModel], description: String?, location: LocnVO?)
 typealias UpdateRootColumnsParams = (thumbArchiveNbr: String, folderId: Int, folderArchiveNbr: String, folderLinkId: Int)
+typealias SortFolderParams = (folderLinkId: Int, sortOption: SortOption)
 
 enum FilesEndpoint {
     // NAVIGATION
@@ -49,6 +50,10 @@ enum FilesEndpoint {
     
     // RENAME
     case renameFolder(params: UpdateRecordParams)
+    
+    // SORT
+    /// Saves a folder's sort on V1. The failsafe behind `FolderV2Endpoint.patchFolder`.
+    case sortFolder(params: SortFolderParams)
     
     //UNSHARE
     case unshareRecord(archiveId: Int, folderLinkId: Int)
@@ -95,6 +100,8 @@ extension FilesEndpoint: RequestProtocol {
             return "/record/update"
         case .renameFolder:
             return "/folder/update"
+        case .sortFolder:
+            return "/folder/sort"
         case .updateRootColumns:
             return "/folder/updateRootColumns"
         case .unshareRecord:
@@ -145,6 +152,9 @@ extension FilesEndpoint: RequestProtocol {
             
         case .renameFolder(let params):
             return FilesEndpointPayloads.renameFolderRequest(params: params)
+            
+        case .sortFolder(let params):
+            return FilesEndpointPayloads.sortFolderPayload(for: params)
             
         case .unshareRecord(let archiveID, let folderLinkId):
             return FilesEndpointPayloads.unshareRecord(archiveId: archiveID, folderLinkId: folderLinkId)
@@ -505,6 +515,22 @@ class FilesEndpointPayloads {
                         ]
                     ]
                 ]
+        ]
+    }
+    
+    /// Mirrors the web client: only `folder_linkId` and the V1 sort value, so both clients share one saved order.
+    static func sortFolderPayload(for params: SortFolderParams) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "FolderVO": [
+                            "folder_linkId": params.folderLinkId,
+                            "sort": params.sortOption.apiValue
+                        ]
+                    ]
+                ]
+            ]
         ]
     }
     

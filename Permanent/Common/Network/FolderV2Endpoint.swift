@@ -10,6 +10,9 @@ import Foundation
 enum FolderV2Endpoint {
     case getFolderById(folderId: String, shareToken: String)
     case getFolderChildren(folderId: String, shareToken: String, pageSize: Int)
+    /// A flat body of only the edited fields, such as `["sort": option.stelaValue]`. The server
+    /// rejects unknown keys.
+    case patchFolder(folderId: String, fields: [String: Any])
 
     /// Requests the whole folder in one page while cursor pagination is deferred. Large but bounded,
     /// so the query isn't rejected; a server-side clamp would silently truncate the listing.
@@ -19,7 +22,12 @@ enum FolderV2Endpoint {
 extension FolderV2Endpoint: RequestProtocol {
     var path: String { "" }  // Not used - we use customURL
     
-    var method: RequestMethod { .get }
+    var method: RequestMethod {
+        switch self {
+        case .getFolderById, .getFolderChildren: return .get
+        case .patchFolder: return .patch
+        }
+    }
     
     var requestType: RequestType { .data }
     
@@ -32,7 +40,14 @@ extension FolderV2Endpoint: RequestProtocol {
         set { }
     }
     
-    var bodyData: Data? { nil }
+    var bodyData: Data? {
+        switch self {
+        case .getFolderById, .getFolderChildren:
+            return nil
+        case .patchFolder(_, let fields):
+            return try? JSONSerialization.data(withJSONObject: fields)
+        }
+    }
     
     var customURL: String? {
         let baseURL = APIEnvironment.defaultEnv.apiServer
@@ -43,6 +58,8 @@ extension FolderV2Endpoint: RequestProtocol {
             return "\(baseURL)api/v2/folders?folderIds[]=\(folderId)&pageSize=9999"
         case .getFolderChildren(let folderId, _, let pageSize):
             return "\(baseURL)api/v2/folders/\(folderId)/children?pageSize=\(pageSize)"
+        case .patchFolder(let folderId, _):
+            return "\(baseURL)api/v2/folders/\(folderId)"
         }
     }
     
@@ -50,6 +67,8 @@ extension FolderV2Endpoint: RequestProtocol {
         switch self {
         case .getFolderById(_, let token), .getFolderChildren(_, let token, _):
             return token.isEmpty ? nil : token
+        case .patchFolder:
+            return nil
         }
     }
     
@@ -57,7 +76,12 @@ extension FolderV2Endpoint: RequestProtocol {
         return ["Content-Type": "application/json", "Request-Version": "2"]
     }
 
-    /// Both cases are reads with V1 failsafes, so a 401 here must not force-logout — it can be a
-    /// foreign-archive rejection, and real expiry surfaces through the V1 call that follows.
-    var ignoreErrors: Bool { true }
+    /// The reads have V1 failsafes, so a 401 there must not force-logout: it can be a foreign-archive
+    /// rejection. The PATCH runs on the session's own archive only, so its 401 really is an expired session.
+    var ignoreErrors: Bool {
+        switch self {
+        case .getFolderById, .getFolderChildren: return true
+        case .patchFolder: return false
+        }
+    }
 }

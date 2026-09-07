@@ -207,29 +207,21 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - Client-side sort (PR3 — /children has no sort param)
 
     func testSort_NameAscending_IsCaseInsensitive() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .nameAscending
         let input = [makeRecordFile(name: "banana"), makeRecordFile(name: "Apple"), makeRecordFile(name: "cherry")]
-        XCTAssertEqual(vm.sortedByActiveOption(input).map { $0.name }, ["Apple", "banana", "cherry"])
+        XCTAssertEqual(FilesViewModel.sorted(input, by: .nameAscending).map { $0.name }, ["Apple", "banana", "cherry"])
     }
 
     func testSort_NameDescending() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .nameDescending
         let input = [makeRecordFile(name: "Apple"), makeRecordFile(name: "cherry"), makeRecordFile(name: "banana")]
-        XCTAssertEqual(vm.sortedByActiveOption(input).map { $0.name }, ["cherry", "banana", "Apple"])
+        XCTAssertEqual(FilesViewModel.sorted(input, by: .nameDescending).map { $0.name }, ["cherry", "banana", "Apple"])
     }
 
     func testSort_TypeAscending_FoldersBeforeRecords() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .typeAscending
         let input = [makeRecordFile(name: "a"), makeFolderFile(name: "b")]
-        XCTAssertEqual(vm.sortedByActiveOption(input).first?.type.isFolder, true)
+        XCTAssertEqual(FilesViewModel.sorted(input, by: .typeAscending).first?.type.isFolder, true)
     }
 
     func testSort_DateAscending_UsesCreatedDate() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .dateAscending
         let old = """
         { "items": [ { "recordId": "1", "displayName": "old", "type": "type.record.image", "displayDate": "2020-01-01T00:00:00" } ] }
         """
@@ -238,7 +230,7 @@ final class FilesViewModelTests: XCTestCase {
         """
         let oldFile = FileModel(model: decodeChildren(old)!.items![0], permissions: [.read], accessRole: .viewer)
         let newFile = FileModel(model: decodeChildren(new)!.items![0], permissions: [.read], accessRole: .viewer)
-        XCTAssertEqual(vm.sortedByActiveOption([newFile, oldFile]).map { $0.name }, ["old", "new"])
+        XCTAssertEqual(FilesViewModel.sorted([newFile, oldFile], by: .dateAscending).map { $0.name }, ["old", "new"])
     }
 
     // MARK: - Stela date parsing
@@ -267,8 +259,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testSort_DateAscending_MixedFractionalAndPostgresFormats() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .dateAscending
         // Three real instants, each in a different Stela format; expect oldest → newest.
         let a = """
         { "items": [ { "recordId": "1", "displayName": "2023", "type": "type.record.image", "displayDate": "2023-01-01 00:00:00+00" } ] }
@@ -282,7 +272,7 @@ final class FilesViewModelTests: XCTestCase {
         let fa = FileModel(model: decodeChildren(a)!.items![0], permissions: [.read], accessRole: .viewer)
         let fb = FileModel(model: decodeChildren(b)!.items![0], permissions: [.read], accessRole: .viewer)
         let fc = FileModel(model: decodeChildren(c)!.items![0], permissions: [.read], accessRole: .viewer)
-        XCTAssertEqual(vm.sortedByActiveOption([fc, fa, fb]).map { $0.name }, ["2023", "2024", "2025"])
+        XCTAssertEqual(FilesViewModel.sorted([fc, fa, fb], by: .dateAscending).map { $0.name }, ["2023", "2024", "2025"])
     }
 
     // MARK: - archiveNo listing gate (G3 — hasBadId bails the whole listing to V1 when a child
@@ -1901,13 +1891,15 @@ final class FilesViewModelTests: XCTestCase {
     // navigation retries once, and it must never run the V1 failsafe and overwrite a newer listing.
 
     /// Folder target built via the V2 decode path (folderId > 0 — the convenience
-    /// init(name:recordId:...) can't set folderId).
-    private func makeV2FolderTarget(folderId: Int = 10) -> FileModel {
+    /// init(name:recordId:...) can't set folderId). `archiveId` and `sort` are sent only when given.
+    private func makeV2FolderTarget(folderId: Int = 10, archiveId: Int? = nil, sort: String? = nil, permissions: [Permission] = [.read]) -> FileModel {
+        let archiveField = archiveId.map { ", \"archiveId\": \"\($0)\"" } ?? ""
+        let sortField = sort.map { ", \"sort\": \"\($0)\"" } ?? ""
         let json = """
         { "items": [ { "folderId": "\(folderId)", "displayName": "Folder \(folderId)", "type": "private",
-          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test" } ] }
+          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test"\(archiveField)\(sortField) } ] }
         """
-        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
+        return FileModel(model: decodeChildren(json)!.items![0], permissions: permissions, accessRole: .viewer)
     }
 
     /// MyFilesViewModel with the flag pinned ON and the fetch seam scripted to return
@@ -2411,6 +2403,293 @@ final class FilesViewModelTests: XCTestCase {
             guard case .error = status else {
                 return XCTFail("an offline V1 failsafe must surface an error, got \(String(describing: status))")
             }
+        }
+    }
+
+    // MARK: - Folder sort: the saved order comes from the backend
+    // Listing a folder adopts its saved sort; a sort change saves through the Stela PATCH with the V1
+    // `/folder/sort` call as the failsafe, then the listing trusts the server order.
+
+    /// Runs `body` with the session on an owner-role archive (archiveID 1), which may persist a sort.
+    private func withEditingSessionArchive(_ body: () -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let json = "{\"archiveId\": 1, \"archiveNbr\": \"0001-test\", \"accessRole\": \"access.role.owner\"}"
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = try? ArchiveVOData.decoder.decode(ArchiveVOData.self, from: json.data(using: .utf8)!)
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        body()
+    }
+
+    func testFileModel_V2FolderChild_CarriesTheSavedSort() {
+        XCTAssertEqual(makeV2FolderTarget(sort: "date-descending").savedSortOption, .dateDescending)
+        XCTAssertEqual(makeV2FolderTarget(sort: "type-ascending").savedSortOption, .typeAscending)
+        XCTAssertNil(makeV2FolderTarget().savedSortOption, "a folder without a saved sort")
+        XCTAssertNil(makeV2FolderTarget(sort: "sort.brand_new").savedSortOption, "an unknown value is not guessed")
+    }
+
+    func testFileModel_RecordChildren_NeverCarryASavedSort() throws {
+        let v2 = """
+        { "items": [ { "recordId": "8", "displayName": "photo.jpg", "type": "type.record.image", "status": "ok",
+          "folderLinkId": "12", "sort": "date-descending" } ] }
+        """
+        let v2Record = FileModel(model: decodeChildren(v2)!.items![0], permissions: [.read], accessRole: .viewer)
+        XCTAssertNil(v2Record.savedSortOption, "only folders own a sort")
+
+        let v1Data = try XCTUnwrap("{ \"recordId\": 8, \"displayName\": \"photo.jpg\", \"sort\": \"sort.type_desc\" }".data(using: .utf8))
+        let v1Record = FileModel(model: try JSONDecoder().decode(ItemVO.self, from: v1Data), permissions: [.read], accessRole: .viewer)
+        XCTAssertNil(v1Record.savedSortOption, "the V1 child shape is shared by records and folders")
+    }
+
+    func testFileModel_V1Folder_CarriesTheSavedSortInTheV1Vocabulary() throws {
+        let data = try XCTUnwrap("{ \"folderId\": 10, \"folder_linkId\": 11, \"displayName\": \"Folder\", \"sort\": \"sort.type_desc\" }".data(using: .utf8))
+        let folderVO = try JSONDecoder().decode(MinFolderVO.self, from: data)
+        XCTAssertEqual(FileModel(model: folderVO, permissions: [.read], accessRole: .owner).savedSortOption, .typeDescending)
+    }
+
+    func testOrdered_TrustsTheServerOrderOnlyWhenTheSavedSortIsActive() {
+        let files = [makeRecordFile(name: "cherry"), makeRecordFile(name: "Apple"), makeRecordFile(name: "banana")]
+
+        let trusted = FilesViewModel.ordered(files, activeSort: .nameAscending, savedSort: .nameAscending)
+        XCTAssertEqual(trusted.map { $0.name }, ["cherry", "Apple", "banana"], "the server already ordered it")
+
+        let unknown = FilesViewModel.ordered(files, activeSort: .nameAscending, savedSort: nil)
+        XCTAssertEqual(unknown.map { $0.name }, ["Apple", "banana", "cherry"], "no saved sort → sorted here")
+
+        let stale = FilesViewModel.ordered(files, activeSort: .nameDescending, savedSort: .nameAscending)
+        XCTAssertEqual(stale.map { $0.name }, ["cherry", "banana", "Apple"], "the save failed → sorted here")
+    }
+
+    func testListingSort_NewFolderTakesItsSavedSort_SameFolderKeepsTheChoice() {
+        let vm = MyFilesViewModel()
+        let folder = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+        XCTAssertEqual(vm.listingSort(for: folder), .dateDescending, "a folder not yet on screen lists in its saved sort")
+        XCTAssertEqual(vm.activeSortOption, .nameAscending, "reading the rule commits nothing")
+
+        vm.adoptSavedSort(folderId: 10, savedSort: .dateDescending)
+        XCTAssertEqual(vm.activeSortOption, .dateDescending)
+
+        vm.activeSortOption = .nameDescending
+        XCTAssertEqual(vm.listingSort(for: folder), .nameDescending, "re-listing the folder on screen keeps the picker's choice")
+        XCTAssertEqual(vm.listingSort(for: makeV2FolderTarget(folderId: 20)), .nameDescending, "no saved sort → the choice stays")
+        XCTAssertEqual(vm.listingSort(for: makeV2FolderTarget(folderId: 30, sort: "type-ascending")), .typeAscending)
+    }
+
+    func testNavigateV2_CommitAdoptsTheSavedSort_RefreshingKeepsTheChoice() {
+        let vm = MyFilesViewModel()
+        vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .dateDescending, "entering the folder adopts its saved sort")
+
+        // The user picks another order and the save fails, then the same folder refreshes.
+        vm.activeSortOption = .nameDescending
+        vm.navigateMin(params: navParams, backNavigation: true) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .nameDescending, "a refresh of the same folder keeps the user's choice")
+
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 20)
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .nameDescending, "a folder with no saved sort leaves the option alone")
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 30, sort: "type-ascending")
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .typeAscending)
+    }
+
+    func testNavigateV2_FailedNavigation_AdoptsNothing() {
+        // The V2 fetch fails and the V1 failsafe runs offline, so the user stays in the current folder:
+        // its header must not announce the sort of a folder that was never entered.
+        let vm = MyFilesViewModel()
+        vm.childrenFetchV2Request = { _, completion in completion(.failed(message: "offline")) }
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+
+        let reported = expectation(description: "navigation reports back")
+        var status: RequestStatus?
+        vm.navigateMin(params: navParams, backNavigation: false) { status = $0; reported.fulfill() }
+        wait(for: [reported], timeout: 5)
+
+        guard case .error = status else {
+            return XCTFail("an offline V1 failsafe must surface an error, got \(String(describing: status))")
+        }
+        XCTAssertEqual(vm.activeSortOption, .nameAscending)
+        XCTAssertEqual(vm.listingSort(for: makeV2FolderTarget(folderId: 10, sort: "date-descending")), .dateDescending,
+                       "the folder still counts as not on screen, so the next attempt adopts")
+    }
+
+    func testEmptyingTheStack_LetsTheSameFolderAdoptItsSortAgain() {
+        // Shares: enter a folder, back to the root (no folder, stack emptied), pick a sort there, re-enter.
+        let vm = SharedFilesViewModel()
+        vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+        let folder = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+
+        vm.v2NavigationTarget = folder
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .dateDescending)
+
+        vm.navigationStack.removeAll()
+        vm.activeSortOption = .nameDescending
+
+        vm.v2NavigationTarget = folder
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .dateDescending, "re-entering from a folderless root adopts the saved sort")
+    }
+
+    func testStelaResponseSavedSort_RequiresTheEchoedSort() {
+        let echoed: [String: Any] = ["data": ["id": "10", "sort": "date-descending"]]
+        XCTAssertTrue(FilesViewModel.stelaResponseSavedSort(echoed, as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort(echoed, as: .nameAscending), "a 200 that kept the old sort did not save")
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort(["data": ["id": "10"]], as: .dateDescending), "a 200 that ignored the field did not save")
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort([:], as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort("not json", as: .dateDescending))
+    }
+
+    func testLegacyResponseSavedSort_NeedsSuccessAndAMatchingEchoIfAny() {
+        let echoed: [String: Any] = ["isSuccessful": true, "Results": [["data": [["FolderVO": ["sort": "sort.display_date_desc"]]]]]]
+        XCTAssertTrue(FilesViewModel.legacyResponseSavedSort(echoed, as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.legacyResponseSavedSort(echoed, as: .nameAscending), "the echoed folder still has another sort")
+        XCTAssertTrue(FilesViewModel.legacyResponseSavedSort(["isSuccessful": true], as: .dateDescending), "no echo → success is enough")
+        XCTAssertFalse(FilesViewModel.legacyResponseSavedSort(["isSuccessful": false], as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.legacyResponseSavedSort("not json", as: .dateDescending))
+    }
+
+    func testCanPersistSort_FollowsTheEditPermission() {
+        withEditingSessionArchive {
+            XCTAssertTrue(MyFilesViewModel().canPersistSort, "the archive owner may change a folder's saved sort")
+            XCTAssertFalse(PublicArchiveViewModel().canPersistSort, "a public gallery is read-only whatever the session role")
+
+            let shared = SharedFilesViewModel()
+            XCTAssertFalse(shared.canPersistSort, "no folder on screen at the Shares root")
+            shared.navigationStack = [makeV2FolderTarget(folderId: 10, archiveId: 2, permissions: [.read])]
+            XCTAssertFalse(shared.canPersistSort, "a viewer on a shared folder must not rewrite the owner's sort")
+            shared.navigationStack = [makeV2FolderTarget(folderId: 10, archiveId: 2, permissions: [.read, .edit])]
+            XCTAssertTrue(shared.canPersistSort, "an editor on a shared folder may")
+        }
+        withSessionArchive {
+            XCTAssertFalse(MyFilesViewModel().canPersistSort, "a viewer-role archive may not")
+        }
+    }
+
+    /// A view model on the given folder, with both sort writes scripted. Returns the recorded calls.
+    private func makeSortVM(folder: FileModel, patchSucceeds: Bool, v1Succeeds: Bool)
+        -> (vm: MyFilesViewModel, patches: () -> [(String, SortOption)], saves: () -> [(Int, SortOption)]) {
+        let vm = MyFilesViewModel()
+        vm.navigationStack = [folder]
+        var patches: [(String, SortOption)] = []
+        var saves: [(Int, SortOption)] = []
+        vm.sortPatchV2Request = { folderId, option, done in
+            patches.append((folderId, option))
+            done(patchSucceeds)
+        }
+        vm.sortSaveV1Request = { folderLinkId, option, done in
+            saves.append((folderLinkId, option))
+            done(v1Succeeds)
+        }
+        return (vm, { patches }, { saves })
+    }
+
+    func testSaveSortOption_OwnFolder_PatchesV2AndSkipsTheV1Save() {
+        withEditingSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 1), patchSucceeds: true, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.dateDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, true)
+            XCTAssertEqual(patches().map { $0.0 }, ["10"])
+            XCTAssertEqual(patches().map { $0.1 }, [.dateDescending])
+            XCTAssertTrue(saves().isEmpty, "V2 succeeded, so the V1 failsafe must not run")
+            XCTAssertEqual(vm.activeSortOption, .dateDescending)
+            XCTAssertEqual(vm.navigationStack.last?.savedSortOption, .dateDescending,
+                           "the stack's copy follows the save, so the refresh trusts the server order")
+        }
+    }
+
+    func testSaveSortOption_PatchFails_FallsBackToTheV1Save() {
+        withEditingSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 1), patchSucceeds: false, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.typeAscending) { saved = $0 }
+
+            XCTAssertEqual(saved, true)
+            XCTAssertEqual(patches().count, 1)
+            XCTAssertEqual(saves().map { $0.0 }, [11], "V1 addresses the folder by folder_linkId")
+            XCTAssertEqual(saves().map { $0.1 }, [.typeAscending])
+            XCTAssertEqual(vm.navigationStack.last?.savedSortOption, .typeAscending)
+        }
+    }
+
+    func testSaveSortOption_BothWritesFail_ReportsFalseAndKeepsTheChoiceLocally() {
+        withEditingSessionArchive {
+            let folder = makeV2FolderTarget(archiveId: 1, sort: "alphabetical-ascending")
+            let (vm, patches, saves) = makeSortVM(folder: folder, patchSucceeds: false, v1Succeeds: false)
+
+            var saved: Bool?
+            vm.saveSortOption(.dateAscending) { saved = $0 }
+
+            XCTAssertEqual(saved, false)
+            XCTAssertEqual(patches().count, 1)
+            XCTAssertEqual(saves().count, 1)
+            XCTAssertEqual(vm.activeSortOption, .dateAscending, "the picker still shows what the user chose")
+            XCTAssertEqual(vm.navigationStack.last?.savedSortOption, .nameAscending,
+                           "the server still has the old sort, so the next listing is sorted client-side")
+        }
+    }
+
+    func testSaveSortOption_ForeignFolder_SkipsThePatchAndSavesOnV1() {
+        withEditingSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 2), patchSucceeds: true, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.nameDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, true)
+            XCTAssertTrue(patches().isEmpty, "a bearer-only PATCH on a foreign archive risks the 401 force-logout")
+            XCTAssertEqual(saves().count, 1)
+        }
+    }
+
+    func testSaveSortOption_WithoutEditPermission_OnlyChangesThePicker() {
+        withSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 1), patchSucceeds: true, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.dateDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, false)
+            XCTAssertTrue(patches().isEmpty)
+            XCTAssertTrue(saves().isEmpty, "a viewer's choice stays on the device")
+            XCTAssertEqual(vm.activeSortOption, .dateDescending)
+        }
+    }
+
+    func testSaveSortOption_NoCurrentFolder_ReportsFalseWithoutRequests() {
+        withEditingSessionArchive {
+            let vm = MyFilesViewModel()
+            var requests = 0
+            vm.sortPatchV2Request = { _, _, done in requests += 1; done(true) }
+            vm.sortSaveV1Request = { _, _, done in requests += 1; done(true) }
+
+            var saved: Bool?
+            vm.saveSortOption(.dateDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, false)
+            XCTAssertEqual(requests, 0)
+            XCTAssertEqual(vm.activeSortOption, .dateDescending, "the picker still shows the choice")
+        }
+    }
+
+    func testCanPatchSortViaStela_OwnArchiveWithAFolderId_UntilStelaRejectsTheField() {
+        withEditingSessionArchive {
+            let vm = MyFilesViewModel()
+            XCTAssertTrue(vm.canPatchSortViaStela(makeV2FolderTarget(archiveId: 1)))
+            XCTAssertFalse(vm.canPatchSortViaStela(makeV2FolderTarget(archiveId: 2)), "foreign archive")
+            XCTAssertFalse(vm.canPatchSortViaStela(makeFolderFile()), "the convenience init has no folderId")
+
+            FilesViewModel.stelaRejectsSortPatch = true
+            defer { FilesViewModel.stelaRejectsSortPatch = false }
+            XCTAssertFalse(vm.canPatchSortViaStela(makeV2FolderTarget(archiveId: 1)),
+                           "after a 400 the session goes straight to V1 instead of failing every time")
         }
     }
 }
