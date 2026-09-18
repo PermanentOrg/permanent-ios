@@ -23,7 +23,7 @@ extension ShareItemViewModel {
 
     /// Fetches all archives that have access to this item.
     func fetchSharedArchives() {
-        // Fresh cycle: allow exactly one V1→V2 folderLinkId recovery attempt (see VH4 guard).
+        // Fresh cycle: allow exactly one recovery attempt on the bridge back from V1 to the V2 read.
         attemptedV2FolderLinkRecovery = false
         // Check V2 data first - it's more reliable than initial fileModel type
         if let v2Data = shareLinkV2Data,
@@ -48,6 +48,10 @@ extension ShareItemViewModel {
             } else {
                 fetchSharedArchivesV1()
             }
+        } else if isFolder, fileModel.folderId > 0 {
+            fetchFolderV2(folderId: String(fileModel.folderId), shareToken: nil)
+        } else if !isFolder, fileModel.recordId > 0 {
+            fetchRecordV2(recordId: String(fileModel.recordId), shareToken: nil)
         } else if !isFolder,
                   let recordData = shareVO?.recordData,
                   let folderLinkIdInt = recordData.folderLinkID {
@@ -64,9 +68,12 @@ extension ShareItemViewModel {
     private func fetchRecordV2(recordId: String, shareToken: String?) {
         isLoadingArchives = true
 
-        let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: recordId, shareToken: shareToken))
+        let fetch: (String, String?, @escaping (OperationResult) -> Void) -> Void = recordFetchV2Request ?? { recordId, shareToken, completion in
+            let operation = APIOperation(RecordV2Endpoint.getRecordById(recordId: recordId, shareToken: shareToken))
+            operation.execute(in: APIRequestDispatcher()) { completion($0) }
+        }
 
-        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+        fetch(recordId, shareToken) { [weak self] result in
             Task {
                 await MainActor.run {
                     guard let self = self else { return }
@@ -88,9 +95,9 @@ extension ShareItemViewModel {
                             self.correctFolderLinkId = folderLinkIdInt
                         }
 
-                        // V2 API may not return pending archive share requests,
-                        // so delegate to V1 which returns the complete share list
-                        self.fetchSharedArchivesV1()
+                        self.adoptV2Shares(recordData.shares,
+                                           pendingShares: recordData.pendingShares,
+                                           callerRole: recordData.accessRole)
 
                     case .error:
                         self.fetchSharedArchivesV1()
@@ -108,9 +115,12 @@ extension ShareItemViewModel {
     private func fetchFolderV2(folderId: String, shareToken: String?) {
         isLoadingArchives = true
 
-        let operation = APIOperation(FolderV2Endpoint.getFolderById(folderId: folderId, shareToken: shareToken ?? ""))
+        let fetch: (String, String?, @escaping (OperationResult) -> Void) -> Void = folderFetchV2Request ?? { folderId, shareToken, completion in
+            let operation = APIOperation(FolderV2Endpoint.getFolderById(folderId: folderId, shareToken: shareToken ?? ""))
+            operation.execute(in: APIRequestDispatcher()) { completion($0) }
+        }
 
-        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+        fetch(folderId, shareToken) { [weak self] result in
             Task {
                 await MainActor.run {
                     guard let self = self else { return }
@@ -131,9 +141,9 @@ extension ShareItemViewModel {
                             self.correctFolderLinkId = folderLinkIdInt
                         }
 
-                        // V2 API may not return pending archive share requests,
-                        // so delegate to V1 which returns the complete share list
-                        self.fetchSharedArchivesV1()
+                        self.adoptV2Shares(folderData.shares,
+                                           pendingShares: folderData.pendingShares,
+                                           callerRole: folderData.accessRole)
 
                     case .error:
                         self.fetchSharedArchivesV1()
@@ -144,6 +154,25 @@ extension ShareItemViewModel {
                 }
             }
         }
+    }
+
+    /// Publishes the V2 share list, or hands off to V1 when V2's answer would be incomplete.
+    /// Below manager the server strips requested-but-unapproved rows, so only V1 lists them all.
+    private func adoptV2Shares(_ shares: [RecordShareV2]?,
+                               pendingShares: [PendingShareV2]?,
+                               callerRole: String?) {
+        let role = AccessRole.roleForValue(callerRole)
+        guard callerRole != nil, role == .owner || role == .manager, let shares else {
+            fetchSharedArchivesV1()
+            return
+        }
+
+        #if DEBUG
+        Self.lastSharedArchivesSource = "v2"
+        #endif
+
+        isLoadingArchives = false
+        finalizeSharedArchives(convertV2SharesToV1(shares), pendingSharesV2: pendingShares)
     }
 
     // MARK: - Fetch Pending Shares via V2
@@ -201,6 +230,10 @@ extension ShareItemViewModel {
     // MARK: - Fetch via V1 API
 
     private func fetchSharedArchivesV1() {
+        #if DEBUG
+        Self.lastSharedArchivesSource = "v1"
+        #endif
+
         // Use correct folderLinkId if available, otherwise use the one from fileModel
         let folderLinkId = correctFolderLinkId ?? fileModel.folderLinkId
 
@@ -338,7 +371,7 @@ extension ShareItemViewModel {
     private func convertV2SharesToV1(_ sharesV2: [RecordShareV2]) -> [ShareVOData] {
         let userOwnArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
 
-        return sharesV2.compactMap { share -> ShareVOData? in
+        let mapped: [ShareVOData] = sharesV2.compactMap { share -> ShareVOData? in
             guard let shareIdString = share.shareId,
                   let shareId = Int(shareIdString),
                   let archiveData = share.archive,
@@ -375,6 +408,12 @@ extension ShareItemViewModel {
                 createdDT: nil,
                 updatedDT: nil
             )
+        }
+
+        return mapped.sorted { share1, share2 in
+            let isPending1 = share1.status?.contains("pending") ?? false
+            let isPending2 = share2.status?.contains("pending") ?? false
+            return isPending1 && !isPending2
         }
     }
 
@@ -626,7 +665,83 @@ extension ShareItemViewModel {
             return
         }
 
+        // The grant response carries no archive name or thumbnail, so re-read the item to fill the
+        // row. V2 answers for a manager or owner; everyone else, and any failure, falls back to V1.
+        if isFolder, let folderId = v2ItemIdForShareRead, !folderId.isEmpty {
+            refreshShareFromFolderV2(folderId: folderId,
+                                     shareID: shareID,
+                                     at: index,
+                                     fallback: { [weak self] in
+                self?.fetchCompleteShareDetailsV1(for: share, at: index,
+                                                  clearLoadingState: clearLoadingState,
+                                                  loadingShareID: loadingShareID)
+            }, clearLoadingState: clearLoadingState, loadingShareID: loadingShareID)
+            return
+        }
+
+        fetchCompleteShareDetailsV1(for: share, at: index,
+                                    clearLoadingState: clearLoadingState,
+                                    loadingShareID: loadingShareID)
+    }
+
+    /// The Stela item id for the share read, preferring the share-link payload over the file model.
+    private var v2ItemIdForShareRead: String? {
+        if let itemId = shareLinkV2Data?.itemId ?? cachedV2ItemId, !itemId.isEmpty { return itemId }
+        let id = isFolder ? fileModel.folderId : fileModel.recordId
+        return id > 0 ? String(id) : nil
+    }
+
+    private func refreshShareFromFolderV2(folderId: String,
+                                          shareID: Int,
+                                          at index: Int,
+                                          fallback: @escaping () -> Void,
+                                          clearLoadingState: Bool,
+                                          loadingShareID: Int?) {
+        let fetch: (String, String?, @escaping (OperationResult) -> Void) -> Void = folderFetchV2Request ?? { folderId, shareToken, completion in
+            let operation = APIOperation(FolderV2Endpoint.getFolderById(folderId: folderId, shareToken: shareToken ?? ""))
+            operation.execute(in: APIRequestDispatcher()) { completion($0) }
+        }
+
+        fetch(folderId, shareLinkV2Data?.token) { [weak self] result in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+
+                    guard case .json(let response, _) = result,
+                          let model: FolderV2Response = JSONHelper.decoding(
+                            from: response,
+                            with: FolderV2Response.decoder
+                          ),
+                          let folderData = model.items?.first,
+                          let shares = folderData.shares,
+                          let refreshed = self.convertV2SharesToV1(shares)
+                            .first(where: { $0.shareID == shareID }) else {
+                        fallback()
+                        return
+                    }
+
+                    if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
+                        self.sharedArchives[index] = refreshed
+                    }
+                    if clearLoadingState, let loadingID = loadingShareID {
+                        self.approvingShareIDs.remove(loadingID)
+                    }
+                    self.notifyShareUpdates()
+                    self.objectWillChange.send()
+                }
+            }
+        }
+    }
+
+    private func fetchCompleteShareDetailsV1(for share: ShareVOData, at index: Int, clearLoadingState: Bool = false, loadingShareID: Int? = nil) {
+        guard let shareID = share.shareID else {
+            return
+        }
+
         guard fileModel.folderLinkId > 0 else {
+            if clearLoadingState, let loadingID = loadingShareID {
+                approvingShareIDs.remove(loadingID)
+            }
             return
         }
 

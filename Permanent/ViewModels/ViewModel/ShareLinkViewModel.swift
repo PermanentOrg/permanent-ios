@@ -20,13 +20,8 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     var shareVO: SharebyURLVOData?
     
     var recordVO: RecordVOData?
-    var folderVO: FolderVOData?
     var shareVOS: [ShareVOData]? {
-        if let recordVO = recordVO {
-            return recordVO.shareVOS
-        } else {
-            return folderVO?.shareVOS
-        }
+        recordVO?.shareVOS
     }
     var pendingShareVOs: [MinArchiveVO] {
         fileViewModel.minArchiveVOS.filter({
@@ -62,20 +57,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             self.recordVO = record?.recordVO
             
             handler(record)
-        }
-    }
-    
-    func getFolder(then handler: @escaping (FolderVO?) -> Void) {
-        let downloadInfo = FileDownloadInfoVM(
-            fileType: fileViewModel.type,
-            folderLinkId: fileViewModel.folderLinkId,
-            parentFolderLinkId: fileViewModel.parentFolderLinkId
-        )
-        
-        downloader?.getFolder(downloadInfo) { (folder, error) in
-            self.folderVO = folder?.folderVO
-            
-            handler(folder)
         }
     }
     

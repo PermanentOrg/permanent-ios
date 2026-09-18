@@ -51,6 +51,9 @@ struct RecordV2Data: Model {
     let archiveArchiveNumber: String?
     let shares: [RecordShareV2]?
     let pendingShares: [PendingShareV2]?
+    /// The caller's effective role on this record. Short form ("owner"), which
+    /// `AccessRole.roleForValue` accepts. Below manager the server strips pending rows from `shares`.
+    let accessRole: String?
     let archive: RecordArchiveV2?
 }
 

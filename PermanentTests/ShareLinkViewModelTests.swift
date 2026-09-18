@@ -52,11 +52,6 @@ final class ShareLinkViewModelTests: XCTestCase {
         XCTAssertNil(sut.recordVO)
     }
 
-    func testInit_FolderVOIsNil() {
-        let sut = makeSUT()
-        XCTAssertNil(sut.folderVO)
-    }
-
     // MARK: - Notification Names
 
     func testDidRevokeShareLinkNotifName_HasExpectedValue() {

@@ -521,6 +521,7 @@
 		5E8B7C452FD83F8500CFC501 /* UploadProgressMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8B7C442FD83F8500CFC501 /* UploadProgressMathTests.swift */; };
 		5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */; };
 		5E8D461A3023DD9A00D9CE82 /* ShareInvitationIdTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8D46193023DD9A00D9CE82 /* ShareInvitationIdTests.swift */; };
+		CF751CC1696B40F7819D96C9 /* ShareArchivesV2SourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1996E0E74A174FC78FCB44EF /* ShareArchivesV2SourceTests.swift */; };
 		5E8D461B3023DD9A00D9CE82 /* InviteEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8D46183023DD9A00D9CE82 /* InviteEndpointTests.swift */; };
 		5E9097BE2F99629B00C2EAEC /* UploadActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9097BD2F99629B00C2EAEC /* UploadActivityAttributes.swift */; };
 		5E9097BF2F99629B00C2EAEC /* UploadActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9097BD2F99629B00C2EAEC /* UploadActivityAttributes.swift */; };
@@ -1685,6 +1686,7 @@
 		5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewController.swift; sourceTree = "<group>"; };
 		5E8D46183023DD9A00D9CE82 /* InviteEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteEndpointTests.swift; sourceTree = "<group>"; };
 		5E8D46193023DD9A00D9CE82 /* ShareInvitationIdTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareInvitationIdTests.swift; sourceTree = "<group>"; };
+		1996E0E74A174FC78FCB44EF /* ShareArchivesV2SourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesV2SourceTests.swift; sourceTree = "<group>"; };
 		5E9097BD2F99629B00C2EAEC /* UploadActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadActivityAttributes.swift; sourceTree = "<group>"; };
 		5E9097C02F9962BD00C2EAEC /* UploadLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadLiveActivityManager.swift; sourceTree = "<group>"; };
 		5E9097C72F996BD900C2EAEC /* PermanentWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PermanentWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3613,6 +3615,7 @@
 				5E8B7C442FD83F8500CFC501 /* UploadProgressMathTests.swift */,
 				5E8D46183023DD9A00D9CE82 /* InviteEndpointTests.swift */,
 				5E8D46193023DD9A00D9CE82 /* ShareInvitationIdTests.swift */,
+				1996E0E74A174FC78FCB44EF /* ShareArchivesV2SourceTests.swift */,
 				5E7B9C1E2FB3169200C1D3D0 /* AccountOnboardingViewModelTests.swift */,
 				5E7B9C1F2FB3169200C1D3D0 /* PublicArchiveViewModelTests.swift */,
 				5E7B9C202FB3169200C1D3D0 /* SharedFilesViewModelTests.swift */,
@@ -6296,6 +6299,7 @@
 				5E7B9C182FB27BE500C1D3D0 /* AccountEndpointTests.swift in Sources */,
 				5E7B9C192FB27BE500C1D3D0 /* AccountDeleteViewModelTests.swift in Sources */,
 				5E8D461A3023DD9A00D9CE82 /* ShareInvitationIdTests.swift in Sources */,
+				CF751CC1696B40F7819D96C9 /* ShareArchivesV2SourceTests.swift in Sources */,
 				5E8D461B3023DD9A00D9CE82 /* InviteEndpointTests.swift in Sources */,
 				5E7B9C1A2FB27BE500C1D3D0 /* LegacyPlanningEndpointTests.swift in Sources */,
 				5E7B9C1B2FB27BE500C1D3D0 /* ShareEndpointTests.swift in Sources */,
