@@ -99,7 +99,7 @@ struct LegacyEndpointSurfaceTests {
                                                      removeGoalTags: nil,
                                                      removeWhyTags: nil)
         #expect(endpoint.path == "/account/tags")
-        #expect(sendsV2(endpoint, "account/tags"))
+        #expect(sendsV2(endpoint, "accounts/tags"))
     }
 
     @Test("Gift storage carries a dead V1 path")
@@ -107,7 +107,7 @@ struct LegacyEndpointSurfaceTests {
         let gift = GiftingModel(storageAmount: 1, recipientEmails: ["a@b.c"], note: nil)
         let endpoint = BillingEndpoint.giftStorage(gift: gift)
         #expect(endpoint.path == "/billing/giftStorage")
-        #expect(sendsV2(endpoint, "billing/gift"))
+        #expect(sendsV2(endpoint, "storage/gift"))
     }
 
     // MARK: - Live on Stela V2

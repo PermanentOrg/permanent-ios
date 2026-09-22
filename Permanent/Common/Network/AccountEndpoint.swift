@@ -171,7 +171,7 @@ extension AccountEndpoint: RequestProtocol {
         let endpointPath = APIEnvironment.defaultEnv.apiServer
         switch self {
         case .addRemoveTags(_, _, _, _, _):
-            return "\(endpointPath)api/v2/account/tags"
+            return "\(endpointPath)api/v2/accounts/tags"
         default : return nil
         }
     }

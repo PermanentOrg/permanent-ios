@@ -56,12 +56,12 @@ final class EventsEndpointTests: XCTestCase {
 
     func testSendEvent_CustomURL() {
         let endpoint = EventsEndpoint.sendEvent(eventsPayload: makePayload())
-        XCTAssertEqual(endpoint.customURL, "\(apiServer)api/v2/event")
+        XCTAssertEqual(endpoint.customURL, "\(apiServer)api/v2/events")
     }
 
     func testChecklist_CustomURL() {
         let endpoint = EventsEndpoint.checklist
-        XCTAssertEqual(endpoint.customURL, "\(apiServer)api/v2/event/checklist")
+        XCTAssertEqual(endpoint.customURL, "\(apiServer)api/v2/events/checklist")
     }
 
     // MARK: - RequestType / ResponseType Tests
