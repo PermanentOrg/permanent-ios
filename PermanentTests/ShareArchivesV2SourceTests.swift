@@ -9,8 +9,8 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// Pins that the shared-archives list is served by the Stela item read, and that it hands off to the
-/// legacy read only when Stela's answer would be incomplete.
+/// Pins that the shared-archives list is served by the Stela item read whatever the caller's role, and
+/// that it hands off to the legacy read only when that read fails.
 /// Serialized: the view model's init issues a request, so a late completion lands in another test.
 @MainActor
 @Suite(.serialized)
@@ -35,8 +35,8 @@ struct ShareArchivesV2SourceTests {
         #expect(vm.isLoadingArchives == false)
     }
 
-    @Test("A curator's response hands off, because the server strips requested rows below manager")
-    func curatorResponseHandsOffToLegacy() async throws {
+    @Test("A curator's response serves the list, because Stela has already dropped pending requests")
+    func curatorResponseServesTheList() async throws {
         let vm = await makeViewModel()
         vm.folderFetchV2Request = Self.folderStub(callerRole: "curator", shares: [
             Self.share(id: 9, archiveId: 3, name: "Family", status: "status.generic.ok")
@@ -45,18 +45,49 @@ struct ShareArchivesV2SourceTests {
         vm.fetchSharedArchives()
         try await waitUntil { ShareItemViewModel.lastSharedArchivesSource != "none" }
 
-        #expect(ShareItemViewModel.lastSharedArchivesSource == "v1")
+        #expect(ShareItemViewModel.lastSharedArchivesSource == "v2")
+        #expect(vm.sharedArchives.count == 1)
+        #expect(vm.sharedArchives.first?.shareID == 9)
     }
 
-    @Test("An absent shares key hands off, because absent means no answer")
-    func absentSharesKeyHandsOffToLegacy() async throws {
+    @Test("A response with no caller role still serves the list")
+    func missingCallerRoleServesTheList() async throws {
+        let vm = await makeViewModel()
+        vm.folderFetchV2Request = Self.folderStub(callerRole: nil, shares: [
+            Self.share(id: 9, archiveId: 3, name: "Family", status: "status.generic.ok")
+        ])
+
+        vm.fetchSharedArchives()
+        try await waitUntil { ShareItemViewModel.lastSharedArchivesSource != "none" }
+
+        #expect(ShareItemViewModel.lastSharedArchivesSource == "v2")
+        #expect(vm.sharedArchives.count == 1)
+    }
+
+    @Test("A null shares list, which Stela sends for a folder never shared, is an empty answer")
+    func nullSharesIsAnEmptyAnswer() async throws {
+        let vm = await makeViewModel()
+        vm.folderFetchV2Request = Self.folderStub(callerRole: "owner", shares: nil, sendsNullShares: true)
+
+        vm.fetchSharedArchives()
+        try await waitUntil { ShareItemViewModel.lastSharedArchivesSource != "none" }
+
+        #expect(ShareItemViewModel.lastSharedArchivesSource == "v2")
+        #expect(vm.sharedArchives.isEmpty)
+        #expect(vm.shouldShowArchivesSection == false)
+        #expect(vm.isLoadingArchives == false)
+    }
+
+    @Test("An absent shares key is an empty answer too")
+    func absentSharesKeyIsAnEmptyAnswer() async throws {
         let vm = await makeViewModel()
         vm.folderFetchV2Request = Self.folderStub(callerRole: "owner", shares: nil)
 
         vm.fetchSharedArchives()
         try await waitUntil { ShareItemViewModel.lastSharedArchivesSource != "none" }
 
-        #expect(ShareItemViewModel.lastSharedArchivesSource == "v1")
+        #expect(ShareItemViewModel.lastSharedArchivesSource == "v2")
+        #expect(vm.sharedArchives.isEmpty)
     }
 
     @Test("An empty shares array is an answer, and empties the section")
@@ -169,6 +200,36 @@ struct ShareArchivesV2SourceTests {
         #expect(vm.sharedArchives.first?.archiveVO?.preferredThumbnailURL == "https://example.com/200.jpg")
     }
 
+    // MARK: - Who sees pending requests
+
+    @Test("Someone who cannot manage shares does not see pending requests")
+    func pendingRequestsHiddenWithoutShareManagement() {
+        let visible = ShareItemViewModel.sharesVisible([
+            Self.shareVO(id: 1, status: "status.generic.ok"),
+            Self.shareVO(id: 2, status: "status.generic.pending")
+        ], canManageShares: false)
+
+        #expect(visible.map(\.shareID) == [1])
+    }
+
+    @Test("Owners and managers still see pending requests")
+    func pendingRequestsKeptForShareManagers() {
+        let visible = ShareItemViewModel.sharesVisible([
+            Self.shareVO(id: 2, status: "status.generic.pending"),
+            Self.shareVO(id: 1, status: "status.generic.ok")
+        ], canManageShares: true)
+
+        #expect(visible.map(\.shareID) == [2, 1])
+    }
+
+    @Test("Only owners and managers carry the permission that decides it")
+    func shareManagementIsOwnerAndManagerOnly() {
+        let managing = AccessRole.allCases.filter {
+            ArchiveVOData.permissions(forAccessRole: $0.apiValue).contains(.archiveShare)
+        }
+        #expect(Set(managing) == [.owner, .manager])
+    }
+
     // MARK: - Helpers
 
     private final class CallCounter: @unchecked Sendable {
@@ -189,21 +250,32 @@ struct ShareArchivesV2SourceTests {
         """
     }
 
+    private static func shareVO(id: Int, status: String) -> ShareVOData {
+        ShareVOData(shareID: id, folderLinkID: 1, archiveID: 100 + id, accessRole: "access.role.viewer",
+                    type: nil, status: status, requestToken: nil, previewToggle: nil, folderVO: nil,
+                    recordVO: nil, archiveVO: nil, accountVO: nil, createdDT: nil, updatedDT: nil)
+    }
+
     private static func pendingShare(id: Int, email: String, name: String) -> String {
         """
         {"id": "\(id)", "email": "\(email)", "name": "\(name)", "accessRole": "access.role.viewer"}
         """
     }
 
-    private static func folderStub(callerRole: String,
+    /// `shares: nil` leaves the key out; `sendsNullShares` writes the explicit `"shares": null` Stela
+    /// actually returns for an item that has never been shared.
+    private static func folderStub(callerRole: String?,
                                    folderLinkId: String = "1",
                                    shares: [String]?,
+                                   sendsNullShares: Bool = false,
                                    pendingShares: [String] = []) -> (String, String?, @escaping (OperationResult) -> Void) -> Void {
-        let sharesJSON = shares.map { ", \"shares\": [\($0.joined(separator: ","))]" } ?? ""
+        let roleJSON = callerRole.map { ", \"accessRole\": \"\($0)\"" } ?? ""
+        let sharesJSON = sendsNullShares
+            ? ", \"shares\": null"
+            : shares.map { ", \"shares\": [\($0.joined(separator: ","))]" } ?? ""
         let pendingJSON = pendingShares.isEmpty ? "" : ", \"pendingShares\": [\(pendingShares.joined(separator: ","))]"
         let body = """
-        {"items": [{"id": "55", "folderId": "55", "folderLinkId": "\(folderLinkId)",
-                    "accessRole": "\(callerRole)"\(sharesJSON)\(pendingJSON)}]}
+        {"items": [{"id": "55", "folderId": "55", "folderLinkId": "\(folderLinkId)"\(roleJSON)\(sharesJSON)\(pendingJSON)}]}
         """
         // The decoder re-serializes, so hand it a JSON object rather than raw bytes.
         let object = try? JSONSerialization.jsonObject(with: Data(body.utf8), options: [])
