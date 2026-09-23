@@ -248,50 +248,19 @@ class UploadManager {
                 }
 
                 if model.results[0].data?[0].accountVO?.spaceLeft ?? 0 > filesSize {
-                    // Light UI work on main: stamp the queue owner and start the Live Activity, so the user
-                    // gets visible confirmation right away.
-                    DispatchQueue.main.async {
-                        UserDefaults.standard.set(accountId, forKey: Constants.Keys.StorageKeys.uploadQueueOwnerAccountIdKey)
-
-                        let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
-                        let destination = files.first?.folder
-                        UploadLiveActivityManager.shared.startActivity(
-                            totalFiles: files.count,
-                            firstFileName: files.first?.name ?? "",
-                            archiveNo: archiveNo,
-                            folderLinkId: destination?.folderLinkId ?? 0,
-                            folderName: destination?.name ?? "",
-                            folderItemCount: destination?.itemCount,
-                            folderIsShared: destination?.isShared
-                        )
-                    }
-
-                    // File-system prep off-main so the spinner keeps animating. No `uploadFilesKey` access here:
-                    // UserDefaults is main-only, which serializes against the 30 s timer and avoids a lost update.
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        let fileHelper = FileHelper()
-                        for file in files {
-                            self.prepareFileForUpload(file, fileHelper: fileHelper)
-                        }
-
-                        // Single read-append-write on main. O(N) instead of
-                        // the previous O(N²) per-file decode/encode loop.
-                        DispatchQueue.main.async {
-                            var saved: [FileInfo] = (try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)) ?? []
-                            let existingIds = Set(saved.map(\.id))
-                            for file in files where !existingIds.contains(file.id) {
-                                saved.append(file)
-                            }
-                            try? PreferencesManager.shared.setCustomObject(saved, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
-
-                            self.refreshQueue()
-                            completion?(true)
-                        }
-                    }
+                    self.enqueue(files: files, accountId: accountId, completion: completion)
                 } else {
-                    self.logger.error("🔼 Quota exceeded - not enough space left")
-                    NotificationCenter.default.post(name: Self.quotaExceededNotification, object: self, userInfo: nil)
-                    DispatchQueue.main.async { completion?(false) }
+                    // The signed-in account is out of room, but the archive may be billed to
+                    // someone else. Ask them before refusing.
+                    let archiveId = PermSession.currentSession?.selectedArchive?.archiveID ?? 0
+                    Self.askPayerHasRoom(archiveId: archiveId, filesSize: filesSize) { allowed in
+                        if allowed {
+                            self.logger.debug("🔼 Archive payer has room — proceeding")
+                            self.enqueue(files: files, accountId: accountId, completion: completion)
+                        } else {
+                            self.denyQuota(completion: completion)
+                        }
+                    }
                 }
 
                 return
@@ -307,6 +276,93 @@ class UploadManager {
                 break
             }
         }
+    }
+
+    /// Queues the files and starts the visible side of the upload. Reached once the quota
+    /// question has been answered, whichever account answered it.
+    private func enqueue(files: [FileInfo], accountId: Int, completion: ((Bool) -> Void)?) {
+        // Light UI work on main: stamp the queue owner and start the Live Activity, so the user
+        // gets visible confirmation right away.
+        DispatchQueue.main.async {
+            UserDefaults.standard.set(accountId, forKey: Constants.Keys.StorageKeys.uploadQueueOwnerAccountIdKey)
+
+            let archiveNo = PermSession.currentSession?.selectedArchive?.archiveNbr ?? ""
+            let destination = files.first?.folder
+            UploadLiveActivityManager.shared.startActivity(
+                totalFiles: files.count,
+                firstFileName: files.first?.name ?? "",
+                archiveNo: archiveNo,
+                folderLinkId: destination?.folderLinkId ?? 0,
+                folderName: destination?.name ?? "",
+                folderItemCount: destination?.itemCount,
+                folderIsShared: destination?.isShared
+            )
+        }
+
+        // File-system prep off-main so the spinner keeps animating. No `uploadFilesKey` access here:
+        // UserDefaults is main-only, which serializes against the 30 s timer and avoids a lost update.
+        DispatchQueue.global(qos: .userInitiated).async {
+            let fileHelper = FileHelper()
+            for file in files {
+                self.prepareFileForUpload(file, fileHelper: fileHelper)
+            }
+
+            // Single read-append-write on main. O(N) instead of
+            // the previous O(N²) per-file decode/encode loop.
+            DispatchQueue.main.async {
+                var saved: [FileInfo] = (try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)) ?? []
+                let existingIds = Set(saved.map(\.id))
+                for file in files where !existingIds.contains(file.id) {
+                    saved.append(file)
+                }
+                try? PreferencesManager.shared.setCustomObject(saved, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+
+                self.refreshQueue()
+                completion?(true)
+            }
+        }
+    }
+
+    /// Refuses the upload and raises the warning the user acts on.
+    private func denyQuota(completion: ((Bool) -> Void)?) {
+        self.logger.error("🔼 Quota exceeded - not enough space left")
+        NotificationCenter.default.post(name: Self.quotaExceededNotification, object: self, userInfo: nil)
+        DispatchQueue.main.async { completion?(false) }
+    }
+
+    /// Asks an archive's payer whether `filesSize` fits. Shared with the share extension, and only
+    /// called once the signed-in account has come up short, so it can only turn a refusal into a pass.
+    static func askPayerHasRoom(archiveId: Int, filesSize: Int, completion: @escaping (Bool) -> Void) {
+        guard archiveId > 0 else {
+            completion(false)
+            return
+        }
+
+        let operation = APIOperation(ArchiveV2Endpoint.payerAccountStorage(archiveId: archiveId))
+        operation.execute(in: APIRequestDispatcher()) { result in
+            completion(payerHasRoom(result, filesSize: filesSize))
+        }
+    }
+
+    /// Only a definitive yes allows. A 200 with no readable figure still proves a payer exists, so
+    /// that allows too; anything else leaves the signed-in account's own refusal standing.
+    static func payerHasRoom(_ result: OperationResult, filesSize: Int) -> Bool {
+        // The dispatcher passes a 2xx body it could not parse through as raw text, and handing
+        // that to the decoder raises an uncatchable exception, so require an object first.
+        guard case .json(let response, let http) = result,
+              let code = http?.statusCode, (200...299).contains(code),
+              response is [String: Any],
+              let model: PayerAccountStorageV2Data = JSONHelper.decoding(from: response, with: PayerAccountStorageV2Data.decoder)
+        else { return false }
+
+        return hasRoom(remainingBytes: model.spaceLeftBytes, filesSize: filesSize)
+    }
+
+    /// True when `filesSize` fits. A nil figure means the server did not tell us and must not
+    /// block; an upload that exactly fills the remaining space is refused.
+    static func hasRoom(remainingBytes: Int?, filesSize: Int) -> Bool {
+        guard let remainingBytes else { return true }
+        return remainingBytes > filesSize
     }
     
     /// File-system prep only: writes bytes to disk and moves tmp files to durable storage. Does not

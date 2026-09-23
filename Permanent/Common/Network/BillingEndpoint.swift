@@ -69,7 +69,7 @@ extension BillingEndpoint: RequestProtocol {
         let endpointPath = APIEnvironment.defaultEnv.apiServer
         switch self {
         case .giftStorage(_):
-            return "\(endpointPath)api/v2/billing/gift"
+            return "\(endpointPath)api/v2/storage/gift"
         case .purchaseStorage:
             return "\(endpointPath)api/v2/storage-purchases"
         default : return nil

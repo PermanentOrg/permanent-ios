@@ -242,10 +242,16 @@ class ShareExtensionViewModel: ViewModelInterface {
                 }
 
                 let spaceLeft = model.results[0].data?[0].accountVO?.spaceLeft ?? 0
-                let hasEnoughSpace = spaceLeft > totalFilesSize
+                if spaceLeft > totalFilesSize {
+                    DispatchQueue.main.async { completion(nil) }
+                    return
+                }
 
-                DispatchQueue.main.async {
-                    completion(hasEnoughSpace ? nil : .insufficientSpace)
+                // This account is out of room, but the archive may be billed to someone else.
+                // Ask them before reporting the share as too large.
+                let archiveId = self.currentArchive?.archiveID ?? 0
+                UploadManager.askPayerHasRoom(archiveId: archiveId, filesSize: totalFilesSize) { allowed in
+                    DispatchQueue.main.async { completion(allowed ? nil : .insufficientSpace) }
                 }
 
             case .error(_, _):

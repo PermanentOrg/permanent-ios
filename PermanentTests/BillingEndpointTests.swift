@@ -59,7 +59,7 @@ final class BillingEndpointTests: XCTestCase {
     func testGiftStorage_TargetsStelaBillingGift() {
         let gift = GiftingModel(storageAmount: 1, recipientEmails: ["a@b.com"], note: "")
         let url = BillingEndpoint.giftStorage(gift: gift).customURL
-        XCTAssertEqual(url, "\(APIEnvironment.defaultEnv.apiServer)api/v2/billing/gift")
+        XCTAssertEqual(url, "\(APIEnvironment.defaultEnv.apiServer)api/v2/storage/gift")
     }
 
     // MARK: - StoragePurchaseResponse decoding

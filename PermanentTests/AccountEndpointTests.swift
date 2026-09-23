@@ -199,7 +199,7 @@ final class AccountEndpointTests: XCTestCase {
     func testCustomURL_AddRemoveTags_ContainsApiV2Path() {
         let endpoint = AccountEndpoint.addRemoveTags(archiveType: "type:person", addGoalTags: nil, addWhyTags: nil, removeGoalTags: nil, removeWhyTags: nil)
         XCTAssertNotNil(endpoint.customURL)
-        XCTAssertTrue(endpoint.customURL!.contains("api/v2/account/tags"))
+        XCTAssertTrue(endpoint.customURL!.contains("api/v2/accounts/tags"))
     }
 
     func testCustomURL_NonTagEndpoints_ReturnsNil() {
