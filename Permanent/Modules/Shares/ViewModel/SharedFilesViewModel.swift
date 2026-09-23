@@ -11,6 +11,9 @@ class SharedFilesViewModel: FilesViewModel {
     static let didSelectFilesNotifName = NSNotification.Name("SharedFilesViewModel.didSelectFilesNotifName")
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
 
+    /// The share list is on screen: no folder is open and none is being entered.
+    var showsShareList: Bool { navigationStack.isEmpty && !isLoadingFirstPage }
+
     /// The V2 payload carries no per-child accessRole, so each child takes the entered folder's role
     /// intersected with archive permissions. Fails closed to `.viewer`, so it can only under-grant.
     override func v2ChildContext(enteredFolder: FileModel?) -> (permissions: [Permission], accessRole: AccessRole) {
@@ -41,7 +44,7 @@ class SharedFilesViewModel: FilesViewModel {
         switch section {
         case FileListType.downloading.rawValue: return .downloads
         case FileListType.uploading.rawValue: return .uploads
-        case FileListType.synced.rawValue: return currentFolderIsRoot ? "" : activeSortOption.title
+        case FileListType.synced.rawValue: return currentFolderIsRoot && !isLoadingFirstPage ? "" : listingSortTitle
         default: return "" // We cannot have more than 3 sections.
         }
     }
@@ -116,7 +119,12 @@ class SharedFilesViewModel: FilesViewModel {
                     // archives never runs it and leaves the previous state behind.
                     self.sharedByMeViewModels = byMe
                     self.sharedWithMeViewModels = withMe
-                    self.viewModels = self.shareListType == .sharedByMe ? byMe : withMe
+                    // A folder on screen, or one being entered, keeps its rows; the share list waits in its caches.
+                    if self.showsShareList {
+                        self.viewModels = self.shareListType == .sharedByMe ? byMe : withMe
+                        // The share list is not a folder, so no folder's next page may land on it.
+                        self.resetChildrenPaging()
+                    }
 
                     handler(.success)
 
@@ -145,19 +153,18 @@ class SharedFilesViewModel: FilesViewModel {
         
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
+        var entered: FileModel?
         if !backNavigation {
             let accessRole = AccessRole.roleForValue(folderVO.accessRole)
             let archivePermissionsSet = Set(self.archivePermissions)
             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: folderVO.accessRole ?? ""))
             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
             
-            let file = FileModel(model: folderVO, permissions: permissionsIntersection, accessRole: accessRole)
-            navigationStack.append(file)
+            entered = FileModel(model: folderVO, permissions: permissionsIntersection, accessRole: accessRole)
         }
         
-        adoptSavedSort(folderId: folderVO.folderID ?? -1, savedSort: SortOption(serverValue: folderVO.sort))
-        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, folderLinkId)
-        getLeanItems(params: params, then: handler)
+        listV1Folder(entering: entered, folderId: folderVO.folderID ?? -1, savedSort: SortOption(serverValue: folderVO.sort),
+                     params: (archiveNo, folderLinkIds, folderLinkId), then: handler)
     }
     
     override func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {

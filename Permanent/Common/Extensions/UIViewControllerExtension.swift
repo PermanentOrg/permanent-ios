@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 
 private var spinnerViewKey: UInt8 = 0
+private var touchBlockerKey: UInt8 = 0
 
 extension UIViewController {
     /// One overlay per screen. A single shared slot let one screen's hide remove another screen's
@@ -63,6 +64,28 @@ extension UIViewController {
         })
     }
     
+    private var touchBlocker: UIView? {
+        get { objc_getAssociatedObject(self, &touchBlockerKey) as? UIView }
+        set { objc_setAssociatedObject(self, &touchBlockerKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    }
+
+    /// Holds touches like the spinner overlay does, but draws nothing, so skeleton rows stay in view.
+    /// The keyboard sits in its own window above it, so it is dismissed too.
+    func showTouchBlocker() {
+        guard touchBlocker == nil, isViewLoaded else { return }
+        view.endEditing(true)
+        let blocker = UIView(frame: view.bounds)
+        blocker.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blocker.backgroundColor = .clear
+        view.addSubview(blocker)
+        touchBlocker = blocker
+    }
+
+    func hideTouchBlocker() {
+        touchBlocker?.removeFromSuperview()
+        touchBlocker = nil
+    }
+
     public func showToast(message: String, seconds: Double = 3.0) {
         let toast = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         toast.view.alpha = 0.5

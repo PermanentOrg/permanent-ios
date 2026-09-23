@@ -19,6 +19,13 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     var deeplinkPayload: PublicProfileDeeplinkPayload?
     
     private var isGridView = true
+    private lazy var folderHeader: FolderHeaderTransition? = {
+        guard backButton != nil, directoryLabel != nil else { return nil }
+        return FolderHeaderTransition(backButton: backButton, titleLabel: directoryLabel)
+    }()
+    /// How the last folder load ended, for flows that changed the header before it landed; nil while one runs.
+    private var lastFolderLoadStatus: RequestStatus?
+    private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
     
     private let refreshControl = UIRefreshControl()
     
@@ -55,6 +62,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         directoryLabel.text = "Public"
         backButton.tintColor = .primary
         backButton.isHidden = true
+        _ = folderHeader
         
         linkButton.tintColor = .primary
         linkButton.setTitle(nil, for: .normal)
@@ -64,6 +72,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
+        _ = pagingSection
         
         collectionView.refreshControl = refreshControl
         // The side gutters belong to `sectionInset`, not `contentInset`: the latter is re-resolved when the
@@ -82,6 +91,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     
     func refreshCollectionView() {
         handleTableBackgroundView()
+        pagingSection.prepareForReload()
         collectionView.reloadData()
         #if DEBUG
         // Surface which navigation path served the current listing so UI parity tests can
@@ -102,20 +112,19 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard let viewModel = viewModel,
-              let _ = viewModel.removeCurrentFolderFromHierarchy(),
+              let leftFolder = viewModel.removeCurrentFolderFromHierarchy(),
               let destinationFolder = viewModel.currentFolder
         else {
             return
         }
         
+        let revertHeader = showHeaderWhileLoading(title: destinationFolder.name, showsBack: !viewModel.currentFolderIsRoot)
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
-            self.directoryLabel.text = destinationFolder.name
-            
-            // If we got to the root, hide the back button.
-            if viewModel.currentFolderIsRoot {
-                self.backButton.isHidden = true
-            }
+            // The folder left is still on screen, so it goes back on the history and keeps its header.
+            guard self.folderLoadFailed(), viewModel.navigationStack.last?.folderLinkId == destinationFolder.folderLinkId else { return }
+            viewModel.navigationStack.append(leftFolder)
+            revertHeader()
         })
     }
     
@@ -139,7 +148,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         )
         
         // Back navigation set to `true` so it's not considered a in-depth navigation.
-        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
+        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, isRefresh: true, then: handler)
     }
     
     @objc
@@ -165,12 +174,16 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
             
             let navigationParams = (archiveNo: deeplinkPayload.archiveNbr, folderLinkId: folderId, folderName: "")
             viewModel?.getRoot(then: { status in
+                // The link carries no name, so only the arrow can show before the folder loads.
+                let revertHeader = self.showHeaderWhileLoading(title: self.folderHeader?.current.title, showsBack: true, entering: folderId)
                 self.navigateToFolder(withParams: navigationParams, backNavigation: false, then: {
-                    self.backButton.isHidden = false
-                    self.directoryLabel.text = self.viewModel?.currentFolder?.name
+                    guard !self.folderLoadFailed(entering: folderId) else { return revertHeader() }
+                    self.folderHeader?.show(title: self.viewModel?.currentFolder?.name, showsBack: true)
                     
-                    if let file = self.viewModel?.viewModels.first(where: { $0.archiveNo == deeplinkPayload.fileArchiveNbr }) {
-                        self.presentFileDetails(file: file)
+                    // The linked file can sit on a later page than the first.
+                    self.viewModel?.loadChildrenPages(until: { $0.archiveNo == deeplinkPayload.fileArchiveNbr }) { file in
+                        self.refreshCollectionView()
+                        if let file { self.presentFileDetails(file: file) }
                     }
                 })
             })
@@ -197,7 +210,8 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     // MARK: - Network Related
     
     private func getRootFolder(isRetry: Bool = false) {
-        showSpinner()
+        // The retry runs under the skeleton the first attempt put up.
+        if !isRetry { setLoadingFirstPage(true) }
 
         viewModel?.getRoot(then: { [weak self] status in
             guard let self = self else { return }
@@ -207,20 +221,84 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
                 self.getRootFolder(isRetry: true)
                 return
             }
-            self.onFilesFetchCompletion(status)
+            let finish = {
+                self.setLoadingFirstPage(false)
+                if status != .success, self.collectionView != nil { self.dropRootSkeleton() }
+                self.onFilesFetchCompletion(status)
+            }
+            self.collectionView != nil ? self.pagingSection.afterSkeletonMinimumTime(finish) : finish()
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
-        shouldDisplaySpinner ? showSpinner() : nil
+    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, isRefresh: Bool = false, then handler: VoidAction? = nil) {
+        // Entering a folder shows skeleton tiles; refreshing the one on screen keeps its tiles under the spinner.
+        let showsSkeleton = shouldDisplaySpinner && !isRefresh
+        if showsSkeleton {
+            setLoadingFirstPage(true)
+        } else if shouldDisplaySpinner {
+            showSpinner()
+        }
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
-            self.onFilesFetchCompletion(status)
-            handler?()
+            // The skeleton stays up for its minimum time, so it fades out rather than flickers.
+            let finish = {
+                if showsSkeleton {
+                    self.setLoadingFirstPage(false)
+                    // On failure the previous folder's rows come back from under the skeleton.
+                    if status != .success, self.collectionView != nil { self.refreshCollectionView() }
+                }
+                self.onFilesFetchCompletion(status)
+                handler?()
+            }
+            showsSkeleton && self.collectionView != nil ? self.pagingSection.afterSkeletonMinimumTime(finish) : finish()
         })
+    }
+
+    /// A root that never loaded is not an empty folder, so only the skeleton goes; no empty-folder view comes up.
+    private func dropRootSkeleton() {
+        guard viewModel?.currentFolder == nil else { return refreshCollectionView() }
+        pagingSection.prepareForReload()
+        collectionView.reloadData()
+    }
+
+    /// Names the folder being opened at once, over its skeleton rows. The returned closure puts the previous
+    /// header back when the load failed, unless something else has changed the header since.
+    private func showHeaderWhileLoading(title: String?, showsBack: Bool, entering folderLinkId: Int? = nil) -> VoidAction {
+        let previous = folderHeader?.current
+        folderHeader?.show(title: title, showsBack: showsBack)
+        let revision = folderHeader?.revision
+        lastFolderLoadStatus = nil
+        return { [weak self] in
+            guard let self, let previous, self.folderHeader?.revision == revision, self.folderLoadFailed(entering: folderLinkId) else { return }
+            self.folderHeader?.show(title: previous.title, showsBack: previous.showsBack)
+        }
+    }
+
+    /// An error, or a folder entry another load overtook, leaves the previous folder on screen.
+    private func folderLoadFailed(entering folderLinkId: Int? = nil) -> Bool {
+        guard let status = lastFolderLoadStatus else { return false }
+        if status != .success { return true }
+        guard let folderLinkId else { return false }
+        return viewModel?.currentFolder?.folderLinkId != folderLinkId
+    }
+
+    private func setLoadingFirstPage(_ isLoading: Bool) {
+        guard let viewModel else { return }
+        guard isLoading else {
+            guard viewModel.endFirstPageLoad() else { return }
+            hideTouchBlocker()
+            if collectionView != nil { pagingSection.skeletonWillDisappear() }
+            return
+        }
+        viewModel.beginFirstPageLoad()
+        showTouchBlocker()
+        guard collectionView != nil else { return }
+        pagingSection.skeletonWillAppear()
+        refreshCollectionView()
     }
     
     private func onFilesFetchCompletion(_ status: RequestStatus) {
+        lastFolderLoadStatus = status
         hideSpinner()
 
         switch status {
@@ -236,16 +314,20 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
 // MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
 extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return viewModel?.numberOfSections ?? 0
+        return viewModel.map { $0.numberOfSections + 1 } ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if section == pagingSection.sectionIndex { return pagingSection.numberOfItems(isGrid: isGridView) }
         return viewModel?.numberOfRowsInSection(section) ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let viewModel = self.viewModel else {
             return UICollectionViewCell()
+        }
+        if indexPath.section == pagingSection.sectionIndex {
+            return pagingSection.cell(at: indexPath, isGrid: isGridView)
         }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FileGridCell", for: indexPath) as! FileCollectionViewCell
@@ -274,9 +356,17 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
 
         return CGSize(width: width, height: width + 39)
     }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        pagingSection.willDisplayItem(at: indexPath)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return indexPath.section != pagingSection.sectionIndex
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let viewModel = viewModel else { return }
+        guard let viewModel = viewModel, indexPath.section != pagingSection.sectionIndex else { return }
 
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
@@ -287,16 +377,17 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
             // item carries no V2 folderId — navigateMin gates on both and falls through to V1).
             viewModel.v2NavigationTarget = file
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-                self.backButton.isHidden = false
-                self.directoryLabel.text = file.name
-            })
+            let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
         } else {
             presentFileDetails(file: file)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionFooter {
+            return pagingSection.footer(at: indexPath)
+        }
         if kind == UICollectionView.elementKindSectionHeader {
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             
@@ -313,6 +404,11 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: UIScreen.main.bounds.width, height: 0)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        guard section == pagingSection.sectionIndex else { return .zero }
+        return pagingSection.footerSize(width: collectionView.bounds.width - collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

@@ -27,6 +27,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let screenLockManager = ScreenLockManager()
 
     private var sortActionSheet: SortActionSheet?
+    private lazy var folderHeader: FolderHeaderTransition? = {
+        guard backButton != nil, directoryLabel != nil else { return nil }
+        return FolderHeaderTransition(backButton: backButton, titleLabel: directoryLabel)
+    }()
+    /// How the last folder load ended, for flows that changed the header before it landed; nil while one runs.
+    private var lastFolderLoadStatus: RequestStatus?
+    private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
     let fileHelper = FileHelper()
@@ -177,8 +184,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             
             // Refresh workspace to new archive's root
             self?.getRootFolder()
-            self?.backButton.isHidden = true
-            self?.directoryLabel.text = self?.viewModel?.rootFolderName
+            self?.folderHeader?.show(title: self?.viewModel?.rootFolderName, showsBack: false)
             
             // Additional delayed reset to ensure refresh control works after data loading
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -259,6 +265,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         directoryLabel.text = viewModel?.rootFolderName
         backButton.tintColor = .primary
         backButton.isHidden = true
+        _ = folderHeader
         
         fileActionBottomView.isHidden = true
         
@@ -281,6 +288,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
+        _ = pagingSection
         collectionView.refreshControl = refreshControl
         collectionView.showsVerticalScrollIndicator = false
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
@@ -296,6 +304,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func refreshCollectionView() {
         handleTableBackgroundView()
+        pagingSection.prepareForReload()
         collectionView.reloadData()
         #if DEBUG
         // Surface which navigation path served the current listing so UI parity tests can
@@ -538,22 +547,42 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func backButtonAction(_ sender: UIButton) {
         guard
             let viewModel = viewModel,
-            let _ = viewModel.removeCurrentFolderFromHierarchy(),
+            let leftFolder = viewModel.removeCurrentFolderFromHierarchy(),
             let destinationFolder = viewModel.currentFolder
         else {
             return
         }
         
+        let isRoot = viewModel.currentFolderIsRoot
+        let revertHeader = showHeaderWhileLoading(title: isRoot ? viewModel.rootFolderName : destinationFolder.name, showsBack: !isRoot)
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
-            self.directoryLabel.text = destinationFolder.name
-            
-            // If we got to the root, hide the back button.
-            if viewModel.currentFolderIsRoot {
-                self.backButton.isHidden = true
-                self.directoryLabel.text = viewModel.rootFolderName
-            }
+            // The folder left is still on screen, so it goes back on the history and keeps its header.
+            guard self.folderLoadFailed(), viewModel.navigationStack.last?.folderLinkId == destinationFolder.folderLinkId else { return }
+            viewModel.navigationStack.append(leftFolder)
+            revertHeader()
         })
+    }
+
+    /// Names the folder being opened at once, over its skeleton rows. The returned closure puts the previous
+    /// header back when the load failed, unless something else has changed the header since.
+    private func showHeaderWhileLoading(title: String?, showsBack: Bool, entering folderLinkId: Int? = nil) -> VoidAction {
+        let previous = folderHeader?.current
+        folderHeader?.show(title: title, showsBack: showsBack)
+        let revision = folderHeader?.revision
+        lastFolderLoadStatus = nil
+        return { [weak self] in
+            guard let self, let previous, self.folderHeader?.revision == revision, self.folderLoadFailed(entering: folderLinkId) else { return }
+            self.folderHeader?.show(title: previous.title, showsBack: previous.showsBack)
+        }
+    }
+
+    /// An error, or a folder entry another load overtook, leaves the previous folder on screen.
+    private func folderLoadFailed(entering folderLinkId: Int? = nil) -> Bool {
+        guard let status = lastFolderLoadStatus else { return false }
+        if status != .success { return true }
+        guard let folderLinkId else { return false }
+        return viewModel?.currentFolder?.folderLinkId != folderLinkId
     }
     
     private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
@@ -637,7 +666,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         if viewModel.isSelecting {
-            if viewModel.selectedFiles?.count == viewModel.viewModels.count {
+            if viewModel.childrenPagingState != .complete {
+                selectWholeFolder()
+                return
+            } else if viewModel.selectedFiles?.count == viewModel.viewModels.count {
                 // Deselect all files
                 viewModel.selectedFiles = []
             } else {
@@ -651,6 +683,29 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         refreshCollectionView()
     }
     
+    /// Select all means the whole folder, so the pages not loaded yet come in first.
+    private func selectWholeFolder() {
+        guard let viewModel, let folderLinkId = viewModel.currentFolder?.folderLinkId else { return }
+        viewModel.timer?.invalidate()
+        showSpinner()
+        viewModel.listWholeFolder { [weak self] status in
+            guard let self, let viewModel = self.viewModel else { return }
+            self.hideSpinner()
+            // Select mode may have ended, or the folder changed, while the rows were loading.
+            guard viewModel.isSelecting, viewModel.currentFolder?.folderLinkId == folderLinkId else {
+                return self.refreshCollectionView()
+            }
+            if case .error(let message) = status {
+                self.showErrorAlert(message: message)
+            } else if viewModel.childrenPagingState == .complete {
+                viewModel.selectedFiles = viewModel.viewModels
+            } else {
+                self.showErrorAlert(message: .errorMessage)
+            }
+            self.refreshCollectionView()
+        }
+    }
+
     @objc
     /// Internal (not private) so tests can drive the select-mode transitions directly —
     /// the FAB permission-gate regression lived exactly on this path.
@@ -735,33 +790,36 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     // MARK: - Network Related
     
     private func getRootFolder() {
-        showSpinner()
+        setLoadingFirstPage(true)
 
         let runRequest: (@escaping ServerResponse) -> Void = getRootRequest ?? { [weak self] completion in
             self?.viewModel?.getRoot(then: completion)
         }
 
         runRequest({ status in
-            self.onFilesFetchCompletion(status)
-            self.checkForSavedUniversalLink()
-            self.checkForRequestShareAccess()
+            let finish = {
+                self.setLoadingFirstPage(false)
+                if status != .success, self.collectionView != nil { self.dropRootSkeleton() }
+                self.onFilesFetchCompletion(status)
+                self.checkForSavedUniversalLink()
+                self.checkForRequestShareAccess()
+            }
+            self.collectionView != nil ? self.pagingSection.afterSkeletonMinimumTime(finish) : finish()
         })
     }
     
     func navigationToShareFolderLink() {
         if let navParamsOptional: NavigationDataForShareFolderLink? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink),
            let navParams = navParamsOptional  {
-            backButton.isHidden = false
-            
+            // A link may carry no name, so the header takes the folder's own name once it loads.
+            let knownName = navParams.folderName.flatMap { $0.isEmpty ? nil : $0 }
+            let revertHeader = showHeaderWhileLoading(title: knownName ?? folderHeader?.current.title, showsBack: true, entering: navParams.folderLinkId)
+
             // Standard navigation to shared folder
             navigateToFolder(withParams: NavigateMinParams(archiveNo: navParams.archiveNo, folderLinkId: navParams.folderLinkId, folderName: navParams.folderName), backNavigation: false, shouldDisplaySpinner: true, then: { [weak self] in
-                // Ensure the folder name is preserved even after navigation completes
-                if let folderName = navParams.folderName, !folderName.isEmpty {
-                    self?.directoryLabel.text = folderName
-                } else {
-                    // Fallback to current folder name if available
-                    self?.directoryLabel.text = self?.viewModel?.currentFolder?.name ?? "Folder"
-                }
+                guard let self else { return }
+                guard !self.folderLoadFailed(entering: navParams.folderLinkId) else { return revertHeader() }
+                self.folderHeader?.show(title: knownName ?? self.viewModel?.currentFolder?.name ?? "Folder", showsBack: true)
             })
             
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
@@ -769,20 +827,60 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, resetScroll: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
-        shouldDisplaySpinner ? showSpinner() : nil
+        // Entering a folder shows skeleton rows; refreshing the one on screen keeps its rows under the spinner.
+        let showsSkeleton = shouldDisplaySpinner && resetScroll
+        if showsSkeleton {
+            setLoadingFirstPage(true)
+        } else if shouldDisplaySpinner {
+            showSpinner()
+        }
 
         let runRequest: (NavigateMinParams, Bool, @escaping ServerResponse) -> Void = navigateMinRequest ?? { [weak self] requestParams, requestBackNavigation, completion in
             self?.viewModel?.navigateMin(params: requestParams, backNavigation: requestBackNavigation, then: completion)
         }
 
         runRequest(params, backNavigation, { status in
-            self.onFilesFetchCompletion(status, resetScroll: resetScroll, silenceErrors: silenceErrors)
-            handler?()
+            // The skeleton stays up for its minimum time, so it fades out rather than flickers.
+            let finish = {
+                if showsSkeleton {
+                    self.setLoadingFirstPage(false)
+                    // On failure the previous folder's rows come back from under the skeleton.
+                    if status != .success, self.collectionView != nil { self.refreshCollectionView() }
+                }
+                self.onFilesFetchCompletion(status, resetScroll: resetScroll, silenceErrors: silenceErrors)
+                handler?()
+            }
+            showsSkeleton && self.collectionView != nil ? self.pagingSection.afterSkeletonMinimumTime(finish) : finish()
         })
         viewModel?.timer?.invalidate()
     }
 
+    /// A root that never loaded is not an empty folder, so only the skeleton goes; no empty-folder view comes up.
+    private func dropRootSkeleton() {
+        guard viewModel?.currentFolder == nil else { return refreshCollectionView() }
+        pagingSection.prepareForReload()
+        collectionView.reloadData()
+    }
+
+    private func setLoadingFirstPage(_ isLoading: Bool) {
+        guard let viewModel else { return }
+        guard isLoading else {
+            guard viewModel.endFirstPageLoad() else { return }
+            hideTouchBlocker()
+            if collectionView != nil { pagingSection.skeletonWillDisappear() }
+            return
+        }
+        viewModel.beginFirstPageLoad()
+        showTouchBlocker()
+        guard collectionView != nil else { return }
+        pagingSection.skeletonWillAppear()
+        refreshCollectionView()
+        let inset = collectionView.adjustedContentInset
+        collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
+    }
+
     private func onFilesFetchCompletion(_ status: RequestStatus, resetScroll: Bool = false, silenceErrors: Bool = false) {
+        lastFolderLoadStatus = status
         DispatchQueue.main.async {
             self.hideSpinner()
 
@@ -822,7 +920,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let viewController: UIViewController
         let hostingController = SharePreviewHostingController(shareToken: token)
         hostingController.navigateTo = { [weak self] params in
-            self?.navigateToFolder(withParams: params, backNavigation: false)
+            guard let self else { return }
+            let knownName = params.folderName.flatMap { $0.isEmpty ? nil : $0 }
+            let revertHeader = self.showHeaderWhileLoading(title: knownName ?? self.folderHeader?.current.title, showsBack: true, entering: params.folderLinkId)
+            self.navigateToFolder(withParams: params, backNavigation: false) { [weak self] in
+                guard let self else { return }
+                guard !self.folderLoadFailed(entering: params.folderLinkId) else { return revertHeader() }
+                self.folderHeader?.show(title: knownName ?? self.viewModel?.currentFolder?.name, showsBack: true)
+            }
         }
         hostingController.wireCallbacks()
         viewController = hostingController
@@ -1009,10 +1114,20 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func relocate(files: [FileModel], to destination: FileModel) {
+    func relocate(files: [FileModel], to destination: FileModel, destinationListedWhole: Bool = false) {
         let isInvalidDestination = destination.folderId == files.first?.parentFolderId
         if isInvalidDestination && viewModel?.fileAction == .move {
             showErrorAlert(message: "Please select a different destination folder.".localized())
+            return
+        }
+
+        // The paste check counts the folder's children, so it needs all of them on hand before the paste.
+        if !destinationListedWhole, let viewModel, viewModel.childrenPagingState != .complete,
+           destination.folderId == viewModel.currentFolder?.folderId {
+            floatingActionIsland?.showActivityIndicator()
+            viewModel.listWholeFolder { [weak self] _ in
+                self?.relocate(files: files, to: destination, destinationListedWhole: true)
+            }
             return
         }
 
@@ -1104,16 +1219,20 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 // MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
 extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return viewModel?.numberOfSections ?? 0
+        return viewModel.map { $0.numberOfSections + 1 } ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if section == pagingSection.sectionIndex { return pagingSection.numberOfItems(isGrid: isGridView) }
         return viewModel?.numberOfRowsInSection(section) ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let viewModel = self.viewModel else {
             return UICollectionViewCell()
+        }
+        if indexPath.section == pagingSection.sectionIndex {
+            return pagingSection.cell(at: indexPath, isGrid: isGridView)
         }
         
         let reuseIdentifier: String
@@ -1147,15 +1266,23 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         // Vertical size: 30 is the height of the title label
         let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
         
-        if indexPath.section == FileListType.synced.rawValue {
+        if indexPath.section == FileListType.synced.rawValue || indexPath.section == pagingSection.sectionIndex {
             return isGridView ? gridItemSize : listItemSize
         } else {
             return listItemSize
         }
     }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        pagingSection.willDisplayItem(at: indexPath)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return indexPath.section != pagingSection.sectionIndex
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let viewModel = viewModel else { return }
+        guard let viewModel = viewModel, indexPath.section != pagingSection.sectionIndex else { return }
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
 
@@ -1167,10 +1294,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
             viewModel.v2NavigationTarget = file
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-                self.backButton.isHidden = false
-                self.directoryLabel.text = file.name
-            })
+            let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
             return
         }
 
@@ -1191,10 +1316,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                     // the String folderId, which lives on the tapped FileModel.
                     viewModel.v2NavigationTarget = file
                     let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-                    navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-                        self.backButton.isHidden = false
-                        self.directoryLabel.text = file.name
-                    })
+                    let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
+                    navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
                 }
             } else {
                 if viewModel.isPickingImage {
@@ -1232,6 +1355,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionFooter {
+            return pagingSection.footer(at: indexPath)
+        }
         if kind == UICollectionView.elementKindSectionHeader {
             let section = indexPath.section
             
@@ -1272,8 +1398,16 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
+        guard section != pagingSection.sectionIndex else { return .zero }
+        // The sort header stays over the skeleton rows while a folder's first page loads.
+        let showsSortHeader = section == FileListType.synced.rawValue && viewModel?.isLoadingFirstPage == true
+        let height: CGFloat = showsSortHeader || viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        guard section == pagingSection.sectionIndex else { return .zero }
+        return pagingSection.footerSize(width: collectionView.bounds.width - collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right)
     }
     
     @objc
@@ -1932,7 +2066,8 @@ extension MainViewController: FABActionSheetDelegate {
             folderId: folder.folderId,
             folderLinkId: folder.folderLinkId,
             name: folder.name,
-            itemCount: viewModel?.viewModels.count,
+            // The loaded rows are the folder's size only once every page is in.
+            itemCount: viewModel?.childrenPagingState == .complete ? viewModel?.viewModels.count : nil,
             isShared: false
         )
     }

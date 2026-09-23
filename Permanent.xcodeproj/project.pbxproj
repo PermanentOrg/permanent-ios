@@ -21,6 +21,8 @@
 		06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
 		0C56651DE8BE63857466EAA8 /* Pods_ShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F346436C173F5F5ADDD3A5B /* Pods_ShareExtension.framework */; };
 		13F57C8DB2DB4A4EB984A0BE /* FolderV2ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */; };
+		33C19C795CBE50378B9D9F5D /* FileSkeletonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5658D4DD3F2242A4F50254E /* FileSkeletonCollectionViewCell.swift */; };
+		35B90992D4698BA30D3AA041 /* FolderHeaderTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818F69703A24DBE36140459D /* FolderHeaderTransition.swift */; };
 		37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374554B71E0322714462588A /* ShareManagementTests.swift */; };
 		374557E26C431EDBB0B56D68 /* FloatingActionIslandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
@@ -318,7 +320,6 @@
 		5E63B3E728A43EC400067FAF /* LeftSideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */; };
 		5E63C8F0300FD2A00094665D /* ArchiveV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */; };
 		5E63C8F2300FD2B10094665D /* ArchiveV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8F1300FD2B10094665D /* ArchiveV2Models.swift */; };
-		5EA7C10630A10006000A1851 /* PayerAccountStorageV2Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA7C10530A10005000A1851 /* PayerAccountStorageV2Data.swift */; };
 		5E647334263C22F900E6566D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E647333263C22F900E6566D /* NotificationName.swift */; };
 		5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */; };
 		5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */; };
@@ -581,6 +582,7 @@
 		5EA7C10230A10002000A1851 /* UploadQuotaGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA7C10130A10001000A1851 /* UploadQuotaGateTests.swift */; };
 		5EA7C10330A10003000A1851 /* ArchiveV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */; };
 		5EA7C10430A10004000A1851 /* ArchiveV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8F1300FD2B10094665D /* ArchiveV2Models.swift */; };
+		5EA7C10630A10006000A1851 /* PayerAccountStorageV2Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA7C10530A10005000A1851 /* PayerAccountStorageV2Data.swift */; };
 		5EA7C10730A10007000A1851 /* PayerAccountStorageV2Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA7C10530A10005000A1851 /* PayerAccountStorageV2Data.swift */; };
 		5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA94A112B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift */; };
 		5EA9C2C62E45FF78003BA1E9 /* ShareItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA9C2BE2E45FF78003BA1E9 /* ShareItemView.swift */; };
@@ -779,6 +781,7 @@
 		615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */; };
 		6A9003F462545A081BD4059B /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */; };
 		7D8910FD6C14469790D035E1 /* StoragePurchaseResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E3387A37349B181125656 /* StoragePurchaseResponse.swift */; };
+		8777477F297949860B7ADB75 /* FileListPagingSectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52963D1AFE3D416C7F827DC0 /* FileListPagingSectionTests.swift */; };
 		9220ACC22A179F88003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
 		9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
 		9220ACC62A1B8706003797C9 /* ArchivesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B8029C3260100337E45 /* ArchivesRepository.swift */; };
@@ -829,6 +832,7 @@
 		92E3FB5E2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
 		92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		9CBB9ACA108840A69B585109 /* UIViewControllerSpinnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */; };
+		B17FBAA79A19C452630997CA /* FileListPagingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7086DD1E6242F48025317F07 /* FileListPagingSection.swift */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
@@ -1020,7 +1024,9 @@
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
 		C1C966448DB21BFB0CD217A8 /* Pods_PermanentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D393D0AF0E820F85F119D3 /* Pods_PermanentTests.framework */; };
+		C921A7CAFA64AA880B43FA08 /* FilesViewModelPagingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E97D4DB6AAF7FDE3E653F7 /* FilesViewModelPagingTests.swift */; };
 		CF751CC1696B40F7819D96C9 /* ShareArchivesV2SourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1996E0E74A174FC78FCB44EF /* ShareArchivesV2SourceTests.swift */; };
+		D53B536DB38878F307712F2E /* FileListStatusFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9800A52B4AA91874B395D67D /* FileListStatusFooterView.swift */; };
 		F502C4D926DCF1E700657D37 /* ArchivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */; };
 		F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FB2742E265007E4594 /* SearchViewController.swift */; };
 		F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */; };
@@ -1272,6 +1278,7 @@
 		37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingActionIslandViewController.swift; sourceTree = "<group>"; };
 		39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerSpinnerTests.swift; sourceTree = "<group>"; };
 		3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		52963D1AFE3D416C7F827DC0 /* FileListPagingSectionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileListPagingSectionTests.swift; sourceTree = "<group>"; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
 		5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonUsualBlue50View.swift; sourceTree = "<group>"; };
 		5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteBottomAlertView.swift; sourceTree = "<group>"; };
@@ -1492,7 +1499,6 @@
 		5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftSideMenu.swift; sourceTree = "<group>"; };
 		5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveV2Endpoint.swift; sourceTree = "<group>"; };
 		5E63C8F1300FD2B10094665D /* ArchiveV2Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveV2Models.swift; sourceTree = "<group>"; };
-		5EA7C10530A10005000A1851 /* PayerAccountStorageV2Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayerAccountStorageV2Data.swift; sourceTree = "<group>"; };
 		5E647333263C22F900E6566D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileMilestonesViewController.swift; sourceTree = "<group>"; };
 		5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileAddMilestonesViewController.swift; sourceTree = "<group>"; };
@@ -1735,6 +1741,7 @@
 		5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomListItemView.swift; sourceTree = "<group>"; };
 		5EA70D8E2B2C793A00175D9C /* GradientCustomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientCustomBarView.swift; sourceTree = "<group>"; };
 		5EA7C10130A10001000A1851 /* UploadQuotaGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadQuotaGateTests.swift; sourceTree = "<group>"; };
+		5EA7C10530A10005000A1851 /* PayerAccountStorageV2Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayerAccountStorageV2Data.swift; sourceTree = "<group>"; };
 		5EA94A112B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomInvalidAlertMessageView.swift; sourceTree = "<group>"; };
 		5EA9C2B52E45FF78003BA1E9 /* ShareComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareComponents.swift; sourceTree = "<group>"; };
 		5EA9C2B72E45FF78003BA1E9 /* ShareItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemViewModel.swift; sourceTree = "<group>"; };
@@ -1889,6 +1896,9 @@
 		5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCustomNavigationView.swift; sourceTree = "<group>"; };
 		66D393D0AF0E820F85F119D3 /* Pods_PermanentTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PermanentTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA7DA7E35CC88C6BBC541F2 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
+		7086DD1E6242F48025317F07 /* FileListPagingSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileListPagingSection.swift; sourceTree = "<group>"; };
+		818F69703A24DBE36140459D /* FolderHeaderTransition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FolderHeaderTransition.swift; sourceTree = "<group>"; };
+		81E97D4DB6AAF7FDE3E653F7 /* FilesViewModelPagingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FilesViewModelPagingTests.swift; sourceTree = "<group>"; };
 		8E782DE197F0DAAD60CD1427 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewModel.swift; sourceTree = "<group>"; };
 		9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
@@ -1923,6 +1933,8 @@
 		92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCompletedCell.xib; sourceTree = "<group>"; };
 		92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCreateCell.xib; sourceTree = "<group>"; };
 		92E3FB502A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewController.swift; sourceTree = "<group>"; };
+		9800A52B4AA91874B395D67D /* FileListStatusFooterView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileListStatusFooterView.swift; sourceTree = "<group>"; };
+		A5658D4DD3F2242A4F50254E /* FileSkeletonCollectionViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileSkeletonCollectionViewCell.swift; sourceTree = "<group>"; };
 		A7E1E2F5C825456114314819 /* Pods-ShareExtension.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.dev-debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
 		BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelocateFolderPayload.swift; sourceTree = "<group>"; };
@@ -2983,6 +2995,10 @@
 				5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */,
 				5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */,
 				F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */,
+				A5658D4DD3F2242A4F50254E /* FileSkeletonCollectionViewCell.swift */,
+				9800A52B4AA91874B395D67D /* FileListStatusFooterView.swift */,
+				7086DD1E6242F48025317F07 /* FileListPagingSection.swift */,
+				818F69703A24DBE36140459D /* FolderHeaderTransition.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -3764,6 +3780,8 @@
 				5E1E61AA2F6B000700998DCE /* RegisterViewTests.swift */,
 				5E7B9C0C2FB27AC800C1D3D0 /* ArchivesEndpointTests.swift */,
 				5E7B9C0E2FB27B7400C1D3D0 /* AuthenticationEndpointTests.swift */,
+				81E97D4DB6AAF7FDE3E653F7 /* FilesViewModelPagingTests.swift */,
+				52963D1AFE3D416C7F827DC0 /* FileListPagingSectionTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -6123,6 +6141,10 @@
 				374557E26C431EDBB0B56D68 /* FloatingActionIslandViewController.swift in Sources */,
 				5E814A482C8F34E4005FF97C /* AuthLeftSideView.swift in Sources */,
 				5ECD1DA12C1346810049A03F /* GradientSemiCirclesLoaderView.swift in Sources */,
+				33C19C795CBE50378B9D9F5D /* FileSkeletonCollectionViewCell.swift in Sources */,
+				D53B536DB38878F307712F2E /* FileListStatusFooterView.swift in Sources */,
+				B17FBAA79A19C452630997CA /* FileListPagingSection.swift in Sources */,
+				35B90992D4698BA30D3AA041 /* FolderHeaderTransition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6321,6 +6343,8 @@
 				5E1E61A92F6AFFFA00998DCE /* RenameViewTests.swift in Sources */,
 				37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */,
 				5E173EBD2F64050D00C6D151 /* MainViewControllerTests.swift in Sources */,
+				C921A7CAFA64AA880B43FA08 /* FilesViewModelPagingTests.swift in Sources */,
+				8777477F297949860B7ADB75 /* FileListPagingSectionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

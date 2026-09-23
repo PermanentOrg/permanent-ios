@@ -250,7 +250,7 @@ final class MainViewControllerTests: XCTestCase {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         vc.collectionView = collectionView
         
-        XCTAssertEqual(vc.numberOfSections(in: collectionView), 3)
+        XCTAssertEqual(vc.numberOfSections(in: collectionView), 4, "the view model's three sections plus the paging section")
     }
     
     func testNumberOfItemsInSyncedSectionUsesViewModelRows() {
@@ -737,6 +737,158 @@ final class MainViewControllerTests: XCTestCase {
         errorVC.navigateToFolder(withParams: ("0000", 99, nil), backNavigation: false, shouldDisplaySpinner: false)
         XCTAssertTrue(errorVC.didShowAlert)
         XCTAssertEqual(errorVC.lastAlertMessage, "Network down")
+    }
+
+    /// A main screen with a real view, whose navigation waits until the test answers it.
+    private func makeSkeletonTestController() -> (vc: AlertTrackingMainViewController, answer: () -> ((RequestStatus) -> Void)?) {
+        let vc = AlertTrackingMainViewController()
+        vc.viewModel = MyFilesViewModel()
+        let rootView = UIView(frame: .init(x: 0, y: 0, width: 390, height: 844))
+        let collectionView = UICollectionView(frame: rootView.bounds, collectionViewLayout: UICollectionViewFlowLayout())
+        let switchViewButton = UIButton(type: .system)
+        let bottomView = BottomActionSheet(frame: .zero)
+        let directoryLabel = UILabel()
+        let backButton = UIButton(type: .system)
+        let fabView = FABView(frame: .zero)
+        [collectionView, switchViewButton, bottomView, directoryLabel, backButton, fabView].forEach { rootView.addSubview($0) }
+        vc.view = rootView
+        vc.collectionView = collectionView
+        vc.switchViewButton = switchViewButton
+        vc.fileActionBottomView = bottomView
+        vc.directoryLabel = directoryLabel
+        vc.backButton = backButton
+        vc.fabView = fabView
+        collectionView.dataSource = vc
+        collectionView.delegate = vc
+
+        var pending: ((RequestStatus) -> Void)?
+        vc.navigateMinRequest = { _, _, completion in pending = completion }
+        return (vc, { pending })
+    }
+
+    func testEnteringAFolder_ShowsSkeletonRowsAndHoldsTouchesUntilItsPageLands() {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewCount = vc.view.subviews.count
+
+        vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: false)
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, true)
+        XCTAssertEqual(vc.view.subviews.count, viewCount + 1, "a clear view holds touches, as the spinner did")
+        XCTAssertEqual(vc.collectionView(vc.collectionView, layout: vc.collectionView.collectionViewLayout, referenceSizeForHeaderInSection: FileListType.synced.rawValue).height, 40,
+                       "the sort header stays over the skeleton")
+
+        answer()?(.success)
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, false)
+        XCTAssertEqual(vc.view.subviews.count, viewCount)
+    }
+
+    func testAFailedFolderEntry_BringsThePreviousRowsBack() {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewCount = vc.view.subviews.count
+
+        vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: false)
+        answer()?(.error(message: "Network down"))
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, false)
+        XCTAssertEqual(vc.view.subviews.count, viewCount, "touches are free again")
+        XCTAssertTrue(vc.didShowAlert)
+    }
+
+    func testEnteringAFolder_NamesItAtOnce_AndPutsTheOldNameBackIfItFails() {
+        let (vc, answer) = makeSkeletonTestController()
+        let folder = makeFolder(name: "Trips", folderLinkId: 20)
+        vc.viewModel?.viewModels = [folder]
+        vc.directoryLabel.text = "Private Files"
+        vc.backButton.isHidden = true
+
+        vc.collectionView(vc.collectionView, didSelectItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
+
+        XCTAssertEqual(vc.directoryLabel.text, "Trips", "the name shows over the skeleton, before the rows land")
+        XCTAssertFalse(vc.backButton.isHidden)
+
+        answer()?(.error(message: "offline"))
+
+        XCTAssertEqual(vc.directoryLabel.text, "Private Files")
+        XCTAssertTrue(vc.backButton.isHidden)
+    }
+
+    func testAFolderEntryAnotherLoadOvertook_PutsTheOldNameBack() {
+        let (vc, answer) = makeSkeletonTestController()
+        vc.viewModel?.viewModels = [makeFolder(name: "Trips", folderLinkId: 20)]
+        vc.directoryLabel.text = "Private Files"
+        vc.backButton.isHidden = true
+
+        vc.collectionView(vc.collectionView, didSelectItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
+        answer()?(.success)
+
+        XCTAssertEqual(vc.directoryLabel.text, "Private Files", "a success that never entered the folder is not an entry")
+        XCTAssertTrue(vc.backButton.isHidden)
+    }
+
+    func testAFolderEntryThatLands_KeepsItsName() {
+        let (vc, answer) = makeSkeletonTestController()
+        let folder = makeFolder(name: "Trips", folderLinkId: 20)
+        vc.viewModel?.viewModels = [folder]
+        vc.directoryLabel.text = "Private Files"
+
+        vc.collectionView(vc.collectionView, didSelectItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
+        vc.viewModel?.navigationStack.append(folder)
+        answer()?(.success)
+
+        XCTAssertEqual(vc.directoryLabel.text, "Trips")
+        XCTAssertFalse(vc.backButton.isHidden)
+    }
+
+    func testAFailedBack_KeepsTheFolderOnScreenAndOnTheHistory() {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewModel = vc.viewModel as! MyFilesViewModel
+        viewModel.navigationStack = [makeFolder(name: "My Files", folderLinkId: 100), makeFolder(name: "Child", folderLinkId: 200)]
+        vc.directoryLabel.text = "Child"
+        vc.backButton.isHidden = false
+
+        vc.backButtonAction(vc.backButton)
+
+        XCTAssertEqual(vc.directoryLabel.text, viewModel.rootFolderName)
+        XCTAssertTrue(vc.backButton.isHidden)
+
+        answer()?(.error(message: "offline"))
+
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderLinkId), [100, 200], "the next Back must not skip a level")
+        XCTAssertEqual(vc.directoryLabel.text, "Child")
+        XCTAssertFalse(vc.backButton.isHidden)
+    }
+
+    func testTheHeader_KeepsOneHeightWithOrWithoutTheArrow() {
+        let row = UIStackView()
+        row.alignment = .center
+        let backButton = UIButton(type: .system)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let label = UILabel()
+        label.font = TextFontStyle.style3.font
+        label.text = "Private Files"
+        row.addArrangedSubview(backButton)
+        row.addArrangedSubview(label)
+        let header = FolderHeaderTransition(backButton: backButton, titleLabel: label)
+
+        header.show(title: "Private Files", showsBack: false, animated: false)
+        let rootHeight = row.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        header.show(title: "Trips", showsBack: true, animated: false)
+        let folderHeight = row.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+
+        XCTAssertEqual(rootHeight, 30, accuracy: 0.5)
+        XCTAssertEqual(folderHeight, rootHeight, accuracy: 0.5)
+    }
+
+    func testRefreshingTheFolderOnScreen_NeverShowsTheSkeleton() {
+        let (vc, answer) = makeSkeletonTestController()
+
+        vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: true, resetScroll: false)
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, false)
+        answer()?(.success)
     }
 
 

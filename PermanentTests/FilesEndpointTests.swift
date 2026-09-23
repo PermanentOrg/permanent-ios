@@ -44,6 +44,14 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertFalse(url.contains("api/v2/folder/42/children"), "Should use the canonical plural /folders route, not the deprecated singular alias")
     }
 
+    func testFolderV2_GetChildren_SendsTheCursorOnlyForLaterPages() {
+        let first = FolderV2Endpoint.getFolderChildren(folderId: "42", shareToken: "", pageSize: 10).customURL ?? ""
+        XCTAssertFalse(first.contains("cursor="), first)
+
+        let next = FolderV2Endpoint.getFolderChildren(folderId: "42", shareToken: "", pageSize: 10, cursor: "7 8").customURL ?? ""
+        XCTAssertTrue(next.hasSuffix("api/v2/folders/42/children?pageSize=10&cursor=7%208"), next)
+    }
+
     func testFolderV2_GetById_UsesCanonicalPluralPath() {
         let url = FolderV2Endpoint.getFolderById(folderId: "42", shareToken: "").customURL ?? ""
         XCTAssertTrue(url.contains("api/v2/folders?folderIds[]=42"), url)

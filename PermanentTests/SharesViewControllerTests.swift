@@ -21,7 +21,7 @@ final class SharesViewControllerTests: XCTestCase {
         let collectionView = makeCollectionView()
         vc.collectionView = collectionView
 
-        XCTAssertEqual(vc.numberOfSections(in: collectionView), 3)
+        XCTAssertEqual(vc.numberOfSections(in: collectionView), 4, "the view model's three sections plus the paging section")
     }
 
     func testNumberOfItemsInSyncedSectionUsesViewModelRows() {
@@ -586,7 +586,7 @@ private final class TestableSharesViewController: SharesViewController {
     var didPresentViewController = false
     var lastPresentedViewController: UIViewController?
 
-    override func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
+    override func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, isRefresh: Bool = false, silenceErrors: Bool = false, then handler: VoidAction? = nil) {
         didNavigateToFolder = true
         lastNavigateParams = params
         handler?()
