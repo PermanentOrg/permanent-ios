@@ -95,9 +95,7 @@ extension ShareItemViewModel {
                             self.correctFolderLinkId = folderLinkIdInt
                         }
 
-                        self.adoptV2Shares(recordData.shares,
-                                           pendingShares: recordData.pendingShares,
-                                           callerRole: recordData.accessRole)
+                        self.adoptV2Shares(recordData.shares, pendingShares: recordData.pendingShares)
 
                     case .error:
                         self.fetchSharedArchivesV1()
@@ -141,9 +139,7 @@ extension ShareItemViewModel {
                             self.correctFolderLinkId = folderLinkIdInt
                         }
 
-                        self.adoptV2Shares(folderData.shares,
-                                           pendingShares: folderData.pendingShares,
-                                           callerRole: folderData.accessRole)
+                        self.adoptV2Shares(folderData.shares, pendingShares: folderData.pendingShares)
 
                     case .error:
                         self.fetchSharedArchivesV1()
@@ -156,23 +152,15 @@ extension ShareItemViewModel {
         }
     }
 
-    /// Publishes the V2 share list, or hands off to V1 when V2's answer would be incomplete.
-    /// Below manager the server strips requested-but-unapproved rows, so only V1 lists them all.
-    private func adoptV2Shares(_ shares: [RecordShareV2]?,
-                               pendingShares: [PendingShareV2]?,
-                               callerRole: String?) {
-        let role = AccessRole.roleForValue(callerRole)
-        guard callerRole != nil, role == .owner || role == .manager, let shares else {
-            fetchSharedArchivesV1()
-            return
-        }
-
+    /// Publishes the V2 share list as the answer. Stela already drops pending requests for callers
+    /// below manager, and sends no list at all for an item that has never been shared.
+    private func adoptV2Shares(_ shares: [RecordShareV2]?, pendingShares: [PendingShareV2]?) {
         #if DEBUG
         Self.lastSharedArchivesSource = "v2"
         #endif
 
         isLoadingArchives = false
-        finalizeSharedArchives(convertV2SharesToV1(shares), pendingSharesV2: pendingShares)
+        finalizeSharedArchives(convertV2SharesToV1(shares ?? []), pendingSharesV2: pendingShares)
     }
 
     // MARK: - Fetch Pending Shares via V2
@@ -298,9 +286,10 @@ extension ShareItemViewModel {
                                 shares = []
                             }
 
+                            let visible = Self.sharesVisible(shares, canManageShares: self.canManageShares)
                             self.fetchPendingSharesFromV2 { pendingShares in
                                 Task { @MainActor in
-                                    self.finalizeSharedArchives(shares, pendingSharesV2: pendingShares)
+                                    self.finalizeSharedArchives(visible, pendingSharesV2: pendingShares)
                                 }
                             }
                         }
@@ -354,9 +343,10 @@ extension ShareItemViewModel {
                                 shares = []
                             }
 
+                            let visible = Self.sharesVisible(shares, canManageShares: self.canManageShares)
                             self.fetchPendingSharesFromV2 { pendingShares in
                                 Task { @MainActor in
-                                    self.finalizeSharedArchives(shares, pendingSharesV2: pendingShares)
+                                    self.finalizeSharedArchives(visible, pendingSharesV2: pendingShares)
                                 }
                             }
                         }
@@ -364,6 +354,18 @@ extension ShareItemViewModel {
                 }
             }
         }
+    }
+
+    // MARK: - Who Sees Pending Requests
+
+    /// Owner and manager only, which is who the product lets manage an item's shares.
+    private var canManageShares: Bool { fileModel.permissions.contains(.archiveShare) }
+
+    /// Drops pending requests for anyone who cannot manage shares. Stela already does this to its
+    /// own reads, so this holds the legacy read to the same rule.
+    static func sharesVisible(_ shares: [ShareVOData], canManageShares: Bool) -> [ShareVOData] {
+        guard !canManageShares else { return shares }
+        return shares.filter { $0.status?.contains("pending") != true }
     }
 
     // MARK: - V2 to V1 Conversion

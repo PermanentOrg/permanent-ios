@@ -17,7 +17,7 @@ protocol PublicArchiveChildDelegate: AnyObject {
 class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewModel> {
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var headerViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var segmentedControl: UISegmentedControl!
+    @IBOutlet weak var segmentedControl: SlidingTabControl!
     @IBOutlet weak var collectionViewContainer: UIView!
     
     @IBOutlet weak var profileBannerImageView: UIImageView!
@@ -47,6 +47,8 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         super.viewDidLoad()
         
         viewModel = PublicProfilePicturesViewModel()
+        // Before the archive loads, so a linked profile shows its tabs under the spinner.
+        segmentedControl.titles = ["Archive".localized(), "Profile".localized()]
         
         // Listen for archive name changes to update title
         NotificationCenter.default.addObserver(forName: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, queue: .main) { [weak self] notification in
@@ -198,13 +200,11 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             self.changeProfilePhotoButtonView.isHidden = false
             self.changeProfileBannerPhotoButtonView.isHidden = false
         })
-
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style11.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.font: TextFontStyle.style8.font], for: .normal)
-        segmentedControl.selectedSegmentTintColor = .primary
     }
     
     @IBAction func segmentedControlValueChanged(_ sender: Any) {
+        // Both pages exist only once the archive has loaded.
+        guard let archiveVC, let profilePageVC else { return }
         if segmentedControl.selectedSegmentIndex == 0 {
             profilePageVC.view.isHidden = true
             archiveVC.view.isHidden = false

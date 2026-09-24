@@ -60,13 +60,9 @@ class SearchFilesViewModel: FilesViewModel {
             } else {
                 return "Tags".localized() + " (\(selectedTagVOs.count))"
             }
-        case 1: return currentFolderIsRoot ? "Results".localized() : activeSortOption.title
+        case 1: return currentFolderIsRoot && !isLoadingFirstPage ? "Results".localized() : listingSortTitle
         default: return ""
         }
-    }
-    
-    override var shouldDisplayBackgroundView: Bool {
-        syncedViewModels.isEmpty && uploadQueue.isEmpty
     }
     
     override var numberOfSections: Int {

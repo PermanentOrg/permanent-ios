@@ -368,6 +368,43 @@ struct FileModel: Equatable, Codable {
         }
     }
 
+    /// A folder's own V2 details, as a share link opens it. Permissions come from the caller, and the
+    /// archive number from the folder's path, or `fallbackArchiveNo` when the path has none.
+    init(model: FolderV2Data, fallbackArchiveNo: String, permissions: [Permission], accessRole: AccessRole) {
+        self.name = model.displayName ?? "-"
+        self.savedSortOption = SortOption(serverValue: model.sort)
+        self.date = model.displayTimestamp?.dateOnly ?? "-"
+        self.createdDT = model.displayTimestamp
+        self.uploadedDT = model.createdAt
+        self.modifiedDT = model.updatedAt
+
+        self.thumbnailURL256 = model.thumbnailUrls?.url256
+        self.thumbnailURL = model.thumbnailUrls?.url200
+        self.thumbnailURL500 = model.thumbnailUrls?.url500
+        self.thumbnailURL1000 = model.thumbnailUrls?.url1000
+        self.thumbnailURL2000 = model.thumbnailUrls?.url2000
+        self.thumbStatus = FileModel.thumbStatus(fromV2Status: model.status)
+        self.description = model.description ?? ""
+        self.size = Int64(model.size ?? -1)
+        self.uploadFileName = ""
+
+        self.type = FileType.fromV2(typeString: model.type, isFolder: true)
+
+        self.archiveThumbnailURL = nil
+        self.archiveId = model.archive?.id.flatMap(Int.init) ?? -1
+        self.archiveNo = model.paths?.archiveNumbers?.last ?? fallbackArchiveNo
+
+        self.recordId = -1
+        self.folderId = model.folderId.flatMap(Int.init) ?? -1
+        self.parentFolderId = model.parentFolder?.id.flatMap(Int.init) ?? -1
+        self.parentFolderLinkId = model.parentFolder?.folderLinkId.flatMap(Int.init) ?? -1
+        self.folderLinkId = model.folderLinkId.flatMap(Int.init) ?? -1
+
+        self.tagVOS = nil
+        self.permissions = permissions
+        self.accessRole = accessRole
+    }
+
     /// Maps the Stela folder `status` enum to the legacy `ThumbStatus` used by
     /// `canBeAccessed`, so copying/moving items stay non-tappable as they did on V1.
     private static func thumbStatus(fromV2Status status: String?) -> ThumbStatus? {

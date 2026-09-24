@@ -53,7 +53,7 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
                 
                 AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
             },
-            onNavigateToSharedWithMe: { [weak self] params in
+            onNavigateToSharedWithMe: { [weak self] params, folderId in
                 guard let self = self else { return }
                 
                 guard let sharesVC = UIViewController.create(
@@ -68,12 +68,13 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
                     sharesVC.sharedFolderArchiveNo = params.archiveNo
                     sharesVC.sharedFolderLinkId = params.folderLinkId
                     sharesVC.sharedFolderName = params.folderName ?? "Shared Folder"
+                    sharesVC.sharedFolderId = folderId
                     sharesVC.fileType = .sharedFolder // Set fileType to trigger folder navigation
                 }
                 
                 AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
             },
-            onNavigateToSharedByMe: { [weak self] params in
+            onNavigateToSharedByMe: { [weak self] params, folderId in
                 guard let self = self else { return }
                 
                 guard let sharesVC = UIViewController.create(
@@ -88,6 +89,7 @@ class SharePreviewHostingController: UIHostingController<SharePreviewView> {
                     sharesVC.sharedFolderArchiveNo = params.archiveNo
                     sharesVC.sharedFolderLinkId = params.folderLinkId
                     sharesVC.sharedFolderName = params.folderName ?? "Shared Folder"
+                    sharesVC.sharedFolderId = folderId
                     sharesVC.fileType = .sharedFolder // Set fileType to trigger folder navigation
                 }
                 

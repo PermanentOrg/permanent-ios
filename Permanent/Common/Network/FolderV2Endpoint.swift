@@ -9,13 +9,14 @@ import Foundation
 
 enum FolderV2Endpoint {
     case getFolderById(folderId: String, shareToken: String)
-    case getFolderChildren(folderId: String, shareToken: String, pageSize: Int)
+    /// `cursor` is the previous page's `nextCursor`, the last child's folderLinkId; nil asks for the first page.
+    case getFolderChildren(folderId: String, shareToken: String, pageSize: Int, cursor: String? = nil)
     /// A flat body of only the edited fields, such as `["sort": option.stelaValue]`. The server
     /// rejects unknown keys.
     case patchFolder(folderId: String, fields: [String: Any])
 
-    /// Requests the whole folder in one page while cursor pagination is deferred. Large but bounded,
-    /// so the query isn't rejected; a server-side clamp would silently truncate the listing.
+    /// The whole folder in one page, for callers that need every child. Large but bounded, so the
+    /// query isn't rejected; a server-side clamp would silently truncate the listing.
     static let maxChildrenPageSize = 99_999_999
 }
 
@@ -56,8 +57,12 @@ extension FolderV2Endpoint: RequestProtocol {
             // Canonical plural route; the singular `/folder` alias is deprecated. `pageSize` is required even for
             // one id (400 without it); 9999 also covers a future multi-id call without paging.
             return "\(baseURL)api/v2/folders?folderIds[]=\(folderId)&pageSize=9999"
-        case .getFolderChildren(let folderId, _, let pageSize):
-            return "\(baseURL)api/v2/folders/\(folderId)/children?pageSize=\(pageSize)"
+        case .getFolderChildren(let folderId, _, let pageSize, let cursor):
+            var components = URLComponents(string: "\(baseURL)api/v2/folders/\(folderId)/children")
+            var items = [URLQueryItem(name: "pageSize", value: "\(pageSize)")]
+            if let cursor { items.append(URLQueryItem(name: "cursor", value: cursor)) }
+            components?.queryItems = items
+            return components?.url?.absoluteString
         case .patchFolder(let folderId, _):
             return "\(baseURL)api/v2/folders/\(folderId)"
         }
@@ -65,7 +70,7 @@ extension FolderV2Endpoint: RequestProtocol {
     
     var shareToken: String? {
         switch self {
-        case .getFolderById(_, let token), .getFolderChildren(_, let token, _):
+        case .getFolderById(_, let token), .getFolderChildren(_, let token, _, _):
             return token.isEmpty ? nil : token
         case .patchFolder:
             return nil

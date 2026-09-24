@@ -204,3 +204,12 @@
 "TapToRetry" = "Tap to Retry.";
 "YoureOffline" = "You're offline.";
 "ConnectToLoadFullQuality" = "Connect to load full quality.";
+"CouldntLoadMoreItems" = "Couldn't load more items.";
+"TryAgain" = "Try again";
+"FolderCountOne" = "%d Folder";
+"FolderCountOther" = "%d Folders";
+"FileCountOne" = "%d File";
+"FileCountOther" = "%d Files";
+"LoadingItems" = "Loading items";
+"LoadingMoreItems" = "Loading more items";
+"TabPosition" = "%1$d of %2$d";

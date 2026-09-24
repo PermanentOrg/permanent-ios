@@ -88,6 +88,15 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
         }
      }
     
+    /// Fades from what the header last showed on screen to what it shows now. Call it right after the change.
+    func fadeInChange() {
+        let fade = CATransition()
+        fade.type = .fade
+        fade.duration = 0.25
+        fade.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        layer.add(fade, forKey: kCATransition)
+    }
+
     @IBAction func leftButtonPressed(_ sender: Any) {
         leftButtonAction?(self)
     }

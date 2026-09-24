@@ -8,7 +8,7 @@ import UIKit
 
 class WorkspaceSegmentedControlView: UIView {
     var viewModel: SaveDestinationBrowserViewModel?
-    let segmentedControl = UISegmentedControl(items: ["", ""])
+    let segmentedControl = SlidingTabControl()
     
     init() {
         super.init(frame: .zero)
@@ -32,11 +32,7 @@ class WorkspaceSegmentedControlView: UIView {
     }
     
     func configureSegmentedControl() {
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style11.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.font: TextFontStyle.style8.font], for: .normal)
-        segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
-        segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
-        segmentedControl.selectedSegmentTintColor = .primary
+        segmentedControl.titles = [.sharedByMe, .sharedWithMe]
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
     }
@@ -51,7 +47,7 @@ class WorkspaceSegmentedControlView: UIView {
         ])
     }
     
-    @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+    @objc func segmentedControlValueChanged(_ sender: SlidingTabControl) {
         viewModel?.workspace = sender.selectedSegmentIndex == 0 ? .sharedByMeFiles : .shareWithMeFiles
     }
 }

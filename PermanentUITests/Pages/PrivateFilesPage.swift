@@ -74,24 +74,38 @@ class PrivateFilesPage {
     }
     
     func createNewFolder(name: String) {
+        submitNewFolder(named: name)
+        // Staging can fail a create with an internal error and take the same one moments later.
+        if !cell(named: name).waitForExistence(timeout: 10) {
+            submitNewFolder(named: name)
+        }
+        XCTAssertTrue(cell(named: name).waitForExistence(timeout: 20), "Folder \(name) was not created")
+        // The spinner is still fading out and would take the next tap.
+        sleep(1)
+    }
+
+    private func submitNewFolder(named name: String) {
         addButton.tap()
         XCTAssertTrue(addNewFolder.waitForExistence(timeout: 5))
         addNewFolder.tap()
-        
+
         let createFolderAlert = CreateFolderAlertPage(app: app)
-        
+
         XCTAssertTrue(createFolderAlert.textField.waitForExistence(timeout: 5))
         createFolderAlert.textField.typeText(name)
-        
+
         XCTAssertTrue(createFolderAlert.createButton.waitForExistence(timeout: 5))
         createFolderAlert.createButton.tap()
-        
-        sleep(3)
     }
     
     func enterFolder(named name: String) {
-        let folderCell = app.collectionViews.cells.containing(.staticText, identifier: name).firstMatch
+        let folderCell = cell(named: name)
+        XCTAssertTrue(folderCell.waitForExistence(timeout: 10), "Folder \(name) is not in the list")
         folderCell.tap()
+    }
+
+    private func cell(named name: String) -> XCUIElement {
+        app.collectionViews.cells.containing(.staticText, identifier: name).firstMatch
     }
     
     func enterPhotoLibrary() {
@@ -265,7 +279,7 @@ class PrivateFilesPage {
     }
 
     func deleteElement(named name: String) {
-        let cell = app.collectionViews.cells.containing(.staticText, identifier: name).firstMatch
+        let cell = cell(named: name)
         XCTAssertTrue(cell.waitForExistence(timeout: 10))
 
         let moreButton = cell.buttons.firstMatch
