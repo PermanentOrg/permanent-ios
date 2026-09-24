@@ -58,8 +58,66 @@ class SharedFilesViewModel: FilesViewModel {
     var shareListType: ShareListType = .sharedByMe {
         didSet {
             viewModels = shareListType == .sharedByMe ? sharedByMeViewModels : sharedWithMeViewModels
+            holdsBackShareList = false
             navigationStack.removeAll()
         }
+    }
+
+    /// A folder opened from a share link, whose own V2 details give the role for the paged route.
+    var linkedFolderId: Int?
+
+    /// Test seam for the V2 folder details request.
+    var folderV2Request: ((_ folderId: String, _ completion: @escaping (FolderV2Data?) -> Void) -> Void)?
+
+    override func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+        guard !backNavigation, v2NavigationTarget == nil, let folderId = linkedFolderId else {
+            return super.navigateMin(params: params, backNavigation: backNavigation, then: handler)
+        }
+        linkedFolderId = nil
+        resolveLinkedFolder(folderId: folderId, params: params) { [weak self] target in
+            guard let self else { return handler(.error(message: .errorMessage)) }
+            // Without the details the folder opens on the V1 route, listed whole, as before.
+            self.v2NavigationTarget = target
+            self.enterFolder(params: params, then: handler)
+        }
+    }
+
+    private func enterFolder(params: NavigateMinParams, then handler: @escaping ServerResponse) {
+        super.navigateMin(params: params, backNavigation: false, then: handler)
+    }
+
+    /// Nil unless the details name the same folder link, so a mismatch can never open another folder.
+    private func resolveLinkedFolder(folderId: Int, params: NavigateMinParams, completion: @escaping (FileModel?) -> Void) {
+        let request = folderV2Request ?? { folderId, completion in
+            APIOperation(FolderV2Endpoint.getFolderById(folderId: folderId, shareToken: "")).execute(in: APIRequestDispatcher()) { result in
+                guard case .json(let response, _) = result,
+                      let model: FolderV2Response = JSONHelper.decoding(from: response, with: FolderV2Response.decoder) else {
+                    return completion(nil)
+                }
+                completion(model.items?.first)
+            }
+        }
+        request(String(folderId)) { [weak self] folder in
+            DispatchQueue.main.async {
+                guard let self, let folder, folder.folderLinkId.flatMap(Int.init) == params.folderLinkId else { return completion(nil) }
+                // The same role and permissions the V1 entry takes from the folder, failing closed to viewer.
+                let role = folder.accessRole ?? AccessRole.viewer.apiValue
+                let permissions = Array(Set(self.archivePermissions).intersection(ArchiveVOData.permissions(forAccessRole: role)))
+                completion(FileModel(model: folder, fallbackArchiveNo: params.archiveNo, permissions: permissions,
+                                     accessRole: AccessRole.roleForValue(role)))
+            }
+        }
+    }
+
+    /// A share list landed while a folder was on screen or on its way, so it waits in the caches.
+    private var holdsBackShareList = false
+
+    /// Once a folder entry has failed back to the share list, the list that landed meanwhile shows.
+    func showHeldBackShareList() {
+        guard holdsBackShareList, showsShareList else { return }
+        holdsBackShareList = false
+        viewModels = shareListType == .sharedByMe ? sharedByMeViewModels : sharedWithMeViewModels
+        resetChildrenPaging()
     }
     
     var sharedByMeViewModels: [FileModel] = []
@@ -149,6 +207,7 @@ class SharedFilesViewModel: FilesViewModel {
                     self.sharedByMeViewModels = byMe
                     self.sharedWithMeViewModels = withMe
                     // A folder on screen, or one being entered, keeps its rows; the share list waits in its caches.
+                    self.holdsBackShareList = !self.showsShareList
                     if self.showsShareList {
                         self.viewModels = self.shareListType == .sharedByMe ? byMe : withMe
                         // The share list is not a folder, so no folder's next page may land on it.

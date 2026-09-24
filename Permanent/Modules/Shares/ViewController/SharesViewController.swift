@@ -36,6 +36,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     var fileType: FileType?
     var sharedFolderArchiveNo: String = ""
     var sharedFolderLinkId: Int = -1
+    /// Set by a share link, so the folder's own details can open it on the paged route.
+    var sharedFolderId: Int?
     var sharedFolderName: String = ""
     var sharedRecordId: Int = -1
     var shareThumbnailURL: String?
@@ -82,6 +84,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             if let fileType = fileType {
                 self.fileType = nil
                 if fileType.isFolder {
+                    viewModel?.linkedFolderId = sharedFolderId
                     let navigateParams: NavigateMinParams = (sharedFolderArchiveNo, sharedFolderLinkId, nil)
                     let revertHeader = showHeaderWhileLoading(title: sharedFolderName, showsBack: true, entering: sharedFolderLinkId)
                     navigateToFolder(withParams: navigateParams, backNavigation: false, shouldDisplaySpinner: true, then: revertHeader)
@@ -1614,8 +1617,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             let finish = {
                 if showsSkeleton {
                     self.setLoadingFirstPage(false)
-                    // On failure the previous folder's rows come back from under the skeleton.
-                    if status != .success, self.collectionView != nil { self.refreshCollectionView() }
+                    // On failure the previous rows come back from under the skeleton, with any share list that landed.
+                    if status != .success, self.collectionView != nil {
+                        self.viewModel?.showHeldBackShareList()
+                        self.refreshCollectionView()
+                    }
                 }
                 self.onFilesFetchCompletion(status, silenceErrors: silenceErrors)
                 handler?()

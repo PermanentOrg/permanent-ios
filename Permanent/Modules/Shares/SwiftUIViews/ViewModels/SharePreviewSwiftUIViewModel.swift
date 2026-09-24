@@ -107,8 +107,9 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
 
     var onNavigateToFolder: ((NavigateMinParams) -> Void)?
     var onNavigateToShares: ((String) -> Void)?
-    var onNavigateToSharedWithMe: ((NavigateMinParams?) -> Void)?
-    var onNavigateToSharedByMe: ((NavigateMinParams?) -> Void)?
+    /// The folder id goes along, so Shared files can open the folder on the paged route.
+    var onNavigateToSharedWithMe: ((NavigateMinParams?, _ folderId: Int?) -> Void)?
+    var onNavigateToSharedByMe: ((NavigateMinParams?, _ folderId: Int?) -> Void)?
     var onNavigateToFilePreview: ((FilePreviewParams) -> Void)?
 
     init(shareToken: String,
@@ -309,10 +310,10 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                let folderLinkId = folderData.folderLinkID,
                let archiveNbr = currentArchive?.archiveNbr {
                 let params: NavigateMinParams = (archiveNo: archiveNbr, folderLinkId: folderLinkId, folderName: folderData.displayName)
-                onNavigateToSharedByMe?(params)
+                onNavigateToSharedByMe?(params, folderData.folderID)
             } else {
                 // For non-folder shares or when folder data is missing, go to shared by me
-                onNavigateToSharedByMe?(nil)
+                onNavigateToSharedByMe?(nil, nil)
             }
         } else {
             // Add share to account before navigating
@@ -378,7 +379,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 let folderLinkId = folderData.folderLinkID,
                 let archiveNbr = self.currentArchive?.archiveNbr {
             let params: NavigateMinParams = (archiveNo: archiveNbr, folderLinkId: folderLinkId, folderName: folderData.displayName)
-            self.onNavigateToSharedWithMe?(params)
+            self.onNavigateToSharedWithMe?(params, folderData.folderID)
         } else if let navigateToShares = self.onNavigateToShares,
                   let archiveNbr = self.currentArchive?.archiveNbr {
             navigateToShares(archiveNbr)
@@ -440,10 +441,11 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         
         do {
             let children = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[FolderChildV2Data], Error>) in
+                // The preview does not scroll and shows only its first few items, so one page covers it.
                 let operation = APIOperation(FolderV2Endpoint.getFolderChildren(
                     folderId: "\(folderId)",
                     shareToken: shareToken,
-                    pageSize: 99999999
+                    pageSize: FilesViewModel.childrenPageSize
                 ))
                 operation.execute(in: APIRequestDispatcher()) { result in
                     switch result {

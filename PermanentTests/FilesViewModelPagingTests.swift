@@ -413,6 +413,27 @@ final class FilesViewModelPagingTests: XCTestCase {
         XCTAssertEqual(server.requests.count, 2, "the first page and the refresh, no next page")
     }
 
+    func testALateFolderListing_DoesNotLandOnceNoFolderIsOnScreen() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page([1, 2, 3], nextCursor: nil)]
+        enter(makeFolder(), in: viewModel)
+
+        server.holdsNextRequest = true
+        let done = expectation(description: "refresh settled")
+        viewModel.navigateMin(params: navParams, backNavigation: true) { _ in done.fulfill() }
+        // The share list or the search results replace the folder while its refresh is on the way.
+        viewModel.navigationStack.removeAll()
+        viewModel.viewModels = []
+
+        server.heldCompletion?(page(Array(1...10), nextCursor: "10"))
+        wait(for: [done], timeout: 5)
+
+        XCTAssertTrue(viewModel.viewModels.isEmpty, "the folder's rows stay off the list that replaced it")
+        XCTAssertEqual(viewModel.childrenPagingState, .complete, "and none of its pages are due")
+    }
+
     func testRetry_DoesNothingUnlessAPageFailed() {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
@@ -526,6 +547,65 @@ final class FilesViewModelPagingTests: XCTestCase {
 
         viewModel.endBackPreview()
         XCTAssertTrue(viewModel.showsShareList)
+    }
+
+    /// Records whether the V1 route ran, without the network.
+    private final class LinkedSharedFilesViewModel: SharedFilesViewModel {
+        var v1Entries = 0
+        override func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+            v1Entries += 1
+            handler(.success)
+        }
+    }
+
+    private func openLinkedFolder(details: FolderV2Data?, in viewModel: LinkedSharedFilesViewModel) {
+        viewModel.linkedFolderId = 77
+        viewModel.folderV2Request = { folderId, completion in
+            XCTAssertEqual(folderId, "77")
+            completion(details)
+        }
+        let done = expectation(description: "linked folder entered")
+        viewModel.navigateMin(params: navParams, backNavigation: false) { _ in done.fulfill() }
+        wait(for: [done], timeout: 5)
+    }
+
+    func testAShareLinksFolder_OpensOnThePagedRouteWithTheServersRole() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page(Array(1...10), nextCursor: "10")]
+
+        openLinkedFolder(details: FolderV2Data(folderId: "77", displayName: "Trips", folderLinkId: "11", accessRole: "editor"), in: viewModel)
+
+        XCTAssertEqual(viewModel.v1Entries, 0)
+        XCTAssertEqual(server.requests.first?.pageSize, FilesViewModel.childrenPageSize, "a first page, not the whole folder")
+        XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
+        XCTAssertEqual(viewModel.navigationStack.last?.folderId, 77)
+        XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .editor)
+    }
+
+    func testAShareLinksFolderWithoutDetails_OpensOnTheV1RouteAsBefore() {
+        let viewModel = LinkedSharedFilesViewModel()
+        openLinkedFolder(details: nil, in: viewModel)
+        XCTAssertEqual(viewModel.v1Entries, 1)
+    }
+
+    func testDetailsForAnotherFolderLink_AreNotUsed() {
+        let viewModel = LinkedSharedFilesViewModel()
+        openLinkedFolder(details: FolderV2Data(folderId: "77", folderLinkId: "999", accessRole: "owner"), in: viewModel)
+        XCTAssertEqual(viewModel.v1Entries, 1, "the details must name the folder link being opened")
+    }
+
+    func testDetailsWithoutARole_FailClosedToViewer() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page([1, 2], nextCursor: nil)]
+
+        openLinkedFolder(details: FolderV2Data(folderId: "77", folderLinkId: "11"), in: viewModel)
+
+        XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .viewer)
+        XCTAssertFalse(viewModel.navigationStack.last?.permissions.contains(.edit) ?? true)
     }
 
     func testTheShareListSkeleton_HasNoSortHeader() {

@@ -67,6 +67,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
 
     @objc private func onReachabilityChanged() {
         updateNetworkDependentButtons()
+        if ReachabilityManager.shared.isConnected { loadNextPageIfNearLastLoadedFile(retryingFailedPage: true) }
     }
 
     /// Details (info) shows record-backed metadata and the share menu performs network
@@ -115,11 +116,15 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     }
 
     /// The folder behind the pager loads in pages, so nearing its last loaded file asks for the next one.
-    private func loadNextPageIfNearLastLoadedFile() {
+    /// A failed page is asked again only on a swipe or a reconnect, so a failure never retries itself in a loop.
+    private func loadNextPageIfNearLastLoadedFile(retryingFailedPage: Bool = false) {
         let files = filteredFiles
-        guard let viewModel, viewModel.childrenPagingState == .loadingMore,
-              let index = files.firstIndex(of: currentFile), index >= files.count - 3 else { return }
-        viewModel.loadNextChildrenPage { _ in }
+        guard let viewModel, let index = files.firstIndex(of: currentFile), index >= files.count - 3 else { return }
+        switch viewModel.childrenPagingState {
+        case .loadingMore: viewModel.loadNextChildrenPage { _ in }
+        case .failed where retryingFailedPage: viewModel.retryNextChildrenPage { _ in }
+        default: break
+        }
     }
 
     /// The pager keeps the "no next page" it was given until its pages are set again, which a swipe must not see.
@@ -230,7 +235,7 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             currentFile = nextFile
             
             navigationController?.setNavigationBarHidden(false, animated: true)
-            loadNextPageIfNearLastLoadedFile()
+            loadNextPageIfNearLastLoadedFile(retryingFailedPage: true)
         }
         if needsPagesReset { resetPages() }
     }

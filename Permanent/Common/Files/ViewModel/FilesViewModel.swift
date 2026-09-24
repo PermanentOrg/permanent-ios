@@ -61,6 +61,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
         didSet {
             if navigationStack.isEmpty {
                 listedFolderId = nil
+                // A listing of the folder just left must not land on the share list or the search results.
+                childrenFetchGeneration += 1
+                isFetchingFirstPage = false
                 resetChildrenPaging()
             }
         }

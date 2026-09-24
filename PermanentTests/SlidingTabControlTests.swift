@@ -62,6 +62,13 @@ final class SlidingTabControlTests: XCTestCase {
         XCTAssertTrue(try tab("Shared With Me", in: control).accessibilityTraits.contains(.button))
     }
 
+    func testVoiceOver_HearsEachTabsPosition() throws {
+        let control = makeControl()
+
+        XCTAssertEqual(try tab("Shared By Me", in: control).accessibilityValue, "1 of 2")
+        XCTAssertEqual(try tab("Shared With Me", in: control).accessibilityValue, "2 of 2")
+    }
+
     func testNoTabBarTrait_SoUITestsFindEachTabOnce() {
         // Under a tab-bar trait the button's own label also reads as a button.
         XCTAssertFalse(makeControl().accessibilityTraits.contains(.tabBar))

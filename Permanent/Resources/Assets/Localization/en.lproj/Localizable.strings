@@ -212,3 +212,4 @@
 "FileCountOther" = "%d Files";
 "LoadingItems" = "Loading items";
 "LoadingMoreItems" = "Loading more items";
+"TabPosition" = "%1$d of %2$d";

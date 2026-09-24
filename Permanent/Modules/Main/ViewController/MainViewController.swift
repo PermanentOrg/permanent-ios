@@ -1208,6 +1208,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
            destination.folderId == viewModel.currentFolder?.folderId {
             floatingActionIsland?.showActivityIndicator()
             viewModel.listWholeFolder { [weak self] _ in
+                self?.refreshCollectionView()
                 self?.relocate(files: files, to: destination, destinationListedWhole: true)
             }
             return

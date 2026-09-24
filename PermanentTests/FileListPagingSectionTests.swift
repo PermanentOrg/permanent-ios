@@ -101,11 +101,14 @@ final class FileListPagingSectionTests: XCTestCase {
         let viewModel = makeViewModel(responses: [page([1, 2, 3], nextCursor: "3")])
         let section = makeSection(for: viewModel)
 
-        viewModel.viewModels.removeAll()
-        XCTAssertEqual(section.footerContent, .hidden, "an empty folder shows its empty view instead")
-
+        // Rows still loaded, so only the folder check can hide the counts.
+        let folderStack = viewModel.navigationStack
         viewModel.navigationStack.removeAll()
         XCTAssertEqual(section.footerContent, .hidden, "the share list and search results are not a folder")
+
+        viewModel.navigationStack = folderStack
+        viewModel.viewModels.removeAll()
+        XCTAssertEqual(section.footerContent, .hidden, "an empty folder shows its empty view instead")
     }
 
     func testSkeletonsComingIntoView_LoadTheNextPageOnlyWhileOneIsDue() {

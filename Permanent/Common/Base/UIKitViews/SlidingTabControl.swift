@@ -151,6 +151,8 @@ final class SlidingTabControl: UIControl {
     private func updateSelectedTraits() {
         for (index, tab) in tabs.enumerated() {
             tab.accessibilityTraits = index == selectedSegmentIndex ? [.button, .selected] : .button
+            // The position a segmented control reads out, such as "1 of 2".
+            tab.accessibilityValue = String(format: "TabPosition".localized(), index + 1, tabs.count)
         }
     }
 
