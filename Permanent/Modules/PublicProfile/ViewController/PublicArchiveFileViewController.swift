@@ -335,8 +335,8 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
         
-        cell.rightButtonTapAction = { _ in
-            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
+        cell.rightButtonTapAction = { [weak self] _ in
+            self?.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
         }
         
         return cell

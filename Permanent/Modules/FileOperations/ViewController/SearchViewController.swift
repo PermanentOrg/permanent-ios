@@ -312,8 +312,8 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
             let file = viewModel.fileForRowAt(indexPath: indexPath)
             newCell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: false, isSearchCell: true)
             
-            newCell.rightButtonTapAction = { _ in
-                self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
+            newCell.rightButtonTapAction = { [weak self] _ in
+                self?.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
             }
             
             cell = newCell

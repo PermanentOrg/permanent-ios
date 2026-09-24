@@ -1336,8 +1336,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         let pendingInvitationCount = pendingInvitationBadgeCount(for: file)
         cell.setMoreButtonBadgeCount(cell.moreButton.isHidden ? 0 : pendingInvitationCount)
         
-        cell.rightButtonTapAction = { _ in
-            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
+        // Weak, or the cells the list keeps would keep this screen alive after it is replaced.
+        cell.rightButtonTapAction = { [weak self] _ in
+            self?.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
         }
         
         return cell

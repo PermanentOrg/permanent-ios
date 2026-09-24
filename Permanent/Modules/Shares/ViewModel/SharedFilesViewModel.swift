@@ -74,9 +74,12 @@ class SharedFilesViewModel: FilesViewModel {
             return super.navigateMin(params: params, backNavigation: backNavigation, then: handler)
         }
         linkedFolderId = nil
+        let generation = listingGeneration
         resolveLinkedFolder(folderId: folderId, params: params) { [weak self] target in
             guard let self else { return handler(.error(message: .errorMessage)) }
-            // Without the details the folder opens on the V1 route, listed whole, as before.
+            // A tab or archive switch meanwhile replaced the list, so the entry ends quietly.
+            guard generation == self.listingGeneration else { return handler(.success) }
+            // Without the details the folder opens on the V1 route, which lists it whole.
             self.v2NavigationTarget = target
             self.enterFolder(params: params, then: handler)
         }
@@ -99,14 +102,24 @@ class SharedFilesViewModel: FilesViewModel {
         }
         request(String(folderId)) { [weak self] folder in
             DispatchQueue.main.async {
-                guard let self, let folder, folder.folderLinkId.flatMap(Int.init) == params.folderLinkId else { return completion(nil) }
-                // The same role and permissions the V1 entry takes from the folder, failing closed to viewer.
-                let role = folder.accessRole ?? AccessRole.viewer.apiValue
+                guard let self, let folder, folder.folderLinkId.flatMap(Int.init) == params.folderLinkId,
+                      let role = self.linkedFolderRole(folder) else { return completion(nil) }
                 let permissions = Array(Set(self.archivePermissions).intersection(ArchiveVOData.permissions(forAccessRole: role)))
                 completion(FileModel(model: folder, fallbackArchiveNo: params.archiveNo, permissions: permissions,
                                      accessRole: AccessRole.roleForValue(role)))
             }
         }
+    }
+
+    /// Stela's top-level role is the account's best across its archives, where V1 gives the selected archive's.
+    /// So only the selected archive's own folder takes it; any other takes that archive's approved share.
+    private func linkedFolderRole(_ folder: FolderV2Data) -> String? {
+        guard let archiveId = currentArchive?.archiveID.map(String.init) else { return nil }
+        if folder.archive?.id == archiveId { return folder.accessRole ?? AccessRole.viewer.apiValue }
+        let approved = folder.shares?.first { share in
+            share.archive?.archiveId == archiveId && (share.status == ArchiveVOData.Status.ok.rawValue || share.status == "ok")
+        }
+        return approved?.accessRole
     }
 
     /// A share list landed while a folder was on screen or on its way, so it waits in the caches.

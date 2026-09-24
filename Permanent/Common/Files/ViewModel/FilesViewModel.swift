@@ -77,6 +77,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Monotonic id of the newest folder listing, a V2 fetch or a V1 leg. A superseded listing commits nothing:
     /// V2 reports `.superseded` (see `getFolderChildrenV2`), V1 completes quietly (see `isCurrentListing`).
     private var childrenFetchGeneration = 0
+    /// Lets work that runs before a listing starts see whether the list was replaced meanwhile.
+    var listingGeneration: Int { childrenFetchGeneration }
 
     /// Injection seam for the V2 children fetch. Tests pin the supersede/retry policy in
     /// `navigateV2` by returning outcomes, with no network.

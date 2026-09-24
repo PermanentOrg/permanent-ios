@@ -549,13 +549,24 @@ final class FilesViewModelPagingTests: XCTestCase {
         XCTAssertTrue(viewModel.showsShareList)
     }
 
-    /// Records whether the V1 route ran, without the network.
+    /// Records whether the V1 route ran, without the network, with archive 1 selected and owned.
     private final class LinkedSharedFilesViewModel: SharedFilesViewModel {
         var v1Entries = 0
+        override var currentArchive: ArchiveVOData? { ArchiveVOData.mock() }
+        override var archivePermissions: [Permission] { ArchiveVOData.permissions(forAccessRole: "owner") }
         override func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
             v1Entries += 1
             handler(.success)
         }
+    }
+
+    /// Folder 77 on folder link 11, as Stela describes it; `extra` adds fields such as a role or shares.
+    private func folderDetails(archiveId: String = "1", _ extra: String = "") -> FolderV2Data {
+        let json = """
+        { "items": [ { "folderId": "77", "displayName": "Trips", "folderLinkId": "11", "sort": "date-descending",
+          "archive": { "id": "\(archiveId)", "name": "Family" }\(extra) } ] }
+        """
+        return try! FolderV2Response.decoder.decode(FolderV2Response.self, from: Data(json.utf8)).items![0]
     }
 
     private func openLinkedFolder(details: FolderV2Data?, in viewModel: LinkedSharedFilesViewModel) {
@@ -575,16 +586,38 @@ final class FilesViewModelPagingTests: XCTestCase {
         server.attach(to: viewModel)
         server.responses = [page(Array(1...10), nextCursor: "10")]
 
-        openLinkedFolder(details: FolderV2Data(folderId: "77", displayName: "Trips", folderLinkId: "11", accessRole: "editor"), in: viewModel)
+        openLinkedFolder(details: folderDetails(#", "accessRole": "editor""#), in: viewModel)
 
         XCTAssertEqual(viewModel.v1Entries, 0)
         XCTAssertEqual(server.requests.first?.pageSize, FilesViewModel.childrenPageSize, "a first page, not the whole folder")
         XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
         XCTAssertEqual(viewModel.navigationStack.last?.folderId, 77)
         XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .editor)
+        XCTAssertEqual(Set(viewModel.navigationStack.last?.permissions ?? []), Set(ArchiveVOData.permissions(forAccessRole: "editor")))
     }
 
-    func testAShareLinksFolderWithoutDetails_OpensOnTheV1RouteAsBefore() {
+    func testAnotherArchivesFolder_TakesTheSelectedArchivesShareNotTheAccountsBestRole() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page([1, 2], nextCursor: nil)]
+        // The account owns the folder's archive 3 too, but archive 1 holds only a viewer share.
+        let shares = #", "accessRole": "owner", "shares": [ { "id": "9", "accessRole": "access.role.viewer", "status": "status.generic.ok", "archive": { "id": "1" } } ]"#
+
+        openLinkedFolder(details: folderDetails(archiveId: "3", shares), in: viewModel)
+
+        XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .viewer)
+        XCTAssertEqual(viewModel.navigationStack.last?.permissions, [.read])
+    }
+
+    func testAnotherArchivesFolderWithOnlyAPendingShare_OpensOnTheV1Route() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let shares = #", "accessRole": "owner", "shares": [ { "id": "9", "accessRole": "access.role.editor", "status": "status.generic.pending", "archive": { "id": "1" } } ]"#
+        openLinkedFolder(details: folderDetails(archiveId: "3", shares), in: viewModel)
+        XCTAssertEqual(viewModel.v1Entries, 1)
+    }
+
+    func testAShareLinksFolderWithoutDetails_OpensOnTheV1Route() {
         let viewModel = LinkedSharedFilesViewModel()
         openLinkedFolder(details: nil, in: viewModel)
         XCTAssertEqual(viewModel.v1Entries, 1)
@@ -592,20 +625,41 @@ final class FilesViewModelPagingTests: XCTestCase {
 
     func testDetailsForAnotherFolderLink_AreNotUsed() {
         let viewModel = LinkedSharedFilesViewModel()
-        openLinkedFolder(details: FolderV2Data(folderId: "77", folderLinkId: "999", accessRole: "owner"), in: viewModel)
+        openLinkedFolder(details: FolderV2Data(folderId: "77", folderLinkId: "999", sort: "date-descending", accessRole: "owner"), in: viewModel)
         XCTAssertEqual(viewModel.v1Entries, 1, "the details must name the folder link being opened")
     }
 
-    func testDetailsWithoutARole_FailClosedToViewer() {
+    func testTheSelectedArchivesFolderWithoutARole_FailsClosedToViewer() {
         let viewModel = LinkedSharedFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
         server.responses = [page([1, 2], nextCursor: nil)]
 
-        openLinkedFolder(details: FolderV2Data(folderId: "77", folderLinkId: "11"), in: viewModel)
+        openLinkedFolder(details: folderDetails(), in: viewModel)
 
         XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .viewer)
-        XCTAssertFalse(viewModel.navigationStack.last?.permissions.contains(.edit) ?? true)
+        XCTAssertEqual(viewModel.navigationStack.last?.permissions, [.read], "an owner archive still grants only what a viewer may do")
+    }
+
+    func testASwitchDuringTheDetailsRequest_EndsTheEntryQuietly() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        viewModel.navigationStack = [makeFolder(folderId: 5)]
+        viewModel.linkedFolderId = 77
+        var answer: ((FolderV2Data?) -> Void)?
+        viewModel.folderV2Request = { _, completion in answer = completion }
+        let done = expectation(description: "entry settled")
+        viewModel.navigateMin(params: navParams, backNavigation: false) { _ in done.fulfill() }
+
+        // A tab or archive switch empties the history while the details are on their way.
+        viewModel.navigationStack.removeAll()
+        answer?(folderDetails(#", "accessRole": "editor""#))
+        wait(for: [done], timeout: 5)
+
+        XCTAssertTrue(server.requests.isEmpty, "no listing of the linked folder starts")
+        XCTAssertEqual(viewModel.v1Entries, 0)
+        XCTAssertTrue(viewModel.navigationStack.isEmpty)
     }
 
     func testTheShareListSkeleton_HasNoSortHeader() {

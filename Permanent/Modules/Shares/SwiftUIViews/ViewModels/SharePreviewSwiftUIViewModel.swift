@@ -160,8 +160,8 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 switch result {
                 case .success(let changed):
                     if changed {
+                        // AuthenticationManager has already announced the archive change.
                         self.needsWorkspaceReload = true
-                        NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
                         self.start()
                         // Don't set isLoading = false here, let loadShareData() handle it
                     } else {
@@ -731,9 +731,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 
                 switch result {
                 case .success(let changed):
-                    if changed {
-                        NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
-                    }
                     
                     // Wait for workspace to reload before dismissing to avoid showing loading state in background
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
