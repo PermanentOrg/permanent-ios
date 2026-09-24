@@ -71,8 +71,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// root). On back/refresh the target is taken from `navigationStack` instead.
     var v2NavigationTarget: FileModel?
 
-    /// Monotonic id of the newest V2 children fetch. Superseded fetches compare against
-    /// it on the main thread and report `.superseded` (see `getFolderChildrenV2`).
+    /// Monotonic id of the newest folder listing, a V2 fetch or a V1 leg. A superseded listing commits nothing:
+    /// V2 reports `.superseded` (see `getFolderChildrenV2`), V1 completes quietly (see `isCurrentListing`).
     private var childrenFetchGeneration = 0
 
     /// Injection seam for the V2 children fetch. Tests pin the supersede/retry policy in
@@ -169,7 +169,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         switch section {
         case FileListType.downloading.rawValue: return .downloads
         case FileListType.uploading.rawValue: return .uploads
-        case FileListType.synced.rawValue: return listingSortTitle
+        // Until root discovery names the folder, the header keeps the sort it has.
+        case FileListType.synced.rawValue: return isLoadingFirstPage && firstPageSort == nil ? activeSortOption.title : listingSortTitle
         default: return "" // We cannot have more than 3 sections.
         }
     }
@@ -184,7 +185,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var queueItemsForCurrentFolder: [FileInfo] {
-        uploadQueue.filter { $0.folder.folderId == navigationStack.last?.folderId }
+        let folder = backPreviewStack != nil ? backPreviewStack?.last : navigationStack.last
+        return uploadQueue.filter { $0.folder.folderId == folder?.folderId }
     }
     
     /// Empty while a folder's first page loads, so the previous folder never shows under the skeleton rows.
@@ -1054,12 +1056,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var isLoadingFirstPage = false {
         didSet {
             guard isLoadingFirstPage else { return }
-            firstPageSort = (v2NavigationTarget ?? currentFolder).map { listingSort(for: $0) }
+            let folder = backPreviewStack != nil ? backPreviewStack?.last : (v2NavigationTarget ?? currentFolder)
+            firstPageSort = folder.map { listingSort(for: $0) }
         }
     }
     /// Nil while the folder being entered is not known yet, as during root discovery.
     private var firstPageSort: SortOption?
-    private var firstPageLoads = 0
+    private(set) var firstPageLoads = 0
 
     /// Loads can overlap, such as an archive switch during a folder entry, so the skeleton ends with the last one.
     func beginFirstPageLoad() {
@@ -1073,6 +1076,34 @@ class FilesViewModel: NSObject, ViewModelInterface {
         firstPageLoads = max(0, firstPageLoads - 1)
         if firstPageLoads == 0 { isLoadingFirstPage = false }
         return firstPageLoads == 0
+    }
+
+    // MARK: - Back swipe preview
+
+    /// The history as it will be once a back swipe lands, while the swipe uncovers the parent's loading look.
+    private var backPreviewStack: [FileModel]?
+    private var backPreviewFolderLinkId: Int?
+
+    /// A first-page load of its own, so a real load can overlap it and the counts stay true.
+    func beginBackPreview() {
+        backPreviewStack = Array(navigationStack.dropLast())
+        backPreviewFolderLinkId = navigationStack.last?.folderLinkId
+        beginFirstPageLoad()
+    }
+
+    /// `true` when no other load is under way, so the folder's own rows come back.
+    @discardableResult
+    func endBackPreview() -> Bool {
+        backPreviewStack = nil
+        backPreviewFolderLinkId = nil
+        return endFirstPageLoad()
+    }
+
+    /// The folder the swipe began in is still on screen, and nothing else is loading.
+    var backPreviewStillApplies: Bool {
+        guard let backPreviewStack else { return false }
+        return firstPageLoads == 1 && navigationStack.count == backPreviewStack.count + 1
+            && navigationStack.last?.folderLinkId == backPreviewFolderLinkId
     }
 
     /// The sort the header names: while a first page loads, the one the folder being entered will list in.

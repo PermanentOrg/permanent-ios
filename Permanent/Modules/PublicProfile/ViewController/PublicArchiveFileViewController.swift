@@ -181,7 +181,8 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
                     self.folderHeader?.show(title: self.viewModel?.currentFolder?.name, showsBack: true)
                     
                     // The linked file can sit on a later page than the first.
-                    self.viewModel?.loadChildrenPages(until: { $0.archiveNo == deeplinkPayload.fileArchiveNbr }) { file in
+                    self.viewModel?.loadChildrenPages(until: { $0.archiveNo == deeplinkPayload.fileArchiveNbr }) { [weak self] file in
+                        guard let self, self.viewIfLoaded?.window != nil else { return }
                         self.refreshCollectionView()
                         if let file { self.presentFileDetails(file: file) }
                     }

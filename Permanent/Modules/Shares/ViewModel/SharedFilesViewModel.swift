@@ -12,7 +12,36 @@ class SharedFilesViewModel: FilesViewModel {
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
 
     /// The share list is on screen: no folder is open and none is being entered.
-    var showsShareList: Bool { navigationStack.isEmpty && !isLoadingFirstPage }
+    var showsShareList: Bool {
+        navigationStack.isEmpty && (!isLoadingFirstPage || (shareListLoads > 0 && firstPageLoads == shareListLoads))
+    }
+
+    /// Share-list loads under skeleton rows. They count as first-page loads, but they are not folder entries.
+    private var shareListLoads = 0
+
+    func beginShareListLoad() {
+        shareListLoads += 1
+        beginFirstPageLoad()
+    }
+
+    /// `true` when this ended the last first-page load under way.
+    @discardableResult
+    func endShareListLoad() -> Bool {
+        shareListLoads = max(0, shareListLoads - 1)
+        return endFirstPageLoad()
+    }
+
+    /// Counted as a share-list load, so a share list that loads under the swipe still counts as on screen.
+    override func beginBackPreview() {
+        shareListLoads += 1
+        super.beginBackPreview()
+    }
+
+    @discardableResult
+    override func endBackPreview() -> Bool {
+        shareListLoads = max(0, shareListLoads - 1)
+        return super.endBackPreview()
+    }
 
     /// The V2 payload carries no per-child accessRole, so each child takes the entered folder's role
     /// intersected with archive permissions. Fails closed to `.viewer`, so it can only under-grant.

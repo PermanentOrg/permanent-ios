@@ -16,6 +16,7 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
     private let shimmerMask = CAShapeLayer()
     private var activeConstraints: [NSLayoutConstraint] = []
     private var isGrid: Bool?
+    private var shimmers = true
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,12 +50,13 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
         contentView.layer.addSublayer(shimmerLayer)
         contentView.layer.masksToBounds = true
 
-        configure(isGrid: false, accessibilityLabel: nil)
+        configure(isGrid: false, accessibilityLabel: nil, shimmers: true)
         NotificationCenter.default.addObserver(self, selector: #selector(updateShimmer), name: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil)
     }
 
     /// A non-nil `accessibilityLabel` makes this placeholder the one VoiceOver reads; the others stay silent.
-    func configure(isGrid: Bool, accessibilityLabel: String?) {
+    func configure(isGrid: Bool, accessibilityLabel: String?, shimmers: Bool = true) {
+        self.shimmers = shimmers
         self.accessibilityLabel = accessibilityLabel
         isAccessibilityElement = accessibilityLabel != nil
         accessibilityElementsHidden = accessibilityLabel == nil
@@ -98,6 +100,9 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        // Standalone layers animate geometry changes by default; the sweep must follow the cell at once.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         shimmerLayer.frame = contentView.bounds
         // The sweep lights the placeholders only, not the row behind them.
         contentView.layoutIfNeeded()
@@ -106,6 +111,7 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
             shapes.append(UIBezierPath(roundedRect: placeholder.frame, cornerRadius: placeholder.layer.cornerRadius))
         }
         shimmerMask.path = shapes.cgPath
+        CATransaction.commit()
         updateShimmer()
     }
 
@@ -116,7 +122,7 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
 
     /// Still under Reduce Motion, and re-added when missing, since reuse or a trip to the background can drop it.
     @objc private func updateShimmer() {
-        guard !UIAccessibility.isReduceMotionEnabled else {
+        guard shimmers, !UIAccessibility.isReduceMotionEnabled else {
             shimmerLayer.removeAnimation(forKey: "shimmer")
             shimmerLayer.isHidden = true
             return

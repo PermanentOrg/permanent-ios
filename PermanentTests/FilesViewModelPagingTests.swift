@@ -486,13 +486,63 @@ final class FilesViewModelPagingTests: XCTestCase {
         XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), SortOption.dateDescending.title)
     }
 
-    func testTheHeaderOverARootSkeleton_WaitsForTheRootToBeKnown() {
+    func testABackPreview_NamesTheParentsSortNotTheChilds() {
+        let viewModel = MyFilesViewModel()
+        viewModel.navigationStack = [makeFolder(folderId: 1, sort: "date-descending"), makeFolder(folderId: 2, sort: nil)]
+
+        viewModel.beginBackPreview()
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), SortOption.dateDescending.title)
+
+        XCTAssertTrue(viewModel.endBackPreview(), "no other load, so the folder's rows come back")
+        XCTAssertFalse(viewModel.isLoadingFirstPage)
+    }
+
+    func testABackPreview_StopsApplyingOnceAnotherLoadOrAnotherFolderTakesOver() {
+        let viewModel = MyFilesViewModel()
+        viewModel.navigationStack = [makeFolder(folderId: 1), makeFolder(folderId: 2)]
+        viewModel.beginBackPreview()
+        XCTAssertTrue(viewModel.backPreviewStillApplies)
+
+        viewModel.beginFirstPageLoad()
+        XCTAssertFalse(viewModel.backPreviewStillApplies, "a load started under the finger")
+        viewModel.endFirstPageLoad()
+        XCTAssertTrue(viewModel.backPreviewStillApplies)
+
+        viewModel.navigationStack.removeLast()
+        XCTAssertFalse(viewModel.backPreviewStillApplies, "the folder the swipe began in has gone")
+        viewModel.endBackPreview()
+        XCTAssertFalse(viewModel.backPreviewStillApplies)
+    }
+
+    func testASharesBackPreview_LetsAShareListThatLoadsUnderItShow() {
+        let viewModel = SharedFilesViewModel()
+        viewModel.navigationStack = [makeFolder(folderId: 1)]
+        viewModel.beginBackPreview()
+
+        // An archive switch empties the history and reloads the share list while the finger is down.
+        viewModel.navigationStack.removeAll()
+        viewModel.beginShareListLoad()
+        XCTAssertTrue(viewModel.showsShareList)
+
+        viewModel.endBackPreview()
+        XCTAssertTrue(viewModel.showsShareList)
+    }
+
+    func testTheShareListSkeleton_HasNoSortHeader() {
+        let viewModel = SharedFilesViewModel()
+        viewModel.beginShareListLoad()
+
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), "")
+    }
+
+    func testTheHeaderOverARootSkeleton_KeepsTheCurrentSortUntilTheRootNamesItsOwn() {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
         server.holdsNextRequest = true
+        viewModel.activeSortOption = .dateAscending
         viewModel.beginFirstPageLoad()
-        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), "", "no folder yet, so no sort to name")
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), SortOption.dateAscending.title, "no folder yet, so the current sort stays")
 
         let told = expectation(forNotification: FilesViewModel.childrenDidChangeNotification, object: viewModel)
         viewModel.v2NavigationTarget = makeFolder(sort: "date-descending")
@@ -600,7 +650,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         var status: RequestStatus?
         viewModel.listV1Folder(entering: entered, folderId: 30, savedSort: .dateDescending, params: ("0001-test", [1, 2], 11)) { status = $0 }
 
-        XCTAssertNotEqual(status, .success)
+        XCTAssertEqual(status, .error(message: "offline"))
         XCTAssertTrue(viewModel.navigationStack.isEmpty, "the folder on screen stays the current folder")
         XCTAssertEqual(viewModel.activeSortOption, .nameAscending)
     }
@@ -625,6 +675,21 @@ final class FilesViewModelPagingTests: XCTestCase {
         viewModel.isLoadingFirstPage = false
         viewModel.navigationStack = [makeFolder()]
         XCTAssertFalse(viewModel.showsShareList)
+    }
+
+    func testTheShareListLoadingUnderItsOwnSkeleton_StillShows() {
+        let viewModel = SharedFilesViewModel()
+
+        viewModel.beginShareListLoad()
+        XCTAssertTrue(viewModel.isLoadingFirstPage)
+        XCTAssertTrue(viewModel.showsShareList, "the share list's own skeleton does not hold it back")
+
+        viewModel.beginFirstPageLoad()
+        XCTAssertFalse(viewModel.showsShareList, "a folder being entered at the same time wins")
+
+        viewModel.endFirstPageLoad()
+        XCTAssertTrue(viewModel.endShareListLoad())
+        XCTAssertFalse(viewModel.isLoadingFirstPage)
     }
 
     // MARK: - Late V1 replies

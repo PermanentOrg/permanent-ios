@@ -36,13 +36,18 @@ final class FileListPagingSection {
         let center = NotificationCenter.default
         observers.append(center.addObserver(forName: FilesViewModel.childrenDidChangeNotification, object: nil, queue: .main) { [weak self] notification in
             guard let self, let viewModel = self.viewModel(), notification.object as? FilesViewModel === viewModel else { return }
+            let focusWasOnPlaceholder = UIAccessibility.focusedElement(using: .notificationVoiceOver) is FileSkeletonCollectionViewCell
             self.onChange()
             if let firstNewChild = notification.userInfo?[FilesViewModel.firstNewChildKey] as? Int {
                 self.fadeInRows(from: firstNewChild)
+                // The first new row takes the placeholder's place, so VoiceOver carries on from there.
+                if focusWasOnPlaceholder {
+                    self.moveAccessibilityFocus(to: self.collectionView?.cellForItem(at: IndexPath(item: firstNewChild, section: self.sectionIndex - 1)))
+                }
             }
             // After the redraw, so focus lands on the error and its retry button instead of a row that went silent.
             if viewModel.childrenPagingState == .failed, !viewModel.isLoadingFirstPage {
-                self.moveAccessibilityFocus(to: self.visibleFooter)
+                self.showFooterToVoiceOver()
             }
         })
         observers.append(center.addObserver(forName: UIContentSizeCategory.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
@@ -75,7 +80,9 @@ final class FileListPagingSection {
         }
         // One placeholder speaks for the rest, so VoiceOver can tell the list goes on.
         let label = indexPath.item == 0 ? accessibilityLabelForSkeleton : nil
-        cell.configure(isGrid: isGrid, accessibilityLabel: label)
+        // Under the retry footer nothing is loading, so the placeholders hold still.
+        let isLoading = viewModel().map { $0.isLoadingFirstPage || $0.childrenPagingState == .loadingMore } ?? false
+        cell.configure(isGrid: isGrid, accessibilityLabel: label, shimmers: isLoading)
         return cell
     }
 
@@ -111,6 +118,17 @@ final class FileListPagingSection {
         onChange()
         // The focused retry button is gone now; the first placeholder says more is loading.
         moveAccessibilityFocus(to: collectionView?.cellForItem(at: IndexPath(item: 0, section: sectionIndex)))
+    }
+
+    /// The footer sits under the placeholders and is often off screen when a page fails, so it is scrolled in first.
+    private func showFooterToVoiceOver() {
+        guard UIAccessibility.isVoiceOverRunning, let collectionView else { return }
+        collectionView.layoutIfNeeded()
+        let footerPath = IndexPath(item: 0, section: sectionIndex)
+        if let frame = collectionView.layoutAttributesForSupplementaryElement(ofKind: UICollectionView.elementKindSectionFooter, at: footerPath)?.frame {
+            collectionView.scrollRectToVisible(frame, animated: false)
+        }
+        moveAccessibilityFocus(to: visibleFooter)
     }
 
     private var visibleFooter: UIView? {

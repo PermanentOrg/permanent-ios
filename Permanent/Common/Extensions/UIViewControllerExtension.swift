@@ -49,6 +49,8 @@ extension UIViewController {
         spinnerView = overlay
     }
 
+    var isShowingSpinner: Bool { spinnerView != nil }
+
     func hideSpinner() {
         guard let overlay = spinnerView else { return }
         spinnerView = nil

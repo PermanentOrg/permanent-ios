@@ -56,6 +56,13 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
 
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .filePreviewVMDidSaveData, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onReachabilityChanged), name: ReachabilityManager.reachabilityDidChangeNotifName, object: nil)
+        // Pages can land from the list behind the pager too, not only from requests the pager makes.
+        NotificationCenter.default.addObserver(self, selector: #selector(childrenDidChange), name: FilesViewModel.childrenDidChangeNotification, object: viewModel)
+    }
+
+    @objc private func childrenDidChange() {
+        resetPages()
+        loadNextPageIfNearLastLoadedFile()
     }
 
     @objc private func onReachabilityChanged() {
@@ -112,11 +119,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         let files = filteredFiles
         guard let viewModel, viewModel.childrenPagingState == .loadingMore,
               let index = files.firstIndex(of: currentFile), index >= files.count - 3 else { return }
-        viewModel.loadNextChildrenPage { [weak self] changed in
-            guard changed, let self, self.viewModel?.childrenPagingState != .failed else { return }
-            self.resetPages()
-            self.loadNextPageIfNearLastLoadedFile()
-        }
+        viewModel.loadNextChildrenPage { _ in }
     }
 
     /// The pager keeps the "no next page" it was given until its pages are set again, which a swipe must not see.

@@ -65,10 +65,6 @@ class SearchFilesViewModel: FilesViewModel {
         }
     }
     
-    override var shouldDisplayBackgroundView: Bool {
-        !isLoadingFirstPage && childrenPagingState == .complete && syncedViewModels.isEmpty && uploadQueue.isEmpty
-    }
-    
     override var numberOfSections: Int {
         2
     }

@@ -18,7 +18,7 @@ class FileDetailsPage {
         app.buttons["fileDetailsShareButton"]
     }
     var segmentedControl: XCUIElement {
-        app.segmentedControls["fileDetailsSegmentedControl"]
+        app.descendants(matching: .any)["fileDetailsSegmentedControl"]
     }
     var infoSegment: XCUIElement {
         segmentedControl.buttons["Info"]

@@ -770,17 +770,64 @@ final class MainViewControllerTests: XCTestCase {
         let (vc, answer) = makeSkeletonTestController()
         let viewCount = vc.view.subviews.count
 
+        vc.viewModel?.activeSortOption = .dateAscending
         vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: false)
 
         XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, true)
         XCTAssertEqual(vc.view.subviews.count, viewCount + 1, "a clear view holds touches, as the spinner did")
         XCTAssertEqual(vc.collectionView(vc.collectionView, layout: vc.collectionView.collectionViewLayout, referenceSizeForHeaderInSection: FileListType.synced.rawValue).height, 40,
                        "the sort header stays over the skeleton")
+        XCTAssertEqual(vc.viewModel?.title(forSection: FileListType.synced.rawValue), SortOption.dateAscending.title,
+                       "before the folder is known, the header keeps the current sort")
 
         answer()?(.success)
 
         XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, false)
         XCTAssertEqual(vc.view.subviews.count, viewCount)
+    }
+
+    func testTheBackSwipe_WorksOnlyWhereTheBackArrowCouldBeTapped() throws {
+        let (vc, _) = makeSkeletonTestController()
+        let viewModel = try XCTUnwrap(vc.viewModel)
+        viewModel.navigationStack = [makeFolder(name: "Root", folderLinkId: 1), makeFolder(name: "Trips", folderLinkId: 2)]
+        vc.backButton.isHidden = false
+        XCTAssertTrue(vc.canSwipeBack)
+
+        viewModel.isSelecting = true
+        XCTAssertFalse(vc.canSwipeBack, "not while files are being selected")
+        viewModel.isSelecting = false
+
+        vc.backButton.isUserInteractionEnabled = false
+        XCTAssertFalse(vc.canSwipeBack, "not while the arrow is disabled")
+        vc.backButton.isUserInteractionEnabled = true
+
+        vc.showSpinner()
+        XCTAssertFalse(vc.canSwipeBack, "not while the spinner covers the arrow")
+        vc.hideSpinner()
+        XCTAssertTrue(vc.canSwipeBack)
+
+        viewModel.navigationStack.removeLast()
+        XCTAssertFalse(vc.canSwipeBack, "the root has nowhere to go back to")
+    }
+
+    func testTheVoiceOverEscapeGesture_GoesUpAFolderLikeTheArrow() throws {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewModel = try XCTUnwrap(vc.viewModel)
+        viewModel.navigationStack = [
+            makeFolder(name: "Root", folderLinkId: 1), makeFolder(name: "Trips", folderLinkId: 2), makeFolder(name: "2024", folderLinkId: 3)
+        ]
+        vc.backButton.isHidden = false
+
+        XCTAssertTrue(vc.accessibilityPerformEscape())
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderLinkId), [1, 2])
+        XCTAssertEqual(viewModel.isLoadingFirstPage, true, "the parent loads under skeleton rows")
+
+        XCTAssertTrue(vc.accessibilityPerformEscape(), "a busy folder keeps the gesture, so no sheet around the list closes")
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderLinkId), [1, 2], "and does not go back again")
+        answer()?(.success)
+
+        viewModel.navigationStack.removeLast()
+        XCTAssertFalse(vc.accessibilityPerformEscape(), "at the root the gesture is left to the system")
     }
 
     func testAFailedFolderEntry_BringsThePreviousRowsBack() {

@@ -174,7 +174,7 @@ final class SharesViewControllerTests: XCTestCase {
         let backButton = UIButton(type: .system)
         let fabView = FABView(frame: .zero)
         let bottomView = BottomActionSheet(frame: .zero)
-        let segmented = UISegmentedControl(items: ["A", "B"])
+        let segmented = SlidingTabControl()
 
         vm.fileAction = .move
         vm.selectedFiles = [makeFile(name: "X", folderLinkId: 203)]
@@ -239,6 +239,21 @@ final class SharesViewControllerTests: XCTestCase {
         }
         vc.backButtonAction(UIButton(type: .system))
         XCTAssertTrue(didCallGetShares)
+    }
+
+    func testBackToTheShareList_LoadsItUnderSkeletonRows() throws {
+        let vc = makeController()
+        let vm = try XCTUnwrap(vc.viewModel)
+        vm.navigationStack = [makeFolder(name: "Root", folderLinkId: 910)]
+        var pending: ((RequestStatus) -> Void)?
+        vc.getSharesRequest = { completion in pending = completion }
+
+        vc.backButtonAction(UIButton(type: .system))
+
+        XCTAssertTrue(vm.isLoadingFirstPage, "skeleton rows, not the spinner")
+        XCTAssertEqual(vc.directoryLabel.text, "Shares".localized())
+        pending?(.success)
+        XCTAssertFalse(vm.isLoadingFirstPage)
     }
 
     func testBackButtonActionWithMoveAtRootShowsCancelMoveDialog() throws {
@@ -528,7 +543,7 @@ final class SharesViewControllerTests: XCTestCase {
         let rootView = UIView(frame: .init(x: 0, y: 0, width: 390, height: 844))
         let directoryLabel = UILabel()
         let backButton = UIButton(type: .system)
-        let segmentedControl = UISegmentedControl(items: ["A", "B"])
+        let segmentedControl = SlidingTabControl()
         let collectionView = makeCollectionView()
         let switchViewButton = UIButton(type: .system)
         let fileActionBottomView = BottomActionSheet(frame: .zero)

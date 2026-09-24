@@ -33,6 +33,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }()
     /// How the last folder load ended, for flows that changed the header before it landed; nil while one runs.
     private var lastFolderLoadStatus: RequestStatus?
+    private var backSwipe: FolderBackSwipe?
     private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
@@ -53,6 +54,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         initUI()
         setupCollectionView()
         setupBottomActionSheet()
+        setUpBackSwipe()
 
         fabView.delegate = self
 
@@ -305,7 +307,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func refreshCollectionView() {
         handleTableBackgroundView()
         pagingSection.prepareForReload()
-        collectionView.reloadData()
+        reloadFadingSortTitle()
         #if DEBUG
         // Surface which navigation path served the current listing so UI parity tests can
         // confirm a "V2" run actually used Stela (not the silent V1 failsafe). DEBUG-only.
@@ -313,6 +315,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         #endif
     }
     
+    /// The server can name another sort than the one shown, as when root discovery finds the root's own.
+    /// A reload can hand the header view to another section, so the fade waits to see where it landed.
+    private func reloadFadingSortTitle() {
+        let headerBefore = visibleSortHeader
+        let titleChanges = headerBefore.map { $0.leftButtonTitle != viewModel?.title(forSection: FileListType.synced.rawValue) } ?? false
+        collectionView.reloadData()
+        guard titleChanges, let headerBefore else { return }
+        collectionView.layoutIfNeeded()
+        if visibleSortHeader === headerBefore { headerBefore.fadeInChange() }
+    }
+
+    private var visibleSortHeader: FileCollectionViewHeaderCell? {
+        let path = IndexPath(item: 0, section: FileListType.synced.rawValue)
+        return collectionView?.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: path) as? FileCollectionViewHeaderCell
+    }
+
     func handleTableBackgroundView() {
         guard viewModel?.shouldDisplayBackgroundView == false else {
             let emptyView = EmptyFolderView(title: .emptyFolderMessage, image: .emptyFolder)
@@ -543,6 +561,70 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         dismiss(animated: true, completion: nil)
     }
     
+    // MARK: - Back swipe
+
+    private func setUpBackSwipe() {
+        backSwipe = FolderBackSwipe(list: collectionView, in: view, handlers: .init(
+            canGoBack: { [weak self] in self?.canSwipeBack ?? false },
+            showParentPreview: { [weak self] in self?.showBackPreview() },
+            previewStillApplies: { [weak self] in self?.viewModel?.backPreviewStillApplies ?? false },
+            endParentPreview: { [weak self] in self?.endBackPreview() ?? false },
+            goBack: { [weak self] in
+                guard let self else { return }
+                self.backButtonAction(self.backButton)
+            }
+        ))
+    }
+
+    /// The back swipe and the VoiceOver escape gesture work only when the back arrow could be tapped.
+    var canSwipeBack: Bool {
+        guard let viewModel, !viewModel.isSelecting, !viewModel.isLoadingFirstPage, viewModel.navigationStack.count > 1,
+              !isShowingPopup else { return false }
+        return folderHeader?.current.showsBack == true && backButton.isUserInteractionEnabled
+    }
+
+    /// The spinner, a dialog or the sort sheet covers the back arrow from inside this view.
+    private var isShowingPopup: Bool {
+        isShowingSpinner || actionDialog?.superview != nil || sortActionSheet?.superview != nil
+    }
+
+    override func accessibilityPerformEscape() -> Bool {
+        // An open popup closes first, as the gesture closes a system one.
+        if let sortActionSheet, sortActionSheet.superview != nil {
+            sortActionSheet.dismiss()
+            return true
+        }
+        if let actionDialog, actionDialog.superview != nil {
+            actionDialog.dismiss()
+            return true
+        }
+        // Only the root lets the gesture through, so a busy folder never closes the sheet this list sits in.
+        guard let viewModel, viewModel.navigationStack.count > 1 else { return false }
+        if canSwipeBack {
+            backButtonAction(backButton)
+            UIAccessibility.post(notification: .screenChanged, argument: directoryLabel)
+        }
+        return true
+    }
+
+    /// The skeleton rows the parent folder will load under, shown before the swipe decides.
+    private func showBackPreview() {
+        viewModel?.beginBackPreview()
+        refreshCollectionView()
+        let inset = collectionView.adjustedContentInset
+        collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
+    }
+
+    /// `true` when the folder's own rows came back.
+    private func endBackPreview() -> Bool {
+        guard let viewModel else { return false }
+        // With no load of its own left, nothing may go on holding touches.
+        let rowsBack = viewModel.endBackPreview()
+        if rowsBack { hideTouchBlocker() }
+        refreshCollectionView()
+        return rowsBack
+    }
+
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard

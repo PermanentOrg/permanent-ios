@@ -13,7 +13,7 @@ import MobileCoreServices
 class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
-    @IBOutlet var segmentedControl: UISegmentedControl!
+    @IBOutlet var segmentedControl: SlidingTabControl!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var switchViewButton: UIButton!
     private let refreshControl = UIRefreshControl()
@@ -53,6 +53,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }()
     /// How the last folder load ended, for flows that changed the header before it landed; nil while one runs.
     private var lastFolderLoadStatus: RequestStatus?
+    private var backSwipe: FolderBackSwipe?
+    private var backPreviewIsShareList = false
     private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
     private var sharesRefreshRequestId = UUID()
     /// Archive whose share list is loading right now, nil once it lands. A second fetch for the same archive
@@ -71,6 +73,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         configureUI()
         setupCollectionView()
         setupBottomActionSheet()
+        setUpBackSwipe()
         
         fabView.delegate = self
         
@@ -227,19 +230,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         navigationItem.title = .shares
         view.backgroundColor = .backgroundPrimary
         
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style11.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.font: TextFontStyle.style8.font], for: .normal)
-        segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
-        segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
+        segmentedControl.titles = [.sharedByMe, .sharedWithMe]
         
         if let listType = ShareListType(rawValue: selectedIndex) {
             segmentedControl.selectedSegmentIndex = selectedIndex
             viewModel?.shareListType = listType
         }
-        segmentedControl.selectedSegmentTintColor = .primary
         
         directoryLabel.font = TextFontStyle.style3.font
         directoryLabel.textColor = .primary
+        // Over the share list's skeleton, not the storyboard's placeholder name.
+        directoryLabel.text = "Shares".localized()
         backButton.tintColor = .primary
         backButton.isHidden = true
         _ = folderHeader
@@ -640,7 +641,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         viewModel?.invalidateTimer()
     }
     
-    @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+    @IBAction func segmentedControlValueChanged(_ sender: SlidingTabControl) {
         guard let listType = ShareListType(rawValue: sender.selectedSegmentIndex) else {
             return
         }
@@ -656,6 +657,75 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         viewModel?.selectedFiles = []
     }
     
+    // MARK: - Back swipe
+
+    private func setUpBackSwipe() {
+        backSwipe = FolderBackSwipe(list: collectionView, in: view, handlers: .init(
+            canGoBack: { [weak self] in self?.canSwipeBack ?? false },
+            showParentPreview: { [weak self] in self?.showBackPreview() },
+            previewStillApplies: { [weak self] in self?.viewModel?.backPreviewStillApplies ?? false },
+            endParentPreview: { [weak self] in self?.endBackPreview() ?? false },
+            goBack: { [weak self] in
+                guard let self else { return }
+                self.backButtonAction(self.backButton)
+            }
+        ))
+    }
+
+    /// The back swipe and the VoiceOver escape gesture work only when the back arrow could be tapped.
+    var canSwipeBack: Bool {
+        guard let viewModel, !viewModel.isSelecting, !viewModel.isLoadingFirstPage, !viewModel.navigationStack.isEmpty,
+              !isShowingPopup else { return false }
+        // Leaving the shared folder in the middle of a move asks first, so the swipe stays out of it.
+        if viewModel.navigationStack.count == 1 && viewModel.fileAction != .none { return false }
+        return folderHeader?.current.showsBack == true && backButton.isUserInteractionEnabled
+    }
+
+    /// The spinner, a dialog or the sort sheet covers the back arrow from inside this view.
+    private var isShowingPopup: Bool {
+        isShowingSpinner || actionDialog?.superview != nil || sortActionSheet?.superview != nil
+    }
+
+    override func accessibilityPerformEscape() -> Bool {
+        // An open popup closes first, as the gesture closes a system one.
+        if let sortActionSheet, sortActionSheet.superview != nil {
+            sortActionSheet.dismiss()
+            return true
+        }
+        if let actionDialog, actionDialog.superview != nil {
+            actionDialog.dismiss()
+            return true
+        }
+        guard let viewModel, !viewModel.navigationStack.isEmpty else { return false }
+        if canSwipeBack {
+            backButtonAction(backButton)
+            UIAccessibility.post(notification: .screenChanged, argument: directoryLabel)
+        }
+        return true
+    }
+
+    /// The skeleton rows the parent will load under, shown before the swipe decides.
+    private func showBackPreview() {
+        guard let viewModel else { return }
+        // The share list loads without the sort header a folder has.
+        backPreviewIsShareList = viewModel.navigationStack.count == 1
+        viewModel.beginBackPreview()
+        refreshCollectionView()
+        let inset = collectionView.adjustedContentInset
+        collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
+    }
+
+    /// `true` when the folder's own rows came back.
+    private func endBackPreview() -> Bool {
+        backPreviewIsShareList = false
+        guard let viewModel else { return false }
+        // With no load of its own left, nothing may go on holding touches.
+        let rowsBack = viewModel.endBackPreview()
+        if rowsBack { hideTouchBlocker() }
+        refreshCollectionView()
+        return rowsBack
+    }
+
     @IBAction func backButtonAction(_ sender: UIButton) {
         let fileTypeString: String = FileType(rawValue: self.viewModel?.selectedFiles?.first?.type.rawValue ?? "")?.isFolder ?? false ? "folder" : "file"
         if let navigationStackCount = viewModel?.navigationStack.count,
@@ -1257,8 +1327,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 
     fileprivate func getShares(shouldShowSpinner: Bool = true, completion: (() -> Void)? = nil) {
-        if shouldShowSpinner {
-            showSpinner()
+        // The share list loads under skeleton rows, as a folder does.
+        let showsSkeleton = shouldShowSpinner && collectionView != nil
+        if showsSkeleton {
+            setLoadingFirstPage(true, forShareList: true)
         }
         
         fabView.setVisibility(hidden: true)
@@ -1272,35 +1344,53 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         inFlightSharesArchiveId = sessionArchiveId
 
         runRequest({ status in
-            guard self.sharesRefreshRequestId == requestId else { return }
+            // The skeleton stays up for its minimum time, so it fades out rather than flickers.
+            let settle = {
+                if showsSkeleton { self.setLoadingFirstPage(false, forShareList: true) }
+                self.applySharesResult(status, requestId: requestId, redraws: showsSkeleton, then: completion)
+            }
+            showsSkeleton ? self.pagingSection.afterSkeletonMinimumTime(settle) : settle()
+        })
+    }
 
-            self.lastFolderLoadStatus = status
-            self.inFlightSharesArchiveId = nil
-            self.hideSpinner()
-            switch status {
-            case .success:
-                // Stamp what is on screen so the sync can tell whether it still matches the selected archive.
-                // Only on success: a failed refresh leaves the old data up, and lying would suppress the retry.
-                self.loadedArchiveId = self.sessionArchiveId
-                // A folder on screen, or one being entered, keeps its rows; the share list waits in its caches.
-                guard self.viewModel?.showsShareList == true else { break }
-                self.refreshCollectionView {
-                    self.scrollToFileIfNeeded()
-                    
-                    self.folderHeader?.show(title: "Shares".localized(), showsBack: false)
-                    if let rootFolder = self.viewModel?.currentFolderIsRoot, rootFolder {
-                        self.fileActionBottomView.isHidden = true
-                    }
-                }
+    /// `redraws` brings back the rows the skeleton hid when the share list itself is not shown.
+    private func applySharesResult(_ status: RequestStatus, requestId: UUID, redraws: Bool, then completion: (() -> Void)?) {
+        guard self.sharesRefreshRequestId == requestId else {
+            // A newer fetch may have redrawn under this one's skeleton rows, which this settle just ended.
+            if redraws, self.viewModel?.isLoadingFirstPage == false { self.refreshCollectionView() }
+            return
+        }
+
+        self.lastFolderLoadStatus = status
+        self.inFlightSharesArchiveId = nil
+        self.hideSpinner()
+        switch status {
+        case .success:
+            // Stamp what is on screen so the sync can tell whether it still matches the selected archive.
+            // Only on success: a failed refresh leaves the old data up, and lying would suppress the retry.
+            self.loadedArchiveId = self.sessionArchiveId
+            // A folder on screen, or one being entered, keeps its rows; the share list waits in its caches.
+            guard self.viewModel?.showsShareList == true else {
+                if redraws { self.refreshCollectionView() }
+                break
+            }
+            self.refreshCollectionView {
+                self.scrollToFileIfNeeded()
                 
-            case .error(let message):
-                self.showErrorAlert(message: message)
+                self.folderHeader?.show(title: "Shares".localized(), showsBack: false)
+                if let rootFolder = self.viewModel?.currentFolderIsRoot, rootFolder {
+                    self.fileActionBottomView.isHidden = true
+                }
             }
             
-            if let completion = completion {
-                completion()
-            }
-        })
+        case .error(let message):
+            if redraws { self.refreshCollectionView() }
+            self.showErrorAlert(message: message)
+        }
+        
+        if let completion = completion {
+            completion()
+        }
     }
 
     private func download(_ file: FileModel) {
@@ -1556,15 +1646,16 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         return viewModel?.currentFolder?.folderLinkId != folderLinkId
     }
 
-    private func setLoadingFirstPage(_ isLoading: Bool) {
+    /// `forShareList` is the share list itself loading, rather than a folder being entered.
+    private func setLoadingFirstPage(_ isLoading: Bool, forShareList: Bool = false) {
         guard let viewModel else { return }
         guard isLoading else {
-            guard viewModel.endFirstPageLoad() else { return }
+            guard forShareList ? viewModel.endShareListLoad() : viewModel.endFirstPageLoad() else { return }
             hideTouchBlocker()
             if collectionView != nil { pagingSection.skeletonWillDisappear() }
             return
         }
-        viewModel.beginFirstPageLoad()
+        forShareList ? viewModel.beginShareListLoad() : viewModel.beginFirstPageLoad()
         showTouchBlocker()
         guard collectionView != nil else { return }
         pagingSection.skeletonWillAppear()
@@ -1833,6 +1924,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         guard section != pagingSection.sectionIndex else { return .zero }
+        if backPreviewIsShareList && section == FileListType.synced.rawValue { return .zero }
         // The sort header stays over the skeleton rows while a folder's first page loads.
         let showsSortHeader = section == FileListType.synced.rawValue && viewModel?.isLoadingFirstPage == true
         let hasRows = showsSortHeader || viewModel?.numberOfRowsInSection(section) != 0
