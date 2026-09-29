@@ -13,15 +13,31 @@ class AuthenticationManagerTests: XCTestCase {
     var mockAuthRepo: AuthRepository!
     var mockAccountRepo: AccountRepository!
     var mockArchivesRepo: ArchivesRepository!
+    var savedCurrentSession: PermSession?
+    var savedKeychainData: Data?
+    var savedAppNeedUpdate = false
     
     override func setUp() {
         super.setUp()
+        savedCurrentSession = PermSession.currentSession
+        savedKeychainData = SessionKeychainHandler().keychain.getData(SessionKeychainHandler.keychainAuthDataKey)
+        savedAppNeedUpdate = RCValues.appNeedUpdate
+        RCValues.appNeedUpdate = false
     }
     
     override func tearDown() {
         authManager = nil
         mockAuthRepo = nil
         mockAccountRepo = nil
+        
+        let keychain = SessionKeychainHandler().keychain
+        if let savedKeychainData {
+            keychain.set(savedKeychainData, forKey: SessionKeychainHandler.keychainAuthDataKey)
+        } else {
+            keychain.delete(SessionKeychainHandler.keychainAuthDataKey)
+        }
+        PermSession.currentSession = savedCurrentSession
+        RCValues.appNeedUpdate = savedAppNeedUpdate
         
         super.tearDown()
     }
@@ -350,5 +366,51 @@ class AuthenticationManagerTests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
 
+    // MARK: - Saved-session restore
 
+    func testRestoreSavedSessionLoadsTheKeychainSessionWhenNoneIsLoaded() throws {
+        authManager = AuthenticationManager()
+        try authManager.keychainHandler.saveSession(sessionWithAccount(token: "saved"))
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertEqual(authManager.session?.token, "saved")
+        XCTAssertEqual(PermSession.currentSession?.token, "saved")
+    }
+
+    func testRestoreSavedSessionKeepsALoadedSession() throws {
+        authManager = AuthenticationManager()
+        authManager.session = sessionWithAccount(token: "live")
+        try authManager.keychainHandler.saveSession(sessionWithAccount(token: "saved"))
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertEqual(authManager.session?.token, "live")
+    }
+
+    func testRestoreSavedSessionWithNothingSavedLeavesSessionNil() {
+        authManager = AuthenticationManager()
+        authManager.keychainHandler.clearSession()
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertNil(authManager.session)
+    }
+
+    func testRestoreSavedSessionSkipsWhenAnUpdateIsRequired() throws {
+        authManager = AuthenticationManager()
+        try authManager.keychainHandler.saveSession(sessionWithAccount(token: "saved"))
+        RCValues.appNeedUpdate = true
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertNil(authManager.session)
+    }
+
+    /// A saved session decodes only when it carries an account.
+    private func sessionWithAccount(token: String) -> PermSession {
+        let session = PermSession(token: token)
+        session.account = AccountVOData.mock()
+        return session
+    }
 }

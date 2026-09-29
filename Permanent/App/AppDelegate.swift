@@ -69,6 +69,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      handleEventsForBackgroundURLSession identifier: String,
                      completionHandler: @escaping () -> Void) {
         if identifier == BackgroundUploadSessionManager.backgroundSessionIdentifier {
+            // This wake connects no scene, so load the session the post-relaunch registerRecord needs.
+            AuthenticationManager.shared.restoreSavedSessionIfNeeded()
             BackgroundUploadSessionManager.shared.backgroundSessionCompletionHandler = completionHandler
             BackgroundUploadSessionManager.shared.reconnectToExistingSession()
         }

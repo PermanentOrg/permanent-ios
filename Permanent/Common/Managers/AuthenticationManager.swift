@@ -95,6 +95,13 @@ class AuthenticationManager {
         }
     }
     
+    /// Loads the saved session without a network call or a logout, and not once an update is required.
+    /// A background launch can connect no scene, so the root screen's reloadSession never runs there.
+    func restoreSavedSessionIfNeeded() {
+        guard session == nil, !RCValues.appNeedUpdate, let savedSession = try? keychainHandler.savedSession() else { return }
+        session = savedSession
+    }
+    
     func login(withUsername username: String, password: String, then handler: @escaping (LoginStatus) -> Void) {
         logout()
         

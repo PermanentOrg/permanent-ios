@@ -81,6 +81,9 @@ enum BackgroundUploadDrainTask {
             complete(false)
         }
 
+        // With no scene connected, nothing else restores the session, and uploads need its token.
+        DispatchQueue.main.sync { AuthenticationManager.shared.restoreSavedSessionIfNeeded() }
+
         // Kick the queue. UploadOperation wraps each file in its own
         // `beginBackgroundTask`, so per-file work composes within the wake.
         UploadManager.shared.refreshQueue()
