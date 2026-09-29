@@ -148,7 +148,7 @@ class MainFileOperationsUITests: BaseUITestCase {
         privateFilesPage.waitForExistence()
 
         // Create a couple of folders so multi-select has something to act on. The
-        // "aaa_" prefix keeps them at the top of the Name (A-Z) list.
+        // "aaa_" prefix keeps them at the top of the A to Z name order.
         let firstFolder = "aaa_multi_a_\(UUID().uuidString.prefix(6))"
         let secondFolder = "aaa_multi_b_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: firstFolder)

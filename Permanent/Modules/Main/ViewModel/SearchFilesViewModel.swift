@@ -79,8 +79,7 @@ class SearchFilesViewModel: FilesViewModel {
     
     func heightForSection(_ section: Int) -> Double {
         switch section {
-        case 0: return 40
-        case 1: return 40
+        case 0, 1: return Double(FileCollectionViewHeaderCell.height)
         default: return 0
         }
     }

@@ -97,6 +97,43 @@ final class FolderSortViewModelTests: XCTestCase {
         XCTAssertEqual(SortOption.typeDescending.rawValue, 5)
     }
 
+    // MARK: - SortOption wording
+
+    func testSortOption_Titles_NameTheFieldThenTheOrder() {
+        XCTAssertEqual(SortOption.nameAscending.title, "Name  •  A to Z")
+        XCTAssertEqual(SortOption.nameDescending.title, "Name  •  Z to A")
+        XCTAssertEqual(SortOption.dateAscending.title, "Date  •  Oldest first")
+        XCTAssertEqual(SortOption.dateDescending.title, "Date  •  Newest first")
+        XCTAssertEqual(SortOption.typeAscending.title, "Type  •  Ascending")
+        XCTAssertEqual(SortOption.typeDescending.title, "Type  •  Descending")
+    }
+
+    func testSortOption_TheMark_HasTwoSpacesOnEachSide() {
+        XCTAssertEqual(SortOption.titleSeparator, "  \u{2022}  ")
+        XCTAssertEqual(SortOption.spoken(SortOption.nameDescending.title), "Name, Z to A")
+    }
+
+    func testSortOption_FieldOrders_AreTheTwoOrdersOfTheSameField() {
+        for option in SortOption.allCases {
+            XCTAssertEqual(option.fieldOrders.count, 2, "\(option)")
+            XCTAssertTrue(option.fieldOrders.contains(option), "\(option)")
+            XCTAssertTrue(option.fieldOrders.allSatisfy { $0.fieldTitle == option.fieldTitle }, "\(option)")
+        }
+    }
+
+    func testSortOption_SpokenTitles_ReadTheMarkAsAPause() {
+        XCTAssertEqual(SortOption.dateDescending.spokenTitle, "Date, Newest first")
+        for option in SortOption.allCases {
+            XCTAssertEqual(option.spokenTitle, "\(option.fieldTitle), \(option.directionTitle)")
+        }
+        XCTAssertEqual(SortOption.spoken("Uploads"), "Uploads", "a title without the mark reads as it is")
+    }
+
+    func testSortOption_FieldDefaults_AreEachFieldsFirstOrder() {
+        XCTAssertEqual(SortOption.fieldDefaults, [.nameAscending, .dateDescending, .typeAscending])
+        XCTAssertEqual(SortOption.fieldDefaults, SortOption.fieldDefaults.compactMap { $0.fieldOrders.first })
+    }
+
     // MARK: - SortOption server vocabularies
     // V1 stores and takes `sort.alphabetical_asc`; Stela reads and (once it takes `sort`) writes
     // `alphabetical-ascending`. A folder's saved sort must parse from either.

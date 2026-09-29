@@ -21,34 +21,38 @@
                         <action selector="leftButtonPressed:" destination="U6b-Vx-4bR" eventType="touchUpInside" id="EM7-UM-wXx"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DNq-Cg-cGm">
-                    <rect key="frame" x="230" y="8" width="30" height="34"/>
-                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <connections>
-                        <action selector="cancelButtonPressed:" destination="U6b-Vx-4bR" eventType="touchUpInside" id="R8w-9j-R78"/>
-                    </connections>
-                </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a8J-31-PfT">
-                    <rect key="frame" x="270" y="8" width="30" height="34"/>
-                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <connections>
-                        <action selector="rightButtonPressed:" destination="U6b-Vx-4bR" eventType="touchUpInside" id="qpx-1N-BqY"/>
-                    </connections>
-                </button>
+                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Hq3-Sk-Vw1">
+                    <rect key="frame" x="240" y="8" width="60" height="34"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DNq-Cg-cGm">
+                            <rect key="frame" x="0.0" y="0.0" width="30" height="34"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <connections>
+                                <action selector="cancelButtonPressed:" destination="U6b-Vx-4bR" eventType="touchUpInside" id="R8w-9j-R78"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a8J-31-PfT">
+                            <rect key="frame" x="30" y="0.0" width="30" height="34"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <connections>
+                                <action selector="rightButtonPressed:" destination="U6b-Vx-4bR" eventType="touchUpInside" id="qpx-1N-BqY"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="VXr-Tz-HHm"/>
             <constraints>
                 <constraint firstItem="LpX-I3-gSQ" firstAttribute="centerY" secondItem="U6b-Vx-4bR" secondAttribute="centerY" id="ARo-sz-wn2"/>
-                <constraint firstItem="a8J-31-PfT" firstAttribute="centerY" secondItem="U6b-Vx-4bR" secondAttribute="centerY" id="FvJ-Jb-veH"/>
-                <constraint firstItem="LpX-I3-gSQ" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leadingMargin" constant="6" id="GBf-mB-DSF"/>
-                <constraint firstAttribute="trailingMargin" secondItem="a8J-31-PfT" secondAttribute="trailing" constant="4" id="c25-Cr-TyW"/>
-                <constraint firstItem="a8J-31-PfT" firstAttribute="leading" secondItem="DNq-Cg-cGm" secondAttribute="trailing" constant="10" id="lA6-5B-ztP"/>
-                <constraint firstItem="DNq-Cg-cGm" firstAttribute="centerY" secondItem="U6b-Vx-4bR" secondAttribute="centerY" id="pjI-IV-AXX"/>
+                <constraint firstItem="Hq3-Sk-Vw1" firstAttribute="centerY" secondItem="U6b-Vx-4bR" secondAttribute="centerY" id="FvJ-Jb-veH"/>
+                <constraint firstItem="LpX-I3-gSQ" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leadingMargin" id="GBf-mB-DSF"/>
+                <constraint firstAttribute="trailingMargin" secondItem="Hq3-Sk-Vw1" secondAttribute="trailing" id="c25-Cr-TyW"/>
             </constraints>
             <connections>
                 <outlet property="clearButton" destination="DNq-Cg-cGm" id="g5j-zI-5tv"/>
                 <outlet property="leftButton" destination="LpX-I3-gSQ" id="1h8-sg-6ZH"/>
                 <outlet property="rightButton" destination="a8J-31-PfT" id="GIz-da-0w3"/>
+                <outlet property="trailingButtons" destination="Hq3-Sk-Vw1" id="Tr7-Bt-Stk"/>
             </connections>
             <point key="canvasLocation" x="139" y="21"/>
         </collectionReusableView>

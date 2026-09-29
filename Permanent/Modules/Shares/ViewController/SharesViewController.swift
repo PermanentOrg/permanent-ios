@@ -23,8 +23,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @IBOutlet var fabView: FABView!
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
-    private var fileActionSheet: SharedFileActionSheet?
-    
     private let overlayView = UIView()
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
@@ -48,7 +46,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     var changeArchiveRequest: ((Int, String, @escaping (Bool) -> Void) -> Void)?
     
     private var isGridView = false
-    private var sortActionSheet: SortActionSheet?
+    private(set) lazy var sortMenu = SortMenu.make(
+        current: { [weak self] in self?.viewModel?.activeSortOption ?? .nameAscending },
+        onSelect: { [weak self] option in self?.applySort(option) }
+    )
+    private(set) lazy var stickyHeaderReveal = StickyHeaderReveal(list: collectionView, keepsShown: { [weak self] in
+        self?.viewModel?.isSelecting == true
+    })
     private lazy var folderHeader: FolderHeaderTransition? = {
         guard backButton != nil, directoryLabel != nil else { return nil }
         return FolderHeaderTransition(backButton: backButton, titleLabel: directoryLabel)
@@ -188,26 +192,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
 
         NotificationCenter.default.addObserver(forName: ArchivesViewModel.didChangeArchiveNotification, object: nil, queue: .main) { [weak self] _ in
-            guard let self = self else { return }
-
-            self.viewModel?.navigationStack.removeAll()
-            self.viewModel?.selectedFiles = []
-            self.viewModel?.fileAction = .none
-
-            if let listType = ShareListType(rawValue: self.segmentedControl.selectedSegmentIndex) {
-                self.viewModel?.shareListType = listType
-            }
-
-            self.fileActionBottomView.isHidden = true
-            self.fabView.setVisibility(hidden: true)
-            self.folderHeader?.show(title: "Shares".localized(), showsBack: false)
-            self.collectionView.setContentOffset(.zero, animated: false)
-            self.refreshControl.endRefreshing()
-
-            // Only fetch while on screen: a `reloadData()` with no window leaves cells un-laid-out and the
-            // list renders blank. `loadedArchiveId` still points at the old archive, so it refetches later.
-            guard self.viewIfLoaded?.window != nil else { return }
-            self.getShares(shouldShowSpinner: true)
+            self?.archiveDidChange()
         }
         
         NotificationCenter.default.addObserver(forName: SettingsRouter.showMemberChecklistNotifName, object: nil, queue: nil) { [weak self] _ in
@@ -257,7 +242,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         styleNavBar()
     }
     
-    fileprivate func setupCollectionView() {
+    func setupCollectionView() {
         isGridView = viewModel?.isGridView ?? false
         switchViewButton.accessibilityIdentifier = "switchViewButton"
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
@@ -270,11 +255,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         collectionView.refreshControl = refreshControl
         collectionView.showsVerticalScrollIndicator = false
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 6
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.estimatedItemSize = .zero
-        collectionView.collectionViewLayout = flowLayout
+        collectionView.collectionViewLayout = StickyHeaderFlowLayout.fileList()
         
         refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
@@ -321,6 +302,29 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             collectionView.reloadData()
             configureCollectionViewBgView()
         }
+    }
+
+    /// Back to the share list of the archive just selected.
+    func archiveDidChange() {
+        viewModel?.navigationStack.removeAll()
+        viewModel?.selectedFiles = []
+        viewModel?.fileAction = .none
+
+        if let listType = ShareListType(rawValue: segmentedControl.selectedSegmentIndex) {
+            viewModel?.shareListType = listType
+        }
+
+        fileActionBottomView.isHidden = true
+        fabView.setVisibility(hidden: true)
+        folderHeader?.show(title: "Shares".localized(), showsBack: false)
+        stickyHeaderReveal.show(animated: false)
+        collectionView.setContentOffset(.zero, animated: false)
+        refreshControl.endRefreshing()
+
+        // Only fetch while on screen: a `reloadData()` with no window leaves cells un-laid-out and the
+        // list renders blank. `loadedArchiveId` still points at the old archive, so it refetches later.
+        guard viewIfLoaded?.window != nil else { return }
+        getShares(shouldShowSpinner: true)
     }
 
     /// The list needs a fetch when it shows another archive than the selected one and no fetch for the
@@ -684,17 +688,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         return folderHeader?.current.showsBack == true && backButton.isUserInteractionEnabled
     }
 
-    /// The spinner, a dialog or the sort sheet covers the back arrow from inside this view.
+    /// The spinner or a dialog covers the back arrow from inside this view.
     private var isShowingPopup: Bool {
-        isShowingSpinner || actionDialog?.superview != nil || sortActionSheet?.superview != nil
+        isShowingSpinner || actionDialog?.superview != nil
     }
 
     override func accessibilityPerformEscape() -> Bool {
         // An open popup closes first, as the gesture closes a system one.
-        if let sortActionSheet, sortActionSheet.superview != nil {
-            sortActionSheet.dismiss()
-            return true
-        }
         if let actionDialog, actionDialog.superview != nil {
             actionDialog.dismiss()
             return true
@@ -871,16 +871,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.reloadData()
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 6
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.estimatedItemSize = .zero
-        collectionView.collectionViewLayout = flowLayout
+        collectionView.collectionViewLayout = StickyHeaderFlowLayout.fileList()
         collectionView.collectionViewLayout.invalidateLayout()
-    }
-    
-    @objc private func headerButtonAction(_ sender: UIButton) {
-        showSortActionSheetDialog()
+        stickyHeaderReveal.show(animated: false)
     }
     
     @objc private func cancelAllUploadsAction(_ sender: UIButton) {
@@ -903,35 +896,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         present(hosting, animated: false)
     }
 
-    func showSortActionSheetDialog() {
-        // Safety measure, in case the user taps to show sheet, but the previously shown one
-        // has not finished dimissing and being deallocated.
-        guard fileActionSheet == nil else { return }
-        
-        guard
-            sortActionSheet == nil,
-            let viewModel = viewModel else { return }
-        
-        sortActionSheet = SortActionSheet(
-            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
-            selectedOption: viewModel.activeSortOption,
-            onDismiss: {
-                self.view.dismissPopup(
-                    self.sortActionSheet,
-                    overlayView: self.overlayView,
-                    completion: { _ in
-                        self.sortActionSheet?.removeFromSuperview()
-                        self.sortActionSheet = nil
-                    }
-                )
-            }
-        )
-        
-        sortActionSheet?.delegate = self
-        view.addSubview(sortActionSheet!)
-        view.presentPopup(sortActionSheet, overlayView: overlayView)
-    }
-    
     private func generateMenuItems(for file: FileModel, atIndexPath indexPath: IndexPath) -> [FileMenuViewModel.MenuItem] {
         var menuItems: [FileMenuViewModel.MenuItem] = []
         
@@ -1668,6 +1632,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         refreshCollectionView()
         let inset = collectionView.adjustedContentInset
         collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
+        stickyHeaderReveal.show(animated: false)
     }
 
     private func onFilesFetchCompletion(_ status: RequestStatus, silenceErrors: Bool = false) {
@@ -1829,6 +1794,22 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         pagingSection.willDisplayItem(at: indexPath)
     }
 
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView === collectionView else { return }
+        stickyHeaderReveal.listDidScroll()
+    }
+
+    /// A status-bar tap brings the row back as the list starts moving; the scroll itself is not the finger's.
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        if scrollView === collectionView { stickyHeaderReveal.show(animated: true) }
+        return true
+    }
+
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        guard scrollView === collectionView else { return }
+        stickyHeaderReveal.show(animated: true)
+    }
+
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         return indexPath.section != pagingSection.sectionIndex
     }
@@ -1893,11 +1874,9 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = title
             headerView.configure(with: viewModel)
-            if viewModel?.shouldPerformAction(forSection: section) == true {
-                headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
-            } else {
-                headerView.leftButtonAction = nil
-            }
+            headerView.sortMenu = viewModel?.shouldPerformAction(forSection: section) == true ? sortMenu : nil
+            // The layout spans the synced header across the side insets, so its buttons move in by that much.
+            headerView.gutterWidth = section == FileListType.synced.rawValue ? collectionView.contentInset.left : 0
             
             // Reset the reused header's Select button to visible; a previous dequeue may
             // have hidden it for a paste-destination section (see below).
@@ -1908,10 +1887,13 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
             } else {
                 if let selectWasPressed = viewModel?.isSelecting, selectWasPressed {
-                    headerView.rightButtonTitle = "Select all  ".localized()
-                } else {
-                    if !fabView.isHidden {
-                        headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
+                    headerView.rightButtonTitle = "Select all".localized()
+                } else if !fabView.isHidden {
+                    if viewModel?.isSelectingDestination == true {
+                        headerView.rightButtonTitle = nil
+                    } else {
+                        headerView.rightButtonTitle = "Select".localized()
+                        headerView.showSelectIcon()
                     }
                 }
                 // A title-less button is still tappable, so hide it outright in paste mode — otherwise tapping
@@ -1934,7 +1916,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         // The sort header stays over the skeleton rows while a folder's first page loads.
         let showsSortHeader = section == FileListType.synced.rawValue && viewModel?.isLoadingFirstPage == true
         let hasRows = showsSortHeader || viewModel?.numberOfRowsInSection(section) != 0
-        let height: CGFloat = hasRows && (viewModel?.title(forSection: section) ?? "").isNotEmpty ? 40 : 0
+        let height: CGFloat = hasRows && (viewModel?.title(forSection: section) ?? "").isNotEmpty ? FileCollectionViewHeaderCell.height : 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
     }
 
@@ -2068,16 +2050,25 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
     }
 }
 
-// MARK: - SortActionSheetDelegate
-extension SharesViewController: SortActionSheetDelegate {
-    func didSelectOption(_ option: SortOption) {
+// MARK: - Sorting
+extension SharesViewController {
+    /// Saves the pick, then lists the folder in the new order from its top.
+    func applySort(_ option: SortOption) {
         guard let viewModel = viewModel else { return }
         if viewModel.currentFolder != nil { showSpinner() }
         viewModel.saveSortOption(option) { [weak self] _ in
             // The refresh's own guard would leave the spinner up if the folder is gone by now.
             self?.hideSpinner()
-            self?.refreshCurrentFolder()
+            // A folder's refreshed rows are drawn on a later main-queue turn; scrolling first would lay out rows now gone.
+            self?.refreshCurrentFolder(then: { [weak self] in DispatchQueue.main.async { self?.scrollListToTop() } })
         }
+    }
+
+    /// The row stays on screen deep in a list, so a new order would otherwise open mid-list.
+    private func scrollListToTop() {
+        guard let collectionView else { return }
+        let inset = collectionView.adjustedContentInset
+        collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
     }
 }
 

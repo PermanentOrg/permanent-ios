@@ -110,12 +110,12 @@ final class SearchFilesViewModelTests: XCTestCase {
 
     // MARK: - heightForSection
 
-    func testHeightForSection_0_Returns40() {
+    func testHeightForSection_0_ReturnsTheHeaderRowHeight() {
         let vm = SearchFilesViewModel()
         XCTAssertEqual(vm.heightForSection(0), 40)
     }
 
-    func testHeightForSection_1_Returns40() {
+    func testHeightForSection_1_ReturnsTheHeaderRowHeight() {
         let vm = SearchFilesViewModel()
         XCTAssertEqual(vm.heightForSection(1), 40)
     }

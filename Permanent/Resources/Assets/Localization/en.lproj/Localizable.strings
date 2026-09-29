@@ -79,9 +79,14 @@
 "Downloads" = "Downloads";
 "CannotUpload" = "Cannot upload selected files.";
 "Date" = "Date";
-"FileType" = "File Type";
-"Ascending" = "ascending";
-"Descending" = "descending";
+"SortBy" = "Sort by";
+"SortFieldType" = "Type";
+"SortAToZ" = "A to Z";
+"SortZToA" = "Z to A";
+"SortNewestFirst" = "Newest first";
+"SortOldestFirst" = "Oldest first";
+"SortAscending" = "Ascending";
+"SortDescending" = "Descending";
 "CopyHere" = "Copy here";
 "MoveHere" = "Move here";
 "Shares" = "Shares";
@@ -132,8 +137,6 @@
 "EditorTooltipText" = "Contributor plus permission to edit record metadata and to change folder views.";
 "ContributorTooltipText" = "Viewer plus permission to create file and folder records (e.g. upload only).";
 "ViewerTooltipText" = "A member with permission to view records only";
-"Oldest" = "Oldest";
-"Newest" = "Newest";
 "LinkSettings" = "Link Settings";
 "AccessLevel" = "Access Level";
 "SharedBy" = "Shared by %@";

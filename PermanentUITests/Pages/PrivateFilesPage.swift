@@ -33,7 +33,7 @@ class PrivateFilesPage {
         app.collectionViews.buttons["Uploads"]
     }
     var uploadFinishedButton: XCUIElement {
-        app.collectionViews.buttons["Name (A-Z)"]
+        app.collectionViews.buttons["folderSortButton"]
     }
     var firstElementFromFolder: XCUIElement {
         app.collectionViews.cells.children(matching: .other).element.children(matching: .other).element

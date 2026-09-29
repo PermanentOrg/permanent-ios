@@ -59,6 +59,9 @@ struct TextFontStyle {
     static let style50 = TextStyle(UIFont(name: "Usual-Medium", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style51 = TextStyle(UIFont(name: "Usual-Medium", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style52 = TextStyle(UIFont(name: "Usual-Medium", size: 8)!, TextStyle.calculateSpacing(fontSize: CGFloat(8), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    /// Usual Regular 12pt on a 16pt line.
+    static let smallRegular = TextStyle(UIFont(name: "Usual-Regular", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(16)), NSTextAlignment.natural)
+    static let smallRegularLineHeight: CGFloat = 16
 }
 
 struct Constants {
