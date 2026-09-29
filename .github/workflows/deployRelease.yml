@@ -44,6 +44,8 @@ jobs:
           STRIPE_PUB_KEY: ${{ secrets.MOBILE_PROD_STRIPE_PUB_KEY }}
           SKIPLINT: true
           TEST_PLAN: 'unit-tests'
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 6
         run: bundle exec fastlane tests
 
   build:
