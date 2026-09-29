@@ -5,7 +5,7 @@
 //  Created by Lucian Cerbu on 04/08/2020.
 //
 
-import Firebase
+import FirebaseCore
 import FirebaseMessaging
 import UIKit
 import GooglePlaces

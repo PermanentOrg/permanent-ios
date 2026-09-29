@@ -19,13 +19,17 @@
 		06819AA824EC20CB003D0EB0 /* PETextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA724EC20CB003D0EB0 /* PETextField.swift */; };
 		06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
 		06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
-		0C56651DE8BE63857466EAA8 /* Pods_ShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F346436C173F5F5ADDD3A5B /* Pods_ShareExtension.framework */; };
 		13F57C8DB2DB4A4EB984A0BE /* FolderV2ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */; };
+		27A8248828D7F7791D46A8C1 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = C4BB49D1F73F6196EF2846E3 /* FirebaseRemoteConfig */; };
 		2A2A38DEE4A1157AC46AA700 /* SlidingTabControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D8AA3B5F1D96BC712D9591 /* SlidingTabControl.swift */; };
 		33C19C795CBE50378B9D9F5D /* FileSkeletonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5658D4DD3F2242A4F50254E /* FileSkeletonCollectionViewCell.swift */; };
 		35B90992D4698BA30D3AA041 /* FolderHeaderTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818F69703A24DBE36140459D /* FolderHeaderTransition.swift */; };
 		37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374554B71E0322714462588A /* ShareManagementTests.swift */; };
 		374557E26C431EDBB0B56D68 /* FloatingActionIslandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */; };
+		43ADBC9EB240CEDD48E7A1A5 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4B01A46B68F61AB0ED719A6C /* KeychainSwift */; };
+		4B8959182D39C201C1EBEC57 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 66CA4F6496A69AF7AF670DCC /* FirebaseMessaging */; };
+		5246DFAA8898C90E1CFBF255 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DF0250B40215D2617EB24676 /* KeychainSwift */; };
+		58BBEA8ADF9B45443DFEAC8B /* GoogleMapsCore in Frameworks */ = {isa = PBXBuildFile; productRef = E77729FF568ABEDE14202300 /* GoogleMapsCore */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
 		5E018ABD2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */; };
 		5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */; };
@@ -780,10 +784,15 @@
 		5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */; };
 		5EFECC312D120A25000842BF /* SimpleCustomNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */; };
 		615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */; };
-		6A9003F462545A081BD4059B /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */; };
+		6F37FCAAF68B75EB5F681E06 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = A9406AB4FE7549E92D7C95B3 /* SDWebImage */; };
+		7206030BC198DFD3003BDCC4 /* StripeApplePay in Frameworks */ = {isa = PBXBuildFile; productRef = FD02F1BC4D07A79107B61D6D /* StripeApplePay */; };
 		7D8910FD6C14469790D035E1 /* StoragePurchaseResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E3387A37349B181125656 /* StoragePurchaseResponse.swift */; };
+		81159C7169620D4470D3E59B /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = 241B26D01B7CAA088B0EA5BC /* SkeletonView */; };
+		84EE68EAD38B8E1BA253ACA0 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1BF99BC5F8F2A9591F7AAD /* FirebaseCrashlytics */; };
+		86B9CD59A94255A785ADDAB7 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = 24F56F1257F626384078A94E /* SkeletonView */; };
 		8777477F297949860B7ADB75 /* FileListPagingSectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52963D1AFE3D416C7F827DC0 /* FileListPagingSectionTests.swift */; };
 		8DE03E4A9F507F3374CE110D /* SlidingTabControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFDAC61AA0F3BB2E3AF9E88 /* SlidingTabControlTests.swift */; };
+		8DF300E77BC9DB52E07BAE84 /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 8D9C147BAC223E4374075856 /* GooglePlaces */; };
 		9220ACC22A179F88003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
 		9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
 		9220ACC62A1B8706003797C9 /* ArchivesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B8029C3260100337E45 /* ArchivesRepository.swift */; };
@@ -833,7 +842,11 @@
 		92E3FB5D2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */; };
 		92E3FB5E2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
 		92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
+		939C867A70A9BAA8560D3289 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1CFB7885A846934725020B48 /* SDWebImageSwiftUI */; };
+		9B7FBE1294FECE1EA1DA863C /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = A30D138C8FE63AF195A8C312 /* GoogleMaps */; };
+		9BA5F397E5F0B66C8C90494F /* GoogleMapsBase in Frameworks */ = {isa = PBXBuildFile; productRef = 0419759C07B96AF8F0FD9B32 /* GoogleMapsBase */; };
 		9CBB9ACA108840A69B585109 /* UIViewControllerSpinnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */; };
+		AFD7C67C00B9F221C96666F6 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 668D9C17F676DD94A397602A /* SDWebImage */; };
 		B17FBAA79A19C452630997CA /* FileListPagingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7086DD1E6242F48025317F07 /* FileListPagingSection.swift */; };
 		B7B83532690A0C16583E5E31 /* SlidingTabControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D8AA3B5F1D96BC712D9591 /* SlidingTabControl.swift */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
@@ -1027,11 +1040,11 @@
 		BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD95ECC025D53E58009B443F /* ScreenLockManager.swift */; };
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
-		C1C966448DB21BFB0CD217A8 /* Pods_PermanentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D393D0AF0E820F85F119D3 /* Pods_PermanentTests.framework */; };
 		C921A7CAFA64AA880B43FA08 /* FilesViewModelPagingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E97D4DB6AAF7FDE3E653F7 /* FilesViewModelPagingTests.swift */; };
 		CF751CC1696B40F7819D96C9 /* ShareArchivesV2SourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1996E0E74A174FC78FCB44EF /* ShareArchivesV2SourceTests.swift */; };
 		D53B536DB38878F307712F2E /* FileListStatusFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9800A52B4AA91874B395D67D /* FileListStatusFooterView.swift */; };
 		E3174058C098E538A18BFB7A /* FolderBackSwipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBFDB169A0369A1C9B8D77D /* FolderBackSwipeTests.swift */; };
+		F139BE1F866D9B554A5C66E3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5F33A024FC6C264513FAA2D1 /* KeychainSwift */; };
 		F502C4D926DCF1E700657D37 /* ArchivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */; };
 		F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FB2742E265007E4594 /* SearchViewController.swift */; };
 		F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */; };
@@ -1200,6 +1213,7 @@
 		F5EA7C81286DB56700001110 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC5501E255AB31800CA1574 /* FileHelper.swift */; };
 		F5EEB4D62821556C00D584AD /* AccountOnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EEB4D52821556C00D584AD /* AccountOnboardingViewModel.swift */; };
+		F9E99843A7F35CA204F7FB85 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 734A79C8FF416982D0B913A1 /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1257,7 +1271,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0498FB00C012A9F022DFE286 /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelInterface.swift; sourceTree = "<group>"; };
 		06644A7F24EA6F47003CD359 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		06644A8424EA7156003CD359 /* RoundedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
@@ -1271,18 +1284,10 @@
 		06B0EB2424E67B6A003D90C6 /* AuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewController.swift; sourceTree = "<group>"; };
 		06B0EB2724E67E6A003D90C6 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		06B0EB2924E67EC4003D90C6 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		0E04732D257D8C9C0C6CA79A /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
-		13D3DA3479E9CAA7E3951DF3 /* Pods-ShareExtension.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.dev-release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.dev-release.xcconfig"; sourceTree = "<group>"; };
 		1996E0E74A174FC78FCB44EF /* ShareArchivesV2SourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesV2SourceTests.swift; sourceTree = "<group>"; };
-		24F80AE2751B19DB48B8570D /* Pods-Permanent.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-release.xcconfig"; sourceTree = "<group>"; };
-		2F346436C173F5F5ADDD3A5B /* Pods_ShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3151B793663565F9F6FC3809 /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
-		3278A56B6D2A2FE2C59C76A2 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
-		373AA3372E62550B5A478C18 /* Pods-PermanentTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.release.xcconfig"; sourceTree = "<group>"; };
 		374554B71E0322714462588A /* ShareManagementTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareManagementTests.swift; sourceTree = "<group>"; };
 		37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingActionIslandViewController.swift; sourceTree = "<group>"; };
 		39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerSpinnerTests.swift; sourceTree = "<group>"; };
-		3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52963D1AFE3D416C7F827DC0 /* FileListPagingSectionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileListPagingSectionTests.swift; sourceTree = "<group>"; };
 		5CFDAC61AA0F3BB2E3AF9E88 /* SlidingTabControlTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SlidingTabControlTests.swift; sourceTree = "<group>"; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
@@ -1900,12 +1905,9 @@
 		5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorMethod.swift; sourceTree = "<group>"; };
 		5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordView.swift; sourceTree = "<group>"; };
 		5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCustomNavigationView.swift; sourceTree = "<group>"; };
-		66D393D0AF0E820F85F119D3 /* Pods_PermanentTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PermanentTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6BA7DA7E35CC88C6BBC541F2 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		7086DD1E6242F48025317F07 /* FileListPagingSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileListPagingSection.swift; sourceTree = "<group>"; };
 		818F69703A24DBE36140459D /* FolderHeaderTransition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FolderHeaderTransition.swift; sourceTree = "<group>"; };
 		81E97D4DB6AAF7FDE3E653F7 /* FilesViewModelPagingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FilesViewModelPagingTests.swift; sourceTree = "<group>"; };
-		8E782DE197F0DAAD60CD1427 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewModel.swift; sourceTree = "<group>"; };
 		9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSteward.swift; sourceTree = "<group>"; };
@@ -1941,7 +1943,6 @@
 		92E3FB502A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewController.swift; sourceTree = "<group>"; };
 		9800A52B4AA91874B395D67D /* FileListStatusFooterView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileListStatusFooterView.swift; sourceTree = "<group>"; };
 		A5658D4DD3F2242A4F50254E /* FileSkeletonCollectionViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileSkeletonCollectionViewCell.swift; sourceTree = "<group>"; };
-		A7E1E2F5C825456114314819 /* Pods-ShareExtension.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.dev-debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
 		BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelocateFolderPayload.swift; sourceTree = "<group>"; };
 		BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelocateRecordPayload.swift; sourceTree = "<group>"; };
@@ -2135,10 +2136,8 @@
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
 		C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingEndpointTests.swift; sourceTree = "<group>"; };
-		CC014E3B01EE6AFC160D21EE /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderV2ModelsTests.swift; sourceTree = "<group>"; };
 		D78E3387A37349B181125656 /* StoragePurchaseResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoragePurchaseResponse.swift; sourceTree = "<group>"; };
-		EC7EE1F268D1D244F393EB3A /* Pods-PermanentTests.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-release.xcconfig"; sourceTree = "<group>"; };
 		F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesViewModel.swift; sourceTree = "<group>"; };
 		F509D6FB2742E265007E4594 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilesViewModel.swift; sourceTree = "<group>"; };
@@ -2252,7 +2251,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */,
-				6A9003F462545A081BD4059B /* Pods_Permanent.framework in Frameworks */,
+				F9E99843A7F35CA204F7FB85 /* FirebaseAnalytics in Frameworks */,
+				84EE68EAD38B8E1BA253ACA0 /* FirebaseCrashlytics in Frameworks */,
+				4B8959182D39C201C1EBEC57 /* FirebaseMessaging in Frameworks */,
+				27A8248828D7F7791D46A8C1 /* FirebaseRemoteConfig in Frameworks */,
+				9B7FBE1294FECE1EA1DA863C /* GoogleMaps in Frameworks */,
+				8DF300E77BC9DB52E07BAE84 /* GooglePlaces in Frameworks */,
+				7206030BC198DFD3003BDCC4 /* StripeApplePay in Frameworks */,
+				AFD7C67C00B9F221C96666F6 /* SDWebImage in Frameworks */,
+				939C867A70A9BAA8560D3289 /* SDWebImageSwiftUI in Frameworks */,
+				5246DFAA8898C90E1CFBF255 /* KeychainSwift in Frameworks */,
+				86B9CD59A94255A785ADDAB7 /* SkeletonView in Frameworks */,
+				9BA5F397E5F0B66C8C90494F /* GoogleMapsBase in Frameworks */,
+				58BBEA8ADF9B45443DFEAC8B /* GoogleMapsCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2267,7 +2278,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C1C966448DB21BFB0CD217A8 /* Pods_PermanentTests.framework in Frameworks */,
+				43ADBC9EB240CEDD48E7A1A5 /* KeychainSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2284,7 +2295,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C56651DE8BE63857466EAA8 /* Pods_ShareExtension.framework in Frameworks */,
+				F139BE1F866D9B554A5C66E3 /* KeychainSwift in Frameworks */,
+				81159C7169620D4470D3E59B /* SkeletonView in Frameworks */,
+				6F37FCAAF68B75EB5F681E06 /* SDWebImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2633,7 +2646,6 @@
 				5E68830628902DBF0006F434 /* PermanentUITests */,
 				5E8B6FE02FD83F8500CFC501 /* PermanentWidgets */,
 				5E2C5D1824D98EE100E2B95F /* Products */,
-				D01BC0154B74CFCC3532CF7E /* Pods */,
 				5E60451B25120685002E47CB /* Recovered References */,
 				C451B6122C72A441834259B6 /* Frameworks */,
 				5E8B6FDE2FD83F8500CFC501 /* PermanentWidgetsExtension.entitlements */,
@@ -4905,32 +4917,10 @@
 			isa = PBXGroup;
 			children = (
 				BCB0725D2523565A003E2F66 /* WebKit.framework */,
-				3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */,
-				66D393D0AF0E820F85F119D3 /* Pods_PermanentTests.framework */,
-				2F346436C173F5F5ADDD3A5B /* Pods_ShareExtension.framework */,
 				5E9097C82F996BD900C2EAEC /* WidgetKit.framework */,
 				5E9097CA2F996BD900C2EAEC /* SwiftUI.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		D01BC0154B74CFCC3532CF7E /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				3151B793663565F9F6FC3809 /* Pods-Permanent.debug.xcconfig */,
-				0E04732D257D8C9C0C6CA79A /* Pods-Permanent.dev-debug.xcconfig */,
-				3278A56B6D2A2FE2C59C76A2 /* Pods-Permanent.release.xcconfig */,
-				24F80AE2751B19DB48B8570D /* Pods-Permanent.dev-release.xcconfig */,
-				8E782DE197F0DAAD60CD1427 /* Pods-PermanentTests.debug.xcconfig */,
-				0498FB00C012A9F022DFE286 /* Pods-PermanentTests.dev-debug.xcconfig */,
-				373AA3372E62550B5A478C18 /* Pods-PermanentTests.release.xcconfig */,
-				EC7EE1F268D1D244F393EB3A /* Pods-PermanentTests.dev-release.xcconfig */,
-				CC014E3B01EE6AFC160D21EE /* Pods-ShareExtension.debug.xcconfig */,
-				A7E1E2F5C825456114314819 /* Pods-ShareExtension.dev-debug.xcconfig */,
-				6BA7DA7E35CC88C6BBC541F2 /* Pods-ShareExtension.release.xcconfig */,
-				13D3DA3479E9CAA7E3951DF3 /* Pods-ShareExtension.dev-release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		F502C48226D612A500657D37 /* PhotoPicker */ = {
@@ -5030,15 +5020,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E2C5D2B24D98EE300E2B95F /* Build configuration list for PBXNativeTarget "Permanent" */;
 			buildPhases = (
-				CA0D505CD7D48678F7A5C96A /* [CP] Check Pods Manifest.lock */,
-				F5551D86261C54D500A7C540 /* Sourcery */,
+				F5551D86261C54D500A7C540 /* Generate EnvVars */,
 				F5A784992785D84A00738389 /* Swiftlint */,
 				5E2C5D1324D98EE100E2B95F /* Sources */,
 				5E2C5D1424D98EE100E2B95F /* Frameworks */,
 				5E2C5D1524D98EE100E2B95F /* Resources */,
 				F57E4D412653EBC700F0A968 /* Embed App Extensions */,
-				E82573A3EDBC6DA9E96C31B5 /* [CP] Embed Pods Frameworks */,
-				759452DA87FF20899F46C137 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -5048,6 +5035,21 @@
 				5E9097D72F996BDA00C2EAEC /* PBXTargetDependency */,
 			);
 			name = Permanent;
+			packageProductDependencies = (
+				734A79C8FF416982D0B913A1 /* FirebaseAnalytics */,
+				0A1BF99BC5F8F2A9591F7AAD /* FirebaseCrashlytics */,
+				66CA4F6496A69AF7AF670DCC /* FirebaseMessaging */,
+				C4BB49D1F73F6196EF2846E3 /* FirebaseRemoteConfig */,
+				A30D138C8FE63AF195A8C312 /* GoogleMaps */,
+				8D9C147BAC223E4374075856 /* GooglePlaces */,
+				FD02F1BC4D07A79107B61D6D /* StripeApplePay */,
+				668D9C17F676DD94A397602A /* SDWebImage */,
+				1CFB7885A846934725020B48 /* SDWebImageSwiftUI */,
+				DF0250B40215D2617EB24676 /* KeychainSwift */,
+				24F56F1257F626384078A94E /* SkeletonView */,
+				0419759C07B96AF8F0FD9B32 /* GoogleMapsBase */,
+				E77729FF568ABEDE14202300 /* GoogleMapsCore */,
+			);
 			productName = Permanent;
 			productReference = 5E2C5D1724D98EE100E2B95F /* Permanent.app */;
 			productType = "com.apple.product-type.application";
@@ -5074,11 +5076,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E68F2D726A74FCD00CC936E /* Build configuration list for PBXNativeTarget "PermanentTests" */;
 			buildPhases = (
-				6F4E5C1483B13C1C38D313F1 /* [CP] Check Pods Manifest.lock */,
 				5E68F2C826A74FCD00CC936E /* Sources */,
 				5E68F2C926A74FCD00CC936E /* Frameworks */,
 				5E68F2CA26A74FCD00CC936E /* Resources */,
-				7DA7C6A0066AC5F315BAD9BD /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -5086,6 +5086,9 @@
 				5E68F2D226A74FCD00CC936E /* PBXTargetDependency */,
 			);
 			name = PermanentTests;
+			packageProductDependencies = (
+				4B01A46B68F61AB0ED719A6C /* KeychainSwift */,
+			);
 			productName = PermanentTests;
 			productReference = 5E68F2CC26A74FCD00CC936E /* PermanentTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -5111,7 +5114,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5ED06F4D286B2BD5006C126B /* Build configuration list for PBXNativeTarget "ShareExtension" */;
 			buildPhases = (
-				BA1FF7D4A47B99CEB60CAA05 /* [CP] Check Pods Manifest.lock */,
 				5ED06F3A286B2BD5006C126B /* Sources */,
 				5ED06F3B286B2BD5006C126B /* Frameworks */,
 				5ED06F3C286B2BD5006C126B /* Resources */,
@@ -5121,6 +5123,11 @@
 			dependencies = (
 			);
 			name = ShareExtension;
+			packageProductDependencies = (
+				5F33A024FC6C264513FAA2D1 /* KeychainSwift */,
+				241B26D01B7CAA088B0EA5BC /* SkeletonView */,
+				A9406AB4FE7549E92D7C95B3 /* SDWebImage */,
+			);
 			productName = ShareExtension;
 			productReference = 5ED06F3E286B2BD5006C126B /* ShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -5182,6 +5189,16 @@
 				Base,
 			);
 			mainGroup = 5E2C5D0E24D98EE100E2B95F;
+			packageReferences = (
+				1AD7DF7BBAC415F0E81897FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				5EF98D99C2D1D18DE0117567 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+				1C2AA5DC02516AEB49C22BEF /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
+				245DF4B9A825383B2D448268 /* XCRemoteSwiftPackageReference "stripe-ios" */,
+				58930EF39C86F11404CED32C /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				098089FB9D3F3BD5217E93C2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				C4E3B7EE7C12EDA8597EFC90 /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				E65EED7A63789E533DF61A22 /* XCRemoteSwiftPackageReference "SkeletonView" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5E2C5D1824D98EE100E2B95F /* Products */;
 			projectDirPath = "";
@@ -5352,141 +5369,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		6F4E5C1483B13C1C38D313F1 /* [CP] Check Pods Manifest.lock */ = {
+		F5551D86261C54D500A7C540 /* Generate EnvVars */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"$(SRCROOT)/Scripts/generate-env-vars.sh",
+				"$(SRCROOT)/Permanent/App/EnvVars.stencil",
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "Generate EnvVars";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-PermanentTests-checkManifestLockResult.txt",
+				"$(SRCROOT)/Permanent/App/EnvVars.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		759452DA87FF20899F46C137 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7DA7C6A0066AC5F315BAD9BD /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BA1FF7D4A47B99CEB60CAA05 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ShareExtension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CA0D505CD7D48678F7A5C96A /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Permanent-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E82573A3EDBC6DA9E96C31B5 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Permanent/Pods-Permanent-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F5551D86261C54D500A7C540 /* Sourcery */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = Sourcery;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				Permanent/App/EnvVars.generated.swift,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent/App --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID,authClientId=$AUTH_CLIENT_ID,authClientSecret=$AUTH_CLIENT_SECRET,authTenantId=$AUTH_TENANT_ID,stripePublishableKey=$STRIPE_PUB_KEY,uiTestUsername=$UI_TEST_USERNAME,uiTestPassword=$UI_TEST_PASSWORD,authFusionAuthorization=$AUTH_FUSION_AUTHORIZATION,mixpanelToken=$MIXPANEL_TOKEN\n";
+			shellScript = "\"${SRCROOT}/Scripts/generate-env-vars.sh\"\n";
 		};
 		F5A784992785D84A00738389 /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -6807,7 +6710,6 @@
 		};
 		5E2C5D2C24D98EE300E2B95F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3151B793663565F9F6FC3809 /* Pods-Permanent.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -6825,6 +6727,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.16.1;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6841,7 +6747,6 @@
 		};
 		5E2C5D2D24D98EE300E2B95F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3278A56B6D2A2FE2C59C76A2 /* Pods-Permanent.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -6859,6 +6764,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.16.1;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6974,7 +6883,6 @@
 		};
 		5E68F2D326A74FCD00CC936E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8E782DE197F0DAAD60CD1427 /* Pods-PermanentTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7004,7 +6912,6 @@
 		};
 		5E68F2D426A74FCD00CC936E /* DEV-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0498FB00C012A9F022DFE286 /* Pods-PermanentTests.dev-debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7034,7 +6941,6 @@
 		};
 		5E68F2D526A74FCD00CC936E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 373AA3372E62550B5A478C18 /* Pods-PermanentTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7064,7 +6970,6 @@
 		};
 		5E68F2D626A74FCD00CC936E /* DEV-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EC7EE1F268D1D244F393EB3A /* Pods-PermanentTests.dev-release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7265,7 +7170,6 @@
 		};
 		5ED06F49286B2BD5006C126B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC014E3B01EE6AFC160D21EE /* Pods-ShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7304,7 +7208,6 @@
 		};
 		5ED06F4A286B2BD5006C126B /* DEV-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A7E1E2F5C825456114314819 /* Pods-ShareExtension.dev-debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7343,7 +7246,6 @@
 		};
 		5ED06F4B286B2BD5006C126B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6BA7DA7E35CC88C6BBC541F2 /* Pods-ShareExtension.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7382,7 +7284,6 @@
 		};
 		5ED06F4C286B2BD5006C126B /* DEV-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 13D3DA3479E9CAA7E3951DF3 /* Pods-ShareExtension.dev-release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -7485,7 +7386,6 @@
 		};
 		BC0108842511E8D7002F9FD6 /* DEV-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0E04732D257D8C9C0C6CA79A /* Pods-Permanent.dev-debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -7503,6 +7403,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.16.1;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7576,7 +7480,6 @@
 		};
 		BC0108862511E96A002F9FD6 /* DEV-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 24F80AE2751B19DB48B8570D /* Pods-Permanent.dev-release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -7594,6 +7497,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.16.1;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7806,6 +7713,161 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		098089FB9D3F3BD5217E93C2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.2.3;
+			};
+		};
+		1AD7DF7BBAC415F0E81897FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = exactVersion;
+				version = 11.1.0;
+			};
+		};
+		1C2AA5DC02516AEB49C22BEF /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-places-sdk.git";
+			requirement = {
+				kind = exactVersion;
+				version = 8.5.0;
+			};
+		};
+		245DF4B9A825383B2D448268 /* XCRemoteSwiftPackageReference "stripe-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stripe/stripe-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 22.8.1;
+			};
+		};
+		58930EF39C86F11404CED32C /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = exactVersion;
+				version = 5.10.0;
+			};
+		};
+		5EF98D99C2D1D18DE0117567 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk.git";
+			requirement = {
+				kind = exactVersion;
+				version = 8.4.0;
+			};
+		};
+		C4E3B7EE7C12EDA8597EFC90 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 20.0.0;
+			};
+		};
+		E65EED7A63789E533DF61A22 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.30.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0419759C07B96AF8F0FD9B32 /* GoogleMapsBase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EF98D99C2D1D18DE0117567 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMapsBase;
+		};
+		0A1BF99BC5F8F2A9591F7AAD /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1AD7DF7BBAC415F0E81897FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		1CFB7885A846934725020B48 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 098089FB9D3F3BD5217E93C2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+		241B26D01B7CAA088B0EA5BC /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E65EED7A63789E533DF61A22 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
+		};
+		24F56F1257F626384078A94E /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E65EED7A63789E533DF61A22 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
+		};
+		4B01A46B68F61AB0ED719A6C /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C4E3B7EE7C12EDA8597EFC90 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		5F33A024FC6C264513FAA2D1 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C4E3B7EE7C12EDA8597EFC90 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		668D9C17F676DD94A397602A /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 58930EF39C86F11404CED32C /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		66CA4F6496A69AF7AF670DCC /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1AD7DF7BBAC415F0E81897FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		734A79C8FF416982D0B913A1 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1AD7DF7BBAC415F0E81897FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		8D9C147BAC223E4374075856 /* GooglePlaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C2AA5DC02516AEB49C22BEF /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlaces;
+		};
+		A30D138C8FE63AF195A8C312 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EF98D99C2D1D18DE0117567 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+		A9406AB4FE7549E92D7C95B3 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 58930EF39C86F11404CED32C /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		C4BB49D1F73F6196EF2846E3 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1AD7DF7BBAC415F0E81897FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+		DF0250B40215D2617EB24676 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C4E3B7EE7C12EDA8597EFC90 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		E77729FF568ABEDE14202300 /* GoogleMapsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EF98D99C2D1D18DE0117567 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMapsCore;
+		};
+		FD02F1BC4D07A79107B61D6D /* StripeApplePay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 245DF4B9A825383B2D448268 /* XCRemoteSwiftPackageReference "stripe-ios" */;
+			productName = StripeApplePay;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5E2C5D0F24D98EE100E2B95F /* Project object */;
 }
