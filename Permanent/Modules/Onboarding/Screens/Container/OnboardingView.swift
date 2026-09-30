@@ -169,10 +169,15 @@ struct OnboardingView: View {
                 viewModel.showAlert = false
             })
         }
+        .onAppear {
+            // Loading can end before the view appears, for example without a session, so show the first step here too.
+            if !viewModel.initIsLoading && viewModel.contentType == .none {
+                showFirstStep()
+            }
+        }
         .onChange(of: viewModel.initIsLoading, perform: { loading in
             if !loading {
-                viewModel.contentType = viewModel.allArchives.isEmpty ? .welcome : .pendingWelcome
-                viewModel.firstViewContentType = viewModel.contentType
+                showFirstStep()
             }
         })
     }
@@ -224,6 +229,11 @@ struct OnboardingView: View {
     
     private func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    private func showFirstStep() {
+        viewModel.contentType = viewModel.allArchives.isEmpty ? .welcome : .pendingWelcome
+        viewModel.firstViewContentType = viewModel.contentType
     }
     
     func dismissView() {

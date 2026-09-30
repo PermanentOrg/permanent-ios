@@ -310,6 +310,56 @@ class AuthenticationManagerTests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
 
+    // A refused token while restoring the saved archive means the saved login is dead, so launch must
+    // go to sign-in instead of Face ID. Any other failure, as when offline, keeps the session.
+    func testReloadSessionUnauthorizedLogsOut() {
+        authManager = authManagerRestoring(changeArchiveResult: .failure(APIError.unauthorized))
+        saveAndForgetSession()
+
+        let expectation = XCTestExpectation(description: "Reload with a refused token")
+        authManager.reloadSession { success in
+            XCTAssertFalse(success, "A refused token must not count as a restored session")
+            XCTAssertNil(self.authManager.session, "A refused token must leave no session behind")
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5)
+    }
+
+    func testReloadSessionOfflineKeepsSession() {
+        let offline = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)
+        authManager = authManagerRestoring(changeArchiveResult: .failure(offline))
+        let session = saveAndForgetSession()
+
+        let expectation = XCTestExpectation(description: "Reload while offline")
+        authManager.reloadSession { success in
+            XCTAssertTrue(success, "An offline launch must keep the saved session")
+            XCTAssertEqual(self.authManager.session?.token, session.token)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5)
+    }
+
+    private func authManagerRestoring(changeArchiveResult: Result<Bool, Error>) -> AuthenticationManager {
+        let mockArchivesDataSource = MockArchivesRemoteDataSource()
+        mockArchivesDataSource.changeArchiveResult = changeArchiveResult
+        mockArchivesRepo = ArchivesRepository(remoteDataSource: mockArchivesDataSource)
+        mockAuthRepo = AuthRepository(remoteDataSource: MockAuthRemoteDataSource())
+        mockAccountRepo = AccountRepository(remoteDataSource: MockAccountRemoteDataSource())
+        return AuthenticationManager(authRepo: mockAuthRepo, accountRepository: mockAccountRepo, archivesRepository: mockArchivesRepo)
+    }
+
+    /// Saves a session with a selected archive, then clears it in memory so `reloadSession` has to restore it.
+    @discardableResult
+    private func saveAndForgetSession() -> PermSession {
+        let session = PermSession(token: "saved_token")
+        session.selectedArchive = ArchiveVOData.mock()
+        session.account = AccountVOData.mock()
+        authManager.session = session
+        authManager.saveSession()
+        authManager.session = nil
+        return session
+    }
+
     func testSyncSessionSuccess() {
         let mockAuthDataSource = MockAuthRemoteDataSource()
         mockAuthRepo = AuthRepository(remoteDataSource: mockAuthDataSource)

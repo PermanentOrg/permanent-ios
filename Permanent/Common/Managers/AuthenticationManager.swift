@@ -71,7 +71,13 @@ class AuthenticationManager {
                         
                             completion(true)
                             
-                        case .failure:
+                        case .failure(let error):
+                            // A refused token means the saved login is dead, so launch goes to sign-in, not Face ID.
+                            if error as? APIError == APIError.unauthorized {
+                                self?.logout()
+                                completion(false)
+                                return
+                            }
                             // Server call failed, but still keep the session with the saved selectedArchive
                             // This ensures the user's last selected archive is preserved even if offline
                             self?.session?.selectedArchive = selectedArchive
