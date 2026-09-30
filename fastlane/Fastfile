@@ -23,7 +23,7 @@ platform :ios do
 
     run_tests(project: "Permanent.xcodeproj",
               cloned_source_packages_path: "SourcePackages",
-              devices: ["iPhone 17"],
+              devices: ["iPhone 17 Pro"],
               scheme: "Permanent-DEV",
 	            configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",

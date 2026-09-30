@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: xcode-27
+    runs-on: macos-26
     environment: staging
     
     steps:
@@ -21,7 +21,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '27.0'
+          xcode-version: '26.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:
@@ -46,12 +46,28 @@ jobs:
           TEST_PLAN: 'unit-tests'
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10
           FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 6
-        run: bundle exec fastlane tests
+        shell: bash
+        run: bundle exec fastlane tests 2>&1 | tee fastlane-tests.log
+      - name: List failed tests
+        if: failure()
+        shell: bash
+        run: |
+          # fastlane prefixes and colours every line, so GitHub only picks up the ::error lines when printed plain.
+          perl -pe 's/\e\[[0-9;]*m//g' fastlane-tests.log | grep -o '::error .*' | sed "s#${GITHUB_WORKSPACE}/##" | sort -u > failures.txt || true
+          if [ -s failures.txt ]; then
+            cat failures.txt
+            {
+              echo "### Failed tests and build errors"
+              sed -E -e 's/^::error file=([^,]*),line=([0-9]+)[^:]*::[[:space:]]*(.*)$/- `\1:\2` \3/' -e 's/^::error [^:]*::[[:space:]]*(.*)$/- \1/' failures.txt
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No failed test was found. Search the Run Unit Tests step for 'error:'."
+          fi
   
   build:
     needs: test
     name: Build and deploy a beta build to Firebase Distribution
-    runs-on: xcode-27
+    runs-on: macos-26
     environment: staging
 
     steps:
@@ -64,7 +80,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '27.0'
+          xcode-version: '26.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:
