@@ -42,6 +42,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private var backSwipe: FolderBackSwipe?
     private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
+    private let menuDeferral = ContextMenuDeferral()
     
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
@@ -234,6 +235,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         super.viewWillAppear(animated)
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        menuDeferral.menuIsGone()
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -307,6 +313,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func refreshCollectionView() {
+        if menuDeferral.holdsReload({ [weak self] in self?.refreshCollectionView() }) { return }
         handleTableBackgroundView()
         pagingSection.prepareForReload()
         reloadFadingSortTitle()
@@ -572,10 +579,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             showParentPreview: { [weak self] in self?.showBackPreview() },
             previewStillApplies: { [weak self] in self?.viewModel?.backPreviewStillApplies ?? false },
             endParentPreview: { [weak self] in self?.endBackPreview() ?? false },
-            goBack: { [weak self] in
-                guard let self else { return }
-                self.backButtonAction(self.backButton)
-            }
+            goBack: { [weak self] in self?.goUpOneFolder() }
         ))
     }
 
@@ -624,8 +628,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         return rowsBack
     }
 
+    /// Plays the back swipe through when the swipe could run now.
     @IBAction
     func backButtonAction(_ sender: UIButton) {
+        if backSwipe?.slideBack() != true { goUpOneFolder() }
+    }
+
+    private func goUpOneFolder() {
         guard
             let viewModel = viewModel,
             let leftFolder = viewModel.removeCurrentFolderFromHierarchy(),
@@ -1385,9 +1394,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         if viewModel.isSelectingDestination {
             guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
             viewModel.v2NavigationTarget = file
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
+            enter(file, from: collectionView)
             return
         }
 
@@ -1407,9 +1414,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                     // Seed the V2 navigation target (no-op when Stela nav is off): V2 needs
                     // the String folderId, which lives on the tapped FileModel.
                     viewModel.v2NavigationTarget = file
-                    let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-                    let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
-                    navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
+                    enter(file, from: collectionView)
                 }
             } else {
                 if viewModel.isPickingImage {
@@ -1418,6 +1423,15 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                     handlePreviewSelection(file: file)
                 }
             }
+        }
+    }
+
+    /// Slides the folder in, with its name in the header at once.
+    private func enter(_ folder: FileModel, from list: UICollectionView) {
+        let navigateParams: NavigateMinParams = (folder.archiveNo, folder.folderLinkId, nil)
+        FolderOpenSlide.play(on: list) {
+            let revertHeader = showHeaderWhileLoading(title: folder.name, showsBack: true, entering: folder.folderLinkId)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
         }
     }
     
@@ -1546,6 +1560,104 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             self?.viewModel?.timer = nil
             self?.timerActions()
         }
+    }
+}
+
+// MARK: - Long-press menu
+
+extension MainViewController {
+    private var menuPlace: FileMenuItems.Place {
+        viewModel is PublicFilesViewModel ? .publicFiles : .privateFiles
+    }
+
+    private func sheetAction(for type: FileMenuItems.ItemType, file: FileModel, atIndexPath indexPath: IndexPath) -> (() -> Void)? {
+        switch type {
+        case .shareToPermanent, .unshare, .editMetadata: return nil
+        case .shareToAnotherApp: return { [weak self] in self?.shareWithOtherApps(file: file) }
+        case .publish: return { [weak self] in self?.publishAction(file: file) }
+        case .rename: return { [weak self] in self?.renameAction(file: file, atIndexPath: indexPath) }
+        case .delete: return { [weak self] in self?.deleteAction(file: file, atIndexPath: indexPath) }
+        case .move: return { [weak self] in self?.relocateAction(files: [file], action: .move) }
+        case .copy: return { [weak self] in self?.relocateAction(files: [file], action: .copy) }
+        case .download: return { [weak self] in self?.downloadAction(file: file) }
+        }
+    }
+
+    /// The row's file when its … button would open the sheet right now; otherwise the long press does nothing.
+    private func contextMenuFile(at indexPath: IndexPath) -> FileModel? {
+        guard let viewModel, indexPath.section == FileListType.synced.rawValue, indexPath.item < viewModel.syncedViewModels.count,
+              !viewModel.isSelecting, !viewModel.isSelectingDestination, !viewModel.isPickingImage, viewModel.fileAction == .none
+        else { return nil }
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
+        guard file.fileStatus == .synced, URL(string: file.thumbnailURL) != nil || file.canBeAccessed else { return nil }
+        return file
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard indexPaths.count == 1, let indexPath = indexPaths.first, let file = contextMenuFile(at: indexPath) else { return nil }
+        let types = FileMenuItems.types(for: file, in: menuPlace)
+        guard !types.isEmpty else { return nil }
+        let configuration = UIContextMenuConfiguration(identifier: FileContextMenu.identifier(for: file), previewProvider: nil) { [weak self] _ in
+            FileContextMenu.make(for: types) { type in
+                self?.menuDeferral.run { self?.performMenuAction(type, on: file, atIndexPath: indexPath) }
+            }
+        }
+        // Delete stays last when the menu opens above the row, as in the Files app.
+        configuration.preferredMenuElementOrder = .fixed
+        return configuration
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, highlightPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        collectionView.cellForItem(at: indexPath).map { FileContextMenu.preview(for: $0, in: collectionView) }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, dismissalPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        collectionView.cellForItem(at: indexPath).map { FileContextMenu.preview(for: $0, in: collectionView) }
+    }
+
+    /// A tap on the lifted row opens it, as a tap on the row does.
+    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        guard let row = contextMenuRow(for: configuration) else { return }
+        animator.preferredCommitStyle = .dismiss
+        animator.addCompletion { [weak self] in
+            // The menu has closed, so the reloads it held land before a folder slides in.
+            self?.menuDeferral.menuIsGone()
+            self?.collectionView(collectionView, didSelectItemAt: IndexPath(item: row, section: FileListType.synced.rawValue))
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        menuDeferral.menuWillShow()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        menuDeferral.menuWillEnd(animator: animator)
+    }
+
+    private func contextMenuRow(for configuration: UIContextMenuConfiguration) -> Int? {
+        guard let identifier = configuration.identifier as? NSString else { return nil }
+        return viewModel?.syncedViewModels.firstIndex { FileContextMenu.identifier(for: $0) == identifier }
+    }
+
+    private func performMenuAction(_ type: FileMenuItems.ItemType, on file: FileModel, atIndexPath indexPath: IndexPath) {
+        switch type {
+        case .shareToPermanent: presentShareManagement(for: file)
+        case .shareToAnotherApp: shareWithOtherApps(file: file)
+        case .publish: publishAction(file: file)
+        case .rename: renameAction(file: file, atIndexPath: indexPath)
+        case .move: relocateAction(files: [file], action: .move)
+        case .copy: relocateAction(files: [file], action: .copy)
+        case .download: downloadAction(file: file)
+        case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
+        case .unshare, .editMetadata: break
+        }
+    }
+
+    private func confirmMenuAction(_ actionType: ConfirmationBottomAlertView.ActionType, on file: FileModel, then action: @escaping () -> Void) {
+        let confirmation = FileActionConfirmationView.host(for: file, actionType, onConfirm: action, onDismiss: { [weak self] in
+            self?.dismiss(animated: false)
+        })
+        present(confirmation, animated: false)
     }
 }
 
@@ -1798,54 +1910,10 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
-        var menuItems: [FileMenuViewModel.MenuItem] = []
-        if file.permissions.contains(.ownership) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
+        let menuItems = FileMenuItems.types(for: file, in: menuPlace).map { type in
+            FileMenuViewModel.MenuItem(type: type, action: sheetAction(for: type, file: file, atIndexPath: indexPath))
         }
-        
-        // Share to another app - for files with share permission (not folders)
-        if file.permissions.contains(.share) && file.type.isFolder == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
-                shareWithOtherApps(file: file)
-            }))
-        }
-        
-        if file.permissions.contains(.delete) && viewModel is PublicFilesViewModel == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .publish, action: { [self] in
-                publishAction(file: file)
-            }))
-        }
-        
-        if file.permissions.contains(.edit) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .rename, action: { [self] in
-                renameAction(file: file, atIndexPath: indexPath)
-            }))
-        }
-        
-        if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
-                deleteAction(file: file, atIndexPath: indexPath)
-            }))
-        }
-        
-        if file.permissions.contains(.move) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .move, action: { [self] in
-                relocateAction(files: [file], action: .move)
-            }))
-        }
-        
-        if file.permissions.contains(.create) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .copy, action: { [self] in
-                relocateAction(files: [file], action: .copy)
-            }))
-        }
-        
-        if file.permissions.contains(.read) && file.type.isFolder == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .download, action: { [self] in
-                downloadAction(file: file)
-            }))
-        }
-        
+
         let swiftUIView = FileMoreMenuView(
             fileViewModel: file,
             menuItems: menuItems,

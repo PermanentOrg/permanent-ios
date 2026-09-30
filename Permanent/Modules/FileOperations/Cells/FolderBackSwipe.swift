@@ -2,6 +2,8 @@
 //  FolderBackSwipe.swift
 //  Permanent
 //
+//  Created by Lucian Cerbu on 24.09.2026.
+//
 
 import UIKit
 
@@ -22,6 +24,7 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
 
     private weak var list: UICollectionView?
     private let handlers: Handlers
+    private let reduceMotion: () -> Bool
     private let gesture = UIScreenEdgePanGestureRecognizer()
     private var slidingRows: UIView?
     private var dimming: UIView?
@@ -29,13 +32,15 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
     /// Plus one when the leading edge is the left one.
     private var direction: CGFloat = 1
 
-    private static let parallax: CGFloat = 0.3
-    private static let dimmingAlpha: CGFloat = 0.06
-    private static let duration: TimeInterval = 0.25
+    /// Opening a folder uses the same motion, mirrored.
+    static let parallax: CGFloat = 0.3
+    static let dimmingAlpha: CGFloat = 0.06
+    static let duration: TimeInterval = 0.25
 
-    init(list: UICollectionView, in view: UIView, handlers: Handlers) {
+    init(list: UICollectionView, in view: UIView, handlers: Handlers, reduceMotion: @escaping () -> Bool = { UIAccessibility.isReduceMotionEnabled }) {
         self.list = list
         self.handlers = handlers
+        self.reduceMotion = reduceMotion
         super.init()
         let isRightToLeft = view.effectiveUserInterfaceLayoutDirection == .rightToLeft
         direction = isRightToLeft ? -1 : 1
@@ -54,6 +59,29 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         slidingRows == nil && handlers.canGoBack()
+    }
+
+    /// The back arrow's slide: the swipe played through on its own. `false` when there is nothing to slide,
+    /// or Reduce Motion is on, and then the caller goes back without it.
+    func slideBack() -> Bool {
+        guard !reduceMotion(), slidingRows == nil, handlers.canGoBack(), let list, list.window != nil,
+              let container = list.superview else { return false }
+        begin(list, in: container)
+        guard slidingRows != nil else { return false }
+        move(to: 0)
+        finish()
+        // In the same turn as the preview, the load's cross-fade would start from the folder's own rows.
+        list.layer.removeAnimation(forKey: kCATransition)
+        return true
+    }
+
+    /// The shadow the moving rows cast on the rows they cover.
+    static func castEdgeShadow(from view: UIView) {
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.15
+        view.layer.shadowRadius = 8
+        // Kept off the top and bottom edges, so only the side that moves casts a shadow.
+        view.layer.shadowPath = UIBezierPath(rect: view.bounds.insetBy(dx: 0, dy: view.layer.shadowRadius)).cgPath
     }
 
     @objc private func handlePan(_ pan: UIScreenEdgePanGestureRecognizer) {
@@ -82,11 +110,7 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
         let rows = UIView(frame: list.frame)
         snapshot.frame = rows.bounds
         rows.addSubview(snapshot)
-        rows.layer.shadowColor = UIColor.black.cgColor
-        rows.layer.shadowOpacity = 0.15
-        rows.layer.shadowRadius = 8
-        // Kept off the top and bottom edges, so only the side that moves casts a shadow.
-        rows.layer.shadowPath = UIBezierPath(rect: rows.bounds.insetBy(dx: 0, dy: rows.layer.shadowRadius)).cgPath
+        Self.castEdgeShadow(from: rows)
 
         let dimming = UIView(frame: list.frame)
         dimming.backgroundColor = UIColor.black.withAlphaComponent(Self.dimmingAlpha)
@@ -108,7 +132,7 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
         slidingRows.transform = CGAffineTransform(translationX: travel * direction, y: 0)
         dimming?.alpha = 1 - progress
         // The parent drifts in from a little behind, unless Reduce Motion is on.
-        let drift = UIAccessibility.isReduceMotionEnabled ? 0 : -(1 - progress) * Self.parallax * width * direction
+        let drift = reduceMotion() ? 0 : -(1 - progress) * Self.parallax * width * direction
         list.transform = CGAffineTransform(translationX: drift, y: 0)
     }
 

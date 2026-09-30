@@ -2,6 +2,8 @@
 //  FileListPagingSection.swift
 //  Permanent
 //
+//  Created by Lucian Cerbu on 23.09.2026.
+//
 
 import UIKit
 

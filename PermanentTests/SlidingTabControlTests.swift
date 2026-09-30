@@ -2,6 +2,8 @@
 //  SlidingTabControlTests.swift
 //  PermanentTests
 //
+//  Created by Lucian Cerbu on 24.09.2026.
+//
 
 import XCTest
 @testable import Permanent

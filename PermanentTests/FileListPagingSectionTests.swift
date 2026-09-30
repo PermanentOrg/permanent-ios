@@ -2,6 +2,8 @@
 //  FileListPagingSectionTests.swift
 //  PermanentTests
 //
+//  Created by Lucian Cerbu on 23.09.2026.
+//
 
 import XCTest
 @testable import Permanent

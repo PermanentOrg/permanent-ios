@@ -25,6 +25,25 @@ class FileMenuViewModel: ObservableObject {
             case shareToPermanent = "shareToPermanent"
             case shareToAnotherApp = "shareToAnotherApp"
             case editMetadata = "editMetadata"
+
+            var title: String {
+                switch self {
+                case .download: return .save
+                case .copy: return "Copy to another folder"
+                case .move: return "Move to another folder"
+                case .delete: return .delete
+                case .unshare: return "Leave share"
+                case .rename: return .rename
+                case .publish: return "Publish on the web"
+                case .shareToPermanent: return "Share and manage access"
+                case .shareToAnotherApp: return "Save or send a copy"
+                case .editMetadata: return "Edit Metadata"
+                }
+            }
+
+            var isDestructive: Bool {
+                self == .delete || self == .unshare
+            }
         }
         
         let type: ItemType
@@ -883,28 +902,7 @@ class FileMenuViewModel: ObservableObject {
     }
     
     func getTitle(for itemType: MenuItem.ItemType) -> String {
-        switch itemType {
-        case .download:
-            return "Save"
-        case .copy:
-            return "Copy to another folder"
-        case .move:
-            return "Move to another folder"
-        case .delete:
-            return "Delete"
-        case .unshare:
-            return "Leave share"
-        case .rename:
-            return "Rename"
-        case .publish:
-            return "Publish on the web"
-        case .shareToPermanent:
-            return "Share and manage access"
-        case .shareToAnotherApp:
-            return "Save or send a copy"
-        case .editMetadata:
-            return "Edit Metadata"
-        }
+        itemType.title
     }
 
     func shouldShowPendingInvitationBadge(for itemType: MenuItem.ItemType) -> Bool {

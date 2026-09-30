@@ -62,6 +62,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private var backSwipe: FolderBackSwipe?
     private var backPreviewIsShareList = false
     private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
+    private let menuDeferral = ContextMenuDeferral()
+    /// Borrows the sheet's role refresh while a long-press menu is open, so the menu can follow the server's role.
+    private var contextMenuRoleRefresh: FileMenuViewModel?
     private var sharesRefreshRequestId = UUID()
     /// Archive whose share list is loading right now, nil once it lands. A second fetch for the same archive
     /// would supersede this one in the view model, and the spinner would then wait on the duplicate.
@@ -290,6 +293,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         syncSharesForCurrentArchive()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        menuDeferral.menuIsGone()
+    }
+
     /// Refetch if the displayed shares belong to a different archive than the selected one;
     /// otherwise just make sure the layout is current.
     private func syncSharesForCurrentArchive() {
@@ -334,6 +342,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 
     fileprivate func refreshCollectionView(_ completion: (() -> ())? = nil) {
+        if menuDeferral.holdsReload({ [weak self] in self?.refreshCollectionView(completion) }) { return }
         pagingSection.prepareForReload()
         collectionView.reloadData()
         configureCollectionViewBgView()
@@ -672,10 +681,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             showParentPreview: { [weak self] in self?.showBackPreview() },
             previewStillApplies: { [weak self] in self?.viewModel?.backPreviewStillApplies ?? false },
             endParentPreview: { [weak self] in self?.endBackPreview() ?? false },
-            goBack: { [weak self] in
-                guard let self else { return }
-                self.backButtonAction(self.backButton)
-            }
+            goBack: { [weak self] in self?.goUpOneLevel() }
         ))
     }
 
@@ -754,33 +760,39 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 cancelButtonColor: .gray,
                 overlayView: overlayView
             )
+        } else if backSwipe?.slideBack() != true {
+            // The arrow plays the back swipe through when the swipe could run now.
+            goUpOneLevel()
+        }
+    }
+
+    /// Up to the parent folder, or out of a top-level share to the share list.
+    private func goUpOneLevel() {
+        guard
+            let viewModel = viewModel,
+            let leftFolder = viewModel.removeCurrentFolderFromHierarchy()
+        else {
+            return
+        }
+        
+        if let destinationFolder = viewModel.currentFolder {
+            let revertHeader = showHeaderWhileLoading(title: destinationFolder.name, showsBack: !viewModel.currentFolderIsRoot)
+            let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
+            navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
+                // The folder left is still on screen, so it goes back on the history and keeps its header.
+                guard self.folderLoadFailed(), viewModel.navigationStack.last?.folderLinkId == destinationFolder.folderLinkId else { return }
+                viewModel.navigationStack.append(leftFolder)
+                revertHeader()
+            })
         } else {
-            guard
-                let viewModel = viewModel,
-                let leftFolder = viewModel.removeCurrentFolderFromHierarchy()
-            else {
-                return
-            }
-            
-            if let destinationFolder = viewModel.currentFolder {
-                let revertHeader = showHeaderWhileLoading(title: destinationFolder.name, showsBack: !viewModel.currentFolderIsRoot)
-                let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
-                navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
-                    // The folder left is still on screen, so it goes back on the history and keeps its header.
-                    guard self.folderLoadFailed(), viewModel.navigationStack.last?.folderLinkId == destinationFolder.folderLinkId else { return }
-                    viewModel.navigationStack.append(leftFolder)
-                    revertHeader()
-                })
-            } else {
-                let revertHeader = showHeaderWhileLoading(title: "Shares".localized(), showsBack: false)
-                getShares {
-                    // The folder left is still on screen, so it goes back on the history, and is listed again
-                    // because emptying the history ended its paging.
-                    guard self.folderLoadFailed(), viewModel.navigationStack.isEmpty else { return }
-                    viewModel.navigationStack.append(leftFolder)
-                    revertHeader()
-                    self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
-                }
+            let revertHeader = showHeaderWhileLoading(title: "Shares".localized(), showsBack: false)
+            getShares {
+                // The folder left is still on screen, so it goes back on the history, and is listed again
+                // because emptying the history ended its paging.
+                guard self.folderLoadFailed(), viewModel.navigationStack.isEmpty else { return }
+                viewModel.navigationStack.append(leftFolder)
+                revertHeader()
+                self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
             }
         }
     }
@@ -897,57 +909,27 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 
     private func generateMenuItems(for file: FileModel, atIndexPath indexPath: IndexPath) -> [FileMenuViewModel.MenuItem] {
-        var menuItems: [FileMenuViewModel.MenuItem] = []
-        
-        if file.permissions.contains(.share) {
-            if file.permissions.contains(.ownership) {
-                menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
-            }
+        FileMenuItems.types(for: file, in: menuPlace).map { type in
+            FileMenuViewModel.MenuItem(type: type, action: sheetAction(for: type, file: file, atIndexPath: indexPath))
         }
-        
-        // Share to another app - for files with share permission (not folders)
-        if file.permissions.contains(.share) && file.type.isFolder == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
-                shareWithOtherApps(file: file)
-            }))
-        }
+    }
 
-        if file.permissions.contains(.edit) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .rename, action: { [self] in
-                renameAction(file: file, atIndexPath: indexPath)
-            }))
+    private func sheetAction(for type: FileMenuItems.ItemType, file: FileModel, atIndexPath indexPath: IndexPath) -> (() -> Void)? {
+        switch type {
+        case .shareToPermanent, .publish, .editMetadata: return nil
+        case .shareToAnotherApp: return { [weak self] in self?.shareWithOtherApps(file: file) }
+        case .rename: return { [weak self] in self?.renameAction(file: file, atIndexPath: indexPath) }
+        case .download: return { [weak self] in self?.downloadAction(file: file) }
+        case .copy: return { [weak self] in self?.relocateAction(files: [file], action: .copy) }
+        case .move: return { [weak self] in self?.relocateAction(files: [file], action: .move) }
+        case .unshare: return { [weak self] in self?.unshareAction(file: file, atIndexPath: indexPath) }
+        case .delete: return { [weak self] in self?.deleteAction(file: file, atIndexPath: indexPath) }
         }
-        
-        if file.permissions.contains(.read) && file.type.isFolder == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .download, action: { [self] in
-                downloadAction(file: file)
-            }))
-        }
-        
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, file.permissions.contains(.create) && !currentFolderIsRoot {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .copy, action: { [self] in
-                relocateAction(files: [file], action: .copy)
-            }))
-        }
-        
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, file.permissions.contains(.move) && !currentFolderIsRoot {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .move, action: { [self] in
-                relocateAction(files: [file], action: .move)
-            }))
-        }
-        
-        // Add unshare (leave share) or delete as the last item with separator
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .unshare, action: { [self] in
-                unshareAction(file: file, atIndexPath: indexPath)
-            }))
-        } else if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
-                deleteAction(file: file, atIndexPath: indexPath)
-            }))
-        }
-        
-        return menuItems
+    }
+
+    private var menuPlace: FileMenuItems.Place {
+        let isRoot = viewModel?.currentFolderIsRoot ?? true
+        return viewModel?.shareListType == .sharedWithMe ? .sharedWithMe(isRoot: isRoot) : .sharedByMe(isRoot: isRoot)
     }
     
     private func updateFileModelInDataSource(_ updatedFile: FileModel) {
@@ -1727,6 +1709,112 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 }
 
+// MARK: - Long-press menu
+
+extension SharesViewController {
+    /// The row's file when its … button would open the sheet right now; otherwise the long press does nothing.
+    private func contextMenuFile(at indexPath: IndexPath) -> FileModel? {
+        guard let viewModel, indexPath.section == FileListType.synced.rawValue, indexPath.item < viewModel.syncedViewModels.count,
+              !viewModel.isSelecting, !viewModel.isSelectingDestination, viewModel.fileAction == .none
+        else { return nil }
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
+        guard file.fileStatus == .synced, URL(string: file.thumbnailURL) != nil || file.canBeAccessed else { return nil }
+        return file
+    }
+
+    private func fileContextMenu(for file: FileModel, atIndexPath indexPath: IndexPath) -> UIMenu {
+        FileContextMenu.make(for: FileMenuItems.types(for: file, in: menuPlace)) { [weak self] type in
+            self?.menuDeferral.run { self?.performMenuAction(type, on: file, atIndexPath: indexPath) }
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard indexPaths.count == 1, let indexPath = indexPaths.first, let file = contextMenuFile(at: indexPath),
+              !FileMenuItems.types(for: file, in: menuPlace).isEmpty
+        else { return nil }
+        let configuration = UIContextMenuConfiguration(identifier: FileContextMenu.identifier(for: file), previewProvider: nil) { [weak self] _ in
+            self?.fileContextMenu(for: file, atIndexPath: indexPath)
+        }
+        // Delete stays last when the menu opens above the row, as in the Files app.
+        configuration.preferredMenuElementOrder = .fixed
+        return configuration
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, highlightPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        collectionView.cellForItem(at: indexPath).map { FileContextMenu.preview(for: $0, in: collectionView) }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, dismissalPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        collectionView.cellForItem(at: indexPath).map { FileContextMenu.preview(for: $0, in: collectionView) }
+    }
+
+    /// A tap on the lifted row opens it, as a tap on the row does.
+    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        guard let row = contextMenuRow(for: configuration) else { return }
+        animator.preferredCommitStyle = .dismiss
+        animator.addCompletion { [weak self] in
+            // The menu has closed, so the reloads it held land before a folder slides in.
+            self?.menuDeferral.menuIsGone()
+            self?.collectionView(collectionView, didSelectItemAt: IndexPath(item: row, section: FileListType.synced.rawValue))
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        menuDeferral.menuWillShow()
+        refreshRole(forMenu: configuration)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        contextMenuRoleRefresh = nil
+        menuDeferral.menuWillEnd(animator: animator)
+    }
+
+    private func contextMenuRow(for configuration: UIContextMenuConfiguration) -> Int? {
+        guard let identifier = configuration.identifier as? NSString else { return nil }
+        return viewModel?.syncedViewModels.firstIndex { FileContextMenu.identifier(for: $0) == identifier }
+    }
+
+    /// At the top of Shared with me the sheet asks the server for the caller's role as it opens; the open menu follows the answer.
+    private func refreshRole(forMenu configuration: UIContextMenuConfiguration) {
+        guard menuPlace == .sharedWithMe(isRoot: true), let row = contextMenuRow(for: configuration),
+              let file = viewModel?.syncedViewModels[row]
+        else { return }
+        let indexPath = IndexPath(item: row, section: FileListType.synced.rawValue)
+        let refresh = FileMenuViewModel(fileViewModel: file, menuItems: [], showArchiveInfo: true, onDismiss: {})
+        refresh.setFileModelUpdateHandler { [weak self, weak refresh] updatedFile in
+            // A late answer for a menu that has closed must not rewrite the next one.
+            guard let self, let refresh, self.contextMenuRoleRefresh === refresh else { return }
+            self.updateFileModelInDataSource(updatedFile)
+            self.collectionView.contextMenuInteraction?.updateVisibleMenu { _ in
+                self.fileContextMenu(for: updatedFile, atIndexPath: indexPath)
+            }
+        }
+        contextMenuRoleRefresh = refresh
+        refresh.fetchUpdatedAccessRole()
+    }
+
+    private func performMenuAction(_ type: FileMenuItems.ItemType, on file: FileModel, atIndexPath indexPath: IndexPath) {
+        switch type {
+        case .shareToPermanent: presentShareManagement(for: file)
+        case .shareToAnotherApp: shareWithOtherApps(file: file)
+        case .rename: renameAction(file: file, atIndexPath: indexPath)
+        case .move: relocateAction(files: [file], action: .move)
+        case .copy: relocateAction(files: [file], action: .copy)
+        case .download: downloadAction(file: file)
+        case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
+        case .unshare: confirmMenuAction(.leaveShare, on: file) { [weak self] in self?.unshareFile(file, atIndexPath: indexPath) }
+        case .publish, .editMetadata: break
+        }
+    }
+
+    private func confirmMenuAction(_ actionType: ConfirmationBottomAlertView.ActionType, on file: FileModel, then action: @escaping () -> Void) {
+        let confirmation = FileActionConfirmationView.host(for: file, actionType, onConfirm: action, onDismiss: { [weak self] in
+            self?.dismiss(animated: false)
+        })
+        present(confirmation, animated: false)
+    }
+}
+
 // MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
 extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -1826,9 +1914,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         if viewModel.isSelectingDestination {
             guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
             viewModel.v2NavigationTarget = file
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
+            enter(file, from: collectionView)
             return
         }
 
@@ -1845,9 +1931,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                 // Seed the V2 forward-nav target so drill-in engages and children inherit this folder's
                 // accessRole. Nil falls through to V1 safely.
                 viewModel.v2NavigationTarget = file
-                let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-                let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
-                navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
+                enter(file, from: collectionView)
             } else {
                 let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
                 listPreviewVC.modalPresentationStyle = .fullScreen
@@ -1860,6 +1944,15 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                 
                 present(fileDetailsNavigationController, animated: true)
             }
+        }
+    }
+
+    /// Slides the folder in, with its name in the header at once.
+    private func enter(_ folder: FileModel, from list: UICollectionView) {
+        let navigateParams: NavigateMinParams = (folder.archiveNo, folder.folderLinkId, nil)
+        FolderOpenSlide.play(on: list) {
+            let revertHeader = showHeaderWhileLoading(title: folder.name, showsBack: true, entering: folder.folderLinkId)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
         }
     }
     
