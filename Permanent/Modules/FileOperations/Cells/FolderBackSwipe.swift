@@ -58,7 +58,9 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        slidingRows == nil && handlers.canGoBack()
+        // A second finger at the edge during a drag must not swipe the folder away under the files.
+        guard let list, !list.hasActiveDrag, !list.hasActiveDrop else { return false }
+        return slidingRows == nil && handlers.canGoBack()
     }
 
     /// The back arrow's slide: the swipe played through on its own. `false` when there is nothing to slide,

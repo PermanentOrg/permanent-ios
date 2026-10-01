@@ -60,12 +60,17 @@ enum FileContextMenu {
         "\(file.recordId)-\(file.folderLinkId)" as NSString
     }
 
-    /// The rows have square corners, so the lifted row gets a rounded outline, 8 pt in from the screen's sides.
     static func preview(for cell: UICollectionViewCell, in collectionView: UICollectionView) -> UITargetedPreview {
+        let parameters = UIPreviewParameters()
+        parameters.visiblePath = liftedPath(for: cell, in: collectionView)
+        return UITargetedPreview(view: cell, parameters: parameters)
+    }
+
+    /// The rows have square corners, so a lifted row gets a rounded outline, 8 pt in from the screen's sides.
+    /// A drag keeps the same outline, so the row does not change shape when the menu turns into a drag.
+    static func liftedPath(for cell: UICollectionViewCell, in collectionView: UICollectionView) -> UIBezierPath {
         let isGrid = (cell as? FileCollectionViewCell)?.isGridCell ?? false
         let visible = isGrid ? collectionView.bounds : collectionView.bounds.insetBy(dx: 8, dy: 0)
-        let parameters = UIPreviewParameters()
-        parameters.visiblePath = UIBezierPath(roundedRect: cell.bounds.intersection(cell.convert(visible, from: collectionView)), cornerRadius: 12)
-        return UITargetedPreview(view: cell, parameters: parameters)
+        return UIBezierPath(roundedRect: cell.bounds.intersection(cell.convert(visible, from: collectionView)), cornerRadius: 12)
     }
 }

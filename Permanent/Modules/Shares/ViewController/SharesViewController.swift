@@ -63,6 +63,15 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private var backPreviewIsShareList = false
     private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
     private let menuDeferral = ContextMenuDeferral()
+    private lazy var fileDrag = FileListDrag(handlers: .init(
+        draggableFile: { [weak self] indexPath in self?.draggableFile(at: indexPath) },
+        folderRow: { [weak self] indexPath in self?.dropFolder(at: indexPath) },
+        openFolder: { [weak self] in self?.openFolderForDrop },
+        isUnderPinnedHeader: { [weak self] point in self?.isUnderPinnedHeader(point) ?? false },
+        drop: { [weak self] files, destination in self?.startDroppedMove(files, to: destination) },
+        dragDidEnd: { [weak self] in self?.dragDidEnd() },
+        lookDidChange: { [weak self] in self?.showDragLookOnVisibleRows() }
+    ))
     /// Borrows the sheet's role refresh while a long-press menu is open, so the menu can follow the server's role.
     private var contextMenuRoleRefresh: FileMenuViewModel?
     private var sharesRefreshRequestId = UUID()
@@ -83,6 +92,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         setupCollectionView()
         setupBottomActionSheet()
         setUpBackSwipe()
+        setUpDrag()
         
         fabView.delegate = self
         
@@ -157,7 +167,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
             
-            self?.collectionView.reloadData()
+            self?.reloadRows()
         }
 
         NotificationCenter.default.addObserver(forName: ShareItemViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
@@ -171,7 +181,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
             self?.viewModel?.viewModels[index].accessRole = updatedFileModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = updatedFileModel.minArchiveVOS
-            self?.collectionView.reloadData()
+            self?.reloadRows()
         }
         
         NotificationCenter.default.addObserver(forName: UploadManager.quotaExceededNotification, object: nil, queue: nil) { [weak self] notif in
@@ -343,6 +353,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
     fileprivate func refreshCollectionView(_ completion: (() -> ())? = nil) {
         if menuDeferral.holdsReload({ [weak self] in self?.refreshCollectionView(completion) }) { return }
+        if fileDrag.holdsReload({ [weak self] in self?.refreshCollectionView(completion) }) { return }
         pagingSection.prepareForReload()
         collectionView.reloadData()
         configureCollectionViewBgView()
@@ -396,15 +407,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         if #available(iOS 26, *) {
             rightItems.append(FloatingActionImageItem(image: UIColor.clear.imageWithColor(width: 0, height: 0), action: nil))
         }
-        rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
-            self?.dismissFloatingActionIsland()
-            self?.updateFAB()
-
-            self?.viewModel?.selectedFiles = []
-            self?.viewModel?.fileAction = .none
-            self?.viewModel?.isSelectingDestination = false
-            
-            self?.collectionView?.reloadData()
+        rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] _, _ in
+            self?.cancelRelocate()
         })
         
         if viewModel?.fileAction != FileAction.none {
@@ -779,6 +783,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             let revertHeader = showHeaderWhileLoading(title: destinationFolder.name, showsBack: !viewModel.currentFolderIsRoot)
             let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
+                self.fileDrag.navigationDidEnd()
                 // The folder left is still on screen, so it goes back on the history and keeps its header.
                 guard self.folderLoadFailed(), viewModel.navigationStack.last?.folderLinkId == destinationFolder.folderLinkId else { return }
                 viewModel.navigationStack.append(leftFolder)
@@ -1608,7 +1613,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             return
         }
         forShareList ? viewModel.beginShareListLoad() : viewModel.beginFirstPageLoad()
-        showTouchBlocker()
+        if !fileDrag.isDragging { showTouchBlocker() }
         guard collectionView != nil else { return }
         pagingSection.skeletonWillAppear()
         refreshCollectionView()
@@ -1815,6 +1820,120 @@ extension SharesViewController {
     }
 }
 
+// MARK: - Drag to move
+
+extension SharesViewController {
+    private func setUpDrag() {
+        collectionView.dragDelegate = fileDrag
+        collectionView.dropDelegate = fileDrag
+        collectionView.isSpringLoaded = true
+        // A drag never leaves its share: the arrow does not go up from the top shared folder.
+        backButton.addInteraction(FileListDrag.springLoadedBackArrow(
+            canGoUp: { [weak self] in
+                guard let self, self.fileDrag.isDragging, let viewModel = self.viewModel else { return false }
+                return viewModel.navigationStack.count > 1 && self.canSwipeBack
+            },
+            goUp: { [weak self] in
+                guard let self else { return }
+                self.fileDrag.navigationWillStart()
+                self.backButtonAction(self.backButton)
+            }
+        ))
+    }
+
+    /// A row may be dragged when its menu offers Move, which the menu never does at the share list.
+    private func draggableFile(at indexPath: IndexPath) -> FileModel? {
+        guard let file = contextMenuFile(at: indexPath), FileMenuItems.types(for: file, in: menuPlace).contains(.move) else { return nil }
+        return file
+    }
+
+    private func dropFolder(at indexPath: IndexPath) -> FileModel? {
+        contextMenuFile(at: indexPath).flatMap { $0.type.isFolder ? $0 : nil }
+    }
+
+    /// The share list takes no drops.
+    private var openFolderForDrop: FileModel? {
+        guard let viewModel, !viewModel.navigationStack.isEmpty, !viewModel.isSelecting, !viewModel.isSelectingDestination,
+              viewModel.fileAction == .none else { return nil }
+        return viewModel.currentFolder
+    }
+
+    private func isUnderPinnedHeader(_ point: CGPoint) -> Bool {
+        let path = IndexPath(item: 0, section: FileListType.synced.rawValue)
+        guard let header = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: path),
+              !header.isHidden, header.alpha > 0 else { return false }
+        return header.frame.contains(point)
+    }
+
+    /// Greys the folder under the finger, on the rows on screen now.
+    private func showDragLookOnVisibleRows() {
+        guard let viewModel, let collectionView else { return }
+        for case let cell as FileCollectionViewCell in collectionView.visibleCells {
+            guard let indexPath = collectionView.indexPath(for: cell), indexPath.section == FileListType.synced.rawValue,
+                  indexPath.item < viewModel.syncedViewModels.count else { continue }
+            fileDrag.showLook(on: cell, for: viewModel.fileForRowAt(indexPath: indexPath))
+        }
+    }
+
+    /// A folder still loading when the finger lifts gets the touch cover it went without during the drag.
+    private func dragDidEnd() {
+        if viewModel?.isLoadingFirstPage == true { showTouchBlocker() }
+    }
+
+    /// A plain reload of the rows that still waits for an open menu or a drag.
+    private func reloadRows() {
+        if menuDeferral.holdsReload({ [weak self] in self?.reloadRows() }) { return }
+        if fileDrag.holdsReload({ [weak self] in self?.reloadRows() }) { return }
+        collectionView.reloadData()
+    }
+
+    /// Rows that leave the folder go at once, as in Files. Files moved into the open folder show once the server lists them.
+    private func startDroppedMove(_ files: [FileModel], to destination: FileModel) {
+        guard let viewModel, let folder = viewModel.currentFolder else { return }
+        let leaving = files.filter(viewModel.lists)
+        if !leaving.isEmpty {
+            viewModel.removeListedRows(of: leaving)
+            refreshCollectionView()
+        }
+        viewModel.moveDropped(files, to: destination) { [weak self] status in
+            guard let self else { return }
+            switch status {
+            case .success:
+                if !leaving.isEmpty {
+                    self.settleMovedAway(leaving, from: folder, attemptsLeft: Self.movedAwaySettleAttempts)
+                } else if destination.folderLinkId == folder.folderLinkId {
+                    self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
+                }
+            case .error(let message):
+                self.showErrorAlert(message: message)
+                self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
+            }
+        }
+    }
+
+    /// Refetches before the rows count as gone anyway, about 10 s.
+    private static let movedAwaySettleAttempts = 10
+
+    /// The server still lists a moved row for a moment after it answers, so refetches keep it off the screen until it goes.
+    private func settleMovedAway(_ files: [FileModel], from folder: FileModel, attemptsLeft: Int) {
+        refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true) { [weak self] in
+            guard let self, let viewModel = self.viewModel, viewModel.currentFolder?.folderLinkId == folder.folderLinkId else { return }
+            let stillListed = files.filter(viewModel.lists)
+            guard !stillListed.isEmpty else { return }
+            viewModel.removeListedRows(of: stillListed)
+            self.refreshCollectionView()
+            guard attemptsLeft > 1 else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + FilesViewModel.pastedItemsPollInterval) { [weak self] in
+                self?.settleMovedAway(files, from: folder, attemptsLeft: attemptsLeft - 1)
+            }
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldSpringLoadItemAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
+        fileDrag.shouldSpringLoad(indexPath)
+    }
+}
+
 // MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
 extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -1846,6 +1965,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         let isFileSelected = viewModel.selectedFiles?.contains(file) ?? false
 
         cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, isSelecting: viewModel.isSelecting, isFileSelected: isFileSelected)
+        fileDrag.showLook(on: cell, for: file)
         let pendingInvitationCount = pendingInvitationBadgeCount(for: file)
         cell.setMoreButtonBadgeCount(cell.moreButton.isHidden ? 0 : pendingInvitationCount)
         
@@ -1950,9 +2070,13 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
     /// Slides the folder in, with its name in the header at once.
     private func enter(_ folder: FileModel, from list: UICollectionView) {
         let navigateParams: NavigateMinParams = (folder.archiveNo, folder.folderLinkId, nil)
+        fileDrag.navigationWillStart()
         FolderOpenSlide.play(on: list) {
             let revertHeader = showHeaderWhileLoading(title: folder.name, showsBack: true, entering: folder.folderLinkId)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: { [weak self] in
+                revertHeader()
+                self?.fileDrag.navigationDidEnd()
+            })
         }
     }
     
@@ -2082,6 +2206,17 @@ extension SharesViewController: SharedFileActionSheetDelegate {
         viewModel?.fileAction = action
 
         setupBottomActionSheet()
+    }
+
+    /// The X on the Move or Copy bar drops the picked files. The plus button is asked last:
+    /// it stays hidden while a folder for the files is being picked.
+    func cancelRelocate() {
+        dismissFloatingActionIsland()
+        viewModel?.selectedFiles = []
+        viewModel?.fileAction = .none
+        viewModel?.isSelectingDestination = false
+        updateFAB()
+        collectionView?.reloadData()
     }
     
     // MARK: - Share Management

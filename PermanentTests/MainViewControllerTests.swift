@@ -152,6 +152,33 @@ final class MainViewControllerTests: XCTestCase {
         XCTAssertFalse(vc.fabView.isHidden, "deselect restores the FAB when permissions allow")
     }
 
+    func testClosingTheMoveBar_BringsThePlusButtonBack() {
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+        vm.isSelectingDestination = true
+        vc.updateFABViewVisibility()
+        XCTAssertTrue(vc.fabView.isHidden, "precondition: no plus button while a Move waits for its folder")
+
+        vc.cancelRelocate()
+
+        XCTAssertFalse(vm.isSelectingDestination)
+        XCTAssertFalse(vc.fabView.isHidden, "the X on the bar brings the plus button back")
+    }
+
+    func testClosingTheMoveBar_ViewerArchive_KeepsThePlusButtonHidden() {
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+        vm.isSelectingDestination = true
+
+        vc.cancelRelocate()
+
+        XCTAssertTrue(vc.fabView.isHidden, "an archive without write access still gets no plus button")
+    }
+
     func testUpdateFABViewVisibility_HiddenWhileSelecting() {
         // The gate itself must treat select mode as hidden, so any stray refresh that
         // recomputes visibility mid-selection cannot re-show the FAB either.

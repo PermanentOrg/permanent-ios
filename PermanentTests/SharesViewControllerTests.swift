@@ -513,6 +513,28 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertFalse(vc.fabView.isHidden, "deselect restores the FAB when permissions allow")
     }
 
+    func testClosingTheMoveBar_BringsThePlusButtonBack() {
+        let vc = makeController()
+        let writable = FileModel(
+            name: "Editable shared folder",
+            recordId: 0,
+            folderLinkId: 9,
+            archiveNbr: "0001-0000",
+            type: FileType.privateFolder.rawValue,
+            permissions: [.read, .create, .upload]
+        )
+        vc.viewModel?.navigationStack.append(writable)
+        vc.fileActionBottomView.isHidden = true
+        vc.viewModel?.isSelectingDestination = true
+        vc.updateFAB()
+        XCTAssertTrue(vc.fabView.isHidden, "precondition: no plus button while a Move waits for its folder")
+
+        vc.cancelRelocate()
+
+        XCTAssertEqual(vc.viewModel?.isSelectingDestination, false)
+        XCTAssertFalse(vc.fabView.isHidden, "the X on the bar brings the plus button back")
+    }
+
     // MARK: - The pinned sort and Select row
 
     private static let header = UICollectionView.elementKindSectionHeader

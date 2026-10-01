@@ -27,7 +27,9 @@ final class FolderBackSwipeTests: XCTestCase {
 
     /// A test window is never drawn, and a view that was never drawn has no snapshot of its own.
     private final class SnapshotList: UICollectionView {
+        var hasDrag = false
         override func snapshotView(afterScreenUpdates: Bool) -> UIView? { UIView() }
+        override var hasActiveDrag: Bool { hasDrag }
     }
 
     private func hostedList() -> (list: UICollectionView, container: UIView) {
@@ -89,6 +91,17 @@ final class FolderBackSwipeTests: XCTestCase {
         XCTAssertTrue(swipe.slideBack())
 
         XCTAssertNil(list.layer.animation(forKey: kCATransition))
+    }
+
+    func testTheEdgeSwipe_WaitsWhileAFileIsDragged() throws {
+        let (list, container) = hostedList()
+        let swipe = swipe(on: list, in: container) { _ in }
+        let edge = try XCTUnwrap(container.gestureRecognizers?.first { $0 is UIScreenEdgePanGestureRecognizer })
+        XCTAssertTrue(swipe.gestureRecognizerShouldBegin(edge))
+
+        try XCTUnwrap(list as? SnapshotList).hasDrag = true
+
+        XCTAssertFalse(swipe.gestureRecognizerShouldBegin(edge), "a second finger at the edge must not swipe the folder away under the files")
     }
 
     func testTheArrow_LeavesTheWayBackToTheCaller_WhenItCannotSlide() {

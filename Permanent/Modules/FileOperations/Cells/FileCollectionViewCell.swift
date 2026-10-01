@@ -35,9 +35,11 @@ class FileCollectionViewCell: UICollectionViewCell {
     private let moreButtonBadgeView = UIView()
     private let moreButtonBadgeLabel = UILabel()
     private var moreButtonBadgeWidthConstraint: NSLayoutConstraint?
+    private var restingPanelColor: UIColor?
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        restingPanelColor = overlayView.superview?.backgroundColor
         
         initUI()
         
@@ -68,8 +70,15 @@ class FileCollectionViewCell: UICollectionViewCell {
         syncSharingInfoVisibility()
 
         setMoreButtonBadgeCount(0)
+        showDropTarget(false)
     }
     
+    /// A folder under a drag that can take the files turns grey, as in the Files app. iOS fades the dragged rows itself.
+    func showDropTarget(_ isTarget: Bool) {
+        // The row's white panel covers the cell's own background, so the panel is what turns grey.
+        overlayView.superview?.backgroundColor = isTarget ? .galleryGray : restingPanelColor
+    }
+
     private func initUI() {
         activityIndicator.stopAnimating()
         
