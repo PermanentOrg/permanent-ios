@@ -332,6 +332,27 @@ final class StickyHeaderFlowLayoutTests: XCTestCase {
         XCTAssertEqual(refreshControl.layer.sublayerTransform.m42, 0)
     }
 
+    // MARK: - Where the row shows
+
+    func testTheShownFrame_IsTheSlotAtTheTop_AndThePinDeepInTheList() {
+        let (list, layout) = makeList()
+        XCTAssertEqual(layout.shownStickyHeaderFrame?.minY, Self.slotTop)
+
+        list.scroll(to: 600)
+
+        XCTAssertEqual(layout.shownStickyHeaderFrame?.minY, 600)
+        XCTAssertEqual(layout.shownStickyHeaderFrame?.width, 390, "across the whole list")
+    }
+
+    func testAHiddenRow_HasNoShownFrame() {
+        let (list, layout) = makeList()
+        list.scroll(to: 600)
+
+        layout.hidesStickyHeader = true
+
+        XCTAssertNil(layout.shownStickyHeaderFrame)
+    }
+
     // MARK: - Hosted
 
     func testDuringARefresh_ThePinStaysAtTheOffset() throws {

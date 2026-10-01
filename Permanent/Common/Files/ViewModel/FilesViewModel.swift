@@ -1056,7 +1056,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         var isContractBreak = false
     }
 
-    static let childrenPageSize = 10
+    static let childrenPageSize = 20
 
     /// Posted on main, with the view model as the object, when a later page changes the list or its paging state.
     static let childrenDidChangeNotification = Notification.Name("FilesViewModel.childrenDidChange")

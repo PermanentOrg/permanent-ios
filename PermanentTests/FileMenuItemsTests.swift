@@ -28,9 +28,9 @@ final class FileMenuItemsTests: XCTestCase {
 
     // MARK: - Private Files
 
-    func testPrivateFiles_OwnerFile_GetsEightActionsInTheSheetOrder() {
+    func testPrivateFiles_OwnerFile_GetsNineActionsInTheSheetOrder() {
         XCTAssertEqual(types("access.role.owner", in: .privateFiles),
-                       [.shareToPermanent, .shareToAnotherApp, .publish, .rename, .move, .copy, .download, .delete])
+                       [.shareToPermanent, .shareToAnotherApp, .publish, .fileInformation, .rename, .move, .copy, .download, .delete])
     }
 
     func testPrivateFiles_OwnerFolder_HasNoSaveAndNoSendACopy() {
@@ -39,21 +39,21 @@ final class FileMenuItemsTests: XCTestCase {
     }
 
     func testPrivateFiles_ManagerAndCurator_LoseOnlyShareAndManageAccess() {
-        let expected: [ItemType] = [.shareToAnotherApp, .publish, .rename, .move, .copy, .download, .delete]
+        let expected: [ItemType] = [.shareToAnotherApp, .publish, .fileInformation, .rename, .move, .copy, .download, .delete]
         XCTAssertEqual(types("access.role.manager", in: .privateFiles), expected)
         XCTAssertEqual(types("access.role.curator", in: .privateFiles), expected)
     }
 
     func testPrivateFiles_Editor_RenamesCopiesAndSaves() {
-        XCTAssertEqual(types("access.role.editor", in: .privateFiles), [.rename, .copy, .download])
+        XCTAssertEqual(types("access.role.editor", in: .privateFiles), [.fileInformation, .rename, .copy, .download])
     }
 
     func testPrivateFiles_Contributor_CopiesAndSaves() {
-        XCTAssertEqual(types("access.role.contributor", in: .privateFiles), [.copy, .download])
+        XCTAssertEqual(types("access.role.contributor", in: .privateFiles), [.fileInformation, .copy, .download])
     }
 
-    func testPrivateFiles_Viewer_OnlySaves() {
-        XCTAssertEqual(types("access.role.viewer", in: .privateFiles), [.download])
+    func testPrivateFiles_Viewer_ReadsTheInformationAndSaves() {
+        XCTAssertEqual(types("access.role.viewer", in: .privateFiles), [.fileInformation, .download])
     }
 
     func testPrivateFiles_ViewerFolder_HasNoActions() {
@@ -64,7 +64,7 @@ final class FileMenuItemsTests: XCTestCase {
 
     func testPublicFiles_Owner_HasEverythingButPublish() {
         XCTAssertEqual(types("access.role.owner", in: .publicFiles),
-                       [.shareToPermanent, .shareToAnotherApp, .rename, .move, .copy, .download, .delete])
+                       [.shareToPermanent, .shareToAnotherApp, .fileInformation, .rename, .move, .copy, .download, .delete])
     }
 
     // MARK: - Shared
@@ -81,18 +81,28 @@ final class FileMenuItemsTests: XCTestCase {
 
     func testSharedByMe_TopLevel_SharesAndDeletesButNeverMovesOrCopies() {
         XCTAssertEqual(types("access.role.owner", in: .sharedByMe(isRoot: true)),
-                       [.shareToPermanent, .shareToAnotherApp, .rename, .download, .delete])
+                       [.shareToPermanent, .shareToAnotherApp, .fileInformation, .rename, .download, .delete])
     }
 
     func testSharedByMe_InsideAFolder_TakesThePrivateFilesOrderWithoutPublish() {
         XCTAssertEqual(types("access.role.owner", in: .sharedByMe(isRoot: false)),
-                       [.shareToPermanent, .shareToAnotherApp, .rename, .move, .copy, .download, .delete])
+                       [.shareToPermanent, .shareToAnotherApp, .fileInformation, .rename, .move, .copy, .download, .delete])
     }
 
     func testShareAndManageAccess_NeedsTheSharePermissionTooInSharedLists() {
         let owned = FileModel(name: "a.jpg", recordId: 1, folderLinkId: 1, archiveNbr: "0001", type: "type.record.image", permissions: [.ownership, .read])
         XCTAssertFalse(FileMenuItems.types(for: owned, in: .sharedByMe(isRoot: false)).contains(.shareToPermanent))
         XCTAssertTrue(FileMenuItems.types(for: owned, in: .privateFiles).contains(.shareToPermanent), "Private Files asks for ownership alone")
+    }
+
+    func testFileInformation_IsForFilesAnyoneCanOpen_OutsideSharedWithMe() {
+        for place: FileMenuItems.Place in [.privateFiles, .publicFiles, .sharedByMe(isRoot: true), .sharedByMe(isRoot: false)] {
+            XCTAssertTrue(types("access.role.viewer", in: place).contains(.fileInformation), "\(place)")
+            XCTAssertFalse(types("access.role.owner", isFolder: true, in: place).contains(.fileInformation), "no details screen for a folder, \(place)")
+        }
+        for isRoot in [true, false] {
+            XCTAssertFalse(types("access.role.owner", in: .sharedWithMe(isRoot: isRoot)).contains(.fileInformation), "another archive's record")
+        }
     }
 
     // MARK: - Parity with the rules the two screens had before
@@ -134,12 +144,13 @@ final class FileMenuItemsTests: XCTestCase {
                 let label = "\(permissions), folder: \(isFolder)"
                 for isPublic in [false, true] {
                     let before = oldPrivateOrPublicRules(item, isPublic: isPublic)
-                    let now = FileMenuItems.types(for: item, in: isPublic ? .publicFiles : .privateFiles)
+                    // File information is new, so it stays out of the comparison.
+                    let now = FileMenuItems.types(for: item, in: isPublic ? .publicFiles : .privateFiles).filter { $0 != .fileInformation }
                     // the sheet shows the destructive item last, so that is the order people saw
                     XCTAssertEqual(now, before.filter { !$0.isDestructive } + before.filter(\.isDestructive), label)
                 }
                 for isRoot in [false, true] {
-                    XCTAssertEqual(Set(FileMenuItems.types(for: item, in: .sharedByMe(isRoot: isRoot))),
+                    XCTAssertEqual(Set(FileMenuItems.types(for: item, in: .sharedByMe(isRoot: isRoot)).filter { $0 != .fileInformation }),
                                    Set(oldSharedRules(item, isRoot: isRoot, isSharedWithMe: false)), label)
                     XCTAssertEqual(Set(FileMenuItems.types(for: item, in: .sharedWithMe(isRoot: isRoot))),
                                    Set(oldSharedRules(item, isRoot: isRoot, isSharedWithMe: true)), label)

@@ -8,12 +8,18 @@
 import UIKit
 
 /// The long-press menu for one file, laid out like the Files app: Copy, Move and Share side by side on top,
-/// two groups under them, and the destructive item last, on its own.
+/// the file's other actions under them, and the destructive item last, on its own.
 enum FileContextMenu {
     typealias ItemType = FileMenuViewModel.MenuItem.ItemType
 
-    static let topRow: [ItemType] = [.copy, .move, .shareToPermanent]
-    static let groups: [[ItemType]] = [[.download, .shareToAnotherApp], [.rename, .publish], [.delete, .unshare]]
+    /// Share is the phone's share sheet; sharing inside Permanent is the first row under it.
+    static let topRow: [ItemType] = [.copy, .move, .shareToAnotherApp]
+    static let groups: [[ItemType]] = [[.shareToPermanent, .publish, .fileInformation, .rename], [.delete, .unshare]]
+
+    /// Whether the menu would show anything; Save, a viewer's only action in a shared folder, stays in the … sheet.
+    static func hasActions(for types: [ItemType]) -> Bool {
+        types.contains { topRow.contains($0) || groups.joined().contains($0) }
+    }
 
     /// `types` decides which actions appear; the layout above decides where.
     static func make(for types: [ItemType], perform: @escaping (ItemType) -> Void) -> UIMenu {
@@ -35,24 +41,27 @@ enum FileContextMenu {
         switch type {
         case .copy: return .copy
         case .move: return .move
-        case .shareToPermanent: return .share
+        case .shareToAnotherApp: return .share
         default: return type.title
         }
     }
 
+    /// The … sheet's icons, so both menus look alike. The sheet has no icon for Share, so it takes a system one.
     static func image(for type: ItemType) -> UIImage? {
+        let name: String
         switch type {
-        case .copy: return UIImage(systemName: "doc.on.doc")
-        case .move: return UIImage(systemName: "folder")
-        case .shareToPermanent: return UIImage(systemName: "square.and.arrow.up")
-        case .download: return UIImage(systemName: "arrow.down.circle")
-        case .shareToAnotherApp: return UIImage(systemName: "paperplane")
-        case .rename: return UIImage(systemName: "pencil")
-        case .publish: return UIImage(systemName: "globe")
-        case .delete: return UIImage(systemName: "trash")
-        case .unshare: return UIImage(systemName: "rectangle.portrait.and.arrow.right")
-        case .editMetadata: return UIImage(systemName: "info.circle")
+        case .shareToAnotherApp: return UIImage(systemName: "arrow.up.forward.app")
+        case .copy: name = "copyV1"
+        case .move: name = "moveV1"
+        case .shareToPermanent: name = "ShareAndManageV1"
+        case .publish: name = "publishOnWebV1"
+        case .fileInformation, .editMetadata: name = "fileInfoV1"
+        case .rename: name = "renameV1"
+        case .download: name = "downloadV1"
+        case .delete: name = "deleteV1"
+        case .unshare: name = "publishRevokeLink"
         }
+        return UIImage(named: name)?.withRenderingMode(.alwaysTemplate)
     }
 
     /// Keyed by the item, never by its row: the list can reload while the menu is open.

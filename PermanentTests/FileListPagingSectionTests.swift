@@ -37,6 +37,12 @@ final class FileListPagingSectionTests: XCTestCase {
     }
 
     /// A view model inside a folder, answered from `responses` in order.
+    /// One full page: the page size less one file, and the folder `page` adds, so another page is due.
+    private var fullPage: Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
+        let files = FilesViewModel.childrenPageSize - 1
+        return page(Array(1...files), nextCursor: "\(files)")
+    }
+
     private func makeViewModel(responses: [Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure>]) -> MyFilesViewModel {
         let viewModel = MyFilesViewModel()
         var remaining = responses
@@ -60,7 +66,7 @@ final class FileListPagingSectionTests: XCTestCase {
     }
 
     func testTheFirstPage_ShowsAScreenOfSkeletonsAndNoFooter() {
-        let viewModel = makeViewModel(responses: [page(Array(1...9), nextCursor: "9")])
+        let viewModel = makeViewModel(responses: [fullPage])
         let section = makeSection(for: viewModel)
 
         viewModel.isLoadingFirstPage = true
@@ -71,7 +77,7 @@ final class FileListPagingSectionTests: XCTestCase {
     }
 
     func testMorePagesDue_ShowThreeSkeletonRowsAndNoFooter() {
-        let viewModel = makeViewModel(responses: [page(Array(1...9), nextCursor: "9")])
+        let viewModel = makeViewModel(responses: [fullPage])
         let section = makeSection(for: viewModel)
 
         XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
@@ -81,7 +87,7 @@ final class FileListPagingSectionTests: XCTestCase {
     }
 
     func testAFailedPage_KeepsTheSkeletonRowsAndShowsTheRetryFooter() {
-        let viewModel = makeViewModel(responses: [page(Array(1...9), nextCursor: "9"), .failure(.init(message: "offline"))])
+        let viewModel = makeViewModel(responses: [fullPage, .failure(.init(message: "offline"))])
         let section = makeSection(for: viewModel)
         let loaded = expectation(description: "page")
         viewModel.loadNextChildrenPage { _ in loaded.fulfill() }
@@ -115,7 +121,7 @@ final class FileListPagingSectionTests: XCTestCase {
 
     func testSkeletonsComingIntoView_LoadTheNextPageOnlyWhileOneIsDue() {
         var requests = 0
-        let viewModel = makeViewModel(responses: [page(Array(1...9), nextCursor: "9"), .failure(.init(message: "offline"))])
+        let viewModel = makeViewModel(responses: [fullPage, .failure(.init(message: "offline"))])
         let answer = viewModel.childrenPageV2Request
         viewModel.childrenPageV2Request = { folderId, pageSize, cursor, completion in
             requests += 1
@@ -136,7 +142,7 @@ final class FileListPagingSectionTests: XCTestCase {
     }
 
     func testALaterPage_IsMarkedAsAddingRows_WhileTheScreenRedraws() {
-        let viewModel = makeViewModel(responses: [page(Array(1...9), nextCursor: "9"), page(Array(10...18), nextCursor: nil)])
+        let viewModel = makeViewModel(responses: [fullPage, page(Array(FilesViewModel.childrenPageSize...(2 * FilesViewModel.childrenPageSize - 2)), nextCursor: nil)])
         var addingDuringRedraw: [Bool] = []
         var section: FileListPagingSection!
         let changed = expectation(description: "screen told")

@@ -638,6 +638,7 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertEqual(sut.getTitle(for: .shareToPermanent), "Share and manage access")
         XCTAssertEqual(sut.getTitle(for: .shareToAnotherApp), "Save or send a copy")
         XCTAssertEqual(sut.getTitle(for: .editMetadata), "Edit Metadata")
+        XCTAssertEqual(sut.getTitle(for: .fileInformation), "File information")
     }
 
     // MARK: - Pending Invitation Badge Tests
@@ -868,8 +869,8 @@ final class FileMenuViewModelTests: XCTestCase {
 
     // MARK: - MenuItem.ItemType
 
-    func testMenuItemType_AllCases_Has10Cases() {
-        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.allCases.count, 10)
+    func testMenuItemType_AllCases_Has11Cases() {
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.allCases.count, 11)
     }
 
     func testMenuItemType_RawValues() {
@@ -883,6 +884,7 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.shareToPermanent.rawValue, "shareToPermanent")
         XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.shareToAnotherApp.rawValue, "shareToAnotherApp")
         XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.editMetadata.rawValue, "editMetadata")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.fileInformation.rawValue, "fileInformation")
     }
 
     // MARK: - MenuItem Equatable

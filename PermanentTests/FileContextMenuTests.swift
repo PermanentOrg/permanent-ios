@@ -11,7 +11,8 @@ import XCTest
 @MainActor
 final class FileContextMenuTests: XCTestCase {
     private typealias ItemType = FileMenuItems.ItemType
-    private let ownerFile: [ItemType] = [.shareToPermanent, .shareToAnotherApp, .publish, .rename, .move, .copy, .download, .delete]
+    private let ownerFile: [ItemType] = [.shareToPermanent, .shareToAnotherApp, .publish, .fileInformation, .rename, .move, .copy, .download, .delete]
+    private let ownerFolder: [ItemType] = [.shareToPermanent, .publish, .rename, .move, .copy, .delete]
 
     private func groups(_ types: [ItemType], perform: @escaping (ItemType) -> Void = { _ in }) -> [UIMenu] {
         let children = FileContextMenu.make(for: types, perform: perform).children
@@ -34,20 +35,42 @@ final class FileContextMenuTests: XCTestCase {
         unsafeBitCast(handler as AnyObject, to: Handler.self)(action)
     }
 
-    func testOwnerMenu_IsTheFilesLayout_ATopRowThenThreeGroups() {
+    func testOwnerMenu_IsTheFilesLayout_ATopRowThenTwoGroups() {
         let groups = groups(ownerFile)
         XCTAssertEqual(groups.map { actions(in: $0).map(\.title) }, [
             ["Copy", "Move", "Share"],
-            ["Save", "Save or send a copy"],
-            ["Rename", "Publish on the web"],
+            ["Share and manage access", "Publish on the web", "File information", "Rename"],
             ["Delete"]
         ])
         XCTAssertTrue(groups.allSatisfy { $0.options.contains(.displayInline) })
         XCTAssertEqual(groups[0].preferredElementSize, .medium, "Copy, Move and Share sit side by side")
     }
 
-    func testViewerMenu_IsOnlySave_WithNoEmptyGroups() {
-        XCTAssertEqual(groups([.download]).map { actions(in: $0).map(\.title) }, [["Save"]])
+    func testAFolder_HasOnlyCopyAndMoveOnTop_SinceItCannotBeSentToAnotherApp() {
+        XCTAssertEqual(groups(ownerFolder).map { actions(in: $0).map(\.title) }, [
+            ["Copy", "Move"],
+            ["Share and manage access", "Publish on the web", "Rename"],
+            ["Delete"]
+        ])
+    }
+
+    func testTheTopShare_OpensTheShareSheet_AndSaveStaysInTheSheet() throws {
+        var picked: [ItemType] = []
+        let all = groups(ownerFile) { picked.append($0) }.flatMap { actions(in: $0) }
+        try perform(try XCTUnwrap(all.first { $0.title == "Share" }))
+
+        XCTAssertEqual(picked, [.shareToAnotherApp])
+        XCTAssertFalse(all.contains { $0.title == "Save" || $0.title == "Save or send a copy" }, "one way to share, as in Files")
+    }
+
+    func testViewerMenu_IsOnlyFileInformation_WithNoEmptyGroups() {
+        XCTAssertEqual(groups([.fileInformation, .download]).map { actions(in: $0).map(\.title) }, [["File information"]])
+    }
+
+    func testAMenuWithOnlySave_HasNothingToShow() {
+        XCTAssertFalse(FileContextMenu.hasActions(for: [.download]))
+        XCTAssertFalse(FileContextMenu.hasActions(for: []))
+        XCTAssertTrue(FileContextMenu.hasActions(for: [.download, .unshare]))
     }
 
     func testDeleteAndLeaveShare_AreRed_AndNothingElseIs() {

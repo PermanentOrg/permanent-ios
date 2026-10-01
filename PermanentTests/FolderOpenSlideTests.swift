@@ -45,7 +45,7 @@ final class FolderOpenSlideTests: XCTestCase {
         FolderOpenSlide.play(on: list, reduceMotion: false) { opened += 1 }
 
         XCTAssertEqual(opened, 1)
-        XCTAssertEqual(container.subviews.count, 4, "the old rows, their dimming and the list's shadow sit under the list")
+        XCTAssertEqual(container.subviews.count, 3, "the old rows and the list's shadow sit under the list")
         XCTAssertEqual(container.subviews.last, list)
         XCTAssertTrue(slides(list))
         waitUntil(container.subviews.count == 1)
@@ -84,5 +84,66 @@ final class FolderOpenSlideTests: XCTestCase {
 
         XCTAssertEqual(opened, 1)
         XCTAssertEqual(container.subviews, [list])
+    }
+
+    // MARK: - The sort row
+
+    /// A folder list with its sort row, which a never-drawn window cannot snapshot either.
+    private final class SnapshotFolderList: StickyHeaderTestList {
+        override func snapshotView(afterScreenUpdates: Bool) -> UIView? { UIView() }
+        override func resizableSnapshotView(from rect: CGRect, afterScreenUpdates: Bool, withCapInsets capInsets: UIEdgeInsets) -> UIView? { UIView() }
+    }
+
+    private func hostedFolderList(_ configure: (StickyHeaderTestList) -> Void = { _ in }) -> (list: StickyHeaderTestList, container: UIView) {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let container = UIView(frame: window.bounds)
+        window.addSubview(container)
+        let list = SnapshotFolderList(layout: StickyHeaderFlowLayout.fileList())
+        configure(list)
+        list.reloadData()
+        container.addSubview(list)
+        window.isHidden = false
+        list.scroll(to: 0)
+        addTeardownBlock { window.isHidden = true }
+        return (list, container)
+    }
+
+    func testTheSortRow_StaysStillOverTheSlidingList_ThenHandsOver() throws {
+        let (list, container) = hostedFolderList { $0.uploadRows = 0 }
+
+        FolderOpenSlide.play(on: list, reduceMotion: false) {}
+
+        let still = try XCTUnwrap(container.subviews.last)
+        XCTAssertFalse(still === list, "a copy of the row sits above the list")
+        XCTAssertEqual(still.frame, CGRect(x: 0, y: 0, width: 390, height: StickyHeaderTestList.headerHeight))
+        XCTAssertTrue(slides(list))
+        XCTAssertNil(still.layer.animationKeys(), "the copy does not slide")
+        waitUntil(container.subviews.count == 1)
+        XCTAssertEqual(container.subviews, [list], "the copy fades into the list's own row, then goes")
+    }
+
+    func testAHiddenSortRow_SlidesInWithTheRows() {
+        let (list, container) = hostedFolderList()
+        list.scroll(to: 600)
+        (list.collectionViewLayout as? StickyHeaderFlowLayout)?.hidesStickyHeader = true
+        list.layoutIfNeeded()
+
+        FolderOpenSlide.play(on: list, reduceMotion: false) {}
+
+        XCTAssertEqual(container.subviews.count, 3, "no copy of a row that is not on screen")
+        XCTAssertEqual(container.subviews.last, list)
+    }
+
+    func testASortRowThatMoves_IsNotHeldStill() {
+        let (list, container) = hostedFolderList { $0.uploadRows = 0 }
+
+        FolderOpenSlide.play(on: list, reduceMotion: false) {
+            // The next folder lists uploads above its sort row.
+            list.uploadRows = 2
+            list.reloadData()
+        }
+
+        XCTAssertEqual(container.subviews.count, 3)
+        XCTAssertEqual(container.subviews.last, list)
     }
 }

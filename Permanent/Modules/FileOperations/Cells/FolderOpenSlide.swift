@@ -7,8 +7,8 @@
 
 import UIKit
 
-/// Opening a folder as the back swipe mirrored: the list slides in from the trailing edge with the folder's
-/// loading rows, over a snapshot of the rows it leaves, which drift a little the other way and dim.
+/// Opening a folder as the back swipe mirrored: the list slides in from the trailing edge with the folder's loading
+/// rows, over a snapshot of the rows it leaves, which drift a little the other way. The sort row stays put.
 enum FolderOpenSlide {
     /// Runs `open`, which puts the folder's loading rows in the list, then slides the list in.
     /// With no window, no snapshot or Reduce Motion on, it only runs `open`.
@@ -18,23 +18,23 @@ enum FolderOpenSlide {
         let leftRows = UIView(frame: list.frame)
         snapshot.frame = leftRows.bounds
         leftRows.addSubview(snapshot)
-        let dimming = UIView(frame: list.frame)
-        dimming.backgroundColor = UIColor.black.withAlphaComponent(FolderBackSwipe.dimmingAlpha)
-        dimming.alpha = 0
         // The list clips to its bounds, so a view that moves with it casts its shadow.
         let shadow = UIView(frame: list.frame)
         shadow.backgroundColor = list.backgroundColor
         FolderBackSwipe.castEdgeShadow(from: shadow)
-        let added = [leftRows, dimming, shadow]
+        let added = [leftRows, shadow]
         added.forEach {
             $0.isUserInteractionEnabled = false
             container.insertSubview($0, belowSubview: list)
         }
+        // Before the list changes, so the row held still is the one on screen now.
+        let heldRow = FolderBackSwipe.holdSortRow(of: list, above: list, in: container)
 
         open()
         list.layoutIfNeeded()
         // The list's cross-fade to the loading rows would slide the old rows in again.
         list.layer.removeAnimation(forKey: kCATransition)
+        let sortRow = FolderBackSwipe.keepSortRow(heldRow, over: list, in: container)
 
         let direction: CGFloat = list.effectiveUserInterfaceLayoutDirection == .rightToLeft ? -1 : 1
         let width = list.bounds.width
@@ -45,9 +45,9 @@ enum FolderOpenSlide {
             list.transform = .identity
             shadow.transform = .identity
             leftRows.transform = CGAffineTransform(translationX: -FolderBackSwipe.parallax * width * direction, y: 0)
-            dimming.alpha = 1
         } completion: { _ in
             added.forEach { $0.removeFromSuperview() }
+            FolderBackSwipe.releaseSortRow(sortRow)
         }
     }
 }

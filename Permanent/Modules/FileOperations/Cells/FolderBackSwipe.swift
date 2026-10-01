@@ -27,14 +27,13 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
     private let reduceMotion: () -> Bool
     private let gesture = UIScreenEdgePanGestureRecognizer()
     private var slidingRows: UIView?
-    private var dimming: UIView?
+    private var sortRow: UIView?
     private var savedOffset: CGPoint = .zero
     /// Plus one when the leading edge is the left one.
     private var direction: CGFloat = 1
 
     /// Opening a folder uses the same motion, mirrored.
     static let parallax: CGFloat = 0.3
-    static let dimmingAlpha: CGFloat = 0.06
     static let duration: TimeInterval = 0.25
 
     init(list: UICollectionView, in view: UIView, handlers: Handlers, reduceMotion: @escaping () -> Bool = { UIAccessibility.isReduceMotionEnabled }) {
@@ -77,13 +76,49 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
         return true
     }
 
+    /// The sort row as it shows now, held still above the sliding rows, as a bar stays put over a page.
+    /// Nil when the row is hidden or there is none, and then it slides with the rows.
+    static func holdSortRow(of list: UICollectionView, above view: UIView, in container: UIView) -> UIView? {
+        guard let frame = (list.collectionViewLayout as? StickyHeaderFlowLayout)?.shownStickyHeaderFrame,
+              let still = list.resizableSnapshotView(from: frame, afterScreenUpdates: false, withCapInsets: .zero) else { return nil }
+        still.frame = list.convert(frame, to: container)
+        still.isUserInteractionEnabled = false
+        container.insertSubview(still, aboveSubview: view)
+        return still
+    }
+
+    /// Once the list shows the next folder, the held row stays only if that folder's own row sits in the same place.
+    static func keepSortRow(_ still: UIView?, over list: UICollectionView, in container: UIView) -> UIView? {
+        guard let still else { return nil }
+        guard let frame = (list.collectionViewLayout as? StickyHeaderFlowLayout)?.shownStickyHeaderFrame,
+              abs(list.convert(frame, to: container).minY - still.frame.minY) < 1, abs(frame.height - still.frame.height) < 1 else {
+            still.removeFromSuperview()
+            return nil
+        }
+        return still
+    }
+
+    /// Hands over to the list's own row. A sort that changed fades in; the same sort shows no change.
+    static func releaseSortRow(_ still: UIView?) {
+        guard let still else { return }
+        UIView.animate(withDuration: sortRowFade, delay: 0, options: [.allowUserInteraction]) {
+            still.alpha = 0
+        } completion: { _ in
+            still.removeFromSuperview()
+        }
+    }
+
+    static let sortRowFade: TimeInterval = 0.15
+
     /// The shadow the moving rows cast on the rows they cover.
     static func castEdgeShadow(from view: UIView) {
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.15
         view.layer.shadowRadius = 8
-        // Kept off the top and bottom edges, so only the side that moves casts a shadow.
-        view.layer.shadowPath = UIBezierPath(rect: view.bounds.insetBy(dx: 0, dy: view.layer.shadowRadius)).cgPath
+        // A blur reaches about twice its radius. Unshifted and inset that far, only the side that moves casts a
+        // shadow, and none spills onto the sort row or the folder name above it.
+        view.layer.shadowOffset = .zero
+        view.layer.shadowPath = UIBezierPath(rect: view.bounds.insetBy(dx: 0, dy: 2 * view.layer.shadowRadius)).cgPath
     }
 
     @objc private func handlePan(_ pan: UIScreenEdgePanGestureRecognizer) {
@@ -113,18 +148,15 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
         snapshot.frame = rows.bounds
         rows.addSubview(snapshot)
         Self.castEdgeShadow(from: rows)
-
-        let dimming = UIView(frame: list.frame)
-        dimming.backgroundColor = UIColor.black.withAlphaComponent(Self.dimmingAlpha)
-        dimming.isUserInteractionEnabled = false
-        container.insertSubview(dimming, aboveSubview: list)
-        container.insertSubview(rows, aboveSubview: dimming)
+        container.insertSubview(rows, aboveSubview: list)
+        // Before the parent's look, so the row held still is this folder's own.
+        let heldRow = Self.holdSortRow(of: list, above: rows, in: container)
         slidingRows = rows
-        self.dimming = dimming
 
         savedOffset = list.contentOffset
         handlers.showParentPreview()
         list.layoutIfNeeded()
+        sortRow = Self.keepSortRow(heldRow, over: list, in: container)
     }
 
     private func move(to travel: CGFloat) {
@@ -132,7 +164,6 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
         let width = max(1, list.bounds.width)
         let progress = travel / width
         slidingRows.transform = CGAffineTransform(translationX: travel * direction, y: 0)
-        dimming?.alpha = 1 - progress
         // The parent drifts in from a little behind, unless Reduce Motion is on.
         let drift = reduceMotion() ? 0 : -(1 - progress) * Self.parallax * width * direction
         list.transform = CGAffineTransform(translationX: drift, y: 0)
@@ -175,8 +206,8 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
     private func tearDown() {
         list?.transform = .identity
         slidingRows?.removeFromSuperview()
-        dimming?.removeFromSuperview()
+        Self.releaseSortRow(sortRow)
         slidingRows = nil
-        dimming = nil
+        sortRow = nil
     }
 }

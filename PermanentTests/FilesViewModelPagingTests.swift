@@ -83,6 +83,14 @@ final class FilesViewModelPagingTests: XCTestCase {
         return .success(try! FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: Data(json.utf8)))
     }
 
+    /// The page size, so each test reads the same whatever it is.
+    private let n = FilesViewModel.childrenPageSize
+
+    /// A full page of records from `start`, whose cursor is its last row, so another page is due.
+    private func fullPage(from start: Int = 1, badLinkId: Int? = nil) -> Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
+        page(Array(start..<(start + n)), nextCursor: "\(start + n - 1)", badLinkId: badLinkId)
+    }
+
     private func enter(_ folder: FileModel, in viewModel: FilesViewModel, backNavigation: Bool = false) {
         if !backNavigation { viewModel.v2NavigationTarget = folder }
         let done = expectation(description: "folder listed")
@@ -98,17 +106,17 @@ final class FilesViewModelPagingTests: XCTestCase {
 
     // MARK: - First page
 
-    func testFirstPage_AsksForTenAndKeepsTheCursor() {
+    func testFirstPage_AsksForOnePageAndKeepsTheCursor() {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
 
         enter(makeFolder(), in: viewModel)
 
-        XCTAssertEqual(server.requests.first?.pageSize, 10)
+        XCTAssertEqual(server.requests.first?.pageSize, n)
         XCTAssertNil(server.requests.first?.cursor)
-        XCTAssertEqual(viewModel.viewModels.count, 10)
+        XCTAssertEqual(viewModel.viewModels.count, n)
         XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
     }
 
@@ -117,7 +125,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
 
         enter(makeFolder(sort: nil), in: viewModel)
 
@@ -130,14 +138,14 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folder = makeFolder()
-        server.responses = [page(Array(1...10), nextCursor: "10"), page([11, 12, 13], nextCursor: "13"), page(Array(1...13), nextCursor: "13")]
+        server.responses = [fullPage(), page([n + 1, n + 2, n + 3], nextCursor: "\(n + 3)"), page(Array(1...(n + 3)), nextCursor: "\(n + 3)")]
 
         enter(folder, in: viewModel)
         loadNextPage(in: viewModel)
         enter(folder, in: viewModel, backNavigation: true)
 
-        XCTAssertEqual(server.requests.last?.pageSize, 20)
-        XCTAssertEqual(viewModel.viewModels.count, 13)
+        XCTAssertEqual(server.requests.last?.pageSize, 2 * n)
+        XCTAssertEqual(viewModel.viewModels.count, n + 3)
         XCTAssertEqual(viewModel.childrenPagingState, .complete, "a short refresh page means the list is still whole")
     }
 
@@ -147,14 +155,14 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page([10, 11, 12], nextCursor: "12")]
+        server.responses = [fullPage(), page([n, n + 1, n + 2], nextCursor: "\(n + 2)")]
 
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
 
-        XCTAssertEqual(server.requests.last?.cursor, "10")
-        XCTAssertEqual(server.requests.last?.pageSize, 10)
-        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1...12), "a child the server repeats is listed once")
+        XCTAssertEqual(server.requests.last?.cursor, "\(n)")
+        XCTAssertEqual(server.requests.last?.pageSize, n)
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1...(n + 2)), "a child the server repeats is listed once")
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 
@@ -162,12 +170,12 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page([], nextCursor: nil)]
+        server.responses = [fullPage(), page([], nextCursor: nil)]
 
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
 
-        XCTAssertEqual(viewModel.viewModels.count, 10)
+        XCTAssertEqual(viewModel.viewModels.count, n)
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 
@@ -175,20 +183,20 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), .failure(.init(message: "offline")), page([11, 12], nextCursor: "12")]
+        server.responses = [fullPage(), .failure(.init(message: "offline")), page([n + 1, n + 2], nextCursor: "\(n + 2)")]
 
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
 
         XCTAssertEqual(viewModel.childrenPagingState, .failed)
-        XCTAssertEqual(viewModel.viewModels.count, 10)
+        XCTAssertEqual(viewModel.viewModels.count, n)
 
         let retried = expectation(description: "retry")
         viewModel.retryNextChildrenPage { _ in retried.fulfill() }
         wait(for: [retried], timeout: 5)
 
-        XCTAssertEqual(server.requests.last?.cursor, "10", "the retry asks for the same page")
-        XCTAssertEqual(viewModel.viewModels.count, 12)
+        XCTAssertEqual(server.requests.last?.cursor, "\(n)", "the retry asks for the same page")
+        XCTAssertEqual(viewModel.viewModels.count, n + 2)
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 
@@ -196,7 +204,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page([50, 51], nextCursor: "51")]
+        server.responses = [fullPage(), page([1000, 1001], nextCursor: "1001")]
 
         enter(makeFolder(folderId: 10), in: viewModel)
         server.holdsNextRequest = true
@@ -206,12 +214,12 @@ final class FilesViewModelPagingTests: XCTestCase {
 
         let late = expectation(description: "late page")
         DispatchQueue.global().async {
-            server.heldCompletion?(self.page([11, 12], nextCursor: "12"))
+            server.heldCompletion?(self.page([self.n + 1, self.n + 2], nextCursor: "\(self.n + 2)"))
             DispatchQueue.main.async { late.fulfill() }
         }
         wait(for: [late], timeout: 5)
 
-        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), [50, 51])
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), [1000, 1001])
         XCTAssertEqual(reportedChange, false)
     }
 
@@ -219,15 +227,16 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(11...20), nextCursor: "20"), page([21], nextCursor: "21")]
+        server.responses = [fullPage(), fullPage(from: n + 1), page([2 * n + 1], nextCursor: "\(2 * n + 1)")]
 
         enter(makeFolder(), in: viewModel)
         let found = expectation(description: "found")
         var match: FileModel?
-        viewModel.loadChildrenPages(until: { $0.folderLinkId == 15 }) { match = $0; found.fulfill() }
+        let wanted = n + 5
+        viewModel.loadChildrenPages(until: { $0.folderLinkId == wanted }) { match = $0; found.fulfill() }
         wait(for: [found], timeout: 5)
 
-        XCTAssertEqual(match?.folderLinkId, 15)
+        XCTAssertEqual(match?.folderLinkId, wanted)
         XCTAssertEqual(server.requests.count, 2, "no page past the one holding the child")
     }
 
@@ -237,7 +246,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = V1SucceedingViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), .failure(.init(message: "offline"))]
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
 
         enter(makeFolder(folderId: 10), in: viewModel)
         XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
@@ -250,7 +259,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
 
         enter(makeFolder(), in: viewModel)
         viewModel.navigationStack.removeAll()
@@ -279,7 +288,8 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folder = makeFolder()
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(1...25), nextCursor: "25"), page(Array(1...25), nextCursor: "25")]
+        let whole = n + 15
+        server.responses = [fullPage(), page(Array(1...whole), nextCursor: "\(whole)"), page(Array(1...whole), nextCursor: "\(whole)")]
         enter(folder, in: viewModel)
         let listed = expectation(description: "whole folder")
         viewModel.listWholeFolder { _ in listed.fulfill() }
@@ -289,7 +299,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         enter(folder, in: viewModel, backNavigation: true)
 
         XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize, "the settle refetch lists the whole folder")
-        XCTAssertTrue(viewModel.isAwaitingPastedItems, "25 rows, and the paste is still missing")
+        XCTAssertTrue(viewModel.isAwaitingPastedItems, "the whole folder, and the paste is still missing")
     }
 
     func testAPickedSortTheServerDoesNotHold_ListsTheWholeFolder() {
@@ -297,7 +307,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folder = makeFolder(sort: "date-descending")
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(1...12), nextCursor: "12")]
+        server.responses = [fullPage(), page(Array(1...(n + 2)), nextCursor: "\(n + 2)")]
 
         enter(folder, in: viewModel)
         viewModel.activeSortOption = .nameDescending
@@ -312,7 +322,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(1...25), nextCursor: "25")]
+        server.responses = [fullPage(), page(Array(1...(n + 15)), nextCursor: "\(n + 15)")]
         enter(makeFolder(), in: viewModel)
 
         let listed = expectation(description: "whole folder")
@@ -320,7 +330,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         wait(for: [listed], timeout: 5)
 
         XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize)
-        XCTAssertEqual(viewModel.viewModels.count, 25)
+        XCTAssertEqual(viewModel.viewModels.count, n + 15)
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 
@@ -330,13 +340,13 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(11...20), nextCursor: "20", badLinkId: 15), page(Array(1...24), nextCursor: "24")]
+        server.responses = [fullPage(), fullPage(from: n + 1, badLinkId: n + 5), page(Array(1...(n + 14)), nextCursor: "\(n + 14)")]
 
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
 
         XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize, "the same cursor would fail again")
-        XCTAssertEqual(viewModel.viewModels.count, 24)
+        XCTAssertEqual(viewModel.viewModels.count, n + 14)
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 
@@ -344,7 +354,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = V1FailingViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(11...20), nextCursor: "20", badLinkId: 15), .failure(.init(message: "offline"))]
+        server.responses = [fullPage(), fullPage(from: n + 1, badLinkId: n + 5), .failure(.init(message: "offline"))]
 
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
@@ -352,7 +362,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         loadNextPage(in: viewModel)
 
         XCTAssertEqual(viewModel.childrenPagingState, .failed)
-        XCTAssertEqual(viewModel.viewModels.count, 10)
+        XCTAssertEqual(viewModel.viewModels.count, n)
         XCTAssertEqual(server.requests.count, requestsAfterFailure, "no request until the user taps retry")
     }
 
@@ -362,7 +372,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
         enter(makeFolder(), in: viewModel)
 
         server.holdsNextRequest = true
@@ -379,7 +389,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folder = makeFolder()
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(1...20), nextCursor: "20")]
+        server.responses = [fullPage(), page(Array(1...(2 * n)), nextCursor: "\(2 * n)")]
         enter(folder, in: viewModel)
 
         server.holdsNextRequest = true
@@ -389,12 +399,12 @@ final class FilesViewModelPagingTests: XCTestCase {
 
         let late = expectation(description: "late page")
         DispatchQueue.global().async {
-            server.heldCompletion?(self.page([11, 12], nextCursor: "12"))
+            server.heldCompletion?(self.page([self.n + 1, self.n + 2], nextCursor: "\(self.n + 2)"))
             DispatchQueue.main.async { late.fulfill() }
         }
         wait(for: [late], timeout: 5)
 
-        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1...20))
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1...(2 * n)))
         XCTAssertEqual(reportedChange, false)
     }
 
@@ -403,7 +413,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folder = makeFolder()
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
         enter(folder, in: viewModel)
 
         server.holdsNextRequest = true
@@ -429,7 +439,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         viewModel.navigationStack.removeAll()
         viewModel.viewModels = []
 
-        server.heldCompletion?(page(Array(1...10), nextCursor: "10"))
+        server.heldCompletion?(fullPage())
         wait(for: [done], timeout: 5)
 
         XCTAssertTrue(viewModel.viewModels.isEmpty, "the folder's rows stay off the list that replaced it")
@@ -440,7 +450,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
         enter(makeFolder(), in: viewModel)
 
         var changed: Bool?
@@ -454,7 +464,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), .failure(.init(message: "offline"))]
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
         enter(makeFolder(), in: viewModel)
 
         let done = expectation(description: "search ends")
@@ -472,7 +482,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
         enter(makeFolder(), in: viewModel)
 
         viewModel.viewModels.removeAll()
@@ -484,7 +494,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = FilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page([11, 12], nextCursor: "12")]
+        server.responses = [fullPage(), page([n + 1, n + 2], nextCursor: "\(n + 2)")]
         enter(makeFolder(), in: viewModel)
         viewModel.isSelecting = true
         viewModel.selectedFiles = viewModel.viewModels
@@ -586,7 +596,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = LinkedSharedFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10")]
+        server.responses = [fullPage()]
 
         openLinkedFolder(details: folderDetails(#", "accessRole": "editor""#), in: viewModel)
 
@@ -703,13 +713,13 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(1...10), nextCursor: "10"), page(Array(1...14), nextCursor: "14")]
+        server.responses = [fullPage(), fullPage(), page(Array(1...(n + 4)), nextCursor: "\(n + 4)")]
 
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
 
         XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize)
-        XCTAssertEqual(viewModel.viewModels.count, 14)
+        XCTAssertEqual(viewModel.viewModels.count, n + 4)
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 
@@ -718,7 +728,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folder = makeFolder()
-        server.responses = [page(Array(1...10), nextCursor: "10"), .failure(.init(message: "offline"))]
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
         enter(folder, in: viewModel)
         loadNextPage(in: viewModel)
 
@@ -736,7 +746,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folder = makeFolder()
-        server.responses = [page(Array(1...10), nextCursor: "10"), .failure(.init(message: "offline"))]
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
         enter(folder, in: viewModel)
         server.holdsNextRequest = true
         viewModel.loadNextChildrenPage { _ in }
@@ -752,23 +762,23 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), .failure(.init(message: "offline")), page([11], nextCursor: "11")]
+        server.responses = [fullPage(), .failure(.init(message: "offline")), page([n + 1], nextCursor: "\(n + 1)")]
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
 
-        viewModel.removeSyncedFiles([viewModel.viewModels[9]])
+        viewModel.removeSyncedFiles([viewModel.viewModels[n - 1]])
         let retried = expectation(description: "retry")
         viewModel.retryNextChildrenPage { _ in retried.fulfill() }
         wait(for: [retried], timeout: 5)
 
-        XCTAssertEqual(server.requests.last?.cursor, "9")
+        XCTAssertEqual(server.requests.last?.cursor, "\(n - 1)")
     }
 
     func testAPageThatLands_TellsTheScreen() {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [page(Array(1...10), nextCursor: "10"), page([11], nextCursor: "11")]
+        server.responses = [fullPage(), page([n + 1], nextCursor: "\(n + 1)")]
         enter(makeFolder(), in: viewModel)
 
         let posted = expectation(forNotification: FilesViewModel.childrenDidChangeNotification, object: viewModel)
@@ -851,7 +861,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         server.attach(to: viewModel)
         let folderA = makeFolder(folderId: 10)
         let folderB = makeFolder(folderId: 20)
-        server.responses = [page(Array(1...10), nextCursor: "10"), .failure(.init(message: "offline")), page(Array(50...59), nextCursor: "59")]
+        server.responses = [fullPage(), .failure(.init(message: "offline")), fullPage(from: 1000)]
         enter(folderA, in: viewModel)
 
         // A's refresh fails on V2 and its V1 reply is held back.
@@ -874,7 +884,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         heldReply?(v1Listing(folderId: 10, folderLinkId: 11, childLinkIds: [900, 901]))
 
         XCTAssertEqual(refreshStatus, .success, "a superseded listing completes quietly")
-        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(50...59), "B's rows stay")
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1000..<(1000 + n)), "B's rows stay")
         XCTAssertEqual(viewModel.navigationStack.map(\.folderId), [10, 20])
         XCTAssertEqual(viewModel.childrenPagingState, .loadingMore, "B's paging is untouched")
         XCTAssertEqual(leanRequests, 0, "no second request for a folder no longer on its way")
@@ -885,7 +895,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         let server = PageServer()
         server.attach(to: viewModel)
         let folderB = makeFolder(folderId: 20, sort: "date-descending")
-        server.responses = [page(Array(1...10), nextCursor: "10"), page(Array(50...59), nextCursor: "59")]
+        server.responses = [fullPage(), fullPage(from: 1000)]
         enter(makeFolder(folderId: 10), in: viewModel)
 
         // A link with no V2 target goes straight to V1; its rows request is held back.
@@ -901,7 +911,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         heldRows?(v1Listing(folderId: 40, folderLinkId: 41, childLinkIds: [900]))
 
         XCTAssertEqual(linkStatus, .success)
-        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(50...59))
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1000..<(1000 + n)))
         XCTAssertEqual(viewModel.navigationStack.map(\.folderId), [10, 20], "the linked folder never joins the history")
         XCTAssertEqual(viewModel.activeSortOption, .dateDescending, "B's sort stays")
     }
@@ -927,10 +937,10 @@ final class FilesViewModelPagingTests: XCTestCase {
     // MARK: - Sizes and footer text
 
     func testFirstPageSize_RoundsUpAndLeavesRoomForOneMore() {
-        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 0), 10)
-        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 9), 10)
-        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 10), 20)
-        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 37), 40)
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 0), n)
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: n - 1), n)
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: n), 2 * n)
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 3 * n + 7), 4 * n)
     }
 
     func testLoadedCounts_SplitFoldersFromFiles() {

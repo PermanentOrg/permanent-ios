@@ -25,6 +25,7 @@ class FileMenuViewModel: ObservableObject {
             case shareToPermanent = "shareToPermanent"
             case shareToAnotherApp = "shareToAnotherApp"
             case editMetadata = "editMetadata"
+            case fileInformation = "fileInformation"
 
             var title: String {
                 switch self {
@@ -38,6 +39,7 @@ class FileMenuViewModel: ObservableObject {
                 case .shareToPermanent: return "Share and manage access"
                 case .shareToAnotherApp: return "Save or send a copy"
                 case .editMetadata: return "Edit Metadata"
+                case .fileInformation: return "File information"
                 }
             }
 
@@ -526,8 +528,8 @@ class FileMenuViewModel: ObservableObject {
         
         if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
             handleMenuItemAction(menuItem)
-        } else if menuItem.type == .editMetadata {
-            // Dismiss menu first, then execute edit metadata action
+        } else if menuItem.type == .editMetadata || menuItem.type == .fileInformation {
+            // Dismiss menu first, then open the screen the action presents
             dismissWithAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if let action = menuItem.action {
@@ -896,7 +898,7 @@ class FileMenuViewModel: ObservableObject {
             return Image(.shareAndManageV1)
         case .shareToAnotherApp:
             return Image(.saveOrShareV1)
-        case .editMetadata:
+        case .editMetadata, .fileInformation:
             return Image(.fileInfoV1)
         }
     }

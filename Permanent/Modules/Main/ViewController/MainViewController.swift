@@ -1586,7 +1586,12 @@ extension MainViewController {
         case .move: return { [weak self] in self?.relocateAction(files: [file], action: .move) }
         case .copy: return { [weak self] in self?.relocateAction(files: [file], action: .copy) }
         case .download: return { [weak self] in self?.downloadAction(file: file) }
+        case .fileInformation: return { [weak self] in self?.showFileInformation(for: file) }
         }
+    }
+
+    private func showFileInformation(for file: FileModel) {
+        present(FileDetailsViewController.navigation(for: file, delegate: self), animated: true)
     }
 
     /// The row's file when its … button would open the sheet right now; otherwise the long press does nothing.
@@ -1602,7 +1607,7 @@ extension MainViewController {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard indexPaths.count == 1, let indexPath = indexPaths.first, let file = contextMenuFile(at: indexPath) else { return nil }
         let types = FileMenuItems.types(for: file, in: menuPlace)
-        guard !types.isEmpty else { return nil }
+        guard FileContextMenu.hasActions(for: types) else { return nil }
         let configuration = UIContextMenuConfiguration(identifier: FileContextMenu.identifier(for: file), previewProvider: nil) { [weak self] _ in
             FileContextMenu.make(for: types) { type in
                 self?.menuDeferral.run { self?.performMenuAction(type, on: file, atIndexPath: indexPath) }
@@ -1654,6 +1659,7 @@ extension MainViewController {
         case .move: relocateAction(files: [file], action: .move)
         case .copy: relocateAction(files: [file], action: .copy)
         case .download: downloadAction(file: file)
+        case .fileInformation: showFileInformation(for: file)
         case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
         case .unshare, .editMetadata: break
         }
@@ -2595,6 +2601,10 @@ extension MainViewController {
 // MARK: - FilePreviewNavigationControllerDelegate
 extension MainViewController: FilePreviewNavigationControllerDelegate {
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        // File information opens the details straight from the list, so no preview is there to close them.
+        if filePreviewNavigationVC is FileDetailsViewController {
+            filePreviewNavigationVC.dismiss(animated: true)
+        }
         if hasChanges {
             refreshCurrentFolder()
         }

@@ -10,7 +10,7 @@ import UIKit
 
 /// A 390 x 844pt folder list with the screens' sections: Downloads (empty), Uploads (2 rows) and the synced list
 /// (30 rows of 74pt), each non-empty one under a header (40pt unless set), then an empty paging section.
-final class StickyHeaderTestList: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class StickyHeaderTestList: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     static let rowHeight: CGFloat = 74
     static let headerHeight: CGFloat = 40
     static let cellId = "row"

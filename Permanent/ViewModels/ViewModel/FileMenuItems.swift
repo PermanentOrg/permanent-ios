@@ -34,6 +34,10 @@ enum FileMenuItems {
         if place == .privateFiles && permissions.contains(.delete) {
             types.append(.publish)
         }
+        // The details screen reads a record from the user's own archive, so a file shared with them is left out.
+        if permissions.contains(.read) && !isFolder && !place.isSharedWithMe {
+            types.append(.fileInformation)
+        }
         if permissions.contains(.edit) {
             types.append(.rename)
         }
@@ -59,6 +63,11 @@ private extension FileMenuItems.Place {
         case .privateFiles, .publicFiles: return false
         case .sharedByMe, .sharedWithMe: return true
         }
+    }
+
+    var isSharedWithMe: Bool {
+        if case .sharedWithMe = self { return true }
+        return false
     }
 
     var isSharedRoot: Bool {

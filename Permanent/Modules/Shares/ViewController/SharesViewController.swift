@@ -929,7 +929,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         case .move: return { [weak self] in self?.relocateAction(files: [file], action: .move) }
         case .unshare: return { [weak self] in self?.unshareAction(file: file, atIndexPath: indexPath) }
         case .delete: return { [weak self] in self?.deleteAction(file: file, atIndexPath: indexPath) }
+        case .fileInformation: return { [weak self] in self?.showFileInformation(for: file) }
         }
+    }
+
+    private func showFileInformation(for file: FileModel) {
+        present(FileDetailsViewController.navigation(for: file, delegate: self), animated: true)
     }
 
     private var menuPlace: FileMenuItems.Place {
@@ -1735,7 +1740,7 @@ extension SharesViewController {
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard indexPaths.count == 1, let indexPath = indexPaths.first, let file = contextMenuFile(at: indexPath),
-              !FileMenuItems.types(for: file, in: menuPlace).isEmpty
+              FileContextMenu.hasActions(for: FileMenuItems.types(for: file, in: menuPlace))
         else { return nil }
         let configuration = UIContextMenuConfiguration(identifier: FileContextMenu.identifier(for: file), previewProvider: nil) { [weak self] _ in
             self?.fileContextMenu(for: file, atIndexPath: indexPath)
@@ -1806,6 +1811,7 @@ extension SharesViewController {
         case .move: relocateAction(files: [file], action: .move)
         case .copy: relocateAction(files: [file], action: .copy)
         case .download: downloadAction(file: file)
+        case .fileInformation: showFileInformation(for: file)
         case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
         case .unshare: confirmMenuAction(.leaveShare, on: file) { [weak self] in self?.unshareFile(file, atIndexPath: indexPath) }
         case .publish, .editMetadata: break
@@ -2265,6 +2271,10 @@ extension SharesViewController: SharedFileActionSheetDelegate {
 // MARK: - FilePreviewNavigationControllerDelegate
 extension SharesViewController: FilePreviewNavigationControllerDelegate {
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        // File information opens the details straight from the list, so no preview is there to close them.
+        if filePreviewNavigationVC is FileDetailsViewController {
+            filePreviewNavigationVC.dismiss(animated: true)
+        }
         if hasChanges {
             refreshCurrentFolder()
         }

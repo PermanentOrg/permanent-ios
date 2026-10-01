@@ -1,16 +1,16 @@
-Version 1.17.0 moves the app onto Permanent's new backend. Folders, shares, share links, publishing and sorting now use the new backend first, and fall back to the old one on their own if it fails. Storage purchases now go through the new backend too. Folder lists now load 10 items at a time, the sort row is new, a long press on a file opens its menu, folders slide in and out, you can drag files onto folders, and the app runs on iOS 27.
+Version 1.17.0 moves the app onto Permanent's new backend. Folders, shares, share links, publishing and sorting now use the new backend first, and fall back to the old one on their own if it fails. Storage purchases now go through the new backend too. Folder lists now load 20 items at a time, the sort row is new, a long press on a file opens its menu, folders slide in and out, you can drag files onto folders, and the app runs on iOS 27.
 
 This is a production build. It uses your real account, your real files and real payments.
 
 Please focus on:
 
-1. Folders. Open Private Files, then a folder with more than 10 items. The first items must show quickly, with gray placeholder rows while they load. Scroll down: the rest must load as you go, with no gaps and no repeats. Swipe in from the left edge: you must go up one folder.
+1. Folders. Open Private Files, then a folder with more than 20 items. The first items must show quickly, with gray placeholder rows while they load. Scroll down: the rest must load as you go, with no gaps and no repeats. Swipe in from the left edge: you must go up one folder.
 
 2. The sort row. It must stay at the top when you scroll. Pull down to refresh: it must stay too, with the spinner under it. Tap the sort label: a menu must open. Pick another sort, leave the folder and come back: your choice must stay. Tap Select: you must be able to pick several items, and the three-dot button in the bar at the bottom must open its menu.
 
-3. The file menu. Hold a file or a folder for a moment: a menu must open next to it, with Copy, Move and Share on top and Delete last. The actions depend on your role. Pick an action: it must do the same as the three-dot button. In the three-dot menu, one quick tap on any row must work, Delete too.
+3. The file menu. Hold a file or a folder for a moment: a menu must open next to it, with Copy, Move and Share on top (a folder shows Copy and Move) and Delete last. Share must open the share sheet, and File information the file's details. The actions depend on your role. Pick an action: it must do the same as the three-dot button. In the three-dot menu, one quick tap on any row must work, Delete too.
 
-4. Folder slides. Open a folder: it must slide in from the right (unless Reduce Motion is on). Tap the back arrow: it must slide back out, like the swipe from the left edge.
+4. Folder slides. Open a folder: it must slide in from the right (unless Reduce Motion is on), with the sort row staying still and no shadow around it. Tap the back arrow: it must slide back out, like the swipe from the left edge.
 
 5. Drag to move. Hold a file and move your finger: the file must lift and follow it. Drop it on a folder: it must move into that folder. Hold it over a folder or the back arrow for a moment to go there first. While you drag, tap more files with a second finger to move several at once.
 

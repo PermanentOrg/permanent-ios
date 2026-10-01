@@ -36,6 +36,13 @@ final class StickyHeaderFlowLayout: UICollectionViewFlowLayout {
         naturalStickyHeader().map { fullWidth($0.frame) }
     }
 
+    /// Where the row shows now, in the list's coordinates; nil while it is hidden, off screen or missing.
+    var shownStickyHeaderFrame: CGRect? {
+        guard let collectionView, let pinned = pinnedStickyHeader(), pinned.alpha > 0 else { return nil }
+        let frame = Self.restingFrame(of: pinned)
+        return frame.intersects(collectionView.bounds) ? frame : nil
+    }
+
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let attributes = super.layoutAttributesForElements(in: rect)
         guard let pinned = pinnedStickyHeader() else { return attributes }
