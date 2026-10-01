@@ -1,4 +1,4 @@
-Version 1.17.0 moves the app onto Permanent's new backend. Folders, shares, share links, publishing and sorting now use the new backend first, and fall back to the old one on their own if it fails. Storage purchases now go through the new backend too. Folder lists now load 10 items at a time, the sort row is new, and the app runs on iOS 27.
+Version 1.17.0 moves the app onto Permanent's new backend. Folders, shares, share links, publishing and sorting now use the new backend first, and fall back to the old one on their own if it fails. Storage purchases now go through the new backend too. Folder lists now load 10 items at a time, the sort row is new, a long press on a file opens its menu, folders slide in and out, you can drag files onto folders, and the app runs on iOS 27.
 
 This is a production build. It uses your real account, your real files and real payments.
 
@@ -6,22 +6,28 @@ Please focus on:
 
 1. Folders. Open Private Files, then a folder with more than 10 items. The first items must show quickly, with gray placeholder rows while they load. Scroll down: the rest must load as you go, with no gaps and no repeats. Swipe in from the left edge: you must go up one folder.
 
-2. The sort row. It must stay at the top when you scroll. Tap the sort label: a menu must open. Pick another sort, leave the folder and come back: your choice must stay. Tap Select: you must be able to pick several items.
+2. The sort row. It must stay at the top when you scroll. Pull down to refresh: it must stay too, with the spinner under it. Tap the sort label: a menu must open. Pick another sort, leave the folder and come back: your choice must stay. Tap Select: you must be able to pick several items, and the three-dot button in the bar at the bottom must open its menu.
 
-3. Shared Files. Switch between Shared by me and Shared with me. Open a folder shared with you: you must see what is inside, and you must only be able to do what your role allows.
+3. The file menu. Hold a file or a folder for a moment: a menu must open next to it, with Copy, Move and Share on top and Delete last. The actions depend on your role. Pick an action: it must do the same as the three-dot button. In the three-dot menu, one quick tap on any row must work, Delete too.
 
-4. Sharing. On an item you own, open Share. The list of archives it is shared with must be correct. Check it again in an archive where you are Curator. Then open a share link to a folder from Mail or Messages: the app must open that folder and show its items.
+4. Folder slides. Open a folder: it must slide in from the right (unless Reduce Motion is on). Tap the back arrow: it must slide back out, like the swipe from the left edge.
 
-5. Publishing. In the grid view, publish a file. It must appear in Public Files.
+5. Drag to move. Hold a file and move your finger: the file must lift and follow it. Drop it on a folder: it must move into that folder. Hold it over a folder or the back arrow for a moment to go there first. While you drag, tap more files with a second finger to move several at once.
 
-6. Uploads. Upload several photos, then leave the app for a few minutes. When you come back, the uploads must be done and you must still be signed in. Then, in an archive you do not own but may upload to, upload a photo: it must work.
+6. Shared Files. Switch between Shared by me and Shared with me. Open a folder shared with you: you must see what is inside, and you must only be able to do what your role allows.
 
-7. Location. Edit a file's location and search for a place. The results must show right under the search field.
+7. Sharing. On an item you own, open Share. The list of archives it is shared with must be correct. Check it again in an archive where you are Curator. Then open a share link to a folder from Mail or Messages: the app must open that folder and show its items.
 
-8. Archives. Switch archives a few times (gear icon, then My archives). Each archive must load once, with no flicker and no repeated loading.
+8. Publishing. In the grid view, publish a file. It must appear in Public Files.
 
-9. Storage. Open Add Storage from the menu. The screen must load. Buy storage only if you may make a real payment.
+9. Uploads. Upload several photos, then leave the app for a few minutes. When you come back, the uploads must be done and you must still be signed in. Then, in an archive you do not own but may upload to, upload a photo: it must work.
 
-10. iOS 27. On a device with iOS 27, open the app, sign in, and repeat a few of the steps above. Tap a push notification: the app must open. The app must still work on older iOS versions too.
+10. Location. Edit a file's location and search for a place. The results must show right under the search field.
+
+11. Archives. Switch archives a few times (gear icon, then My archives). Each archive must load once, with no flicker and no repeated loading.
+
+12. Storage. Open Add Storage from the menu. The screen must load. Buy storage only if you may make a real payment.
+
+13. iOS 27. On a device with iOS 27, open the app, sign in, and repeat a few of the steps above. Tap a push notification: the app must open. The app must still work on older iOS versions too.
 
 The app also gets its built-in parts (Firebase, Google Maps, Stripe, image loading) in a new way. Nothing should look different, but please report anything odd with maps, notifications, payments or thumbnails.

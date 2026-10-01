@@ -137,9 +137,10 @@ final class FileListDrag: NSObject, UICollectionViewDragDelegate, UICollectionVi
 
     // MARK: - Holding the list still
 
-    /// While a finger drags, list reloads wait and run when the drag ends. Those of a folder the drag opened go ahead.
-    func holdsReload(_ reload: @escaping () -> Void) -> Bool {
-        guard isDragging, !navigating, !dropped else { return false }
+    /// While a finger drags, list reloads wait and run when the drag ends. A folder the drag opened, and a page that
+    /// only adds rows at the end, go ahead: neither moves a row under the finger.
+    func holdsReload(addingPage: Bool = false, _ reload: @escaping () -> Void) -> Bool {
+        guard isDragging, !navigating, !dropped, !addingPage else { return false }
         heldReloads.append(reload)
         return true
     }

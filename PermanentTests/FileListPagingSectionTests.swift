@@ -135,6 +135,23 @@ final class FileListPagingSectionTests: XCTestCase {
         XCTAssertEqual(requests, 1, "a failed page waits for the retry button")
     }
 
+    func testALaterPage_IsMarkedAsAddingRows_WhileTheScreenRedraws() {
+        let viewModel = makeViewModel(responses: [page(Array(1...9), nextCursor: "9"), page(Array(10...18), nextCursor: nil)])
+        var addingDuringRedraw: [Bool] = []
+        var section: FileListPagingSection!
+        let changed = expectation(description: "screen told")
+        section = makeSection(for: viewModel, onChange: {
+            addingDuringRedraw.append(section.isAddingPage)
+            changed.fulfill()
+        })
+
+        section.willDisplayItem(at: IndexPath(item: 0, section: section.sectionIndex))
+        wait(for: [changed], timeout: 5)
+
+        XCTAssertEqual(addingDuringRedraw, [true], "a later page only adds rows after the listed ones")
+        XCTAssertFalse(section.isAddingPage)
+    }
+
     func testTheSkeletonFade_CoversOnlyTheNextReload() {
         let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), collectionViewLayout: UICollectionViewFlowLayout())
         let section = FileListPagingSection(collectionView: collectionView, viewModel: { nil }, onChange: {})

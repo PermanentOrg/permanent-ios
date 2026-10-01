@@ -324,7 +324,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func refreshCollectionView() {
         if menuDeferral.holdsReload({ [weak self] in self?.refreshCollectionView() }) { return }
-        if fileDrag.holdsReload({ [weak self] in self?.refreshCollectionView() }) { return }
+        if fileDrag.holdsReload(addingPage: pagingSection.isAddingPage, { [weak self] in self?.refreshCollectionView() }) { return }
         handleTableBackgroundView()
         pagingSection.prepareForReload()
         reloadFadingSortTitle()

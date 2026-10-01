@@ -353,7 +353,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
     fileprivate func refreshCollectionView(_ completion: (() -> ())? = nil) {
         if menuDeferral.holdsReload({ [weak self] in self?.refreshCollectionView(completion) }) { return }
-        if fileDrag.holdsReload({ [weak self] in self?.refreshCollectionView(completion) }) { return }
+        if fileDrag.holdsReload(addingPage: pagingSection.isAddingPage, { [weak self] in self?.refreshCollectionView(completion) }) { return }
         pagingSection.prepareForReload()
         collectionView.reloadData()
         configureCollectionViewBgView()

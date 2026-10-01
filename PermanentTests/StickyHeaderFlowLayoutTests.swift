@@ -291,6 +291,47 @@ final class StickyHeaderFlowLayoutTests: XCTestCase {
         XCTAssertEqual(context.invalidatedSupplementaryIndexPaths?[Self.header], [Self.syncedPath])
     }
 
+    // MARK: - Pulled down
+
+    func testARowAtTheListTop_StaysAtTheTopWhileTheListIsPulledDown() throws {
+        let (list, layout) = makeList { $0.uploadRows = 0 }
+
+        list.scroll(to: -120)
+
+        XCTAssertEqual(try restingFrame(list.syncedHeader).minY, -120, "the row stays put while the rows move down")
+        XCTAssertEqual(layout.stickyHeaderSlot?.minY, 0)
+    }
+
+    func testARowUnderUploads_MovesDownWithTheListWhenPulled() throws {
+        let (list, _) = makeList()
+
+        list.scroll(to: -120)
+
+        XCTAssertEqual(try restingFrame(list.syncedHeader).minY, Self.slotTop, "the Uploads rows keep their place above it")
+    }
+
+    func testTheRefreshSpinner_DrawsUnderARowAtTheListTop() {
+        let (list, layout) = makeList { $0.uploadRows = 0 }
+        let refreshControl = UIRefreshControl()
+        list.refreshControl = refreshControl
+
+        layout.invalidateLayout()
+        list.layoutIfNeeded()
+
+        XCTAssertEqual(refreshControl.layer.sublayerTransform.m42, 40, "moved down by the row's height")
+    }
+
+    func testTheRefreshSpinner_StaysInPlaceUnderUploads() {
+        let (list, layout) = makeList()
+        let refreshControl = UIRefreshControl()
+        list.refreshControl = refreshControl
+
+        layout.invalidateLayout()
+        list.layoutIfNeeded()
+
+        XCTAssertEqual(refreshControl.layer.sublayerTransform.m42, 0)
+    }
+
     // MARK: - Hosted
 
     func testDuringARefresh_ThePinStaysAtTheOffset() throws {

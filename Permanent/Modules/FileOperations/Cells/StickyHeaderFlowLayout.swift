@@ -51,6 +51,13 @@ final class StickyHeaderFlowLayout: UICollectionViewFlowLayout {
         return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
     }
 
+    override func prepare() {
+        super.prepare()
+        // The row stays put while the list is pulled down, so the refresh spinner draws under it.
+        let drop = stickyHeaderSlot.flatMap { Self.isAtListTop($0) ? $0.height : nil } ?? 0
+        collectionView?.refreshControl?.layer.sublayerTransform = CATransform3DMakeTranslation(0, drop, 0)
+    }
+
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         true
     }
@@ -93,6 +100,11 @@ final class StickyHeaderFlowLayout: UICollectionViewFlowLayout {
         return attributes
     }
 
+    /// Whether nothing sits above the row: no download or upload rows.
+    private static func isAtListTop(_ slot: CGRect) -> Bool {
+        slot.minY < 1
+    }
+
     /// Covers the side gutters too, so rows passing under the row never show beside it.
     private func fullWidth(_ frame: CGRect) -> CGRect {
         guard let collectionView else { return frame }
@@ -106,7 +118,9 @@ final class StickyHeaderFlowLayout: UICollectionViewFlowLayout {
         let slot = fullWidth(natural.frame)
         // Not the adjusted inset, which grows by the refresh control's height while it spins.
         let top = collectionView.contentOffset.y + collectionView.contentInset.top
-        pinned.frame = CGRect(x: slot.minX, y: max(slot.minY, top), width: slot.width, height: slot.height)
+        // A row at the list's top stays there while the list is pulled down, too.
+        let y = Self.isAtListTop(slot) ? top : max(slot.minY, top)
+        pinned.frame = CGRect(x: slot.minX, y: y, width: slot.width, height: slot.height)
         pinned.zIndex = 1
         if hidesStickyHeader, top > slot.minY {
             pinned.alpha = 0

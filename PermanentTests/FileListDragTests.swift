@@ -294,6 +294,16 @@ final class FileListDragTests: XCTestCase {
         XCTAssertFalse(drag.isDragging)
     }
 
+    func testAPageThatOnlyAddsRows_LandsDuringTheDrag() {
+        let drag = makeDrag(), source = Rows(rows), list = makeList(source)
+        let session = startDrag(drag, on: list)
+        var reloads = 0
+
+        XCTAssertFalse(drag.holdsReload(addingPage: true) { reloads += 1 }, "the next page shows while the finger drags")
+        XCTAssertTrue(drag.holdsReload { reloads += 1 }, "other reloads still wait")
+        withExtendedLifetime(session) {}
+    }
+
     // MARK: - Scrolling under a drag
 
     func testADrag_RunsOnAShallowBottomInset_AndTheListGetsItsOwnBack() {

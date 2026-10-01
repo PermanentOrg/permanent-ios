@@ -16,6 +16,8 @@ final class FileListPagingSection {
     private var observers: [NSObjectProtocol] = []
     private var pendingFadeDuration: CFTimeInterval?
     private var skeletonShownAt: CFTimeInterval?
+    /// True while `onChange` runs for a later page, which only adds rows after the listed ones.
+    private(set) var isAddingPage = false
 
     private static let skeletonFadeIn: CFTimeInterval = 0.2
     private static let skeletonFadeOut: CFTimeInterval = 0.3
@@ -39,8 +41,11 @@ final class FileListPagingSection {
         observers.append(center.addObserver(forName: FilesViewModel.childrenDidChangeNotification, object: nil, queue: .main) { [weak self] notification in
             guard let self, let viewModel = self.viewModel(), notification.object as? FilesViewModel === viewModel else { return }
             let focusWasOnPlaceholder = UIAccessibility.focusedElement(using: .notificationVoiceOver) is FileSkeletonCollectionViewCell
+            let firstNewChild = notification.userInfo?[FilesViewModel.firstNewChildKey] as? Int
+            self.isAddingPage = firstNewChild != nil
             self.onChange()
-            if let firstNewChild = notification.userInfo?[FilesViewModel.firstNewChildKey] as? Int {
+            self.isAddingPage = false
+            if let firstNewChild {
                 self.fadeInRows(from: firstNewChild)
                 // The first new row takes the placeholder's place, so VoiceOver carries on from there.
                 if focusWasOnPlaceholder {

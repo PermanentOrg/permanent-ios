@@ -216,6 +216,9 @@ class FloatingActionImageTextItem: FloatingActionTextItem {
 
 class FloatingActionIslandViewController: UIViewController {
     private let toolbar = UIToolbar()
+    /// From iOS 26 the items sit in a plain row: a toolbar there moves items that do not fit into an overflow
+    /// button, which cannot show custom views, and wraps them in glass.
+    private let row = UIStackView()
     private let bgView = UIView()
 
     private var activityIndicator: UIActivityIndicatorView?
@@ -239,6 +242,11 @@ class FloatingActionIslandViewController: UIViewController {
         }
     }
 
+    private var itemsView: UIView {
+        if #available(iOS 26, *) { return row }
+        return toolbar
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -252,37 +260,32 @@ class FloatingActionIslandViewController: UIViewController {
         bgView.layer.shadowOpacity = 1
         bgView.layer.cornerRadius = 32
 
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
         if #available(iOS 26, *) {
-            // Fully transparent toolbar — no Liquid Glass container, no item glass pills
-            let appearance = UIToolbarAppearance()
-            appearance.configureWithTransparentBackground()
-            toolbar.standardAppearance = appearance
-            toolbar.scrollEdgeAppearance = appearance
-            // Prevent UIToolbar from reserving bottom safe area space internally
-            toolbar.insetsLayoutMarginsFromSafeArea = false
-
+            row.axis = .horizontal
+            row.alignment = .center
+            row.spacing = 4
+            row.translatesAutoresizingMaskIntoConstraints = false
         } else {
+            toolbar.translatesAutoresizingMaskIntoConstraints = false
             toolbar.backgroundColor = .white
             toolbar.barTintColor = .white
             toolbar.layer.cornerRadius = 32
             toolbar.clipsToBounds = true
         }
-        toolbar.isHidden = true
+        itemsView.isHidden = true
 
         view.addSubview(bgView)
-        view.addSubview(toolbar)
+        view.addSubview(itemsView)
 
         widthConstraint = bgView.widthAnchor.constraint(equalToConstant: 32)
         let toolbarConstraints: [NSLayoutConstraint]
         if #available(iOS 26, *) {
-            // Inset the transparent toolbar from each pill edge so items don't clip, and centre it at 44pt:
-            // iOS 26 reserves bottom safe-area space in a toolbar, shifting content up in a taller frame.
+            // Inset from each pill edge so the items stay clear of its rounded ends.
             toolbarConstraints = [
-                toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                toolbar.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                toolbar.heightAnchor.constraint(equalToConstant: 44),
+                row.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                row.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                row.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                row.heightAnchor.constraint(equalToConstant: 44),
             ]
         } else {
             toolbarConstraints = [
@@ -312,12 +315,12 @@ class FloatingActionIslandViewController: UIViewController {
             self.widthConstraint.constant = self.view.frame.width
             self.view.layoutIfNeeded()
         }, completion: { _ in
-            self.toolbar.isHidden = false
+            self.itemsView.isHidden = false
         })
     }
 
     func animateDismiss(_ completion: (() -> Void)? = nil) {
-        toolbar.isHidden = true
+        itemsView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
             self.widthConstraint.constant = 64
             self.view.layoutIfNeeded()
@@ -334,7 +337,7 @@ class FloatingActionIslandViewController: UIViewController {
         activityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(activityIndicator!)
 
-        toolbar.isHidden = true
+        itemsView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
             self.widthConstraint.constant = 64
             self.view.layoutIfNeeded()
@@ -353,7 +356,7 @@ class FloatingActionIslandViewController: UIViewController {
         doneCheckmarkImageView?.contentMode = .scaleAspectFit
         view.addSubview(doneCheckmarkImageView!)
 
-        toolbar.isHidden = true
+        itemsView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
             self.widthConstraint.constant = 64
             self.view.layoutIfNeeded()
@@ -376,29 +379,46 @@ class FloatingActionIslandViewController: UIViewController {
         leftItems.forEach({ $0.actionIslandVC = self })
         rightItems.forEach({ $0.actionIslandVC = self })
 
-        let leftToolbarItems = leftItems.compactMap { $0.barButtonItem }
-        let rightToolbarItems = rightItems.compactMap { $0.barButtonItem }
+        if #available(iOS 26, *) {
+            let views = rowViews(leftItems) + [UIView()] + rowViews(rightItems)
+            let replace = {
+                self.row.arrangedSubviews.forEach { $0.removeFromSuperview() }
+                views.forEach(self.row.addArrangedSubview)
+            }
+            // When already visible, cross-dissolve for a smooth count update.
+            if row.isHidden {
+                replace()
+            } else {
+                UIView.transition(with: row, duration: 0.2, options: [.transitionCrossDissolve], animations: replace)
+            }
+            return
+        }
 
         var items: [UIBarButtonItem] = []
-
-        leftToolbarItems.forEach { items.append($0) }
+        leftItems.compactMap { $0.barButtonItem }.forEach { items.append($0) }
         items.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
-        rightToolbarItems.forEach { items.append($0) }
+        rightItems.compactMap { $0.barButtonItem }.forEach { items.append($0) }
+        toolbar.setItems(items, animated: true)
+    }
 
-        if #available(iOS 26, *) {
-            // Suppress individual Liquid Glass pill backgrounds on all items
-            items.forEach { $0.hidesSharedBackground = true }
-            // When already visible, cross-dissolve for a smooth count update.
-            // animated: true triggers a ~1s Liquid Glass rebuild which causes flicker.
-            if toolbar.isHidden {
-                toolbar.setItems(items, animated: false)
-            } else {
-                UIView.transition(with: toolbar, duration: 0.2, options: [.transitionCrossDissolve], animations: {
-                    self.toolbar.setItems(items, animated: false)
-                })
+    /// Each item's own view for the row. A tappable icon gets a 44 pt wide target, and a fixed space stays a gap.
+    private func rowViews(_ items: [FloatingActionItem]) -> [UIView] {
+        items.compactMap { item in
+            guard let barItem = item.barButtonItem else { return nil }
+            guard let custom = barItem.customView else {
+                let gap = UIView()
+                gap.widthAnchor.constraint(equalToConstant: barItem.width).isActive = true
+                return gap
             }
-        } else {
-            toolbar.setItems(items, animated: true)
+            let sizedByItself = custom.constraints.contains { $0.firstItem === custom && $0.firstAttribute == .width }
+            if !sizedByItself {
+                let frameWidth = custom.frame.width
+                let width = custom.widthAnchor.constraint(equalToConstant: item.action == nil ? frameWidth : max(frameWidth, 44))
+                // On a short row a label gives way before an icon does.
+                width.priority = frameWidth > 44 ? .defaultHigh : .required
+                NSLayoutConstraint.activate([width, custom.heightAnchor.constraint(equalToConstant: custom.frame.height)])
+            }
+            return custom
         }
     }
 }
