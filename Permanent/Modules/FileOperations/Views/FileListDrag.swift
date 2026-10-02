@@ -25,14 +25,22 @@ final class FileListDrag: NSObject, UICollectionViewDragDelegate, UICollectionVi
         let lookDidChange: () -> Void
     }
 
-    /// Where a drag began; the files it carries sit on its items.
+    /// Where a drag began, and the files it carries.
     final class Context {
         let sourceFolderLinkId: Int
         /// The list the drag began in. Another workspace's list takes nothing from it.
         weak var origin: FileListDrag?
+        /// Each file as it joins the drag, before iOS adds it to the session's items.
+        var files: [FileModel] = []
+        /// Where the finger held the first row, in that row's own space.
+        var liftTouch: CGPoint?
         init(sourceFolderLinkId: Int, origin: FileListDrag? = nil) {
             self.sourceFolderLinkId = sourceFolderLinkId
             self.origin = origin
+        }
+
+        func carries(_ file: FileModel) -> Bool {
+            files.contains { FileListDrag.isSameItem($0, file) }
         }
     }
 
@@ -68,6 +76,13 @@ final class FileListDrag: NSObject, UICollectionViewDragDelegate, UICollectionVi
     /// Set on the list's own rows, not left to the cells' drop state, which a reload during a drag can leave stale.
     func showLook(on cell: FileCollectionViewCell, for file: FileModel) {
         cell.showDropTarget(targetFolder.map { Self.isSameItem($0, file) } ?? false)
+        cell.holdsDraggedFile = { [weak self] in self?.holdsDraggedFile(file) ?? true }
+    }
+
+    /// From the drop on, and with no drag, the list leaves the faded look to iOS.
+    private func holdsDraggedFile(_ file: FileModel) -> Bool {
+        guard !dropped, let context = session?.localContext as? Context else { return true }
+        return context.carries(file)
     }
 
     private func setTarget(_ folder: FileModel?) {
@@ -193,7 +208,10 @@ final class FileListDrag: NSObject, UICollectionViewDragDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         // Called on every long press, menu ones too, so it only answers.
         guard let file = handlers.draggableFile(indexPath), let open = handlers.openFolder() else { return [] }
-        session.localContext = Context(sourceFolderLinkId: open.folderLinkId, origin: self)
+        let context = Context(sourceFolderLinkId: open.folderLinkId, origin: self)
+        context.files = [file]
+        context.liftTouch = collectionView.cellForItem(at: indexPath).map { session.location(in: $0) }
+        session.localContext = context
         return [Self.item(for: file)]
     }
 
@@ -202,11 +220,28 @@ final class FileListDrag: NSObject, UICollectionViewDragDelegate, UICollectionVi
         guard let context = session.localContext as? Context, context.origin === self, handlers.openFolder()?.folderLinkId == context.sourceFolderLinkId,
               let file = handlers.draggableFile(indexPath), !Self.files(in: session).contains(where: { Self.isSameItem($0, file) })
         else { return [] }
+        context.files.append(file)
         return [Self.item(for: file)]
     }
 
+    /// iOS asks at each lift, and again when a cancelled drag flies back to its row's place in the list. Once a hover
+    /// has put another file in that place, the card fades where the finger let it go instead.
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         guard let cell = collectionView.cellForItem(at: indexPath) else { return nil }
+        guard let session, let context = session.localContext as? Context, let liftTouch = context.liftTouch,
+              !(handlers.draggableFile(indexPath).map(context.carries) ?? false)
+        else { return Self.liftedParameters(for: cell, in: collectionView) }
+        let finger = session.location(in: cell)
+        let card = FileContextMenu.liftedPath(for: cell, in: collectionView)
+        card.apply(CGAffineTransform(translationX: finger.x - liftTouch.x, y: finger.y - liftTouch.y))
+        let parameters = UIDragPreviewParameters()
+        parameters.visiblePath = card
+        parameters.backgroundColor = .clear
+        parameters.shadowPath = UIBezierPath()
+        return parameters
+    }
+
+    private static func liftedParameters(for cell: UICollectionViewCell, in collectionView: UICollectionView) -> UIDragPreviewParameters {
         let parameters = UIDragPreviewParameters()
         parameters.visiblePath = FileContextMenu.liftedPath(for: cell, in: collectionView)
         return parameters
@@ -286,7 +321,7 @@ final class FileListDrag: NSObject, UICollectionViewDragDelegate, UICollectionVi
     }
 
     func collectionView(_ collectionView: UICollectionView, dropPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
-        self.collectionView(collectionView, dragPreviewParametersForItemAt: indexPath)
+        collectionView.cellForItem(at: indexPath).map { Self.liftedParameters(for: $0, in: collectionView) }
     }
 
     /// The finger must be inside the folder row itself: the list's drop index can name the row next to it.

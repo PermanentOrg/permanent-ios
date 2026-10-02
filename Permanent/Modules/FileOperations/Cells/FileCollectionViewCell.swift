@@ -30,7 +30,10 @@ class FileCollectionViewCell: UICollectionViewCell {
     var isFileSelected: Bool = false
     
     var fileInfoId: String?
-    
+    /// Whether this row's file is on the drag under way. iOS fades the row at a lifted file's place in the list,
+    /// even after a hover has put another file there.
+    var holdsDraggedFile: () -> Bool = { true }
+
     var rightButtonTapAction: ((FileCollectionViewCell) -> Void)?
     private let moreButtonBadgeView = UIView()
     private let moreButtonBadgeLabel = UILabel()
@@ -77,6 +80,12 @@ class FileCollectionViewCell: UICollectionViewCell {
     func showDropTarget(_ isTarget: Bool) {
         // The row's white panel covers the cell's own background, so the panel is what turns grey.
         overlayView.superview?.backgroundColor = isTarget ? .galleryGray : restingPanelColor
+    }
+
+    override func dragStateDidChange(_ dragState: UICollectionViewCell.DragState) {
+        super.dragStateDidChange(dragState)
+        // iOS has faded the row by now; a row that holds another file keeps its full colour.
+        if dragState == .dragging, !holdsDraggedFile() { alpha = 1 }
     }
 
     private func initUI() {

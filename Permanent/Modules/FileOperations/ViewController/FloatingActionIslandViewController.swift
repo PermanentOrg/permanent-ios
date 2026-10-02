@@ -334,12 +334,11 @@ class FloatingActionIslandViewController: UIViewController {
     }
 
     func showActivityIndicator() {
-        activityIndicator = UIActivityIndicatorView(style: .gray)
-        activityIndicator?.color = .secondary
-        activityIndicator?.startAnimating()
-        activityIndicator?.frame = CGRect(x: (view.frame.width - 32) / 2, y: 16, width: 32, height: 32)
-        activityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(activityIndicator!)
+        let indicator = UIActivityIndicatorView(style: .gray)
+        indicator.color = .secondary
+        indicator.startAnimating()
+        centerOnPill(indicator, size: CGSize(width: 32, height: 32))
+        activityIndicator = indicator
 
         itemsView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
@@ -354,11 +353,10 @@ class FloatingActionIslandViewController: UIViewController {
     }
 
     func showDoneCheckmark(_ completion: (() -> Void)? = nil) {
-        doneCheckmarkImageView = UIImageView(image: UIImage(named: "checkmarkIcon"))
-        doneCheckmarkImageView?.frame = CGRect(x: (view.frame.width - 22) / 2, y: 24, width: 22, height: 16)
-        doneCheckmarkImageView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        doneCheckmarkImageView?.contentMode = .scaleAspectFit
-        view.addSubview(doneCheckmarkImageView!)
+        let checkmark = UIImageView(image: UIImage(named: "checkmarkIcon"))
+        checkmark.contentMode = .scaleAspectFit
+        centerOnPill(checkmark, size: CGSize(width: 22, height: 16))
+        doneCheckmarkImageView = checkmark
 
         itemsView.isHidden = true
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
@@ -377,6 +375,20 @@ class FloatingActionIslandViewController: UIViewController {
     func hideDoneCheckmark() {
         doneCheckmarkImageView?.removeFromSuperview()
         doneCheckmarkImageView = nil
+    }
+
+    /// Pinned to the pill's centre, not placed from the view's frame: a drop starts the spinner before the island's first layout.
+    private func centerOnPill(_ mark: UIView, size: CGSize) {
+        mark.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mark)
+        NSLayoutConstraint.activate([
+            mark.centerXAnchor.constraint(equalTo: bgView.centerXAnchor),
+            mark.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            mark.widthAnchor.constraint(equalToConstant: size.width),
+            mark.heightAnchor.constraint(equalToConstant: size.height),
+        ])
+        // Placed at once, so the pill's own animation does not fly the mark in from a corner.
+        UIView.performWithoutAnimation { view.layoutIfNeeded() }
     }
 
     func updateToolbarItems() {

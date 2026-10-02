@@ -99,4 +99,42 @@ final class FloatingActionIslandTests: XCTestCase {
         }
         XCTAssertEqual(pill?.bounds.width, 64, "the circle with its spinner; the bar's full width never shows")
     }
+
+    func testTheSpinnerAndCheck_SitInTheMiddleOfTheCircle_WhenADropStartsThemBeforeTheFirstLayout() throws {
+        let island = FloatingActionIslandViewController()
+        island.opensAsCircle = true
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 402, height: 874))
+        let host = UIViewController()
+        window.rootViewController = host
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+        // Pinned with constraints, as the screens pin it, and the spinner starts before any layout, as a drop starts it.
+        island.view.translatesAutoresizingMaskIntoConstraints = false
+        host.addChild(island)
+        host.view.addSubview(island.view)
+        NSLayoutConstraint.activate([
+            island.view.centerXAnchor.constraint(equalTo: host.view.centerXAnchor),
+            island.view.bottomAnchor.constraint(equalTo: host.view.bottomAnchor, constant: -40),
+            island.view.widthAnchor.constraint(equalToConstant: 338),
+            island.view.heightAnchor.constraint(equalToConstant: 64),
+        ])
+        island.didMove(toParent: host)
+
+        island.showActivityIndicator()
+        let spinner = try XCTUnwrap(island.view.subviews.first { $0 is UIActivityIndicatorView })
+        XCTAssertNil(spinner.layer.animationKeys(), "the spinner shows in place; only the circle's width moves")
+        host.view.layoutIfNeeded()
+
+        let pill = try XCTUnwrap(island.view.subviews.first { (view: UIView) -> Bool in view.layer.cornerRadius == 32 && !(view is UIToolbar) })
+        XCTAssertEqual(spinner.center.x, pill.center.x, accuracy: 0.5)
+        XCTAssertEqual(spinner.center.y, pill.center.y, accuracy: 0.5)
+
+        island.hideActivityIndicator()
+        island.showDoneCheckmark()
+        let check = try XCTUnwrap(island.view.subviews.first { $0 is UIImageView })
+        XCTAssertNil(check.layer.animationKeys(), "the check mark shows in place; it does not fly in from a corner")
+        host.view.layoutIfNeeded()
+        XCTAssertEqual(check.center.x, pill.center.x, accuracy: 0.5)
+        XCTAssertEqual(check.center.y, pill.center.y, accuracy: 0.5)
+    }
 }

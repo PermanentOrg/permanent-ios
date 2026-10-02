@@ -258,6 +258,97 @@ final class FileListDragTests: XCTestCase {
         XCTAssertEqual(panel.backgroundColor, resting)
     }
 
+    func testOnlyARowHoldingADraggedFile_LooksLifted() throws {
+        let drag = makeDrag(), source = Rows(rows), list = makeList(source)
+        let cell = try XCTUnwrap(UINib(nibName: "FileCollectionViewCell", bundle: nil).instantiate(withOwner: nil).first as? FileCollectionViewCell)
+        let session = startDrag(drag, on: list)
+
+        // iOS fades the row at the photo's place, also once a hover has put another file there.
+        drag.showLook(on: cell, for: secondPhoto)
+        cell.alpha = 0.5
+        cell.dragStateDidChange(.dragging)
+        XCTAssertEqual(cell.alpha, 1, "another file keeps its full colour")
+
+        drag.showLook(on: cell, for: photo)
+        cell.alpha = 0.5
+        cell.dragStateDidChange(.dragging)
+        XCTAssertEqual(cell.alpha, 0.5, "the photo's own row stays faded, as in the Files app")
+
+        session.point = CGPoint(x: 100, y: 74 + 37)
+        drag.collectionView(list, performDropWith: Coordinator(session: DropSession(session), destinationIndexPath: IndexPath(item: 1, section: 0)))
+        drag.showLook(on: cell, for: secondPhoto)
+        cell.alpha = 0.5
+        cell.dragStateDidChange(.dragging)
+        XCTAssertEqual(cell.alpha, 0.5, "a drop keeps the look it had")
+
+        drag.collectionView(list, dragSessionDidEnd: session)
+        drag.showLook(on: cell, for: secondPhoto)
+        cell.alpha = 0.5
+        cell.dragStateDidChange(.dragging)
+        XCTAssertEqual(cell.alpha, 0.5, "with no drag of its own, the list leaves the look to iOS")
+    }
+
+    // MARK: - A cancelled drag
+
+    func testACancelledDrag_FliesBackToItsRow_WhileTheRowHoldsTheFile() throws {
+        let drag = makeDrag(), source = Rows(rows), list = makeList(source)
+        _ = startDrag(drag, on: list)
+
+        let parameters = try XCTUnwrap(drag.collectionView(list, dragPreviewParametersForItemAt: IndexPath(item: 0, section: 0)))
+
+        let cell = try XCTUnwrap(list.cellForItem(at: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(parameters.visiblePath?.bounds, FileContextMenu.liftedPath(for: cell, in: list).bounds, "the photo's own row")
+        XCTAssertNotEqual(parameters.backgroundColor, .clear)
+    }
+
+    func testACancelledDrag_FadesWhereTheFingerLetGo_WhileAHoverShowsAnotherFileInItsPlace() throws {
+        let drag = makeDrag(), source = Rows(rows), list = makeList(source)
+        let session = DragSession()
+        session.point = CGPoint(x: 150, y: 37)
+        session.items = drag.collectionView(list, itemsForBeginning: session, at: IndexPath(item: 0, section: 0))
+        drag.collectionView(list, dragSessionWillBegin: session)
+
+        // Hovering opens the folder, whose first row is another photo, and the finger lets go above the list.
+        let dunes = FileModel(name: "Dunes.jpg", recordId: 4, folderLinkId: 14, archiveNbr: "0001", type: "type.record.image", permissions: [.read, .move])
+        drag.navigationWillStart()
+        open = folder
+        rows = [dunes]
+        source.files = rows
+        list.reloadData()
+        list.layoutIfNeeded()
+        drag.navigationDidEnd()
+        session.point = CGPoint(x: 200, y: -60)
+
+        let parameters = try XCTUnwrap(drag.collectionView(list, dragPreviewParametersForItemAt: IndexPath(item: 0, section: 0)))
+        let cell = try XCTUnwrap(list.cellForItem(at: IndexPath(item: 0, section: 0)))
+        let lifted = FileContextMenu.liftedPath(for: cell, in: list).bounds
+        XCTAssertEqual(parameters.visiblePath?.bounds, lifted.offsetBy(dx: 50, dy: -97), "the card stays where the finger let it go")
+        XCTAssertEqual(parameters.backgroundColor, .clear, "and fades, with nothing of Dunes in it")
+        XCTAssertEqual(parameters.shadowPath?.isEmpty, true)
+        XCTAssertEqual(drag.collectionView(list, dropPreviewParametersForItemAt: IndexPath(item: 0, section: 0))?.visiblePath?.bounds, lifted, "a drop keeps its look")
+
+        // Back in the photo's own folder, the card flies home again.
+        open = current
+        rows = [photo, folder, secondPhoto]
+        source.files = rows
+        list.reloadData()
+        list.layoutIfNeeded()
+        let home = try XCTUnwrap(drag.collectionView(list, dragPreviewParametersForItemAt: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(home.visiblePath?.bounds, lifted)
+    }
+
+    func testARowAddedByASecondFinger_LiftsWithTheUsualOutline() throws {
+        let drag = makeDrag(), source = Rows(rows), list = makeList(source)
+        let session = startDrag(drag, on: list)
+
+        // The added file need not be on the session's items yet when iOS asks for its lift.
+        _ = drag.collectionView(list, itemsForAddingTo: session, at: IndexPath(item: 2, section: 0), point: .zero)
+        let parameters = try XCTUnwrap(drag.collectionView(list, dragPreviewParametersForItemAt: IndexPath(item: 2, section: 0)))
+
+        let cell = try XCTUnwrap(list.cellForItem(at: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(parameters.visiblePath?.bounds, FileContextMenu.liftedPath(for: cell, in: list).bounds)
+    }
+
     // MARK: - Hovering
 
     func testHovering_OpensAFolderTheFilesMayGoInto_NeverOneOfThem() {
