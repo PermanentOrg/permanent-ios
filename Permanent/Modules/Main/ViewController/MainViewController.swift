@@ -52,6 +52,26 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         dragDidEnd: { [weak self] in self?.dragDidEnd() },
         lookDidChange: { [weak self] in self?.showDragLookOnVisibleRows() }
     ))
+    private lazy var dropProgress = DropProgressIsland(handlers: .init(
+        open: { [weak self] in
+            self?.showFloatingActionIsland(withLeftItems: [], rightItems: [], opensAsCircle: true)
+            return self?.floatingActionIsland
+        },
+        current: { [weak self] in self?.floatingActionIsland },
+        close: { [weak self] done in self?.dismissFloatingActionIsland(done) },
+        hidePlusButton: { [weak self] in self?.fabView.setVisibility(hidden: true) },
+        restore: { [weak self] in
+            guard let self, let viewModel = self.viewModel else { return }
+            // A Move or a selection that started while the circle showed gets its bar now.
+            if viewModel.fileAction != FileAction.none {
+                self.setupBottomActionSheet()
+            } else if viewModel.isSelecting, !(viewModel.selectedFiles ?? []).isEmpty {
+                self.setupBottomActionSheetForMultipleFiles()
+            } else {
+                self.updateFABViewVisibility()
+            }
+        }
+    ))
     
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
@@ -470,6 +490,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             // Multi-select owns the screen while active; the FAB comes back via the
             // restore paths below, which all route through this gate.
             && !viewModel.isSelecting
+            && !dropProgress.isShowing
 
         // `setVisibility` fades the buttons back in: paste mode created a real hide→show transition,
         // and an instant reveal reads as a pop-in.
@@ -1737,28 +1758,36 @@ extension MainViewController {
         askBeforePublicRelocate(.move) { [weak self] in self?.startDroppedMove(files, to: destination) }
     }
 
-    /// Rows that leave the folder go at once, as in Files. Files moved into the open folder show once the server lists them.
-    private func startDroppedMove(_ files: [FileModel], to destination: FileModel) {
+    /// Rows that leave the folder go at once, as in Files; files moved into the open folder show once the server lists them.
+    /// Meanwhile the island shows the move's progress, as after Move Here.
+    func startDroppedMove(_ files: [FileModel], to destination: FileModel) {
         guard let viewModel, let folder = viewModel.currentFolder else { return }
         let leaving = files.filter(viewModel.lists)
         if !leaving.isEmpty {
             viewModel.removeListedRows(of: leaving)
             refreshCollectionView()
         }
+        dropProgress.moveStarted()
         viewModel.moveDropped(files, to: destination) { [weak self] status in
             guard let self else { return }
             switch status {
             case .success:
                 if !leaving.isEmpty {
+                    self.dropProgress.moveEnded(succeeded: true)
                     self.settleMovedAway(leaving, from: folder, attemptsLeft: Self.pastedItemsSettleAttempts)
                 } else if destination.folderLinkId == folder.folderLinkId {
                     self.viewModel?.expectPastedItems(files, destination: destination)
                     self.settlePastedItems(attemptsLeft: Self.pastedItemsSettleAttempts) { [weak self] in
-                        self?.viewModel?.timerRunCount = 0
-                        self?.scheduleNextThumbnailPoll()
+                        guard let self else { return }
+                        self.dropProgress.moveEnded(succeeded: true)
+                        self.viewModel?.timerRunCount = 0
+                        self.scheduleNextThumbnailPoll()
                     }
+                } else {
+                    self.dropProgress.moveEnded(succeeded: true)
                 }
             case .error:
+                self.dropProgress.moveEnded(succeeded: false)
                 self.showErrorAlert(message: .relocateError) { [weak self] in self?.refreshCurrentFolder() }
             }
         }

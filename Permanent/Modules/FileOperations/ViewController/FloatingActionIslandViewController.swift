@@ -226,6 +226,9 @@ class FloatingActionIslandViewController: UIViewController {
 
     private var widthConstraint: NSLayoutConstraint!
 
+    /// A progress-only island, as after a drop, opens as the 64 pt circle and never shows its items.
+    var opensAsCircle = false
+
     var leftItems: [FloatingActionItem] = [] {
         didSet {
             if isViewLoaded {
@@ -308,6 +311,7 @@ class FloatingActionIslandViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        guard !opensAsCircle else { return }
 
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
             // On iOS 26 the toolbar is inset from the view edges, so its width is narrower than the pill.

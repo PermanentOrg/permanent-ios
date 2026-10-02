@@ -11,11 +11,15 @@
 		F2C4F4832E3021E927704BFF /* FileListDragTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1176836068EF8EBDFABA7A4 /* FileListDragTests.swift */; };
 		B7D736FB2405065BD3945F93 /* FloatingActionIslandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D4126FA6582B42D034934D7 /* FloatingActionIslandTests.swift */; };
 		BB2D708B955443712FE1BD82 /* FolderHeaderTransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0933F57722E4AECD86703D /* FolderHeaderTransitionTests.swift */; };
+		36BC6DA1424E0EDC680FD0C7 /* DropMoveProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4474E50EC03A4ECBB8F79768 /* DropMoveProgressTests.swift */; };
+		8FD6F5636D80CEE29D5F683D /* DropProgressIslandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04050A5C9A9F752BA73D624C /* DropProgressIslandTests.swift */; };
 		0FB5C5A812FA527AA39E6ACF /* DrawerWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373CBAEED3362056D6C38D2A /* DrawerWorkspaceTests.swift */; };
 		D4986B15341E3865CD7AAE09 /* FileContextMenuTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80FCC5D542761FC51979E3A /* FileContextMenuTests.swift */; };
 		42D712DD63CC8C1772BAB862 /* FileMenuItemsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BC2BBE72E440365A8942F4 /* FileMenuItemsTests.swift */; };
 		DEF21AD0B830ED3966AAAAEF /* FileActionConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95ABE8826C26BD5B275D51C2 /* FileActionConfirmationView.swift */; };
 		6F65263B985012E21A61EF95 /* ContextMenuDeferral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E841DA53D2335AEFA61F758 /* ContextMenuDeferral.swift */; };
+		7CC9CF8E0F47B2D81D59409D /* DropMoveProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619A8CB28927DE2F72AEE205 /* DropMoveProgress.swift */; };
+		2EA142DA375E24F94FD138D3 /* DropProgressIsland.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC954F1996CB36FF5D54980 /* DropProgressIsland.swift */; };
 		46C8D73B5E2F01D8AFD53BE3 /* FileListDrag.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2E0C2677C8C9D3603069C5 /* FileListDrag.swift */; };
 		2EE86F5145A93D42C00C57EA /* FileContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807A0FA7FD846C5DA2970D66 /* FileContextMenu.swift */; };
 		096DCB549D8E41920FDCA6C1 /* FileMenuItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 900F9D708084B4A1BD9A9A4D /* FileMenuItems.swift */; };
@@ -1364,6 +1368,8 @@
 		C1176836068EF8EBDFABA7A4 /* FileListDragTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListDragTests.swift; sourceTree = "<group>"; };
 		6D4126FA6582B42D034934D7 /* FloatingActionIslandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionIslandTests.swift; sourceTree = "<group>"; };
 		CB0933F57722E4AECD86703D /* FolderHeaderTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderHeaderTransitionTests.swift; sourceTree = "<group>"; };
+		4474E50EC03A4ECBB8F79768 /* DropMoveProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropMoveProgressTests.swift; sourceTree = "<group>"; };
+		04050A5C9A9F752BA73D624C /* DropProgressIslandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropProgressIslandTests.swift; sourceTree = "<group>"; };
 		373CBAEED3362056D6C38D2A /* DrawerWorkspaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerWorkspaceTests.swift; sourceTree = "<group>"; };
 		F80FCC5D542761FC51979E3A /* FileContextMenuTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileContextMenuTests.swift; sourceTree = "<group>"; };
 		E6BC2BBE72E440365A8942F4 /* FileMenuItemsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuItemsTests.swift; sourceTree = "<group>"; };
@@ -1842,6 +1848,8 @@
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
 		5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMoreMenuView.swift; sourceTree = "<group>"; };
 		2E841DA53D2335AEFA61F758 /* ContextMenuDeferral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuDeferral.swift; sourceTree = "<group>"; };
+		619A8CB28927DE2F72AEE205 /* DropMoveProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropMoveProgress.swift; sourceTree = "<group>"; };
+		EFC954F1996CB36FF5D54980 /* DropProgressIsland.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropProgressIsland.swift; sourceTree = "<group>"; };
 		BC2E0C2677C8C9D3603069C5 /* FileListDrag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListDrag.swift; sourceTree = "<group>"; };
 		807A0FA7FD846C5DA2970D66 /* FileContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileContextMenu.swift; sourceTree = "<group>"; };
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
@@ -3859,6 +3867,8 @@
 				C1176836068EF8EBDFABA7A4 /* FileListDragTests.swift */,
 				6D4126FA6582B42D034934D7 /* FloatingActionIslandTests.swift */,
 				CB0933F57722E4AECD86703D /* FolderHeaderTransitionTests.swift */,
+				4474E50EC03A4ECBB8F79768 /* DropMoveProgressTests.swift */,
+				04050A5C9A9F752BA73D624C /* DropProgressIslandTests.swift */,
 				373CBAEED3362056D6C38D2A /* DrawerWorkspaceTests.swift */,
 				F80FCC5D542761FC51979E3A /* FileContextMenuTests.swift */,
 				E6BC2BBE72E440365A8942F4 /* FileMenuItemsTests.swift */,
@@ -4172,6 +4182,8 @@
 				5E7A697C2EBA4CB4005FA69B /* Components */,
 				5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */,
 				2E841DA53D2335AEFA61F758 /* ContextMenuDeferral.swift */,
+				619A8CB28927DE2F72AEE205 /* DropMoveProgress.swift */,
+				EFC954F1996CB36FF5D54980 /* DropProgressIsland.swift */,
 				BC2E0C2677C8C9D3603069C5 /* FileListDrag.swift */,
 				807A0FA7FD846C5DA2970D66 /* FileContextMenu.swift */,
 				5E04DAE02E3697C600D17F67 /* FileMoreMenuItemRow.swift */,
@@ -5496,6 +5508,8 @@
 			files = (
 				DEF21AD0B830ED3966AAAAEF /* FileActionConfirmationView.swift in Sources */,
 				6F65263B985012E21A61EF95 /* ContextMenuDeferral.swift in Sources */,
+				7CC9CF8E0F47B2D81D59409D /* DropMoveProgress.swift in Sources */,
+				2EA142DA375E24F94FD138D3 /* DropProgressIsland.swift in Sources */,
 				46C8D73B5E2F01D8AFD53BE3 /* FileListDrag.swift in Sources */,
 				2EE86F5145A93D42C00C57EA /* FileContextMenu.swift in Sources */,
 				096DCB549D8E41920FDCA6C1 /* FileMenuItems.swift in Sources */,
@@ -6204,6 +6218,8 @@
 				F2C4F4832E3021E927704BFF /* FileListDragTests.swift in Sources */,
 				B7D736FB2405065BD3945F93 /* FloatingActionIslandTests.swift in Sources */,
 				BB2D708B955443712FE1BD82 /* FolderHeaderTransitionTests.swift in Sources */,
+				36BC6DA1424E0EDC680FD0C7 /* DropMoveProgressTests.swift in Sources */,
+				8FD6F5636D80CEE29D5F683D /* DropProgressIslandTests.swift in Sources */,
 				0FB5C5A812FA527AA39E6ACF /* DrawerWorkspaceTests.swift in Sources */,
 				D4986B15341E3865CD7AAE09 /* FileContextMenuTests.swift in Sources */,
 				42D712DD63CC8C1772BAB862 /* FileMenuItemsTests.swift in Sources */,

@@ -823,6 +823,34 @@ final class SharesViewControllerTests: XCTestCase {
         XCTAssertTrue(SharesViewController.shouldFetchShares(loadedArchiveId: 7, sessionArchiveId: 42, inFlightArchiveId: nil))
     }
 
+    // MARK: - The drop's progress circle
+
+    func testADrop_ShowsTheMoveHereCircle_UntilTheServerSaysYes() throws {
+        let vc = makeController()
+        let viewModel = try XCTUnwrap(vc.viewModel)
+        let beach = makeFolder(name: "Beach", folderLinkId: 30)
+        let photo = makeFile(name: "Lake", folderLinkId: 101)
+        viewModel.navigationStack = [makeFolder(name: "Trips", folderLinkId: 20)]
+        viewModel.viewModels = [beach, photo]
+        var answer: ServerResponse?
+        viewModel.relocateV1Request = { _, _, completion in answer = completion }
+        let window = UIWindow(frame: vc.view.frame)
+        window.addSubview(vc.view)
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+
+        vc.startDroppedMove([photo], to: beach)
+
+        let island = try XCTUnwrap(vc.floatingActionIsland, "the drop opens the island Move Here uses")
+        XCTAssertTrue(island.opensAsCircle)
+        answer?(.success)
+        let deadline = Date().addingTimeInterval(3)
+        while vc.floatingActionIsland != nil, Date() < deadline {
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        }
+        XCTAssertNil(vc.floatingActionIsland, "the check mark shows, then the island closes")
+    }
+
     private func makeController(list: UICollectionView? = nil) -> SharesViewController {
         let vc = SharesViewController()
         vc.viewModel = MockSharedFilesViewModel()

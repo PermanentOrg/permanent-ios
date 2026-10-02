@@ -122,10 +122,11 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         view.presentPopup(actionDialog, overlayView: overlayView)
     }
 
-    func showFloatingActionIsland(withLeftItems leftItems: [FloatingActionItem], rightItems: [FloatingActionItem]) {
+    func showFloatingActionIsland(withLeftItems leftItems: [FloatingActionItem], rightItems: [FloatingActionItem], opensAsCircle: Bool = false) {
         floatingActionIsland = FloatingActionIslandViewController()
         floatingActionIsland?.leftItems = leftItems
         floatingActionIsland?.rightItems = rightItems
+        floatingActionIsland?.opensAsCircle = opensAsCircle
         floatingActionIsland?.view.translatesAutoresizingMaskIntoConstraints = false
 
         floatingActionIsland?.willMove(toParent: self)

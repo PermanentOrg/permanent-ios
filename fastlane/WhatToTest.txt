@@ -12,7 +12,7 @@ Please focus on:
 
 4. Folder slides. Open a folder: it must slide in from the right (unless Reduce Motion is on), with the sort row staying still and no shadow around it. Tap the back arrow: it must slide back out, like the swipe from the left edge.
 
-5. Drag to move. Hold a file and move your finger: the file must lift and follow it. Drop it on a folder: it must move into that folder. Hold it over a folder or the back arrow for a moment to go there first. While you drag, tap more files with a second finger to move several at once.
+5. Drag to move. Hold a file and move your finger: the file must lift and follow it. Drop it on a folder: it must move into that folder. Hold it over a folder or the back arrow for a moment to go there first, then let go. Each time, a small circle at the bottom must spin until the move is done, then show a check mark, as after Move Here. With VoiceOver on, you must hear "Moving", then "Moved". While you drag, tap more files with a second finger to move several at once.
 
 6. Shared Files. Switch between Shared by me and Shared with me. Open a folder shared with you: you must see what is inside, and you must only be able to do what your role allows.
 

@@ -76,4 +76,27 @@ final class FloatingActionIslandTests: XCTestCase {
 
         XCTAssertEqual(opened, 1, "the last button opens the selection's sheet")
     }
+
+    func testAProgressIsland_OpensAsTheCircle_AndNeverAsTheBar() {
+        let island = FloatingActionIslandViewController()
+        island.opensAsCircle = true
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 402, height: 300))
+        let host = UIViewController()
+        window.rootViewController = host
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+        host.addChild(island)
+        host.view.addSubview(island.view)
+        island.didMove(toParent: host)
+        island.view.frame = CGRect(x: 32, y: 100, width: 338, height: 64)
+
+        island.showActivityIndicator()
+        island.viewDidAppear(false)
+        island.view.layoutIfNeeded()
+
+        let pill = island.view.subviews.first { (view: UIView) -> Bool in
+            view.layer.cornerRadius == 32 && !(view is UIToolbar)
+        }
+        XCTAssertEqual(pill?.bounds.width, 64, "the circle with its spinner; the bar's full width never shows")
+    }
 }

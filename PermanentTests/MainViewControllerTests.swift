@@ -1186,6 +1186,131 @@ final class MainViewControllerTests: XCTestCase {
         XCTAssertNil(released, "the menu and the reveal hold the screen weakly")
     }
 
+    // MARK: - The drop's progress circle
+
+    /// The main screen in a window, inside Trips with the folder Beach and the photo Lake, on a writable archive
+    /// unless the test brings its own view model. Every move waits until the test answers it.
+    private func makeDropController(viewModel: MyFilesViewModel? = nil) -> (vc: AlertTrackingMainViewController, photo: FileModel, beach: FileModel, answers: () -> [ServerResponse]) {
+        let (vc, _) = makeSkeletonTestController()
+        let writable = PermissionAwareMyFilesViewModel()
+        writable.testArchivePermissions = [.read, .create, .upload]
+        let viewModel = viewModel ?? writable
+        vc.viewModel = viewModel
+        let beach = makeFolder(name: "Beach", folderLinkId: 30)
+        let photo = makeFile(name: "Lake", folderLinkId: 101)
+        viewModel.navigationStack = [makeFolder(name: "Trips", folderLinkId: 20)]
+        viewModel.viewModels = [beach, photo]
+        var answers: [ServerResponse] = []
+        viewModel.relocateV1Request = { _, _, completion in answers.append(completion) }
+        let window = UIWindow(frame: vc.view.frame)
+        window.addSubview(vc.view)
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+        return (vc, photo, beach, { answers })
+    }
+
+    private func waitUntil(_ condition: @autoclosure () -> Bool, timeout: TimeInterval = 3) {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition(), Date() < deadline {
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        }
+    }
+
+    func testADrop_ShowsTheMoveHereCircle_ThenClosesAfterTheCheck() throws {
+        let (vc, photo, beach, answers) = makeDropController()
+
+        vc.startDroppedMove([photo], to: beach)
+
+        let island = try XCTUnwrap(vc.floatingActionIsland, "the drop opens the island Move Here uses")
+        XCTAssertTrue(island.opensAsCircle, "as the 64 pt circle, never the full bar")
+        XCTAssertEqual(answers().count, 1)
+
+        answers().first?(.success)
+
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland, "the check mark shows, then the island closes")
+    }
+
+    func testADropInsideTheOpenFolder_KeepsTheCircle_UntilThePhotoIsListed() throws {
+        let (vc, _, _, answers) = makeDropController()
+        let viewModel = try XCTUnwrap(vc.viewModel)
+        let trips = try XCTUnwrap(viewModel.currentFolder)
+        var refresh: ((RequestStatus) -> Void)?
+        vc.navigateMinRequest = { _, _, completion in refresh = completion }
+        let dunes = makeFile(name: "Dunes", folderLinkId: 201)
+
+        vc.startDroppedMove([dunes], to: trips)
+        answers().first?(.success)
+
+        let island = try XCTUnwrap(vc.floatingActionIsland)
+        XCTAssertNotNil(refresh, "the folder refetches to find the photo")
+        RunLoop.main.run(until: Date().addingTimeInterval(0.6))
+        XCTAssertTrue(vc.floatingActionIsland === island, "the circle spins until the photo is listed")
+
+        viewModel.viewModels.append(dunes)
+        refresh?(.success)
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland, "listed, so the check mark shows and the island closes")
+    }
+
+    func testAFailedDrop_ClosesTheCircle() {
+        let (vc, photo, beach, answers) = makeDropController()
+        vc.startDroppedMove([photo], to: beach)
+        XCTAssertNotNil(vc.floatingActionIsland)
+
+        answers().first?(.error(message: nil))
+
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland)
+    }
+
+    func testTwoQuickDrops_ShareOneCircle_UntilTheLastMoveEnds() throws {
+        let (vc, photo, beach, answers) = makeDropController()
+        let dunes = makeFile(name: "Dunes", folderLinkId: 102)
+        vc.startDroppedMove([photo], to: beach)
+        let island = try XCTUnwrap(vc.floatingActionIsland)
+
+        vc.startDroppedMove([dunes], to: beach)
+        XCTAssertTrue(vc.floatingActionIsland === island, "the second drop keeps the circle")
+        answers()[0](.success)
+        RunLoop.main.run(until: Date().addingTimeInterval(0.8))
+        XCTAssertTrue(vc.floatingActionIsland === island, "it spins on while the second move runs")
+
+        answers()[1](.success)
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland)
+    }
+
+    func testThePlusButton_HidesWhileTheCircleShows_AndComesBack() {
+        let (vc, photo, beach, answers) = makeDropController()
+        vc.updateFABViewVisibility()
+        XCTAssertFalse(vc.fabView.isHidden, "precondition: a writable archive shows the plus button")
+
+        vc.startDroppedMove([photo], to: beach)
+        vc.updateFABViewVisibility()
+        XCTAssertTrue(vc.fabView.isHidden, "a refresh during the wait keeps it hidden")
+
+        answers().first?(.success)
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertFalse(vc.fabView.isHidden, "it comes back once the island closes")
+    }
+
+    func testASelectionMadeWhileTheCircleShows_GetsItsBarOnceTheCircleCloses() throws {
+        let viewModel = MockMyFilesViewModel()
+        let (vc, photo, beach, answers) = makeDropController(viewModel: viewModel)
+        vc.startDroppedMove([photo], to: beach)
+        let circle = try XCTUnwrap(vc.floatingActionIsland)
+
+        viewModel.isSelecting = true
+        viewModel.selectedFiles = [beach]
+        answers().first?(.success)
+
+        waitUntil(vc.floatingActionIsland != nil && vc.floatingActionIsland !== circle)
+        let bar = try XCTUnwrap(vc.floatingActionIsland)
+        XCTAssertFalse(bar === circle)
+        XCTAssertFalse(bar.opensAsCircle, "the selection bar opens once the circle has gone")
+    }
+
     private func makeFolder(name: String, folderLinkId: Int) -> FileModel {
         FileModel(
             name: name,

@@ -72,6 +72,26 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         dragDidEnd: { [weak self] in self?.dragDidEnd() },
         lookDidChange: { [weak self] in self?.showDragLookOnVisibleRows() }
     ))
+    private lazy var dropProgress = DropProgressIsland(handlers: .init(
+        open: { [weak self] in
+            self?.showFloatingActionIsland(withLeftItems: [], rightItems: [], opensAsCircle: true)
+            return self?.floatingActionIsland
+        },
+        current: { [weak self] in self?.floatingActionIsland },
+        close: { [weak self] done in self?.dismissFloatingActionIsland(done) },
+        hidePlusButton: { [weak self] in self?.fabView.setVisibility(hidden: true) },
+        restore: { [weak self] in
+            guard let self, let viewModel = self.viewModel else { return }
+            // A Move or a selection that started while the circle showed gets its bar now.
+            if viewModel.fileAction != FileAction.none {
+                self.setupBottomActionSheet()
+            } else if viewModel.isSelecting, !(viewModel.selectedFiles ?? []).isEmpty {
+                self.setupBottomActionSheetForMultipleFiles()
+            } else {
+                self.updateFAB()
+            }
+        }
+    ))
     /// Borrows the sheet's role refresh while a long-press menu is open, so the menu can follow the server's role.
     private var contextMenuRoleRefresh: FileMenuViewModel?
     private var sharesRefreshRequestId = UUID()
@@ -510,6 +530,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         // Hide the create/upload FAB (and its checklist sub-button) while picking a copy/move
         // destination — you're choosing where to paste, not adding new files here.
         if viewModel?.isSelectingDestination == true { shouldShowFAB = false }
+        if dropProgress.isShowing { shouldShowFAB = false }
 
         // setVisibility fades the buttons back in (see FABView) — hiding them for paste mode
         // created a real hide→show transition that used to not exist.
@@ -1893,16 +1914,20 @@ extension SharesViewController {
         collectionView.reloadData()
     }
 
-    /// Rows that leave the folder go at once, as in Files. Files moved into the open folder show once the server lists them.
-    private func startDroppedMove(_ files: [FileModel], to destination: FileModel) {
+    /// Rows that leave the folder go at once, as in Files; files moved into the open folder show once the server lists them.
+    /// Meanwhile the island shows the move's progress, as after Move Here.
+    func startDroppedMove(_ files: [FileModel], to destination: FileModel) {
         guard let viewModel, let folder = viewModel.currentFolder else { return }
         let leaving = files.filter(viewModel.lists)
         if !leaving.isEmpty {
             viewModel.removeListedRows(of: leaving)
             refreshCollectionView()
         }
+        dropProgress.moveStarted()
         viewModel.moveDropped(files, to: destination) { [weak self] status in
             guard let self else { return }
+            // As after Move Here on this screen, the check shows when the server says yes.
+            self.dropProgress.moveEnded(succeeded: status == .success)
             switch status {
             case .success:
                 if !leaving.isEmpty {

@@ -123,6 +123,7 @@
 "ExpDateTooltip" = "This link will disappear after the expiration date has been reached.";
 "File" = "File";
 "Copied" = "Copied";
+"Moving" = "Moving";
 "Moved" = "Moved";
 "Owner" = "Owner";
 "Manager" = "Manager";
