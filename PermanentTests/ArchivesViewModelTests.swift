@@ -175,6 +175,8 @@ final class ArchivesViewModelTests: XCTestCase {
     // MARK: - currentArchive (no session)
 
     func testCurrentArchive_NoSession_ReturnsNil() {
+        // A UI test run can leave its account signed in on this simulator.
+        AuthenticationManager.shared.session = nil
         let vm = ArchivesViewModel()
         XCTAssertNil(vm.currentArchive())
     }

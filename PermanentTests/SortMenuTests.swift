@@ -78,7 +78,9 @@ final class SortMenuTests: XCTestCase {
         let plain = alphas(of: UIGraphicsImageRenderer(size: symbol.size).image { _ in symbol.draw(in: CGRect(origin: .zero, size: symbol.size)) })
         let drawn = alphas(of: icon)
 
-        XCTAssertEqual(icon.size, symbol.size, "the symbol's own size at the current text size")
+        // iOS 27 can round the two sizes a few billionths of a point apart.
+        XCTAssertEqual(icon.size.width, symbol.size.width, accuracy: 0.001, "the symbol's own width at the current text size")
+        XCTAssertEqual(icon.size.height, symbol.size.height, accuracy: 0.001, "the symbol's own height at the current text size")
         XCTAssertEqual(icon.renderingMode, .alwaysTemplate, "tinted like the menu's text")
         XCTAssertEqual(icon.imageOrientation, .up, "no orientation flag for the menu to drop")
         XCTAssertEqual(drawn.values.count, plain.values.count)

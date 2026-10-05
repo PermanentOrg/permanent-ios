@@ -11,8 +11,8 @@ import XCTest
 class DeleteAlertPage {
     let app: XCUIApplication
     
-    var cancelButton: XCUIElement { app.buttons["Cancel"] }
-    var deleteButton: XCUIElement { app.buttons["Delete"] }
+    var cancelButton: XCUIElement { app.buttons["bottomAlertCancelButton"] }
+    var deleteButton: XCUIElement { app.buttons["bottomAlertConfirmButton"] }
     
     init(app: XCUIApplication) {
         self.app = app

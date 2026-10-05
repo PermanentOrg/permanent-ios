@@ -30,6 +30,7 @@ class MainFileOperationsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         let folderName = "aaae2e_nav_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: folderName)
@@ -107,6 +108,7 @@ class MainFileOperationsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Toggle list/grid view twice to verify both layouts render.
         privateFilesPage.toggleListGridView()
@@ -120,7 +122,7 @@ class MainFileOperationsUITests: BaseUITestCase {
         privateFilesPage.assertElementExists(named: originalName)
 
         // Rename the folder via the file menu.
-        privateFilesPage.renameFirstElementFromFolder(name: renamedName)
+        privateFilesPage.renameElement(named: originalName, to: renamedName)
         privateFilesPage.assertElementExists(named: renamedName)
 
         // Cleanup: target the renamed folder by name so we never tap a real archive item.
@@ -146,6 +148,7 @@ class MainFileOperationsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Create a couple of folders so multi-select has something to act on. The
         // "aaa_" prefix keeps them at the top of the A to Z name order.

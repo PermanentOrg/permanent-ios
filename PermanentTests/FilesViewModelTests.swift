@@ -1006,6 +1006,8 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - archivePermissions (no session)
 
     func testArchivePermissions_NoSession_DefaultsToRead() {
+        // A UI test run can leave its account signed in on this simulator.
+        AuthenticationManager.shared.session = nil
         let vm = FilesViewModel()
         XCTAssertEqual(vm.archivePermissions, [.read])
     }
@@ -1013,6 +1015,7 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - archiveAccessRole (no session)
 
     func testArchiveAccessRole_NoSession_DefaultsToViewer() {
+        AuthenticationManager.shared.session = nil
         let vm = FilesViewModel()
         XCTAssertEqual(vm.archiveAccessRole, .viewer)
     }

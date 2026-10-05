@@ -48,6 +48,12 @@ final class ShareLinksV2EndpointTests: XCTestCase {
         XCTAssertEqual(endpoint.method, .patch)
     }
 
+    func testEveryMethod_GoesOutInCapitals_SinceIOS27SendsALowerCasePatchAsItIs() {
+        let request = ShareLinksV2Endpoint.updateShareLink(shareLinkId: "abc").urlRequest(with: APIEnvironment.staging)
+        XCTAssertEqual(request?.httpMethod, "PATCH", "the proxy in front of the server answers a lower-case patch with 400")
+        XCTAssertEqual([RequestMethod.get, .post, .put, .patch, .delete].map(\.rawValue), ["GET", "POST", "PUT", "PATCH", "DELETE"])
+    }
+
     func testGetShareLink_UsesGetMethod() {
         let endpoint = ShareLinksV2Endpoint.getShareLink(shareLinkId: "abc")
         XCTAssertEqual(endpoint.method, .get)

@@ -186,9 +186,10 @@ class PrivateFilesPage {
         sleep(1)
     }
 
-    func renameFirstElementFromFolder(name: String) {
-        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
-        firstElementMoreButton.tap()
+    func renameElement(named name: String, to newName: String) {
+        let moreButton = cell(named: name).buttons.firstMatch
+        XCTAssertTrue(moreButton.waitForExistence(timeout: 10), "Folder \(name) is not in the list")
+        moreButton.tap()
 
         let fileMenu = FileMenuPage(app: app)
         XCTAssertTrue(fileMenu.renameButton.waitForExistence(timeout: 10))
@@ -207,11 +208,32 @@ class PrivateFilesPage {
         }
 
         renameAlert.textField.tap()
-        renameAlert.textField.typeText(name)
+        renameAlert.textField.typeText(newName)
 
         XCTAssertTrue(renameAlert.renameButton.waitForExistence(timeout: 10))
         renameAlert.renameButton.tap()
         sleep(3)
+    }
+
+    /// Deletes the folders a failed run left behind. Call it before this test makes its own folders,
+    /// and run one UI test run at a time per account, since the names match every run's folders.
+    func removeLeftoverTestFolders() {
+        // The rows load after the bar, so wait for one named row before looking.
+        _ = app.collectionViews.cells.staticTexts.firstMatch.waitForExistence(timeout: 20)
+        for _ in 0..<20 {
+            let names = app.collectionViews.cells.staticTexts
+                .matching(NSPredicate(format: "label BEGINSWITH 'aaa'"))
+                .allElementsBoundByIndex.map(\.label)
+            guard let name = names.first(where: Self.isTestFolderName) else { return }
+            deleteElement(named: name)
+            _ = cell(named: name).waitForNonExistence(timeout: 10)
+        }
+    }
+
+    /// The UI tests name their folders a fixed prefix plus 6 characters of a UUID.
+    static func isTestFolderName(_ name: String) -> Bool {
+        let prefixes = "aaa_(copy_src|copy_dst|move_src|move_dst|multi_a|multi_b|preview|rename|renamed|share|state|upload)|aaae2e_nav"
+        return name.range(of: "^(\(prefixes))_[0-9A-F]{6}$", options: .regularExpression) != nil
     }
 
     func copyFirstElementToCurrentFolder() {

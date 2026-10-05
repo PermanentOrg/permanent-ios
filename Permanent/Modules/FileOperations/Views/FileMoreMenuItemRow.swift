@@ -37,6 +37,7 @@ struct FileMoreMenuItemRow: View {
                 .multilineTextAlignment(.leading)
                 // VoiceOver needs its own way in: the row's drag gesture has no accessibility action.
                 .accessibilityAction { action() }
+                .accessibilityIdentifier("fileMenuItem.\(item.type.rawValue)")
 
             let pendingInvitationCount = viewModel.pendingInvitationBadgeCount(for: item.type)
             if pendingInvitationCount > 0 {

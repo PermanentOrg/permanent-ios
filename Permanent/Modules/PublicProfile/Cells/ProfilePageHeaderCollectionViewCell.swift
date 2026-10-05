@@ -25,13 +25,14 @@ class ProfilePageHeaderCollectionViewCell: UICollectionReusableView {
         configure(titleLabel: "About", buttonText: "Edit")
     }
     
-    func configure(titleLabel: String = "", buttonText: String = "", buttonIsHidden: Bool = false ) {
+    func configure(titleLabel: String = "", buttonText: String = "", buttonIsHidden: Bool = false, buttonIdentifier: String? = nil) {
         self.titleLabel.text = titleLabel.localized()
-        
+
         editButton.setAttributedTitle(NSAttributedString(string: buttonText.localized(), attributes: [.font: TextFontStyle.style17.font, .foregroundColor: UIColor.primary]), for: .normal)
         editButton.setAttributedTitle(NSAttributedString(string: buttonText.localized(), attributes: [.font: TextFontStyle.style17.font, .foregroundColor: UIColor.lightBlue]), for: .highlighted)
-        
+
         editButton.isHidden = buttonIsHidden
+        editButton.accessibilityIdentifier = buttonIdentifier
     }
 
     static func nib() -> UINib {

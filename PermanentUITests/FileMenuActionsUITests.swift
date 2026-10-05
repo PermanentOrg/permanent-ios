@@ -24,6 +24,7 @@ class FileMenuActionsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Create the source and destination folders. The "aaa_" prefix keeps them at
         // the top of the A to Z name order so existing archive items are never touched.
@@ -82,6 +83,7 @@ class FileMenuActionsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Create the source and destination folders. The "aaa_" prefix keeps them at
         // the top of the A to Z name order so existing archive items are never touched.

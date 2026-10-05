@@ -1156,6 +1156,8 @@ final class MainViewControllerTests: XCTestCase {
     }
 
     func testApplySort_SavesAndRefreshesTheFolder_ThenListsItFromTheTop() throws {
+        // A UI test run can leave an editor signed in, and the sort would then wait for a real server.
+        AuthenticationManager.shared.session = nil
         let (vc, list, _) = makeHostedController()
         var refreshed: NavigateMinParams?
         vc.navigateMinRequest = { params, _, completion in
