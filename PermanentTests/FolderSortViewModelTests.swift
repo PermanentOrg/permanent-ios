@@ -100,8 +100,8 @@ final class FolderSortViewModelTests: XCTestCase {
     // MARK: - SortOption wording
 
     func testSortOption_Titles_NameTheFieldThenTheOrder() {
-        XCTAssertEqual(SortOption.nameAscending.title, "Name  •  A to Z")
-        XCTAssertEqual(SortOption.nameDescending.title, "Name  •  Z to A")
+        XCTAssertEqual(SortOption.nameAscending.title, "Name  •  A → Z")
+        XCTAssertEqual(SortOption.nameDescending.title, "Name  •  Z → A")
         XCTAssertEqual(SortOption.dateAscending.title, "Date  •  Oldest first")
         XCTAssertEqual(SortOption.dateDescending.title, "Date  •  Newest first")
         XCTAssertEqual(SortOption.typeAscending.title, "Type  •  Ascending")
@@ -110,7 +110,9 @@ final class FolderSortViewModelTests: XCTestCase {
 
     func testSortOption_TheMark_HasTwoSpacesOnEachSide() {
         XCTAssertEqual(SortOption.titleSeparator, "  \u{2022}  ")
-        XCTAssertEqual(SortOption.spoken(SortOption.nameDescending.title), "Name, Z to A")
+        XCTAssertEqual(SortOption.spoken(SortOption.nameDescending.title), "Name, Z to A", "VoiceOver says the arrow as a word")
+        XCTAssertEqual(SortOption.nameAscending.spokenTitle, "Name, A to Z")
+        XCTAssertEqual(SortOption.dateDescending.spokenTitle, "Date, Newest first")
     }
 
     func testSortOption_FieldOrders_AreTheTwoOrdersOfTheSameField() {
@@ -124,7 +126,7 @@ final class FolderSortViewModelTests: XCTestCase {
     func testSortOption_SpokenTitles_ReadTheMarkAsAPause() {
         XCTAssertEqual(SortOption.dateDescending.spokenTitle, "Date, Newest first")
         for option in SortOption.allCases {
-            XCTAssertEqual(option.spokenTitle, "\(option.fieldTitle), \(option.directionTitle)")
+            XCTAssertEqual(option.spokenTitle, "\(option.fieldTitle), \(option.spokenDirectionTitle)")
         }
         XCTAssertEqual(SortOption.spoken("Uploads"), "Uploads", "a title without the mark reads as it is")
     }

@@ -32,6 +32,11 @@ final class SortMenuTests: XCTestCase {
         unsafeBitCast(handler as AnyObject, to: Handler.self)(action)
     }
 
+    /// Which rows carry the drawn checkmark, as VoiceOver hears them.
+    private func checked(in menu: UIMenu) -> [Bool] {
+        actions(in: menu).map { $0.accessibilityTraits.contains(.selected) }
+    }
+
     private func picks(_ title: String, inGroup index: Int, current: SortOption) throws -> [SortOption] {
         var picked: [SortOption] = []
         let group = groups(for: current) { picked.append($0) }[index]
@@ -55,6 +60,8 @@ final class SortMenuTests: XCTestCase {
         XCTAssertTrue(summary.attributes.contains(.keepsMenuPresented))
         XCTAssertFalse(summary.attributes.contains(.disabled), "a disabled line would be dimmed")
         XCTAssertEqual(summary.accessibilityLabel, "Sort by, Date, Newest first", "read as the header button reads it")
+        XCTAssertNotNil(summary.image, "the arrows sit in the checkmarks' column")
+        XCTAssertFalse(checked(in: groups(for: .dateDescending)[0]).contains(true), "the line is not a choice")
     }
 
     /// Each pixel's opacity, 0 to 255, row by row.
@@ -100,30 +107,32 @@ final class SortMenuTests: XCTestCase {
 
     func testSecondGroup_ListsTheFieldsWithTheCurrentOneChecked() {
         let fields = groups(for: .dateDescending)[1]
-        XCTAssertTrue(fields.options.contains(.singleSelection))
         XCTAssertEqual(actions(in: fields).map(\.title), ["Name", "Date", "Type"])
-        XCTAssertEqual(actions(in: fields).map(\.state), [.off, .on, .off])
+        XCTAssertEqual(checked(in: fields), [false, true, false])
+        XCTAssertTrue(actions(in: fields).allSatisfy { $0.state == .off }, "a checkmark iOS draws itself pushes the Sort by line right")
+        XCTAssertEqual(Set(actions(in: fields).compactMap { $0.image?.size.width }).count, 1, "every title starts at the same place")
     }
 
     func testThirdGroup_ListsTheDateOrdersWithTheCurrentOneChecked() {
         let orders = groups(for: .dateDescending)[2]
-        XCTAssertTrue(orders.options.contains(.singleSelection))
         XCTAssertEqual(actions(in: orders).map(\.title), ["Newest first", "Oldest first"])
-        XCTAssertEqual(actions(in: orders).map(\.state), [.on, .off])
+        XCTAssertEqual(checked(in: orders), [true, false])
+        XCTAssertTrue(actions(in: orders).allSatisfy { $0.state == .off && $0.image != nil })
     }
 
     func testNameDescending_ListsTheNameOrdersWithZToAChecked() {
         let groups = groups(for: .nameDescending)
-        XCTAssertEqual(actions(in: groups[1]).map(\.state), [.on, .off, .off])
-        XCTAssertEqual(actions(in: groups[2]).map(\.title), ["A to Z", "Z to A"])
-        XCTAssertEqual(actions(in: groups[2]).map(\.state), [.off, .on])
+        XCTAssertEqual(checked(in: groups[1]), [true, false, false])
+        XCTAssertEqual(actions(in: groups[2]).map(\.title), ["A → Z", "Z → A"])
+        XCTAssertEqual(actions(in: groups[2]).map(\.accessibilityLabel), ["A to Z", "Z to A"], "VoiceOver says the arrow as a word")
+        XCTAssertEqual(checked(in: groups[2]), [false, true])
     }
 
     func testTypeAscending_ListsTheTypeOrdersWithAscendingChecked() {
         let groups = groups(for: .typeAscending)
-        XCTAssertEqual(actions(in: groups[1]).map(\.state), [.off, .off, .on])
+        XCTAssertEqual(checked(in: groups[1]), [false, false, true])
         XCTAssertEqual(actions(in: groups[2]).map(\.title), ["Ascending", "Descending"])
-        XCTAssertEqual(actions(in: groups[2]).map(\.state), [.on, .off])
+        XCTAssertEqual(checked(in: groups[2]), [true, false])
     }
 
     // MARK: - Picking a field
@@ -196,11 +205,11 @@ final class SortMenuTests: XCTestCase {
         inForce = .dateAscending
         let second = try XCTUnwrap(opening() as? [UIMenu])
 
-        XCTAssertEqual(actions(in: first[0]).first?.subtitle, "Name  •  A to Z")
-        XCTAssertEqual(actions(in: first[1]).map(\.state), [.on, .off, .off])
+        XCTAssertEqual(actions(in: first[0]).first?.subtitle, "Name  •  A → Z")
+        XCTAssertEqual(checked(in: first[1]), [true, false, false])
         XCTAssertEqual(actions(in: second[0]).first?.subtitle, "Date  •  Oldest first")
-        XCTAssertEqual(actions(in: second[1]).map(\.state), [.off, .on, .off])
+        XCTAssertEqual(checked(in: second[1]), [false, true, false])
         XCTAssertEqual(actions(in: second[2]).map(\.title), ["Newest first", "Oldest first"])
-        XCTAssertEqual(actions(in: second[2]).map(\.state), [.off, .on])
+        XCTAssertEqual(checked(in: second[2]), [false, true])
     }
 }

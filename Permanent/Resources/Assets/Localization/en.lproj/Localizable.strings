@@ -81,8 +81,10 @@
 "Date" = "Date";
 "SortBy" = "Sort by";
 "SortFieldType" = "Type";
-"SortAToZ" = "A to Z";
-"SortZToA" = "Z to A";
+"SortAToZ" = "A → Z";
+"SortZToA" = "Z → A";
+"SortAToZSpoken" = "A to Z";
+"SortZToASpoken" = "Z to A";
 "SortNewestFirst" = "Newest first";
 "SortOldestFirst" = "Oldest first";
 "SortAscending" = "Ascending";

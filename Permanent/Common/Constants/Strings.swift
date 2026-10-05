@@ -114,6 +114,8 @@ extension String {
     static var sortFieldType: String { return "SortFieldType".localized() }
     static var sortAToZ: String { return "SortAToZ".localized() }
     static var sortZToA: String { return "SortZToA".localized() }
+    static var sortAToZSpoken: String { return "SortAToZSpoken".localized() }
+    static var sortZToASpoken: String { return "SortZToASpoken".localized() }
     static var sortNewestFirst: String { return "SortNewestFirst".localized() }
     static var sortOldestFirst: String { return "SortOldestFirst".localized() }
     static var sortAscending: String { return "SortAscending".localized() }

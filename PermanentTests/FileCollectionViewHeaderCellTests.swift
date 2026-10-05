@@ -389,7 +389,7 @@ final class FileCollectionViewHeaderCellTests: XCTestCase {
 
         XCTAssertEqual(header.leftButton.accessibilityValue, "Name, Z to A")
         XCTAssertEqual(header.leftButton.accessibilityUserInputLabels, ["Sort by", "Name, Z to A", "Name"])
-        XCTAssertEqual(header.leftButton.configuration?.title, "Name  \u{2022}  Z to A")
+        XCTAssertEqual(header.leftButton.configuration?.title, "Name  \u{2022}  Z \u{2192} A")
     }
 
     func testNoMenu_RestoresThePlainHeaderSortButton() {

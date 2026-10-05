@@ -27,9 +27,11 @@ enum SortOption: Int, CaseIterable, Codable {
     /// The mark between a title's field and its order, "  •  ".
     static let titleSeparator = String(format: .sortOption, "", "")
 
-    /// A sort title as VoiceOver should read it, with a pause in place of the mark.
+    /// A sort title as VoiceOver should read it, with a pause in place of the mark and words in place of arrows.
     static func spoken(_ title: String) -> String {
-        title.replacingOccurrences(of: titleSeparator, with: ", ")
+        allCases.reduce(title.replacingOccurrences(of: titleSeparator, with: ", ")) { spoken, option in
+            spoken.replacingOccurrences(of: option.directionTitle, with: option.spokenDirectionTitle)
+        }
     }
 
     var title: String {
@@ -56,6 +58,15 @@ enum SortOption: Int, CaseIterable, Codable {
         case .dateDescending: return .sortNewestFirst
         case .typeAscending: return .sortAscending
         case .typeDescending: return .sortDescending
+        }
+    }
+
+    /// The order in words, since VoiceOver reads the arrow in "A → Z" aloud.
+    var spokenDirectionTitle: String {
+        switch self {
+        case .nameAscending: return .sortAToZSpoken
+        case .nameDescending: return .sortZToASpoken
+        default: return directionTitle
         }
     }
 
