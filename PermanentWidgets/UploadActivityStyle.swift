@@ -2,6 +2,8 @@
 //  UploadActivityStyle.swift
 //  PermanentWidgets
 //
+//  Created by Lucian Cerbu on 11.08.2026.
+//
 //  Colours, gradients, fonts and metrics for the upload Live Activity. Not from the app's
 //  Colors.swift: that is app-target only, and the widget extension cannot see it.
 //

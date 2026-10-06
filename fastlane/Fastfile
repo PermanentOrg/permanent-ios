@@ -21,10 +21,8 @@ platform :ios do
   lane :tests do
     setup_ci
 
-    # add actions here: https://docs.fastlane.tools/actions
-    cocoapods(use_bundle_exec: true,
-              podfile: "./Podfile")
-    run_tests(workspace: "Permanent.xcworkspace",
+    run_tests(project: "Permanent.xcodeproj",
+              cloned_source_packages_path: "SourcePackages",
               devices: ["iPhone 17 Pro"],
               scheme: "Permanent-DEV",
 	            configuration: "DEV-Debug",
@@ -32,19 +30,10 @@ platform :ios do
 	            reset_simulator: true)
   end
 
-  lane :cocopods do
-    # resolve cocoapods
-    cocoapods(use_bundle_exec: true,
-              podfile: "./Podfile")
-  end
 
   lane :beta do
     setup_ci
 
-    # resolve cocoapods
-    cocoapods(use_bundle_exec: true,
-              podfile: "./Podfile")
-              
     # connect to the app store
     app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
                               in_house: false,
@@ -84,7 +73,9 @@ platform :ios do
     end
 
     # actually build the app
-    build_app(scheme: "Permanent-DEV",
+    build_app(project: "Permanent.xcodeproj",
+              cloned_source_packages_path: "SourcePackages",
+              scheme: "Permanent-DEV",
 	            configuration: "DEV-Release",
 	            xcargs: "-allowProvisioningUpdates",
               include_bitcode: false,
@@ -107,10 +98,6 @@ platform :ios do
   lane :app_store do 
     setup_ci
 
-    # resolve cocoapods
-    cocoapods(use_bundle_exec: true,
-              podfile: "./Podfile")
-           
     # connect to the app store
     app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
                               in_house: false,
@@ -190,7 +177,8 @@ platform :ios do
     )
 
      # actually build the app
-    build_app(workspace: "Permanent.xcworkspace",
+    build_app(project: "Permanent.xcodeproj",
+              cloned_source_packages_path: "SourcePackages",
               scheme: "Permanent",
 	            configuration: "Release",
               include_bitcode: false,

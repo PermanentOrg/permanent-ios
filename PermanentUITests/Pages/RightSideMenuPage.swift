@@ -19,7 +19,7 @@ class RightSideMenuPage {
         app.staticTexts["Sign out"]
     }
     var confirmSignOutButton: XCUIElement {
-        app.buttons.matching(NSPredicate(format: "label == 'Sign out'")).element(boundBy: 1)
+        app.buttons["bottomAlertConfirmButton"]
     }
 
     init(app: XCUIApplication, testCase: XCTestCase, accountEmail: String) {

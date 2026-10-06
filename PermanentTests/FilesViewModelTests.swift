@@ -1006,6 +1006,8 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - archivePermissions (no session)
 
     func testArchivePermissions_NoSession_DefaultsToRead() {
+        // A UI test run can leave its account signed in on this simulator.
+        AuthenticationManager.shared.session = nil
         let vm = FilesViewModel()
         XCTAssertEqual(vm.archivePermissions, [.read])
     }
@@ -1013,6 +1015,7 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - archiveAccessRole (no session)
 
     func testArchiveAccessRole_NoSession_DefaultsToViewer() {
+        AuthenticationManager.shared.session = nil
         let vm = FilesViewModel()
         XCTAssertEqual(vm.archiveAccessRole, .viewer)
     }
@@ -1030,6 +1033,55 @@ final class FilesViewModelTests: XCTestCase {
             }
         }
         wait(for: [expectation], timeout: 1.0)
+    }
+
+    // MARK: - A drop's move
+
+    func testADropsMove_SendsTheFiles_AndLeavesAPendingPasteAlone() {
+        let vm = FilesViewModel()
+        vm.fileAction = .copy
+        vm.selectedFiles = [makeRecordFile(name: "picked.jpg")]
+        var sent: [FileModel] = []
+        vm.relocateV1Request = { files, _, completion in sent = files; completion(.success) }
+        let moved = expectation(description: "moved")
+        var status: RequestStatus?
+
+        vm.moveDropped([makeRecordFile()], to: makeFolderFile()) { status = $0; moved.fulfill() }
+        wait(for: [moved], timeout: 1)
+
+        XCTAssertEqual(status, .success)
+        XCTAssertEqual(sent.map(\.name), ["photo.jpg"])
+        XCTAssertEqual(vm.fileAction, .copy, "the paste bar's action is not the drop's")
+        XCTAssertEqual(vm.selectedFiles?.map(\.name), ["picked.jpg"])
+    }
+
+    func testMoveHere_StillClearsItsPendingMove() {
+        let vm = FilesViewModel()
+        vm.fileAction = .move
+        vm.selectedFiles = [makeRecordFile()]
+        vm.relocateV1Request = { _, _, completion in completion(.success) }
+        let moved = expectation(description: "moved")
+
+        vm.relocate(files: [makeRecordFile()], to: makeFolderFile()) { _ in moved.fulfill() }
+        wait(for: [moved], timeout: 1)
+
+        XCTAssertEqual(vm.fileAction, FileAction.none)
+        XCTAssertEqual(vm.selectedFiles, [])
+    }
+
+    func testDroppedRows_AreFoundAndRemovedByTheirIds_NotByTheWholeRow() {
+        let vm = FilesViewModel()
+        func row(_ name: String, _ folderLinkId: Int) -> FileModel {
+            FileModel(name: name, recordId: 1, folderLinkId: folderLinkId, archiveNbr: "0001", type: "type.record.image", permissions: [.read])
+        }
+        vm.viewModels = [row("a.jpg", 21), row("b.jpg", 22), row("c.jpg", 23)]
+        let renamedA = row("a (new thumbnail).jpg", 21)
+
+        XCTAssertTrue(vm.lists(renamedA))
+        vm.removeListedRows(of: [renamedA, row("gone.jpg", 99), row("c.jpg", 23)])
+
+        XCTAssertEqual(vm.viewModels.map(\.name), ["b.jpg"], "a missing row does not stop the rest from going")
+        XCTAssertFalse(vm.lists(renamedA))
     }
 
     // MARK: - Stela V2 copy routing (POST /records/{id}/copies)

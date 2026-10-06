@@ -2,6 +2,8 @@
 //  FolderHeaderTransition.swift
 //  Permanent
 //
+//  Created by Lucian Cerbu on 23.09.2026.
+//
 
 import UIKit
 
@@ -58,9 +60,9 @@ final class FolderHeaderTransition {
         container?.layoutIfNeeded()
 
         if changesTitle {
-            UIView.transition(with: titleLabel, duration: Self.duration, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                titleLabel.text = title
-            }
+            fadeTitle(of: titleLabel, to: title, followsLabel: changesBack && newShowsBack)
+            // The new name takes its full width now, while it is hidden, so it never shows cut off.
+            container?.layoutIfNeeded()
         }
         guard changesBack else { return }
         // Under Reduce Motion the arrow only fades; the name moves without sliding.
@@ -85,6 +87,38 @@ final class FolderHeaderTransition {
             guard change == self.backChange else { return }
             self.setBackHidden(!newShowsBack)
             self.backTarget = nil
+        }
+    }
+
+    /// The old name fades out, then the new one fades in. Dissolved into each other, both names show at once,
+    /// the old one clipped to the new one's width.
+    private func fadeTitle(of label: UILabel, to title: String?, followsLabel: Bool) {
+        let half = Self.duration / 2
+        let old = label.snapshotView(afterScreenUpdates: false)
+        if let old, let row = label.superview {
+            old.isUserInteractionEnabled = false
+            old.frame = label.frame
+            row.addSubview(old)
+            // As the arrow comes in, the old name moves aside with the label; as it goes, the old name stays clear of it.
+            if followsLabel {
+                old.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    old.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+                    old.centerYAnchor.constraint(equalTo: label.centerYAnchor),
+                    old.widthAnchor.constraint(equalToConstant: label.bounds.width),
+                    old.heightAnchor.constraint(equalToConstant: label.bounds.height)
+                ])
+            }
+            UIView.animate(withDuration: half, delay: 0, options: [.curveEaseIn, .allowUserInteraction]) {
+                old.alpha = 0
+            } completion: { _ in
+                old.removeFromSuperview()
+            }
+        }
+        label.text = title
+        label.alpha = 0
+        UIView.animate(withDuration: half, delay: old == nil ? 0 : half, options: [.curveEaseOut, .allowUserInteraction]) {
+            label.alpha = 1
         }
     }
 

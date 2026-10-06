@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Firebase
 
 class UpdateNecessaryViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!

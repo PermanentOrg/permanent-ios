@@ -203,6 +203,16 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         present(hostingController, animated: true)
     }
     
+    /// The details screen for a file picked from a list, in the navigation the file preview gives it.
+    static func navigation(for file: FileModel, delegate: FilePreviewNavigationControllerDelegate) -> UINavigationController {
+        let details = UIViewController.create(withIdentifier: .fileDetailsOnTap, from: .main) as! FileDetailsViewController
+        details.file = file
+        details.delegate = delegate
+        let navigation = FilePreviewNavigationController(rootViewController: details)
+        navigation.modalPresentationStyle = .fullScreen
+        return navigation
+    }
+
     @objc func closeButtonAction(_ sender: Any) {
         // Hand off to the pager, which dismisses the whole chain in one transition. Dismissing this modal
         // first would briefly reveal the fullscreen preview underneath.

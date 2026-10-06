@@ -2,6 +2,8 @@
 //  FileSkeletonCollectionViewCell.swift
 //  Permanent
 //
+//  Created by Lucian Cerbu on 23.09.2026.
+//
 
 import UIKit
 
@@ -12,11 +14,9 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
     private let thumbnailView = UIView()
     private let titleBar = UIView()
     private let subtitleBar = UIView()
-    private let shimmerLayer = CAGradientLayer()
-    private let shimmerMask = CAShapeLayer()
+    private(set) lazy var shimmer = SkeletonShimmer(in: contentView)
     private var activeConstraints: [NSLayoutConstraint] = []
     private var isGrid: Bool?
-    private var shimmers = true
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -34,33 +34,27 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
 
         for placeholder in [thumbnailView, titleBar, subtitleBar] {
             placeholder.translatesAutoresizingMaskIntoConstraints = false
-            placeholder.backgroundColor = UIColor(.blue50)
+            placeholder.backgroundColor = SkeletonSquareView.fill
             placeholder.layer.cornerCurve = .continuous
             contentView.addSubview(placeholder)
         }
-        thumbnailView.layer.cornerRadius = 6
+        thumbnailView.layer.cornerRadius = SkeletonSquareView.cornerRadius
         titleBar.layer.cornerRadius = 4
         subtitleBar.layer.cornerRadius = 4
-
-        shimmerLayer.colors = [UIColor.white.withAlphaComponent(0).cgColor, UIColor.white.withAlphaComponent(0.55).cgColor, UIColor.white.withAlphaComponent(0).cgColor]
-        shimmerLayer.startPoint = CGPoint(x: 0, y: 0.5)
-        shimmerLayer.endPoint = CGPoint(x: 1, y: 0.5)
-        shimmerLayer.locations = [0, 0.5, 1]
-        shimmerLayer.mask = shimmerMask
-        contentView.layer.addSublayer(shimmerLayer)
+        // Made after the placeholders, so the sweep draws over them.
+        _ = shimmer
         contentView.layer.masksToBounds = true
 
         configure(isGrid: false, accessibilityLabel: nil, shimmers: true)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateShimmer), name: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil)
     }
 
     /// A non-nil `accessibilityLabel` makes this placeholder the one VoiceOver reads; the others stay silent.
     func configure(isGrid: Bool, accessibilityLabel: String?, shimmers: Bool = true) {
-        self.shimmers = shimmers
         self.accessibilityLabel = accessibilityLabel
         isAccessibilityElement = accessibilityLabel != nil
         accessibilityElementsHidden = accessibilityLabel == nil
-        updateShimmer()
+        shimmer.isOn = shimmers
+        shimmer.update()
         guard isGrid != self.isGrid else { return }
         self.isGrid = isGrid
         NSLayoutConstraint.deactivate(activeConstraints)
@@ -100,41 +94,17 @@ class FileSkeletonCollectionViewCell: UICollectionViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        // Standalone layers animate geometry changes by default; the sweep must follow the cell at once.
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        shimmerLayer.frame = contentView.bounds
         // The sweep lights the placeholders only, not the row behind them.
         contentView.layoutIfNeeded()
         let shapes = UIBezierPath()
         for placeholder in [thumbnailView, titleBar, subtitleBar] where !placeholder.isHidden {
             shapes.append(UIBezierPath(roundedRect: placeholder.frame, cornerRadius: placeholder.layer.cornerRadius))
         }
-        shimmerMask.path = shapes.cgPath
-        CATransaction.commit()
-        updateShimmer()
+        shimmer.layout(lighting: shapes)
     }
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
-        updateShimmer()
-    }
-
-    /// Still under Reduce Motion, and re-added when missing, since reuse or a trip to the background can drop it.
-    @objc private func updateShimmer() {
-        guard shimmers, !UIAccessibility.isReduceMotionEnabled else {
-            shimmerLayer.removeAnimation(forKey: "shimmer")
-            shimmerLayer.isHidden = true
-            return
-        }
-        shimmerLayer.isHidden = false
-        guard window != nil, shimmerLayer.animation(forKey: "shimmer") == nil else { return }
-        let animation = CABasicAnimation(keyPath: "locations")
-        animation.fromValue = [-1.0, -0.5, 0.0]
-        animation.toValue = [1.0, 1.5, 2.0]
-        animation.duration = 1.4
-        animation.repeatCount = .infinity
-        animation.isRemovedOnCompletion = false
-        shimmerLayer.add(animation, forKey: "shimmer")
+        shimmer.update()
     }
 }

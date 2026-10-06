@@ -1,0 +1,140 @@
+//
+//  FloatingActionIslandTests.swift
+//  PermanentTests
+//
+//  Created by Lucian Cerbu on 01.10.2026.
+//
+
+import XCTest
+@testable import Permanent
+
+@MainActor
+final class FloatingActionIslandTests: XCTestCase {
+    /// The island widths on 375, 390, 393, 402 and 440 pt wide phones.
+    private let phoneWidths: [CGFloat] = [311, 326, 329, 338, 376]
+
+    /// The select-mode bar as the file screens build it: the count, then Copy, Move and More.
+    private func makeIsland(width: CGFloat, more: @escaping () -> Void = {}) -> FloatingActionIslandViewController {
+        let blank = UIColor.clear.imageWithColor(width: 0, height: 0)
+        let island = FloatingActionIslandViewController()
+        island.leftItems = [FloatingActionTextItem(text: "7 Items", action: nil)]
+        island.rightItems = [
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { _, _ in }),
+            FloatingActionImageItem(image: blank, action: nil),
+            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: { _, _ in }),
+            FloatingActionImageItem(image: blank, action: nil),
+            FloatingActionImageItem(image: UIImage(named: "floatingMore")!.templated!, action: { _, _ in more() }),
+        ]
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: width + 64, height: 300))
+        let host = UIViewController()
+        window.rootViewController = host
+        window.isHidden = false
+        host.addChild(island)
+        host.view.addSubview(island.view)
+        island.didMove(toParent: host)
+        island.view.frame = CGRect(x: 32, y: 100, width: width, height: 64)
+        island.view.layoutIfNeeded()
+        // The items show once the pill has opened; the test skips that animation.
+        island.view.subviews.filter(\.isHidden).forEach { $0.isHidden = false }
+        island.view.layoutIfNeeded()
+        addTeardownBlock { window.isHidden = true }
+        return island
+    }
+
+    private func buttons(in island: FloatingActionIslandViewController) -> [UIButton] {
+        func all(_ view: UIView) -> [UIView] { view.subviews + view.subviews.flatMap(all) }
+        return all(island.view).compactMap { $0 as? UIButton }.filter { $0.window != nil && !$0.isHidden }
+    }
+
+    func testEveryItem_StaysInsideThePill_OnEveryPhoneWidth() {
+        for width in phoneWidths {
+            let island = makeIsland(width: width)
+            let shown = buttons(in: island)
+
+            XCTAssertEqual(shown.count, 4, "the count, Copy, Move and More at \(width) pt; none of them moves into an overflow button")
+            for button in shown {
+                let frame = button.convert(button.bounds, to: island.view)
+                XCTAssertTrue(island.view.bounds.insetBy(dx: 16, dy: 0).contains(frame), "\(frame) sits inside the pill at \(width) pt")
+            }
+        }
+    }
+
+    func testTheIcons_KeepATapTargetOf44Points() {
+        let island = makeIsland(width: phoneWidths[0])
+        let icons = buttons(in: island).filter { $0.bounds.width < 60 }
+
+        XCTAssertEqual(icons.count, 3)
+        icons.forEach { XCTAssertGreaterThanOrEqual($0.bounds.width, 44) }
+    }
+
+    func testTheMoreButton_RunsItsAction() {
+        var opened = 0
+        let island = makeIsland(width: phoneWidths[1], more: { opened += 1 })
+        let more = buttons(in: island).max { $0.convert($0.bounds, to: island.view).minX < $1.convert($1.bounds, to: island.view).minX }
+
+        more?.sendActions(for: .touchUpInside)
+
+        XCTAssertEqual(opened, 1, "the last button opens the selection's sheet")
+    }
+
+    func testAProgressIsland_OpensAsTheCircle_AndNeverAsTheBar() {
+        let island = FloatingActionIslandViewController()
+        island.opensAsCircle = true
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 402, height: 300))
+        let host = UIViewController()
+        window.rootViewController = host
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+        host.addChild(island)
+        host.view.addSubview(island.view)
+        island.didMove(toParent: host)
+        island.view.frame = CGRect(x: 32, y: 100, width: 338, height: 64)
+
+        island.showActivityIndicator()
+        island.viewDidAppear(false)
+        island.view.layoutIfNeeded()
+
+        let pill = island.view.subviews.first { (view: UIView) -> Bool in
+            view.layer.cornerRadius == 32 && !(view is UIToolbar)
+        }
+        XCTAssertEqual(pill?.bounds.width, 64, "the circle with its spinner; the bar's full width never shows")
+    }
+
+    func testTheSpinnerAndCheck_SitInTheMiddleOfTheCircle_WhenADropStartsThemBeforeTheFirstLayout() throws {
+        let island = FloatingActionIslandViewController()
+        island.opensAsCircle = true
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 402, height: 874))
+        let host = UIViewController()
+        window.rootViewController = host
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+        // Pinned with constraints, as the screens pin it, and the spinner starts before any layout, as a drop starts it.
+        island.view.translatesAutoresizingMaskIntoConstraints = false
+        host.addChild(island)
+        host.view.addSubview(island.view)
+        NSLayoutConstraint.activate([
+            island.view.centerXAnchor.constraint(equalTo: host.view.centerXAnchor),
+            island.view.bottomAnchor.constraint(equalTo: host.view.bottomAnchor, constant: -40),
+            island.view.widthAnchor.constraint(equalToConstant: 338),
+            island.view.heightAnchor.constraint(equalToConstant: 64),
+        ])
+        island.didMove(toParent: host)
+
+        island.showActivityIndicator()
+        let spinner = try XCTUnwrap(island.view.subviews.first { $0 is UIActivityIndicatorView })
+        XCTAssertNil(spinner.layer.animationKeys(), "the spinner shows in place; only the circle's width moves")
+        host.view.layoutIfNeeded()
+
+        let pill = try XCTUnwrap(island.view.subviews.first { (view: UIView) -> Bool in view.layer.cornerRadius == 32 && !(view is UIToolbar) })
+        XCTAssertEqual(spinner.center.x, pill.center.x, accuracy: 0.5)
+        XCTAssertEqual(spinner.center.y, pill.center.y, accuracy: 0.5)
+
+        island.hideActivityIndicator()
+        island.showDoneCheckmark()
+        let check = try XCTUnwrap(island.view.subviews.first { $0 is UIImageView })
+        XCTAssertNil(check.layer.animationKeys(), "the check mark shows in place; it does not fly in from a corner")
+        host.view.layoutIfNeeded()
+        XCTAssertEqual(check.center.x, pill.center.x, accuracy: 0.5)
+        XCTAssertEqual(check.center.y, pill.center.y, accuracy: 0.5)
+    }
+}

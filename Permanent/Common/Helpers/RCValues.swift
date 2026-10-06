@@ -5,7 +5,7 @@
 //  Created by Lucian Cerbu on 17.03.2022.
 //
 
-import Firebase
+import FirebaseRemoteConfig
 import Foundation
 
 class RCValues {

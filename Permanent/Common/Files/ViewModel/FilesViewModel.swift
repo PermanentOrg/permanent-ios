@@ -285,6 +285,19 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return false
     }
     
+    /// Whether the folder lists this item; matched by ids, since a row with a new thumbnail is not equal to the old one.
+    func lists(_ file: FileModel) -> Bool {
+        viewModels.contains { $0.recordId == file.recordId && $0.folderLinkId == file.folderLinkId }
+    }
+
+    /// Takes the items' rows out of the listing, matched by ids, and keeps the next page's place.
+    func removeListedRows(of files: [FileModel]) {
+        let removed = viewModels.filter { row in files.contains { $0.recordId == row.recordId && $0.folderLinkId == row.folderLinkId } }
+        guard !removed.isEmpty else { return }
+        viewModels.removeAll { row in removed.contains { $0.recordId == row.recordId && $0.folderLinkId == row.folderLinkId } }
+        moveCursorOffRemovedRows(removed)
+    }
+
     func removeSyncedFiles(_ files: [FileModel]?) {
         guard let files = files else {
             return
@@ -470,12 +483,21 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var relocateV1Request: ((_ files: [FileModel], _ destination: FileModel, _ completion: @escaping ServerResponse) -> Void)?
 
     private func performV1Relocate(files: [FileModel], to destination: FileModel, then handler: @escaping ServerResponse) {
+        sendV1Relocate(files: files, to: destination, action: fileAction) { [weak self] status in
+            self?.selectedFiles = []
+            self?.fileAction = .none
+            handler(status)
+        }
+    }
+
+    /// A drop's move. It passes the action in, so no pending Move is set first or cleared after.
+    func moveDropped(_ files: [FileModel], to destination: FileModel, then handler: @escaping ServerResponse) {
+        sendV1Relocate(files: files, to: destination, action: .move, then: handler)
+    }
+
+    private func sendV1Relocate(files: [FileModel], to destination: FileModel, action: FileAction, then handler: @escaping ServerResponse) {
         if let injected = relocateV1Request {
-            injected(files, destination) { [weak self] status in
-                self?.selectedFiles = []
-                self?.fileAction = .none
-                handler(status)
-            }
+            injected(files, destination, handler)
             return
         }
 
@@ -487,7 +509,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
         if !folders.isEmpty {
             fileGroup.enter()
-            let folderParameters: RelocateParams = ((files: folders, destination: destination), fileAction)
+            let folderParameters: RelocateParams = ((files: folders, destination: destination), action)
             let folderApiOperation = APIOperation(FilesEndpoint.relocate(params: folderParameters))
             folderApiOperation.execute(in: APIRequestDispatcher()) { result in
                 switch result {
@@ -512,7 +534,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
         if !nonFolders.isEmpty {
             fileGroup.enter()
-            let nonFolderParameters: RelocateParams = ((files: nonFolders, destination: destination), fileAction)
+            let nonFolderParameters: RelocateParams = ((files: nonFolders, destination: destination), action)
             let nonFolderApiOperation = APIOperation(FilesEndpoint.relocate(params: nonFolderParameters))
             nonFolderApiOperation.execute(in: APIRequestDispatcher()) { result in
                 switch result {
@@ -536,9 +558,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
 
         fileGroup.notify(queue: .main) {
-            self.selectedFiles = []
-            self.fileAction = .none
-
             if errors.isEmpty {
                 handler(.success)
             } else {
@@ -1037,7 +1056,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
         var isContractBreak = false
     }
 
-    static let childrenPageSize = 10
+    /// A folder's first page, and the step a refresh grows by; small, so a folder opens fast.
+    static let childrenPageSize = 20
+    /// Later pages are bigger, so a fast scroll or a slow network seldom reaches the skeleton rows.
+    static let nextChildrenPageSize = 60
 
     /// Posted on main, with the view model as the object, when a later page changes the list or its paging state.
     static let childrenDidChangeNotification = Notification.Name("FilesViewModel.childrenDidChange")
@@ -1157,7 +1179,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         isFetchingNextPage = true
         let generation = nextPageGeneration
         let context = v2ChildContext(enteredFolder: currentFolder)
-        let pageSize = FilesViewModel.childrenPageSize
+        let pageSize = FilesViewModel.nextChildrenPageSize
 
         fetchChildrenPage(folderId: folderId, pageSize: pageSize, cursor: cursor) { [weak self] result in
             let outcome: Result<(files: [FileModel], nextCursor: String?), ChildrenPageFailure>

@@ -2,6 +2,8 @@
 //  FileListPagingSection.swift
 //  Permanent
 //
+//  Created by Lucian Cerbu on 23.09.2026.
+//
 
 import UIKit
 
@@ -14,6 +16,9 @@ final class FileListPagingSection {
     private var observers: [NSObjectProtocol] = []
     private var pendingFadeDuration: CFTimeInterval?
     private var skeletonShownAt: CFTimeInterval?
+    /// While `onChange` runs for a later page, the index of its first row; that page only adds rows after the listed ones.
+    private var addedPageStart: Int?
+    var isAddingPage: Bool { addedPageStart != nil }
 
     private static let skeletonFadeIn: CFTimeInterval = 0.2
     private static let skeletonFadeOut: CFTimeInterval = 0.3
@@ -22,8 +27,11 @@ final class FileListPagingSection {
 
     private static let firstPageListRows = 8
     private static let firstPageGridTiles = 6
-    private static let nextPageListRows = 3
-    private static let nextPageGridTiles = 2
+    /// Under a failed page's retry footer, and while the list has no size yet.
+    private static let fewListRows = 3
+    private static let fewGridTiles = 2
+    /// How far ahead of the end rows ask for the next page, so it lands before a brisk scroll reaches the skeleton rows.
+    private static let prefetchScreens = 2
 
     /// `onChange` redraws the whole screen, empty-folder view included, after a page lands anywhere.
     init(collectionView: UICollectionView, viewModel: @escaping () -> FilesViewModel?, onChange: @escaping () -> Void) {
@@ -37,8 +45,11 @@ final class FileListPagingSection {
         observers.append(center.addObserver(forName: FilesViewModel.childrenDidChangeNotification, object: nil, queue: .main) { [weak self] notification in
             guard let self, let viewModel = self.viewModel(), notification.object as? FilesViewModel === viewModel else { return }
             let focusWasOnPlaceholder = UIAccessibility.focusedElement(using: .notificationVoiceOver) is FileSkeletonCollectionViewCell
+            let firstNewChild = notification.userInfo?[FilesViewModel.firstNewChildKey] as? Int
+            self.addedPageStart = firstNewChild
             self.onChange()
-            if let firstNewChild = notification.userInfo?[FilesViewModel.firstNewChildKey] as? Int {
+            self.addedPageStart = nil
+            if let firstNewChild {
                 self.fadeInRows(from: firstNewChild)
                 // The first new row takes the placeholder's place, so VoiceOver carries on from there.
                 if focusWasOnPlaceholder {
@@ -53,6 +64,7 @@ final class FileListPagingSection {
         observers.append(center.addObserver(forName: UIContentSizeCategory.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
             self?.collectionView?.collectionViewLayout.invalidateLayout()
         })
+        DispatchQueue.main.async { FileListStatusFooterView.prepareSizing() }
     }
 
     deinit {
@@ -69,8 +81,31 @@ final class FileListPagingSection {
         }
         switch viewModel.childrenPagingState {
         case .complete: return 0
-        case .loadingMore, .failed: return isGrid ? Self.nextPageGridTiles : Self.nextPageListRows
+        case .loadingMore: return nextPagePlaceholders(isGrid: isGrid)
+        // A few, so the retry footer stays close to the rows.
+        case .failed: return isGrid ? Self.fewGridTiles : Self.fewListRows
         }
+    }
+
+    /// Enough placeholders to fill the list's height, up to one page; the server sends no count of what is left.
+    /// The count follows the height, so a batch update must reconcile this section, as `insertAddedPage()` does.
+    private func nextPagePlaceholders(isGrid: Bool) -> Int {
+        let few = isGrid ? Self.fewGridTiles : Self.fewListRows
+        guard let itemsPerScreen else { return few }
+        return max(few, min(itemsPerScreen, FilesViewModel.nextChildrenPageSize))
+    }
+
+    /// How many rows or tiles fill the list's height, or nil while the list has no size yet.
+    private var itemsPerScreen: Int? {
+        guard let collectionView, collectionView.bounds.height > 0,
+              let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return nil }
+        let size = (collectionView.delegate as? UICollectionViewDelegateFlowLayout)?
+            .collectionView?(collectionView, layout: layout, sizeForItemAt: IndexPath(item: 0, section: sectionIndex)) ?? layout.itemSize
+        guard size.width > 0, size.height > 0 else { return nil }
+        let width = collectionView.bounds.width - layout.sectionInset.left - layout.sectionInset.right
+        let perLine = max(1, Int((width + layout.minimumInteritemSpacing) / (size.width + layout.minimumInteritemSpacing)))
+        let lines = Int((collectionView.bounds.height / (size.height + layout.minimumLineSpacing)).rounded(.up))
+        return perLine * lines
     }
 
     func cell(at indexPath: IndexPath, isGrid: Bool) -> UICollectionViewCell {
@@ -196,11 +231,49 @@ final class FileListPagingSection {
         }
     }
 
-    /// Skeleton rows coming into view are what ask for the next page. Driven by display rather than
-    /// scroll offset, since the public archive tab rewrites `contentOffset` for its parent page.
+    /// Rows within two screens of the end, and the skeleton rows, ask for the next page as they come into view. Driven
+    /// by display rather than scroll offset, since the public archive tab rewrites `contentOffset` for its parent page.
     func willDisplayItem(at indexPath: IndexPath) {
-        guard indexPath.section == sectionIndex, let viewModel = viewModel(), !viewModel.isLoadingFirstPage,
-              viewModel.childrenPagingState == .loadingMore else { return }
+        guard let viewModel = viewModel(), !viewModel.isLoadingFirstPage, viewModel.childrenPagingState == .loadingMore else { return }
+        let rowsSection = sectionIndex - 1
+        let isNearTheEnd = indexPath.section == rowsSection
+            && indexPath.item >= viewModel.numberOfRowsInSection(rowsSection) - Self.prefetchScreens * (itemsPerScreen ?? 0)
+        guard indexPath.section == sectionIndex || isNearTheEnd else { return }
         viewModel.loadNextChildrenPage { _ in }
+    }
+
+    /// Adds a later page's rows and leaves the rows on screen as they are. Screens call it from `onChange`; on false, as off
+    /// screen, in select mode, for a list left empty or after another change to the list, they reload the list whole.
+    func insertAddedPage() -> Bool {
+        guard let first = addedPageStart, let collectionView, collectionView.window != nil,
+              let dataSource = collectionView.dataSource, viewModel()?.isSelecting == false else { return false }
+        let rowsSection = sectionIndex - 1
+        let sectionCount = dataSource.numberOfSections?(in: collectionView) ?? 1
+        guard rowsSection >= 0, sectionCount == sectionIndex + 1, collectionView.numberOfSections == sectionCount else { return false }
+        // The list's counts are from before the page; the data source's include it.
+        let counts = (0..<sectionCount).map {
+            (old: collectionView.numberOfItems(inSection: $0), new: dataSource.collectionView(collectionView, numberOfItemsInSection: $0))
+        }
+        let rows = counts[rowsSection]
+        // An empty list needs the screen's empty-folder view, which only the whole reload sets.
+        guard rows.old == first, rows.new >= first, rows.new > 0,
+              counts.indices.allSatisfy({ $0 == rowsSection || $0 == sectionIndex || counts[$0].old == counts[$0].new }) else { return false }
+        let skeletons = counts[sectionIndex]
+        let offset = collectionView.contentOffset
+        UIView.performWithoutAnimation {
+            collectionView.performBatchUpdates {
+                collectionView.insertItems(at: (first..<rows.new).map { IndexPath(item: $0, section: rowsSection) })
+                if skeletons.new < skeletons.old {
+                    collectionView.deleteItems(at: (skeletons.new..<skeletons.old).map { IndexPath(item: $0, section: sectionIndex) })
+                } else if skeletons.new > skeletons.old {
+                    collectionView.insertItems(at: (skeletons.old..<skeletons.new).map { IndexPath(item: $0, section: sectionIndex) })
+                }
+            }
+            // With only skeleton rows on screen, UIKit keeps them there and puts the new rows above the screen.
+            guard collectionView.contentOffset != offset else { return }
+            let bottom = collectionView.contentSize.height + collectionView.adjustedContentInset.bottom - collectionView.bounds.height
+            collectionView.contentOffset = CGPoint(x: offset.x, y: min(offset.y, max(bottom, -collectionView.adjustedContentInset.top)))
+        }
+        return true
     }
 }

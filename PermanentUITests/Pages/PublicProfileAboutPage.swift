@@ -22,6 +22,7 @@ class PublicProfileAboutPage {
 
     func addShortDescription() -> String {
         let shortUUID = UUID().uuidString
+        XCTAssertTrue(shortDescriptionElement.waitUntilSettled(timeout: 10), "the About form did not open")
         shortDescriptionElement.tap()
         shortDescriptionElement.selectAndDeleteText(inApp: app)
         shortDescriptionElement.tap()

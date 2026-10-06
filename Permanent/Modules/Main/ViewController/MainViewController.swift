@@ -26,7 +26,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let refreshControl = UIRefreshControl()
     private let screenLockManager = ScreenLockManager()
 
-    private var sortActionSheet: SortActionSheet?
+    private(set) lazy var sortMenu = SortMenu.make(
+        current: { [weak self] in self?.viewModel?.activeSortOption ?? .nameAscending },
+        onSelect: { [weak self] option in self?.applySort(option) }
+    )
+    private(set) lazy var stickyHeaderReveal = StickyHeaderReveal(list: collectionView, keepsShown: { [weak self] in
+        self?.viewModel?.isSelecting == true
+    })
     private lazy var folderHeader: FolderHeaderTransition? = {
         guard backButton != nil, directoryLabel != nil else { return nil }
         return FolderHeaderTransition(backButton: backButton, titleLabel: directoryLabel)
@@ -36,6 +42,36 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private var backSwipe: FolderBackSwipe?
     private lazy var pagingSection = FileListPagingSection(collectionView: collectionView, viewModel: { [weak self] in self?.viewModel }, onChange: { [weak self] in self?.refreshCollectionView() })
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
+    private let menuDeferral = ContextMenuDeferral()
+    private lazy var fileDrag = FileListDrag(handlers: .init(
+        draggableFile: { [weak self] indexPath in self?.draggableFile(at: indexPath) },
+        folderRow: { [weak self] indexPath in self?.dropFolder(at: indexPath) },
+        openFolder: { [weak self] in self?.openFolderForDrop },
+        isUnderPinnedHeader: { [weak self] point in self?.isUnderPinnedHeader(point) ?? false },
+        drop: { [weak self] files, destination in self?.moveDropped(files, to: destination) },
+        dragDidEnd: { [weak self] in self?.dragDidEnd() },
+        lookDidChange: { [weak self] in self?.showDragLookOnVisibleRows() }
+    ))
+    private lazy var dropProgress = DropProgressIsland(handlers: .init(
+        open: { [weak self] in
+            self?.showFloatingActionIsland(withLeftItems: [], rightItems: [], opensAsCircle: true)
+            return self?.floatingActionIsland
+        },
+        current: { [weak self] in self?.floatingActionIsland },
+        close: { [weak self] done in self?.dismissFloatingActionIsland(done) },
+        hidePlusButton: { [weak self] in self?.fabView.setVisibility(hidden: true) },
+        restore: { [weak self] in
+            guard let self, let viewModel = self.viewModel else { return }
+            // A Move or a selection that started while the circle showed gets its bar now.
+            if viewModel.fileAction != FileAction.none {
+                self.setupBottomActionSheet()
+            } else if viewModel.isSelecting, !(viewModel.selectedFiles ?? []).isEmpty {
+                self.setupBottomActionSheetForMultipleFiles()
+            } else {
+                self.updateFABViewVisibility()
+            }
+        }
+    ))
     
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
@@ -55,6 +91,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         setupCollectionView()
         setupBottomActionSheet()
         setUpBackSwipe()
+        setUpDrag()
 
         fabView.delegate = self
 
@@ -143,7 +180,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
             
-            self?.collectionView.reloadData()
+            self?.reloadRows()
         }
 
         NotificationCenter.default.addObserver(forName: ShareItemViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
@@ -157,7 +194,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
             self?.viewModel?.viewModels[index].accessRole = updatedFileModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = updatedFileModel.minArchiveVOS
-            self?.collectionView.reloadData()
+            self?.reloadRows()
         }
         
         NotificationCenter.default.addObserver(forName: MyFilesViewModel.didSelectFilesNotifName, object: nil, queue: nil) { [weak self] notif in
@@ -228,6 +265,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         super.viewWillAppear(animated)
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        menuDeferral.menuIsGone()
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -282,7 +324,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.trackOpenFiles()
     }
     
-    fileprivate func setupCollectionView() {
+    func setupCollectionView() {
         isGridView = viewModel?.isGridView ?? false
         switchViewButton.accessibilityIdentifier = "switchViewButton"
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
@@ -294,17 +336,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.refreshControl = refreshControl
         collectionView.showsVerticalScrollIndicator = false
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 6
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.estimatedItemSize = .zero
-        collectionView.collectionViewLayout = flowLayout
+        collectionView.collectionViewLayout = StickyHeaderFlowLayout.fileList()
         
         refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
     }
     
     func refreshCollectionView() {
+        if menuDeferral.holdsReload({ [weak self] in self?.refreshCollectionView() }) { return }
+        if fileDrag.holdsReload(addingPage: pagingSection.isAddingPage, { [weak self] in self?.refreshCollectionView() }) { return }
+        if pagingSection.insertAddedPage() { return }
         handleTableBackgroundView()
         pagingSection.prepareForReload()
         reloadFadingSortTitle()
@@ -382,32 +423,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     return
                 }
                 
-                if self?.viewModel is PublicFilesViewModel {
-                    let title = ""
-                    let description = "You are about to \(action == .copy ? "copy" : "move") files to a public folder. This will make them accessible to others. Are you sure you want to proceed?".localized()
-                    let confirmButtonText = action == .copy ? "Copy Here".localized() : "Move Here".localized()
-
-                    self?.showActionDialog(
-                        styled: .simpleWithDescription,
-                        withTitle: title,
-                        description: description,
-                        positiveButtonTitle: confirmButtonText,
-                        positiveAction: { [weak self] in
-                            self?.view.dismissPopup(
-                                self?.actionDialog,
-                                overlayView: self?.overlayView,
-                                completion: { _ in
-                                    self?.actionDialog?.removeFromSuperview()
-                                    self?.actionDialog = nil
-                                    
-                                    self?.relocate(files: selectedFiles, to: destination)
-                                }
-                            )
-                        },
-                        cancelButtonTitle: "Cancel".localized(),
-                        overlayView: self?.overlayView
-                    )
-                } else {
+                self?.askBeforePublicRelocate(action) { [weak self] in
                     self?.relocate(files: selectedFiles, to: destination)
                 }
             },
@@ -417,15 +433,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         if #available(iOS 26, *) {
             rightItems.append(FloatingActionImageItem(image: UIColor.clear.imageWithColor(width: 0, height: 0), action: nil))
         }
-        rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
-            self?.dismissFloatingActionIsland()
-            self?.updateFABViewVisibility()
-
-            self?.viewModel?.selectedFiles = []
-            self?.viewModel?.fileAction = .none
-            self?.viewModel?.isSelectingDestination = false
-
-            self?.collectionView?.reloadData()
+        rightItems.append(FloatingActionImageItem(image: closeImage) { [weak self] _, _ in
+            self?.cancelRelocate()
         })
 
         if viewModel?.fileAction != FileAction.none {
@@ -438,6 +447,27 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView?.reloadData()
     }
     
+    /// Anything copied or moved into Public Files becomes visible to everyone, so it asks first. Elsewhere `go` runs at once.
+    private func askBeforePublicRelocate(_ action: FileAction, then go: @escaping () -> Void) {
+        guard viewModel is PublicFilesViewModel else { return go() }
+        let description = "You are about to \(action == .copy ? "copy" : "move") files to a public folder. This will make them accessible to others. Are you sure you want to proceed?".localized()
+        showActionDialog(
+            styled: .simpleWithDescription,
+            withTitle: "",
+            description: description,
+            positiveButtonTitle: action == .copy ? "Copy Here".localized() : "Move Here".localized(),
+            positiveAction: { [weak self] in
+                self?.view.dismissPopup(self?.actionDialog, overlayView: self?.overlayView, completion: { _ in
+                    self?.actionDialog?.removeFromSuperview()
+                    self?.actionDialog = nil
+                    go()
+                })
+            },
+            cancelButtonTitle: "Cancel".localized(),
+            overlayView: overlayView
+        )
+    }
+
     func showMemberChecklistButton() {
         viewModel?.showMemberChecklist({ [weak self] showChecklist in
             self?.fabView.showsChecklistButton = showChecklist ?? false
@@ -461,6 +491,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             // Multi-select owns the screen while active; the FAB comes back via the
             // restore paths below, which all route through this gate.
             && !viewModel.isSelecting
+            && !dropProgress.isShowing
 
         // `setVisibility` fades the buttons back in: paste mode created a real hide→show transition,
         // and an instant reveal reads as a pop-in.
@@ -494,6 +525,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         // Re-establish content insets to ensure proper scroll behavior
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width, right: 6)
+        stickyHeaderReveal.show(animated: false)
     }
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
@@ -569,10 +601,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             showParentPreview: { [weak self] in self?.showBackPreview() },
             previewStillApplies: { [weak self] in self?.viewModel?.backPreviewStillApplies ?? false },
             endParentPreview: { [weak self] in self?.endBackPreview() ?? false },
-            goBack: { [weak self] in
-                guard let self else { return }
-                self.backButtonAction(self.backButton)
-            }
+            goBack: { [weak self] in self?.goUpOneFolder() }
         ))
     }
 
@@ -583,17 +612,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         return folderHeader?.current.showsBack == true && backButton.isUserInteractionEnabled
     }
 
-    /// The spinner, a dialog or the sort sheet covers the back arrow from inside this view.
+    /// The spinner or a dialog covers the back arrow from inside this view.
     private var isShowingPopup: Bool {
-        isShowingSpinner || actionDialog?.superview != nil || sortActionSheet?.superview != nil
+        isShowingSpinner || actionDialog?.superview != nil
     }
 
     override func accessibilityPerformEscape() -> Bool {
         // An open popup closes first, as the gesture closes a system one.
-        if let sortActionSheet, sortActionSheet.superview != nil {
-            sortActionSheet.dismiss()
-            return true
-        }
         if let actionDialog, actionDialog.superview != nil {
             actionDialog.dismiss()
             return true
@@ -625,8 +650,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         return rowsBack
     }
 
+    /// Plays the back swipe through when the swipe could run now.
     @IBAction
     func backButtonAction(_ sender: UIButton) {
+        if backSwipe?.slideBack() != true { goUpOneFolder() }
+    }
+
+    private func goUpOneFolder() {
         guard
             let viewModel = viewModel,
             let leftFolder = viewModel.removeCurrentFolderFromHierarchy(),
@@ -639,6 +669,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let revertHeader = showHeaderWhileLoading(title: isRoot ? viewModel.rootFolderName : destinationFolder.name, showsBack: !isRoot)
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
+            self.fileDrag.navigationDidEnd()
             // The folder left is still on screen, so it goes back on the history and keeps its header.
             guard self.folderLoadFailed(), viewModel.navigationStack.last?.folderLinkId == destinationFolder.folderLinkId else { return }
             viewModel.navigationStack.append(leftFolder)
@@ -705,11 +736,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         uploadingCell.updateProgress(withValue: value)
-    }
-    
-    @objc
-    private func headerButtonAction(_ sender: UIButton) {
-        showSortActionSheetDialog()
     }
     
     @objc
@@ -814,12 +840,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.reloadData()
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 6
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.estimatedItemSize = .zero
-        collectionView.collectionViewLayout = flowLayout
+        collectionView.collectionViewLayout = StickyHeaderFlowLayout.fileList()
         collectionView.collectionViewLayout.invalidateLayout()
+        stickyHeaderReveal.show(animated: false)
     }
     
     @objc func searchButtonPressed(_ sender: Any) {
@@ -953,12 +976,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             return
         }
         viewModel.beginFirstPageLoad()
-        showTouchBlocker()
+        if !fileDrag.isDragging { showTouchBlocker() }
         guard collectionView != nil else { return }
         pagingSection.skeletonWillAppear()
         refreshCollectionView()
         let inset = collectionView.adjustedContentInset
         collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
+        stickyHeaderReveal.show(animated: false)
     }
 
     private func onFilesFetchCompletion(_ status: RequestStatus, resetScroll: Bool = false, silenceErrors: Bool = false) {
@@ -1330,6 +1354,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         let isFileSelected = viewModel.selectedFiles?.contains(file) ?? false
         
         cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, isSelecting: viewModel.isSelecting, isFileSelected: isFileSelected)
+        fileDrag.showLook(on: cell, for: file)
         
         cell.moreButton.isHidden = cell.moreButton.isHidden || viewModel.isPickingImage
         cell.rightButtonImageView.isHidden = cell.rightButtonImageView.isHidden || viewModel.isPickingImage
@@ -1357,8 +1382,29 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         }
     }
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        StickyHeaderFlowLayout.sectionInsets(in: collectionView, section: section, pagingSection: pagingSection.sectionIndex, isGrid: isGridView)
+    }
+
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         pagingSection.willDisplayItem(at: indexPath)
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // A landing page can move the list and put it back; neither is a scroll.
+        guard scrollView === collectionView, !pagingSection.isAddingPage else { return }
+        stickyHeaderReveal.listDidScroll()
+    }
+
+    /// A status-bar tap brings the row back as the list starts moving; the scroll itself is not the finger's.
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        if scrollView === collectionView { stickyHeaderReveal.show(animated: true) }
+        return true
+    }
+
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        guard scrollView === collectionView else { return }
+        stickyHeaderReveal.show(animated: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -1377,9 +1423,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         if viewModel.isSelectingDestination {
             guard file.type.isFolder, !(viewModel.selectedFiles?.contains(file) ?? false) else { return }
             viewModel.v2NavigationTarget = file
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
+            enter(file, from: collectionView)
             return
         }
 
@@ -1399,9 +1443,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                     // Seed the V2 navigation target (no-op when Stela nav is off): V2 needs
                     // the String folderId, which lives on the tapped FileModel.
                     viewModel.v2NavigationTarget = file
-                    let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-                    let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
-                    navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
+                    enter(file, from: collectionView)
                 }
             } else {
                 if viewModel.isPickingImage {
@@ -1410,6 +1452,19 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                     handlePreviewSelection(file: file)
                 }
             }
+        }
+    }
+
+    /// Slides the folder in, with its name in the header at once.
+    private func enter(_ folder: FileModel, from list: UICollectionView) {
+        let navigateParams: NavigateMinParams = (folder.archiveNo, folder.folderLinkId, nil)
+        fileDrag.navigationWillStart()
+        FolderOpenSlide.play(on: list) {
+            let revertHeader = showHeaderWhileLoading(title: folder.name, showsBack: true, entering: folder.folderLinkId)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: { [weak self] in
+                revertHeader()
+                self?.fileDrag.navigationDidEnd()
+            })
         }
     }
     
@@ -1448,11 +1503,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = viewModel?.title(forSection: section)
             headerView.configure(with: viewModel, isPickingProfilePicture: viewModel!.isPickingImage)
-            if viewModel?.shouldPerformAction(forSection: section) == true {
-                headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
-            } else {
-                headerView.leftButtonAction = nil
-            }
+            headerView.sortMenu = viewModel?.shouldPerformAction(forSection: section) == true ? sortMenu : nil
+            // The layout spans the synced header across the side insets, so its buttons move in by that much.
+            headerView.gutterWidth = section == FileListType.synced.rawValue ? collectionView.contentInset.left : 0
             
             // Reset the reused header's Select button to visible; a previous dequeue may
             // have hidden it for a paste-destination section (see below).
@@ -1463,13 +1516,16 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
             } else {
                 if let selectWasPressed = viewModel?.isSelecting, selectWasPressed {
-                    headerView.rightButtonTitle = "Select all  ".localized()
+                    headerView.rightButtonTitle = "Select all".localized()
+                } else if viewModel?.isSelectingDestination == true {
+                    headerView.rightButtonTitle = nil
                 } else {
-                    headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
+                    headerView.rightButtonTitle = "Select".localized()
+                    headerView.showSelectIcon()
                 }
                 // A title-less button is still tappable, so hide it outright in paste mode — otherwise tapping
-                // where Select used to be silently re-enters multi-select.
-                headerView.rightButton.isHidden = viewModel?.isSelectingDestination ?? false
+                // where Select used to be silently re-enters multi-select. Picking a profile picture has no Select.
+                headerView.rightButton.isHidden = viewModel?.isSelectingDestination == true || viewModel?.isPickingImage == true
 
                 headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton())}
                 headerView.clearButtonAction = { [weak self] header in self?.clearButtonWasPressed(UIButton())}
@@ -1485,7 +1541,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         guard section != pagingSection.sectionIndex else { return .zero }
         // The sort header stays over the skeleton rows while a folder's first page loads.
         let showsSortHeader = section == FileListType.synced.rawValue && viewModel?.isLoadingFirstPage == true
-        let height: CGFloat = showsSortHeader || viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
+        let height: CGFloat = showsSortHeader || viewModel?.numberOfRowsInSection(section) != 0 ? FileCollectionViewHeaderCell.height : 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
     }
 
@@ -1537,6 +1593,229 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             self?.viewModel?.timer = nil
             self?.timerActions()
         }
+    }
+}
+
+// MARK: - Long-press menu
+
+extension MainViewController {
+    private var menuPlace: FileMenuItems.Place {
+        viewModel is PublicFilesViewModel ? .publicFiles : .privateFiles
+    }
+
+    private func sheetAction(for type: FileMenuItems.ItemType, file: FileModel, atIndexPath indexPath: IndexPath) -> (() -> Void)? {
+        switch type {
+        case .shareToPermanent, .unshare, .editMetadata: return nil
+        case .shareToAnotherApp: return { [weak self] in self?.shareWithOtherApps(file: file) }
+        case .publish: return { [weak self] in self?.publishAction(file: file) }
+        case .rename: return { [weak self] in self?.renameAction(file: file, atIndexPath: indexPath) }
+        case .delete: return { [weak self] in self?.deleteAction(file: file, atIndexPath: indexPath) }
+        case .move: return { [weak self] in self?.relocateAction(files: [file], action: .move) }
+        case .copy: return { [weak self] in self?.relocateAction(files: [file], action: .copy) }
+        case .download: return { [weak self] in self?.downloadAction(file: file) }
+        case .fileInformation: return { [weak self] in self?.showFileInformation(for: file) }
+        }
+    }
+
+    private func showFileInformation(for file: FileModel) {
+        present(FileDetailsViewController.navigation(for: file, delegate: self), animated: true)
+    }
+
+    /// The row's file when its … button would open the sheet right now; otherwise the long press does nothing.
+    private func contextMenuFile(at indexPath: IndexPath) -> FileModel? {
+        guard let viewModel, indexPath.section == FileListType.synced.rawValue, indexPath.item < viewModel.syncedViewModels.count,
+              !viewModel.isSelecting, !viewModel.isSelectingDestination, !viewModel.isPickingImage, viewModel.fileAction == .none
+        else { return nil }
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
+        guard file.fileStatus == .synced, URL(string: file.thumbnailURL) != nil || file.canBeAccessed else { return nil }
+        return file
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard indexPaths.count == 1, let indexPath = indexPaths.first, let file = contextMenuFile(at: indexPath) else { return nil }
+        let types = FileMenuItems.types(for: file, in: menuPlace)
+        guard FileContextMenu.hasActions(for: types) else { return nil }
+        let configuration = UIContextMenuConfiguration(identifier: FileContextMenu.identifier(for: file), previewProvider: nil) { [weak self] _ in
+            FileContextMenu.make(for: types) { type in
+                self?.menuDeferral.run { self?.performMenuAction(type, on: file, atIndexPath: indexPath) }
+            }
+        }
+        // Delete stays last when the menu opens above the row, as in the Files app.
+        configuration.preferredMenuElementOrder = .fixed
+        return configuration
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, highlightPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        collectionView.cellForItem(at: indexPath).map { FileContextMenu.preview(for: $0, in: collectionView) }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfiguration configuration: UIContextMenuConfiguration, dismissalPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview? {
+        collectionView.cellForItem(at: indexPath).map { FileContextMenu.preview(for: $0, in: collectionView) }
+    }
+
+    /// A tap on the lifted row opens it, as a tap on the row does.
+    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        guard let row = contextMenuRow(for: configuration) else { return }
+        animator.preferredCommitStyle = .dismiss
+        animator.addCompletion { [weak self] in
+            // The menu has closed, so the reloads it held land before a folder slides in.
+            self?.menuDeferral.menuIsGone()
+            self?.collectionView(collectionView, didSelectItemAt: IndexPath(item: row, section: FileListType.synced.rawValue))
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        menuDeferral.menuWillShow()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        menuDeferral.menuWillEnd(animator: animator)
+    }
+
+    private func contextMenuRow(for configuration: UIContextMenuConfiguration) -> Int? {
+        guard let identifier = configuration.identifier as? NSString else { return nil }
+        return viewModel?.syncedViewModels.firstIndex { FileContextMenu.identifier(for: $0) == identifier }
+    }
+
+    private func performMenuAction(_ type: FileMenuItems.ItemType, on file: FileModel, atIndexPath indexPath: IndexPath) {
+        switch type {
+        case .shareToPermanent: presentShareManagement(for: file)
+        case .shareToAnotherApp: shareWithOtherApps(file: file)
+        case .publish: publishAction(file: file)
+        case .rename: renameAction(file: file, atIndexPath: indexPath)
+        case .move: relocateAction(files: [file], action: .move)
+        case .copy: relocateAction(files: [file], action: .copy)
+        case .download: downloadAction(file: file)
+        case .fileInformation: showFileInformation(for: file)
+        case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
+        case .unshare, .editMetadata: break
+        }
+    }
+
+    private func confirmMenuAction(_ actionType: ConfirmationBottomAlertView.ActionType, on file: FileModel, then action: @escaping () -> Void) {
+        let confirmation = FileActionConfirmationView.host(for: file, actionType, onConfirm: action, onDismiss: { [weak self] in
+            self?.dismiss(animated: false)
+        })
+        present(confirmation, animated: false)
+    }
+}
+
+// MARK: - Drag to move
+
+extension MainViewController {
+    private func setUpDrag() {
+        collectionView.dragDelegate = fileDrag
+        collectionView.dropDelegate = fileDrag
+        collectionView.isSpringLoaded = true
+        backButton.addInteraction(FileListDrag.springLoadedBackArrow(
+            canGoUp: { [weak self] in (self?.fileDrag.isDragging ?? false) && (self?.canSwipeBack ?? false) },
+            goUp: { [weak self] in
+                guard let self else { return }
+                self.fileDrag.navigationWillStart()
+                self.backButtonAction(self.backButton)
+            }
+        ))
+    }
+
+    /// A row may be dragged when its menu offers Move.
+    private func draggableFile(at indexPath: IndexPath) -> FileModel? {
+        guard let file = contextMenuFile(at: indexPath), FileMenuItems.types(for: file, in: menuPlace).contains(.move) else { return nil }
+        return file
+    }
+
+    private func dropFolder(at indexPath: IndexPath) -> FileModel? {
+        contextMenuFile(at: indexPath).flatMap { $0.type.isFolder ? $0 : nil }
+    }
+
+    private var openFolderForDrop: FileModel? {
+        guard let viewModel, !viewModel.isSelecting, !viewModel.isSelectingDestination, !viewModel.isPickingImage,
+              viewModel.fileAction == .none else { return nil }
+        return viewModel.currentFolder
+    }
+
+    private func isUnderPinnedHeader(_ point: CGPoint) -> Bool {
+        guard let header = visibleSortHeader, !header.isHidden, header.alpha > 0 else { return false }
+        return header.frame.contains(point)
+    }
+
+    /// Greys the folder under the finger, on the rows on screen now.
+    private func showDragLookOnVisibleRows() {
+        guard let viewModel, let collectionView else { return }
+        for case let cell as FileCollectionViewCell in collectionView.visibleCells {
+            guard let indexPath = collectionView.indexPath(for: cell), indexPath.section == FileListType.synced.rawValue,
+                  indexPath.item < viewModel.syncedViewModels.count else { continue }
+            fileDrag.showLook(on: cell, for: viewModel.fileForRowAt(indexPath: indexPath))
+        }
+    }
+
+    /// A folder still loading when the finger lifts gets the touch cover it went without during the drag.
+    private func dragDidEnd() {
+        if viewModel?.isLoadingFirstPage == true { showTouchBlocker() }
+    }
+
+    /// A plain reload of the rows that still waits for an open menu or a drag.
+    private func reloadRows() {
+        if menuDeferral.holdsReload({ [weak self] in self?.reloadRows() }) { return }
+        if fileDrag.holdsReload({ [weak self] in self?.reloadRows() }) { return }
+        collectionView.reloadData()
+    }
+
+    private func moveDropped(_ files: [FileModel], to destination: FileModel) {
+        askBeforePublicRelocate(.move) { [weak self] in self?.startDroppedMove(files, to: destination) }
+    }
+
+    /// Rows that leave the folder go at once, as in Files; files moved into the open folder show once the server lists them.
+    /// Meanwhile the island shows the move's progress, as after Move Here.
+    func startDroppedMove(_ files: [FileModel], to destination: FileModel) {
+        guard let viewModel, let folder = viewModel.currentFolder else { return }
+        let leaving = files.filter(viewModel.lists)
+        if !leaving.isEmpty {
+            viewModel.removeListedRows(of: leaving)
+            refreshCollectionView()
+        }
+        dropProgress.moveStarted()
+        viewModel.moveDropped(files, to: destination) { [weak self] status in
+            guard let self else { return }
+            switch status {
+            case .success:
+                if !leaving.isEmpty {
+                    self.dropProgress.moveEnded(succeeded: true)
+                    self.settleMovedAway(leaving, from: folder, attemptsLeft: Self.pastedItemsSettleAttempts)
+                } else if destination.folderLinkId == folder.folderLinkId {
+                    self.viewModel?.expectPastedItems(files, destination: destination)
+                    self.settlePastedItems(attemptsLeft: Self.pastedItemsSettleAttempts) { [weak self] in
+                        guard let self else { return }
+                        self.dropProgress.moveEnded(succeeded: true)
+                        self.viewModel?.timerRunCount = 0
+                        self.scheduleNextThumbnailPoll()
+                    }
+                } else {
+                    self.dropProgress.moveEnded(succeeded: true)
+                }
+            case .error:
+                self.dropProgress.moveEnded(succeeded: false)
+                self.showErrorAlert(message: .relocateError) { [weak self] in self?.refreshCurrentFolder() }
+            }
+        }
+    }
+
+    /// The server still lists a moved row for a moment after it answers, so refetches keep it off the screen until it goes.
+    private func settleMovedAway(_ files: [FileModel], from folder: FileModel, attemptsLeft: Int) {
+        refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true) { [weak self] in
+            guard let self, let viewModel = self.viewModel, viewModel.currentFolder?.folderLinkId == folder.folderLinkId else { return }
+            let stillListed = files.filter(viewModel.lists)
+            guard !stillListed.isEmpty else { return }
+            viewModel.removeListedRows(of: stillListed)
+            self.refreshCollectionView()
+            guard attemptsLeft > 1 else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + FilesViewModel.pastedItemsPollInterval) { [weak self] in
+                self?.settleMovedAway(files, from: folder, attemptsLeft: attemptsLeft - 1)
+            }
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldSpringLoadItemAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
+        fileDrag.shouldSpringLoad(indexPath)
     }
 }
 
@@ -1788,80 +2067,11 @@ extension MainViewController: FABActionSheetDelegate {
         }
     }
     
-    func showSortActionSheetDialog() {
-        guard
-            sortActionSheet == nil,
-            let viewModel = viewModel else { return }
-        
-        sortActionSheet = SortActionSheet(
-            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
-            selectedOption: viewModel.activeSortOption,
-            onDismiss: {
-                self.view.dismissPopup(
-                    self.sortActionSheet,
-                    overlayView: self.overlayView,
-                    completion: { _ in
-                        self.sortActionSheet?.removeFromSuperview()
-                        self.sortActionSheet = nil
-                    }
-                )
-            }
-        )
-        
-        sortActionSheet?.delegate = self
-        view.addSubview(sortActionSheet!)
-        view.presentPopup(sortActionSheet, overlayView: overlayView)
-    }
-
     func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
-        var menuItems: [FileMenuViewModel.MenuItem] = []
-        if file.permissions.contains(.ownership) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToPermanent, action: nil))
+        let menuItems = FileMenuItems.types(for: file, in: menuPlace).map { type in
+            FileMenuViewModel.MenuItem(type: type, action: sheetAction(for: type, file: file, atIndexPath: indexPath))
         }
-        
-        // Share to another app - for files with share permission (not folders)
-        if file.permissions.contains(.share) && file.type.isFolder == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .shareToAnotherApp, action: { [self] in
-                shareWithOtherApps(file: file)
-            }))
-        }
-        
-        if file.permissions.contains(.delete) && viewModel is PublicFilesViewModel == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .publish, action: { [self] in
-                publishAction(file: file)
-            }))
-        }
-        
-        if file.permissions.contains(.edit) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .rename, action: { [self] in
-                renameAction(file: file, atIndexPath: indexPath)
-            }))
-        }
-        
-        if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .delete, action: { [self] in
-                deleteAction(file: file, atIndexPath: indexPath)
-            }))
-        }
-        
-        if file.permissions.contains(.move) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .move, action: { [self] in
-                relocateAction(files: [file], action: .move)
-            }))
-        }
-        
-        if file.permissions.contains(.create) {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .copy, action: { [self] in
-                relocateAction(files: [file], action: .copy)
-            }))
-        }
-        
-        if file.permissions.contains(.read) && file.type.isFolder == false {
-            menuItems.append(FileMenuViewModel.MenuItem(type: .download, action: { [self] in
-                downloadAction(file: file)
-            }))
-        }
-        
+
         let swiftUIView = FileMoreMenuView(
             fileViewModel: file,
             menuItems: menuItems,
@@ -2346,6 +2556,17 @@ extension MainViewController {
 
         setupBottomActionSheet()
     }
+
+    /// The X on the Move or Copy bar drops the picked files. The plus button is asked last:
+    /// it stays hidden while a folder for the files is being picked.
+    func cancelRelocate() {
+        dismissFloatingActionIsland()
+        viewModel?.selectedFiles = []
+        viewModel?.fileAction = .none
+        viewModel?.isSelectingDestination = false
+        updateFABViewVisibility()
+        collectionView?.reloadData()
+    }
     
     func publishAction(file: FileModel) {
         didTapPublish(source: file)
@@ -2391,22 +2612,34 @@ extension MainViewController {
     }
 }
 
-// MARK: - SortActionSheetDelegate
-extension MainViewController: SortActionSheetDelegate {
-    func didSelectOption(_ option: SortOption) {
+// MARK: - Sorting
+extension MainViewController {
+    /// Saves the pick, then lists the folder in the new order from its top.
+    func applySort(_ option: SortOption) {
         guard let viewModel = viewModel else { return }
         if viewModel.currentFolder != nil { showSpinner() }
         viewModel.saveSortOption(option) { [weak self] _ in
             // The refresh's own guard would leave the spinner up if the folder is gone by now.
             self?.hideSpinner()
-            self?.refreshCurrentFolder()
+            self?.refreshCurrentFolder(then: { [weak self] in self?.scrollListToTop() })
         }
+    }
+
+    /// The row stays on screen deep in a list, so a new order would otherwise open mid-list.
+    private func scrollListToTop() {
+        guard let collectionView else { return }
+        let inset = collectionView.adjustedContentInset
+        collectionView.setContentOffset(CGPoint(x: -inset.left, y: -inset.top), animated: false)
     }
 }
 
 // MARK: - FilePreviewNavigationControllerDelegate
 extension MainViewController: FilePreviewNavigationControllerDelegate {
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        // File information opens the details straight from the list, so no preview is there to close them.
+        if filePreviewNavigationVC is FileDetailsViewController {
+            filePreviewNavigationVC.dismiss(animated: true)
+        }
         if hasChanges {
             refreshCurrentFolder()
         }

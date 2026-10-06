@@ -5,7 +5,7 @@
 //  Created by Lucian Cerbu on 04/08/2020.
 //
 
-import Firebase
+import FirebaseCore
 import FirebaseMessaging
 import UIKit
 import GooglePlaces
@@ -59,10 +59,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Reattach to in-flight Live Activity or end orphans from a previous session
         UploadLiveActivityManager.shared.reconcileOnLaunch()
-        
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = RootViewController()
-        window?.makeKeyAndVisible()
 
         return true
     }
@@ -73,12 +69,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      handleEventsForBackgroundURLSession identifier: String,
                      completionHandler: @escaping () -> Void) {
         if identifier == BackgroundUploadSessionManager.backgroundSessionIdentifier {
+            // This wake connects no scene, so load the session the post-relaunch registerRecord needs.
+            AuthenticationManager.shared.restoreSavedSessionIfNeeded()
             BackgroundUploadSessionManager.shared.backgroundSessionCompletionHandler = completionHandler
             BackgroundUploadSessionManager.shared.reconnectToExistingSession()
         }
     }
     
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    @discardableResult
+    func handleUserActivity(_ userActivity: NSUserActivity) -> Bool {
         clearShareDeepLinks()
         
         // Fallback for Live Activity taps that don't have a widgetURL
@@ -307,7 +306,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    @discardableResult
+    func handleOpenURL(_ url: URL) -> Bool {
         os_log("AppDelegate open URL: %{public}@", log: .default, type: .info, url.absoluteString)
         
         // Handle Live Activity deep link to navigate to the upload folder
@@ -537,9 +537,13 @@ extension AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
 
-    // TODO: Maybe make these optional?
     var rootViewController: RootViewController {
         return window!.rootViewController as! RootViewController
+    }
+
+    /// Nil until a scene hands over its window; the FCM token and a push tap can arrive before that.
+    var connectedRootViewController: RootViewController? {
+        return window?.rootViewController as? RootViewController
     }
 }
 
@@ -551,8 +555,8 @@ extension AppDelegate: MessagingDelegate {
             #endif
             PreferencesManager.shared.set(fcmToken, forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
             
-            if rootViewController.isDrawerRootActive && AuthenticationManager.shared.session != nil {
-                rootViewController.sendPushNotificationToken()
+            if let root = connectedRootViewController, root.isDrawerRootActive, AuthenticationManager.shared.session != nil {
+                root.sendPushNotificationToken()
             }
         }
     }
@@ -632,7 +636,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, isFolder: isFolder, recordId: recordId, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
             try? PreferencesManager.shared.setNonPlistObject(requestAccessNotifPayload, forKey: Constants.Keys.StorageKeys.requestLinkAccess)
             
-            if let drawerVC = self.rootViewController.current as? DrawerViewController {
+            if let drawerVC = self.connectedRootViewController?.current as? DrawerViewController {
                 drawerVC.dismiss(animated: false) {
                     if let mainVC = drawerVC.rootViewController.visibleViewController as? MainViewController {
                         mainVC.checkForRequestShareAccess()
@@ -665,7 +669,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName, accessRole: accessRole)
                 try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
                 
-                if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                if let drawerVC = self.connectedRootViewController?.current as? DrawerViewController {
                     // For record notifications, ALWAYS navigate to SharesViewController first
                     // Don't show preview from MainViewController
                     drawerVC.dismiss(animated: false) {
@@ -692,7 +696,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName, accessRole: accessRole)
                 try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFolderKey)
                 
-                if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                if let drawerVC = self.connectedRootViewController?.current as? DrawerViewController {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         if drawerVC.rootViewController.visibleViewController is SharesViewController == false {
                             let sharesVC: SharesViewController = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
@@ -729,7 +733,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             let notifPayload = PARequestNotificationPayload(toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
             try? PreferencesManager.shared.setNonPlistObject(notifPayload, forKey: Constants.Keys.StorageKeys.requestPAAccess)
             
-            if let drawerVC = self.rootViewController.current as? DrawerViewController {
+            if let drawerVC = self.connectedRootViewController?.current as? DrawerViewController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     let rootVC: UIViewController
                     

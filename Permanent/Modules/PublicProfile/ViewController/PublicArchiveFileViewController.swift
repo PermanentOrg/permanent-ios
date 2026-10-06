@@ -90,6 +90,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     }
     
     func refreshCollectionView() {
+        if pagingSection.insertAddedPage() { return }
         handleTableBackgroundView()
         pagingSection.prepareForReload()
         collectionView.reloadData()
@@ -413,6 +414,8 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // A landing page can move the list and put it back; neither is a scroll.
+        guard !pagingSection.isAddingPage else { return }
         // Always try to pass scroll to parent first, let parent decide if it should handle it
         if delegate?.childVC(self, didScrollToOffset: scrollView.contentOffset) ?? false {
             // Parent handled the scroll, reset our offset

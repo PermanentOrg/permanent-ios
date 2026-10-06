@@ -2,6 +2,8 @@
 //  FileListStatusFooterView.swift
 //  Permanent
 //
+//  Created by Lucian Cerbu on 23.09.2026.
+//
 
 import UIKit
 
@@ -96,6 +98,11 @@ class FileListStatusFooterView: UICollectionReusableView {
     }
 
     private static let sizingView = FileListStatusFooterView()
+
+    /// Loads the footer's font and symbol image now, as the first folder end would otherwise stall that frame.
+    static func prepareSizing() {
+        _ = sizingView
+    }
 
     /// Self-sized with the list's current text size, so the message and button keep their room when it grows.
     static func height(for content: Content, width: CGFloat, traits: UITraitCollection) -> CGFloat {

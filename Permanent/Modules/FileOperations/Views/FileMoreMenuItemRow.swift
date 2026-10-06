@@ -10,13 +10,16 @@ struct FileMoreMenuItemRow: View {
     let viewModel: FileMenuViewModel
     let action: () -> Void
     let isDestructive: Bool
+    /// The space around the icon and title. It takes taps too, so the rows meet with no dead gap between them.
+    let insets: EdgeInsets
     
-    @State private var tapStartTime: Date = Date()
+    @State private var pressStart: Date?
     
-    init(item: FileMenuViewModel.MenuItem, viewModel: FileMenuViewModel, isDestructive: Bool = false, action: @escaping () -> Void) {
+    init(item: FileMenuViewModel.MenuItem, viewModel: FileMenuViewModel, isDestructive: Bool = false, insets: EdgeInsets = EdgeInsets(top: 8, leading: 24, bottom: 8, trailing: 24), action: @escaping () -> Void) {
         self.item = item
         self.viewModel = viewModel
         self.isDestructive = isDestructive
+        self.insets = insets
         self.action = action
     }
     
@@ -32,6 +35,9 @@ struct FileMoreMenuItemRow: View {
                     .custom("Usual-Regular", size: 14))
                 .foregroundColor(isDestructive ? viewModel.isMenuItemPressed(item.type) ? Color.error500.opacity(0.5) : Color.error500 : viewModel.isMenuItemPressed(item.type) ? Color.blue900.opacity(0.5) : Color.blue900)
                 .multilineTextAlignment(.leading)
+                // VoiceOver needs its own way in: the row's drag gesture has no accessibility action.
+                .accessibilityAction { action() }
+                .accessibilityIdentifier("fileMenuItem.\(item.type.rawValue)")
 
             let pendingInvitationCount = viewModel.pendingInvitationBadgeCount(for: item.type)
             if pendingInvitationCount > 0 {
@@ -51,22 +57,17 @@ struct FileMoreMenuItemRow: View {
             
             Spacer()
         }
+        .padding(insets)
         .contentShape(Rectangle())
-        .onTapGesture {
-            let tapDuration = Date().timeIntervalSince(tapStartTime)
-            let dragDistance: CGFloat = 0
-            let swipeVelocity: CGFloat = 0
-            
-            if viewModel.validateTapGesture(tapDuration: tapDuration, dragDistance: dragDistance, swipeVelocity: swipeVelocity) {
-                action()
-            }
-        }
+        // One gesture both times the press and runs the action. With a separate tap gesture,
+        // iOS 27 runs a quick tap before the press is timed, and the tap is refused.
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
-                    if !viewModel.isMenuItemPressed(item.type) {
+                    // A new touch starts with no translation. This also clears a touch the system cancelled.
+                    if pressStart == nil || value.translation == .zero {
+                        pressStart = value.time
                         viewModel.handleMenuItemPressed(item.type)
-                        tapStartTime = Date()
                     }
                     
                     let dragDistance = sqrt(pow(value.translation.width, 2) + pow(value.translation.height, 2))
@@ -79,10 +80,11 @@ struct FileMoreMenuItemRow: View {
                     
                     let swipeVelocity = value.predictedEndLocation.y - value.location.y
                     let dragDistance = sqrt(pow(value.translation.width, 2) + pow(value.translation.height, 2))
+                    let tapDuration = value.time.timeIntervalSince(pressStart ?? value.time)
+                    pressStart = nil
                     
-                    let tapDuration = Date().timeIntervalSince(tapStartTime)
-                    if !viewModel.validateTapGesture(tapDuration: tapDuration, dragDistance: dragDistance, swipeVelocity: swipeVelocity) {
-                        return
+                    if viewModel.validateTapGesture(tapDuration: tapDuration, dragDistance: dragDistance, swipeVelocity: swipeVelocity) {
+                        action()
                     }
                 }
         )

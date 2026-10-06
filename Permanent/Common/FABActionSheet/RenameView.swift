@@ -270,6 +270,7 @@ struct RenameView: View {
                 )
         }
         .disabled(!viewModel.isRenameButtonEnabled || isRenaming)
+        .accessibilityIdentifier("renameConfirmButton")
         .padding(.horizontal, 24)
         .padding(.bottom, 32)
     }

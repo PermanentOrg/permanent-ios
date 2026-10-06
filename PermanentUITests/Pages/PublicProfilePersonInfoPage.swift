@@ -21,6 +21,7 @@ class PublicProfilePersonInfoPage {
     
     func fillFullName() -> String {
         let fullNameUUID = UUID().uuidString
+        XCTAssertTrue(fullNameTextField.waitUntilSettled(timeout: 10), "the Person Information form did not open")
         fullNameTextField.tap()
         fullNameTextField.selectAndDeleteText(inApp: app)
         fullNameTextField.tap()

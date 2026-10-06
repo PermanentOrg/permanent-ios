@@ -20,7 +20,7 @@ class RenameAlertPage {
         return identified
     }
     var cancelButton: XCUIElement { app.buttons["Cancel"] }
-    var renameButton: XCUIElement { app.buttons["Rename"] }
+    var renameButton: XCUIElement { app.buttons["renameConfirmButton"] }
     
     init(app: XCUIApplication) {
         self.app = app

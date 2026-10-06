@@ -24,6 +24,7 @@ class UploadFilesUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Seed: aaa_-prefixed folder + one uploaded photo.
         let folderName = "aaa_preview_\(UUID().uuidString.prefix(6))"
@@ -87,10 +88,13 @@ class UploadFilesUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
-        privateFilesPage.createNewFolder(name: "current test")
+        // A name of its own, so the cleanup below deletes this folder and nothing else.
+        let folderName = "aaa_upload_\(UUID().uuidString.prefix(6))"
+        privateFilesPage.createNewFolder(name: folderName)
 
-        privateFilesPage.enterFolder(named: "current test")
+        privateFilesPage.enterFolder(named: folderName)
 
         privateFilesPage.enterPhotoLibrary()
 
@@ -107,7 +111,7 @@ class UploadFilesUITests: BaseUITestCase {
 
         privateFilesPage.goBack()
 
-        privateFilesPage.deleteFirstElementFromFolder()
+        privateFilesPage.deleteElement(named: folderName)
 
         privateFilesPage.toggleRightSideMenu()
 

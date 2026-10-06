@@ -313,7 +313,7 @@ struct FileMoreMenuView: View {
             }
             
             if !viewModel.regularMenuItems.isEmpty || viewModel.destructiveMenuItem != nil {
-                VStack(spacing: 16) {
+                VStack(spacing: 0) {
                     ForEach(viewModel.regularMenuItems.indices, id: \.self) { index in
                         FileMoreMenuItemRow(item: viewModel.regularMenuItems[index], viewModel: viewModel) {
                             viewModel.handleMenuItemTap(viewModel.regularMenuItems[index])
@@ -325,19 +325,28 @@ struct FileMoreMenuView: View {
                             Rectangle()
                                 .fill(Color.gray.opacity(0.3))
                                 .frame(height: 1)
-                                .padding(.horizontal, -24)
+                                .padding(.top, 8)
                         }
                         
-                        FileMoreMenuItemRow(item: destructiveItem, viewModel: viewModel, isDestructive: true) {
+                        // The last row sits by the bottom edge, so it takes all the space from the divider down.
+                        FileMoreMenuItemRow(
+                            item: destructiveItem,
+                            viewModel: viewModel,
+                            isDestructive: true,
+                            insets: EdgeInsets(top: viewModel.regularMenuItems.isEmpty ? 8 : 16, leading: 24, bottom: menuBottomPadding, trailing: 24)
+                        ) {
                             viewModel.handleMenuItemTap(destructiveItem)
                         }
                     }
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 24)
-                .padding(.bottom, viewModel.regularMenuItems.isEmpty && viewModel.destructiveMenuItem != nil ? 16 : 24)
+                .padding(.top, 16)
+                .padding(.bottom, viewModel.destructiveMenuItem == nil ? menuBottomPadding - 8 : 0)
             }
         }
+    }
+    
+    private var menuBottomPadding: CGFloat {
+        viewModel.regularMenuItems.isEmpty && viewModel.destructiveMenuItem != nil ? 16 : 24
     }
     
     // MARK: - Archive Info Section

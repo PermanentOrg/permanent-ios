@@ -32,6 +32,7 @@ class FilePreviewStateUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Seed: aaa_-prefixed folder + one uploaded photo.
         let folderName = "aaa_state_\(UUID().uuidString.prefix(6))"
@@ -85,6 +86,7 @@ class FilePreviewStateUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         let folderName = "aaa_state_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: folderName)

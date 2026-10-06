@@ -24,9 +24,10 @@ class FileMenuActionsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Create the source and destination folders. The "aaa_" prefix keeps them at
-        // the top of the Name (A-Z) list so existing archive items are never touched.
+        // the top of the A to Z name order so existing archive items are never touched.
         let sourceFolder = "aaa_copy_src_\(UUID().uuidString.prefix(6))"
         let destFolder = "aaa_copy_dst_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: sourceFolder)
@@ -82,9 +83,10 @@ class FileMenuActionsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Create the source and destination folders. The "aaa_" prefix keeps them at
-        // the top of the Name (A-Z) list so existing archive items are never touched.
+        // the top of the A to Z name order so existing archive items are never touched.
         let sourceFolder = "aaa_move_src_\(UUID().uuidString.prefix(6))"
         let destFolder = "aaa_move_dst_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: sourceFolder)
