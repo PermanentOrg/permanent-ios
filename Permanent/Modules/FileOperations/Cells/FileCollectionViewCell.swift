@@ -109,7 +109,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileDateLabel.font = TextFontStyle.style12.font
         fileDateLabel.textColor = .lightGray
         fileImageView.clipsToBounds = true
-        
+        // Pictures share the skeleton square's corners, so nothing changes shape as a picture lands.
+        fileImageView.layer.cornerRadius = SkeletonSquareView.cornerRadius
+        fileImageView.layer.cornerCurve = .continuous
+
         sharesImageView.image = UIImage.group.templated
         sharesImageView.tintColor = .iconTintPrimary
         

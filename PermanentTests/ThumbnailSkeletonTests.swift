@@ -110,6 +110,7 @@ final class ThumbnailSkeletonTests: XCTestCase {
         waitUntil({ cell.thumbnailSkeleton.isHidden }, "the picture faded in and the square went")
         XCTAssertNotNil(cell.fileImageView.image)
         XCTAssertFalse(cell.thumbnailSkeleton.shimmer.isSweeping)
+        XCTAssertEqual(cell.fileImageView.layer.cornerRadius, cell.thumbnailSkeleton.layer.cornerRadius, "the picture keeps the square's corners")
 
         // Back on screen, as after a scroll: the picture is in memory now.
         cell.prepareForReuse()
@@ -160,6 +161,7 @@ final class ThumbnailSkeletonTests: XCTestCase {
         cell.layoutIfNeeded()
 
         XCTAssertEqual(cell.thumbnailSkeleton.frame, cell.fileImageView.frame)
+        XCTAssertEqual(cell.fileImageView.layer.cornerRadius, cell.thumbnailSkeleton.layer.cornerRadius)
         XCTAssertEqual(cell.thumbnailSkeleton.shimmer.isSweeping, sweeps)
         XCTAssertEqual(cell.thumbnailSkeleton.shimmer.litRect, cell.thumbnailSkeleton.bounds)
     }
