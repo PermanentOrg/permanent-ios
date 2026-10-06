@@ -22,6 +22,13 @@ final class StickyHeaderFlowLayout: UICollectionViewFlowLayout {
         return layout
     }
 
+    /// Grid tiles keep the list's side insets; rows are as wide as the list and reach across them, or UIKit logs
+    /// them as too wide on every layout pass, which slows each page as it lands.
+    static func sectionInsets(in collectionView: UICollectionView, section: Int, pagingSection: Int, isGrid: Bool) -> UIEdgeInsets {
+        let isTiles = isGrid && (section == FileListType.synced.rawValue || section == pagingSection)
+        return isTiles ? .zero : UIEdgeInsets(top: 0, left: -collectionView.contentInset.left, bottom: 0, right: -collectionView.contentInset.right)
+    }
+
     /// Hidden is alpha 0, slid up out of the list unless `slidesStickyHeader` is off.
     var hidesStickyHeader = false {
         didSet { if hidesStickyHeader != oldValue { invalidateStickyHeader() } }

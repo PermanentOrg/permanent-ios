@@ -83,12 +83,18 @@ final class FilesViewModelPagingTests: XCTestCase {
         return .success(try! FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: Data(json.utf8)))
     }
 
-    /// The page size, so each test reads the same whatever it is.
+    /// The page sizes, so each test reads the same whatever they are.
     private let n = FilesViewModel.childrenPageSize
+    private let next = FilesViewModel.nextChildrenPageSize
 
     /// A full page of records from `start`, whose cursor is its last row, so another page is due.
     private func fullPage(from start: Int = 1, badLinkId: Int? = nil) -> Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
         page(Array(start..<(start + n)), nextCursor: "\(start + n - 1)", badLinkId: badLinkId)
+    }
+
+    /// A full later page of records from `start`, so another page is due after it too.
+    private func fullNextPage(from start: Int) -> Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
+        page(Array(start..<(start + next)), nextCursor: "\(start + next - 1)")
     }
 
     private func enter(_ folder: FileModel, in viewModel: FilesViewModel, backNavigation: Bool = false) {
@@ -161,7 +167,7 @@ final class FilesViewModelPagingTests: XCTestCase {
         loadNextPage(in: viewModel)
 
         XCTAssertEqual(server.requests.last?.cursor, "\(n)")
-        XCTAssertEqual(server.requests.last?.pageSize, n)
+        XCTAssertEqual(server.requests.last?.pageSize, next, "later pages are bigger than the first")
         XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1...(n + 2)), "a child the server repeats is listed once")
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
@@ -713,13 +719,15 @@ final class FilesViewModelPagingTests: XCTestCase {
         let viewModel = MyFilesViewModel()
         let server = PageServer()
         server.attach(to: viewModel)
-        server.responses = [fullPage(), fullPage(), page(Array(1...(n + 4)), nextCursor: "\(n + 4)")]
+        let whole = n + next + 4
+        server.responses = [fullPage(), fullNextPage(from: n + 1), fullNextPage(from: n + 1), page(Array(1...whole), nextCursor: "\(whole)")]
 
         enter(makeFolder(), in: viewModel)
         loadNextPage(in: viewModel)
+        loadNextPage(in: viewModel)
 
         XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize)
-        XCTAssertEqual(viewModel.viewModels.count, n + 4)
+        XCTAssertEqual(viewModel.viewModels.count, whole)
         XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 

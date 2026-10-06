@@ -268,6 +268,31 @@ final class StickyHeaderFlowLayoutTests: XCTestCase {
         XCTAssertFalse(layout.sectionHeadersPinToVisibleBounds)
     }
 
+    /// Rows as wide as the list, as the folder screens size them, with the section insets that let them fit.
+    private final class FullWidthRowsList: StickyHeaderTestList {
+        override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+            CGSize(width: bounds.width, height: Self.rowHeight)
+        }
+
+        @objc func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+            StickyHeaderFlowLayout.sectionInsets(in: collectionView, section: section, pagingSection: 3, isGrid: false)
+        }
+    }
+
+    func testFullWidthRows_ReachAcrossTheSideInsets_AndGridTilesKeepThem() throws {
+        let list = FullWidthRowsList()
+        list.reloadData()
+        list.scroll(to: 0)
+
+        let row = try XCTUnwrap(list.collectionViewLayout.layoutAttributesForItem(at: IndexPath(item: 0, section: 2)))
+        XCTAssertEqual(row.frame.minX, -6, "the list's left edge, under its 6pt side inset")
+        XCTAssertEqual(row.frame.width, 390)
+        let rowInsets = UIEdgeInsets(top: 0, left: -6, bottom: 0, right: -6)
+        XCTAssertEqual(StickyHeaderFlowLayout.sectionInsets(in: list, section: 2, pagingSection: 3, isGrid: true), .zero)
+        XCTAssertEqual(StickyHeaderFlowLayout.sectionInsets(in: list, section: 3, pagingSection: 3, isGrid: true), .zero, "skeleton tiles too")
+        XCTAssertEqual(StickyHeaderFlowLayout.sectionInsets(in: list, section: 1, pagingSection: 3, isGrid: true), rowInsets, "uploads stay rows in grid")
+    }
+
     func testAScroll_InvalidatesOnlyThePinnedHeader() throws {
         let (list, layout) = makeList()
         let scrolled = list.bounds.offsetBy(dx: 0, dy: 300)

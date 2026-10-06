@@ -126,6 +126,7 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     }
     
     func refreshCollectionView() {
+        if pagingSection.insertAddedPage() { return }
         handleTableBackgroundView()
         pagingSection.prepareForReload()
         collectionView.reloadData()
@@ -334,6 +335,10 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
         let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: 74)
 
         return listItemSize
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        StickyHeaderFlowLayout.sectionInsets(in: collectionView, section: section, pagingSection: pagingSection.sectionIndex, isGrid: false)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

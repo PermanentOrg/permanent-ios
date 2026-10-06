@@ -1056,7 +1056,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
         var isContractBreak = false
     }
 
+    /// A folder's first page, and the step a refresh grows by; small, so a folder opens fast.
     static let childrenPageSize = 20
+    /// Later pages are bigger, so a fast scroll or a slow network seldom reaches the skeleton rows.
+    static let nextChildrenPageSize = 60
 
     /// Posted on main, with the view model as the object, when a later page changes the list or its paging state.
     static let childrenDidChangeNotification = Notification.Name("FilesViewModel.childrenDidChange")
@@ -1176,7 +1179,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         isFetchingNextPage = true
         let generation = nextPageGeneration
         let context = v2ChildContext(enteredFolder: currentFolder)
-        let pageSize = FilesViewModel.childrenPageSize
+        let pageSize = FilesViewModel.nextChildrenPageSize
 
         fetchChildrenPage(folderId: folderId, pageSize: pageSize, cursor: cursor) { [weak self] result in
             let outcome: Result<(files: [FileModel], nextCursor: String?), ChildrenPageFailure>

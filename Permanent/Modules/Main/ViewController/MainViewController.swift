@@ -345,6 +345,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func refreshCollectionView() {
         if menuDeferral.holdsReload({ [weak self] in self?.refreshCollectionView() }) { return }
         if fileDrag.holdsReload(addingPage: pagingSection.isAddingPage, { [weak self] in self?.refreshCollectionView() }) { return }
+        if pagingSection.insertAddedPage() { return }
         handleTableBackgroundView()
         pagingSection.prepareForReload()
         reloadFadingSortTitle()
@@ -1381,12 +1382,17 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         }
     }
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        StickyHeaderFlowLayout.sectionInsets(in: collectionView, section: section, pagingSection: pagingSection.sectionIndex, isGrid: isGridView)
+    }
+
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         pagingSection.willDisplayItem(at: indexPath)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView === collectionView else { return }
+        // A landing page can move the list and put it back; neither is a scroll.
+        guard scrollView === collectionView, !pagingSection.isAddingPage else { return }
         stickyHeaderReveal.listDidScroll()
     }
 

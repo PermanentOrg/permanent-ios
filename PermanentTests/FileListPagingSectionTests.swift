@@ -43,6 +43,12 @@ final class FileListPagingSectionTests: XCTestCase {
         return page(Array(1...files), nextCursor: "\(files)")
     }
 
+    /// A full later page from record `start`: one record short of the page, and the folder `page` adds.
+    private func fullNextPage(from start: Int) -> Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
+        let end = start + FilesViewModel.nextChildrenPageSize - 2
+        return page(Array(start...end), nextCursor: "\(end)")
+    }
+
     private func makeViewModel(responses: [Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure>]) -> MyFilesViewModel {
         let viewModel = MyFilesViewModel()
         var remaining = responses
@@ -54,8 +60,33 @@ final class FileListPagingSectionTests: XCTestCase {
         return viewModel
     }
 
-    private func makeSection(for viewModel: FilesViewModel, onChange: @escaping () -> Void = {}) -> FileListPagingSection {
-        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), collectionViewLayout: UICollectionViewFlowLayout())
+    /// Sections as the folder screens have them: the view model's own, then the paging section.
+    private final class ListSource: NSObject, UICollectionViewDataSource {
+        let viewModel: FilesViewModel
+        var section: FileListPagingSection?
+        init(_ viewModel: FilesViewModel) { self.viewModel = viewModel }
+
+        func numberOfSections(in collectionView: UICollectionView) -> Int { viewModel.numberOfSections + 1 }
+
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection index: Int) -> Int {
+            guard let section, index == section.sectionIndex else { return viewModel.numberOfRowsInSection(index) }
+            return section.numberOfItems(isGrid: false)
+        }
+
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            if let section, indexPath.section == section.sectionIndex { return section.cell(at: indexPath, isGrid: false) }
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "row", for: indexPath)
+        }
+    }
+
+    /// A list of `height` points, with the file list's spacing and rows of `itemSize`.
+    private func makeSection(for viewModel: FilesViewModel, height: CGFloat = 844, itemSize: CGSize = CGSize(width: 390, height: 74),
+                             onChange: @escaping () -> Void = {}) -> FileListPagingSection {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 6
+        layout.minimumLineSpacing = 0
+        layout.itemSize = itemSize
+        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 390, height: height), collectionViewLayout: layout)
         addTeardownBlock { _ = collectionView }
         return FileListPagingSection(collectionView: collectionView, viewModel: { viewModel }, onChange: onChange)
     }
@@ -76,13 +107,16 @@ final class FileListPagingSectionTests: XCTestCase {
         XCTAssertEqual(section.footerContent, .hidden)
     }
 
-    func testMorePagesDue_ShowThreeSkeletonRowsAndNoFooter() {
+    func testMorePagesDue_FillTheListWithSkeletonsUpToAPage_AndNoFooter() {
         let viewModel = makeViewModel(responses: [fullPage])
         let section = makeSection(for: viewModel)
+        let grid = makeSection(for: viewModel, itemSize: CGSize(width: 189, height: 225))
 
         XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
-        XCTAssertEqual(section.numberOfItems(isGrid: false), 3)
-        XCTAssertEqual(section.numberOfItems(isGrid: true), 2)
+        XCTAssertEqual(section.numberOfItems(isGrid: false), 12, "844 pt of 74 pt rows, so a full page lands in their place")
+        XCTAssertEqual(grid.numberOfItems(isGrid: true), 8, "two tiles a line, four lines")
+        XCTAssertEqual(makeSection(for: viewModel, height: 5000).numberOfItems(isGrid: false), FilesViewModel.nextChildrenPageSize, "never more than a page")
+        XCTAssertEqual(makeSection(for: viewModel, height: 0).numberOfItems(isGrid: false), 3, "a list with no size yet")
         XCTAssertEqual(section.footerContent, .hidden)
     }
 
@@ -93,7 +127,7 @@ final class FileListPagingSectionTests: XCTestCase {
         viewModel.loadNextChildrenPage { _ in loaded.fulfill() }
         wait(for: [loaded], timeout: 5)
 
-        XCTAssertEqual(section.numberOfItems(isGrid: false), 3)
+        XCTAssertEqual(section.numberOfItems(isGrid: false), 3, "a few, so the retry footer stays close to the rows")
         XCTAssertEqual(section.footerContent, .failed)
     }
 
@@ -119,7 +153,7 @@ final class FileListPagingSectionTests: XCTestCase {
         XCTAssertEqual(section.footerContent, .hidden, "an empty folder shows its empty view instead")
     }
 
-    func testSkeletonsComingIntoView_LoadTheNextPageOnlyWhileOneIsDue() {
+    func testRowsInTheLastTwoScreens_LoadTheNextPageOnlyWhileOneIsDue() {
         var requests = 0
         let viewModel = makeViewModel(responses: [fullPage, .failure(.init(message: "offline"))])
         let answer = viewModel.childrenPageV2Request
@@ -128,12 +162,13 @@ final class FileListPagingSectionTests: XCTestCase {
             answer?(folderId, pageSize, cursor, completion)
         }
         let changed = expectation(description: "screen told")
-        let section = makeSection(for: viewModel, onChange: { changed.fulfill() })
+        let section = makeSection(for: viewModel, height: 370, onChange: { changed.fulfill() })
+        let rows = section.sectionIndex - 1
 
-        section.willDisplayItem(at: IndexPath(item: 0, section: section.sectionIndex - 1))
-        XCTAssertEqual(requests, 0, "rows of other sections never ask")
+        section.willDisplayItem(at: IndexPath(item: 9, section: rows))
+        XCTAssertEqual(requests, 0, "20 rows and 5 a screen, so the first 10 rows never ask")
 
-        section.willDisplayItem(at: IndexPath(item: 0, section: section.sectionIndex))
+        section.willDisplayItem(at: IndexPath(item: 10, section: rows))
         wait(for: [changed], timeout: 5)
         XCTAssertEqual(requests, 1)
 
@@ -141,21 +176,117 @@ final class FileListPagingSectionTests: XCTestCase {
         XCTAssertEqual(requests, 1, "a failed page waits for the retry button")
     }
 
-    func testALaterPage_IsMarkedAsAddingRows_WhileTheScreenRedraws() {
-        let viewModel = makeViewModel(responses: [fullPage, page(Array(FilesViewModel.childrenPageSize...(2 * FilesViewModel.childrenPageSize - 2)), nextCursor: nil)])
-        var addingDuringRedraw: [Bool] = []
-        var section: FileListPagingSection!
-        let changed = expectation(description: "screen told")
-        section = makeSection(for: viewModel, onChange: {
-            addingDuringRedraw.append(section.isAddingPage)
-            changed.fulfill()
+    /// A shown 390 x 844pt list of 74pt rows with the screens' sections; `onChange` runs as a screen's would.
+    private func makeShownList(for viewModel: FilesViewModel,
+                               onChange: @escaping (FileListPagingSection, UICollectionView) -> Void) -> (FileListPagingSection, UICollectionView) {
+        let source = ListSource(viewModel)
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 0
+        layout.itemSize = CGSize(width: 390, height: 74)
+        let list = UICollectionView(frame: window.bounds, collectionViewLayout: layout)
+        list.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "row")
+        list.dataSource = source
+        window.addSubview(list)
+        window.isHidden = false
+        addTeardownBlock {
+            window.isHidden = true
+            _ = source
+        }
+        weak var shown: FileListPagingSection?
+        let section = FileListPagingSection(collectionView: list, viewModel: { viewModel }, onChange: {
+            if let shown { onChange(shown, list) }
         })
+        shown = section
+        source.section = section
+        list.reloadData()
+        list.layoutIfNeeded()
+        return (section, list)
+    }
 
+    func testALaterPage_TakesTheSkeletonRowsPlace_WithoutAReload() {
+        let size = FilesViewModel.childrenPageSize
+        let later = FilesViewModel.nextChildrenPageSize
+        // 19 files and a folder, then 59 files (the folder again is dropped), then 7 files.
+        let viewModel = makeViewModel(responses: [fullPage, fullNextPage(from: size),
+                                                  page(Array((size + later - 1)...(size + later + 5)), nextCursor: nil)])
+        var addingDuringRedraw: [Bool] = []
+        var inserted: [Bool] = []
+        var landed: XCTestExpectation?
+        let (section, list) = makeShownList(for: viewModel) { section, _ in
+            addingDuringRedraw.append(section.isAddingPage)
+            inserted.append(section.insertAddedPage())
+            landed?.fulfill()
+        }
+        let rows = section.sectionIndex - 1
+        // 20 rows, then 12 skeleton rows: at the bottom only skeleton rows show.
+        let bottom = list.contentSize.height - list.bounds.height
+        list.contentOffset.y = bottom
+        list.layoutIfNeeded()
+
+        let second = expectation(description: "second page")
+        landed = second
         section.willDisplayItem(at: IndexPath(item: 0, section: section.sectionIndex))
-        wait(for: [changed], timeout: 5)
+        wait(for: [second], timeout: 5)
 
         XCTAssertEqual(addingDuringRedraw, [true], "a later page only adds rows after the listed ones")
+        XCTAssertEqual(inserted, [true])
         XCTAssertFalse(section.isAddingPage)
+        XCTAssertEqual(list.numberOfItems(inSection: rows), size + later - 1)
+        XCTAssertEqual(list.numberOfItems(inSection: section.sectionIndex), 12, "more is due, so the skeleton rows stay under the new rows")
+        XCTAssertEqual(list.contentOffset.y, bottom, "the list does not jump past the new rows")
+        XCTAssertNotNil(list.cellForItem(at: IndexPath(item: size, section: rows)), "the first new row shows")
+        XCTAssertFalse(section.insertAddedPage(), "only while a page is being added")
+
+        let last = expectation(description: "last page")
+        landed = last
+        section.willDisplayItem(at: IndexPath(item: 0, section: section.sectionIndex))
+        wait(for: [last], timeout: 5)
+
+        XCTAssertEqual(inserted, [true, true], "the last page goes in the same way")
+        XCTAssertEqual(list.numberOfItems(inSection: rows), size + later + 6)
+        XCTAssertEqual(list.numberOfItems(inSection: section.sectionIndex), 0, "the skeleton rows go with the last page")
+        XCTAssertEqual(section.footerContent, .counts(folders: 1, files: size + later + 5))
+    }
+
+    func testAPageThatCannotGoIn_IsLeftToAWholeReload() {
+        let size = FilesViewModel.childrenPageSize
+        let later = FilesViewModel.nextChildrenPageSize
+        let emptyLastPage = try! FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self,
+                                                                         from: Data(#"{ "items": [], "pagination": { "nextCursor": null } }"#.utf8))
+        let viewModel = makeViewModel(responses: [fullPage, fullNextPage(from: size), fullNextPage(from: size + later - 1), .success(emptyLastPage)])
+        var inserted: [Bool] = []
+        var landed: XCTestExpectation?
+        let (section, list) = makeShownList(for: viewModel) { section, list in
+            let didInsert = section.insertAddedPage()
+            inserted.append(didInsert)
+            // As the screens do.
+            if !didInsert { list.reloadData() }
+            landed?.fulfill()
+        }
+        let land = { (name: String) in
+            let page = self.expectation(description: name)
+            landed = page
+            section.willDisplayItem(at: IndexPath(item: 0, section: section.sectionIndex))
+            self.wait(for: [page], timeout: 5)
+        }
+
+        viewModel.isSelecting = true
+        land("in select mode")
+        viewModel.isSelecting = false
+
+        let window = list.window
+        list.removeFromSuperview()
+        land("off screen")
+        window?.addSubview(list)
+
+        viewModel.viewModels.removeAll()
+        list.reloadData()
+        land("into a list left empty")
+
+        XCTAssertEqual(inserted, [false, false, false], "select mode, off screen, and a list the empty-folder view must cover")
+        XCTAssertEqual(list.numberOfItems(inSection: section.sectionIndex - 1), 0)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
     }
 
     func testTheSkeletonFade_CoversOnlyTheNextReload() {

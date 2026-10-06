@@ -35,6 +35,11 @@ class FileCollectionViewCell: UICollectionViewCell {
     var holdsDraggedFile: () -> Bool = { true }
 
     var rightButtonTapAction: ((FileCollectionViewCell) -> Void)?
+    /// The loading rows' skeleton square under the picture, until the picture lands; still if its download fails.
+    let thumbnailSkeleton = SkeletonSquareView()
+    /// The picture this row waits for, so a late answer for the file the row showed before is ignored.
+    private var awaitedThumbnail: URL?
+    static let thumbnailFade: TimeInterval = 0.25
     private let moreButtonBadgeView = UIView()
     private let moreButtonBadgeLabel = UILabel()
     private var moreButtonBadgeWidthConstraint: NSLayoutConstraint?
@@ -63,6 +68,9 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileInfoId = nil
         rightButtonTapAction = nil
 
+        fileImageView.sd_cancelCurrentImageLoad()
+        awaitedThumbnail = nil
+        showThumbnailSkeleton(false)
         fileImageView.image = nil
         progressView.setProgress(.zero, animated: false)
         activityIndicator.stopAnimating()
@@ -90,7 +98,8 @@ class FileCollectionViewCell: UICollectionViewCell {
 
     private func initUI() {
         activityIndicator.stopAnimating()
-        
+        setUpThumbnailSkeleton()
+
         fileNameLabel.font = TextFontStyle.style35.font
         fileNameLabel.textColor = .black
         let fontLineHeight = TextFontStyle.style35.font.lineHeight
@@ -140,6 +149,50 @@ class FileCollectionViewCell: UICollectionViewCell {
         ])
     }
     
+    /// The square sits under the picture, in the picture's own frame.
+    private func setUpThumbnailSkeleton() {
+        // A picture from the network or the disk fades in over the square, which goes once the picture covers it.
+        let fade = SDWebImageTransition.fade(duration: Self.thumbnailFade)
+        fade.completion = { [weak self] _ in self?.showThumbnailSkeleton(false) }
+        fileImageView.sd_imageTransition = fade
+        guard let slot = fileImageView.superview else { return }
+        thumbnailSkeleton.translatesAutoresizingMaskIntoConstraints = false
+        thumbnailSkeleton.isHidden = true
+        slot.insertSubview(thumbnailSkeleton, belowSubview: fileImageView)
+        NSLayoutConstraint.activate([
+            thumbnailSkeleton.leadingAnchor.constraint(equalTo: fileImageView.leadingAnchor),
+            thumbnailSkeleton.trailingAnchor.constraint(equalTo: fileImageView.trailingAnchor),
+            thumbnailSkeleton.topAnchor.constraint(equalTo: fileImageView.topAnchor),
+            thumbnailSkeleton.bottomAnchor.constraint(equalTo: fileImageView.bottomAnchor)
+        ])
+        showThumbnailSkeleton(false)
+    }
+
+    private func showThumbnailSkeleton(_ shows: Bool, sweeping: Bool = true) {
+        thumbnailSkeleton.isHidden = !shows
+        thumbnailSkeleton.shimmer.isOn = shows && sweeping
+        thumbnailSkeleton.shimmer.update()
+    }
+
+    private func loadThumbnail(_ url: URL) {
+        awaitedThumbnail = url
+        // `.retryFailed`, because one transient CDN failure otherwise blacklists the URL session-wide and
+        // leaves this thumbnail blank until restart.
+        fileImageView.sd_setImage(with: url, placeholderImage: nil, options: [.retryFailed]) { [weak self] image, error, cacheType, loaded in
+            guard let self, loaded == self.awaitedThumbnail, !Self.isCancelled(error) else { return }
+            if image == nil {
+                self.showThumbnailSkeleton(true, sweeping: false)
+            } else if cacheType == .memory {
+                // Already in memory, so it shows at once with no fade; any other picture's fade takes the square away.
+                self.showThumbnailSkeleton(false)
+            }
+        }
+    }
+
+    private static func isCancelled(_ error: Error?) -> Bool {
+        (error as? SDWebImageError)?.code == .cancelled || (error as? URLError)?.code == .cancelled
+    }
+
     func updateCell(model: FileModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isSelecting: Bool = false, isFileSelected: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
@@ -244,6 +297,10 @@ class FileCollectionViewCell: UICollectionViewCell {
     }
     
     fileprivate func setFileImage(forModel model: FileModel) {
+        // A download still on its way for the file shown before would land over this one's picture or mark.
+        fileImageView.sd_cancelCurrentImageLoad()
+        awaitedThumbnail = nil
+        showThumbnailSkeleton(false)
         if model.type.isFolder {
             fileImageView.contentMode = .scaleAspectFit
             fileImageView.image = UIImage.folder.templated
@@ -252,14 +309,14 @@ class FileCollectionViewCell: UICollectionViewCell {
             switch model.fileStatus {
             case .synced:
                 fileImageView.contentMode = .scaleAspectFill
+                // A row fresh from its nib still holds the nib's folder image, which would cover the square.
+                fileImageView.image = nil
+                // The skeleton square sweeps while the picture is on its way, and while the server has not made it yet.
+                showThumbnailSkeleton(true)
                 if let fileURL = URL(string: model.thumbnailURL) {
-                    // `.retryFailed`, because one transient CDN failure otherwise blacklists the URL session-wide and
-                    // leaves this thumbnail blank until restart.
-                    fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder, options: [.retryFailed])
-                } else {
-                    activityIndicator.startAnimating()
+                    loadThumbnail(fileURL)
                 }
-                
+
             case .downloading:
                 fileImageView.contentMode = .scaleAspectFit
                 fileImageView.image = .download
