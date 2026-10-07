@@ -13,15 +13,31 @@ class AuthenticationManagerTests: XCTestCase {
     var mockAuthRepo: AuthRepository!
     var mockAccountRepo: AccountRepository!
     var mockArchivesRepo: ArchivesRepository!
+    var savedCurrentSession: PermSession?
+    var savedKeychainData: Data?
+    var savedAppNeedUpdate = false
     
     override func setUp() {
         super.setUp()
+        savedCurrentSession = PermSession.currentSession
+        savedKeychainData = SessionKeychainHandler().keychain.getData(SessionKeychainHandler.keychainAuthDataKey)
+        savedAppNeedUpdate = RCValues.appNeedUpdate
+        RCValues.appNeedUpdate = false
     }
     
     override func tearDown() {
         authManager = nil
         mockAuthRepo = nil
         mockAccountRepo = nil
+        
+        let keychain = SessionKeychainHandler().keychain
+        if let savedKeychainData {
+            keychain.set(savedKeychainData, forKey: SessionKeychainHandler.keychainAuthDataKey)
+        } else {
+            keychain.delete(SessionKeychainHandler.keychainAuthDataKey)
+        }
+        PermSession.currentSession = savedCurrentSession
+        RCValues.appNeedUpdate = savedAppNeedUpdate
         
         super.tearDown()
     }
@@ -294,6 +310,56 @@ class AuthenticationManagerTests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
 
+    // A refused token while restoring the saved archive means the saved login is dead, so launch must
+    // go to sign-in instead of Face ID. Any other failure, as when offline, keeps the session.
+    func testReloadSessionUnauthorizedLogsOut() {
+        authManager = authManagerRestoring(changeArchiveResult: .failure(APIError.unauthorized))
+        saveAndForgetSession()
+
+        let expectation = XCTestExpectation(description: "Reload with a refused token")
+        authManager.reloadSession { success in
+            XCTAssertFalse(success, "A refused token must not count as a restored session")
+            XCTAssertNil(self.authManager.session, "A refused token must leave no session behind")
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5)
+    }
+
+    func testReloadSessionOfflineKeepsSession() {
+        let offline = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)
+        authManager = authManagerRestoring(changeArchiveResult: .failure(offline))
+        let session = saveAndForgetSession()
+
+        let expectation = XCTestExpectation(description: "Reload while offline")
+        authManager.reloadSession { success in
+            XCTAssertTrue(success, "An offline launch must keep the saved session")
+            XCTAssertEqual(self.authManager.session?.token, session.token)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5)
+    }
+
+    private func authManagerRestoring(changeArchiveResult: Result<Bool, Error>) -> AuthenticationManager {
+        let mockArchivesDataSource = MockArchivesRemoteDataSource()
+        mockArchivesDataSource.changeArchiveResult = changeArchiveResult
+        mockArchivesRepo = ArchivesRepository(remoteDataSource: mockArchivesDataSource)
+        mockAuthRepo = AuthRepository(remoteDataSource: MockAuthRemoteDataSource())
+        mockAccountRepo = AccountRepository(remoteDataSource: MockAccountRemoteDataSource())
+        return AuthenticationManager(authRepo: mockAuthRepo, accountRepository: mockAccountRepo, archivesRepository: mockArchivesRepo)
+    }
+
+    /// Saves a session with a selected archive, then clears it in memory so `reloadSession` has to restore it.
+    @discardableResult
+    private func saveAndForgetSession() -> PermSession {
+        let session = PermSession(token: "saved_token")
+        session.selectedArchive = ArchiveVOData.mock()
+        session.account = AccountVOData.mock()
+        authManager.session = session
+        authManager.saveSession()
+        authManager.session = nil
+        return session
+    }
+
     func testSyncSessionSuccess() {
         let mockAuthDataSource = MockAuthRemoteDataSource()
         mockAuthRepo = AuthRepository(remoteDataSource: mockAuthDataSource)
@@ -350,5 +416,51 @@ class AuthenticationManagerTests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
 
+    // MARK: - Saved-session restore
 
+    func testRestoreSavedSessionLoadsTheKeychainSessionWhenNoneIsLoaded() throws {
+        authManager = AuthenticationManager()
+        try authManager.keychainHandler.saveSession(sessionWithAccount(token: "saved"))
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertEqual(authManager.session?.token, "saved")
+        XCTAssertEqual(PermSession.currentSession?.token, "saved")
+    }
+
+    func testRestoreSavedSessionKeepsALoadedSession() throws {
+        authManager = AuthenticationManager()
+        authManager.session = sessionWithAccount(token: "live")
+        try authManager.keychainHandler.saveSession(sessionWithAccount(token: "saved"))
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertEqual(authManager.session?.token, "live")
+    }
+
+    func testRestoreSavedSessionWithNothingSavedLeavesSessionNil() {
+        authManager = AuthenticationManager()
+        authManager.keychainHandler.clearSession()
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertNil(authManager.session)
+    }
+
+    func testRestoreSavedSessionSkipsWhenAnUpdateIsRequired() throws {
+        authManager = AuthenticationManager()
+        try authManager.keychainHandler.saveSession(sessionWithAccount(token: "saved"))
+        RCValues.appNeedUpdate = true
+
+        authManager.restoreSavedSessionIfNeeded()
+
+        XCTAssertNil(authManager.session)
+    }
+
+    /// A saved session decodes only when it carries an account.
+    private func sessionWithAccount(token: String) -> PermSession {
+        let session = PermSession(token: token)
+        session.account = AccountVOData.mock()
+        return session
+    }
 }

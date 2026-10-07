@@ -1199,8 +1199,8 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         await fulfillment(of: [loadComplete], timeout: 5.0)
 
-        XCTAssertTrue(repo.getShareLinkV2ByIdCalled || repo.getShareLinkV2ByFileCalled,
-                       "Should attempt to load V2 data for existing link")
+        XCTAssertTrue(repo.getShareLinkV2ByIdCalled,
+                      "Should load V2 data by share-link id for an existing link")
     }
 
     // MARK: - Expiration Display Text Tests
@@ -2053,7 +2053,6 @@ private class TrackingShareManagementRepository: ShareManagementRepository {
     // Tracking flags
     var getShareLinkCallCount = 0
     var getShareLinkV2ByIdCalled = false
-    var getShareLinkV2ByFileCalled = false
     var createShareLinkV2Called = false
     var updateShareLinkV2Called = false
     var deleteShareLinkV2Called = false
@@ -2080,13 +2079,6 @@ private class TrackingShareManagementRepository: ShareManagementRepository {
             } else {
                 completion(self.createMockShareVO(), nil)
             }
-        }
-    }
-
-    override func getShareLinkV2(file: FileModel, then completion: @escaping ShareLinkV2Handler) {
-        getShareLinkV2ByFileCalled = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            completion(nil, "No link found")
         }
     }
 

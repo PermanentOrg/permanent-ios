@@ -46,14 +46,16 @@ playground.xcworkspace
 # .swiftpm
 
 .build/
+# Swift packages checked out by Fastlane on CI (cloned_source_packages_path)
+SourcePackages/
 
 # CocoaPods
 # We recommend against adding the Pods directory to your .gitignore. However
 # you should judge for yourself, the pros and cons are mentioned at:
 # https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
 Pods/
-# Add this line if you want to avoid checking in source code from the Xcode workspace
-*.xcworkspace
+# The CocoaPods workspace at the repo root only; the one inside the project holds Package.resolved
+/Permanent.xcworkspace
 
 # Carthage
 # Add this line if you want to avoid checking in source code from Carthage dependencies.

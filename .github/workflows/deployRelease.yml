@@ -22,13 +22,13 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '26.2'
-      - name: Cache CocoaPods
+      - name: Cache Swift packages
         uses: actions/cache@v3
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          path: SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-spm-
       - name: Run Unit Tests
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
@@ -44,7 +44,25 @@ jobs:
           STRIPE_PUB_KEY: ${{ secrets.MOBILE_PROD_STRIPE_PUB_KEY }}
           SKIPLINT: true
           TEST_PLAN: 'unit-tests'
-        run: bundle exec fastlane tests
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 6
+        shell: bash
+        run: bundle exec fastlane tests 2>&1 | tee fastlane-tests.log
+      - name: List failed tests
+        if: failure()
+        shell: bash
+        run: |
+          # fastlane prefixes and colours every line, so GitHub only picks up the ::error lines when printed plain.
+          perl -pe 's/\e\[[0-9;]*m//g' fastlane-tests.log | grep -o '::error .*' | sed "s#${GITHUB_WORKSPACE}/##" | sort -u > failures.txt || true
+          if [ -s failures.txt ]; then
+            cat failures.txt
+            {
+              echo "### Failed tests and build errors"
+              sed -E -e 's/^::error file=([^,]*),line=([0-9]+)[^:]*::[[:space:]]*(.*)$/- `\1:\2` \3/' -e 's/^::error [^:]*::[[:space:]]*(.*)$/- \1/' failures.txt
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No failed test was found. Search the Run Unit Tests step for 'error:'."
+          fi
 
   build:
     needs: test
@@ -63,13 +81,13 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '26.2'
-      - name: Cache CocoaPods
+      - name: Cache Swift packages
         uses: actions/cache@v3
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          path: SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-spm-
       - name: Run Fastlane AppStore
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}

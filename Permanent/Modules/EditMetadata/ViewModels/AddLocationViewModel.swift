@@ -131,8 +131,7 @@ class AddLocationViewModel: ObservableObject {
         isLoading = true
         // One PATCH per record, with the V1 batch as an automatic failsafe. Records only, and the
         // coordinate lookup stays on V1.
-        if FeatureFlags.useStelaNavigation,
-           let locnVO = locnVO,
+        if let locnVO = locnVO,
            selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
             let fields: [String: Any] = ["location": locnVO.toLocationInputPayload()]
             selectedFiles.patchEachRecordToV2(fieldsFor: { _ in fields }) { [weak self] succeeded in

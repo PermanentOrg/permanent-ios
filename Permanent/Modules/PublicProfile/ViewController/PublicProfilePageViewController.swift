@@ -523,7 +523,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
                 
             case .about:
-                headerCell.configure(titleLabel: "Archive Information".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
+                headerCell.configure(titleLabel: "Archive Information".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled, buttonIdentifier: "archiveInformationEditButton")
                 
                 headerCell.buttonAction = { [weak self] in
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
@@ -535,7 +535,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 
             case .information:
                 if let title = viewModel?.archiveType.personalInformationPublicPageTitle {
-                    headerCell.configure(titleLabel: title, buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
+                    headerCell.configure(titleLabel: title, buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled, buttonIdentifier: "personInformationEditButton")
                 }
                 
                 headerCell.buttonAction = { [weak self] in
@@ -547,7 +547,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 }
                     
             case .onlinePresenceEmail:
-                headerCell.configure(titleLabel: "Online Presence".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
+                headerCell.configure(titleLabel: "Online Presence".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled, buttonIdentifier: "onlinePresenceEditButton")
                 
                 headerCell.buttonAction = { [weak self] in
                     let vc = UIViewController.create(withIdentifier: .onlinePresence, from: .profile) as! PublicProfileOnlinePresenceViewController
@@ -561,7 +561,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 return UICollectionReusableView()
                 
             case .milestones:
-                headerCell.configure(titleLabel: "Milestones".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
+                headerCell.configure(titleLabel: "Milestones".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled, buttonIdentifier: "milestonesEditButton")
                 
                 headerCell.buttonAction = { [weak self] in
                     let vc = UIViewController.create(withIdentifier: .milestones, from: .profile) as! PublicProfileMilestonesViewController

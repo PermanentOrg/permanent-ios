@@ -8,41 +8,33 @@
 import Foundation
 
 class DonateViewModel: ViewModelInterface {
-    var accountId: Int? {
-        return AuthenticationManager.shared.session?.account.accountID
-    }
-    
-    var accountName: String? {
-        return AuthenticationManager.shared.session?.account.fullName
-    }
-    
-    var email: String? {
-        return AuthenticationManager.shared.session?.account.primaryEmail
-    }
-    
-    func createPaymentIntent(amount: Int, _ completion: @escaping ((String?) -> Void)) {
-        guard let accountId = accountId, let name = accountName, let email = email else {
+    /// Asks Stela to open a Stripe PaymentIntent and hands back its client secret, or nil on any failure.
+    /// Stela prices in whole US dollars, so the Apple Pay sheet must show this same integer amount.
+    func createStoragePurchase(amountInUSD: Int, _ completion: @escaping ((String?) -> Void)) {
+        guard amountInUSD > 0, AuthenticationManager.shared.session != nil else {
             completion(nil)
             return
         }
-        
-        var req = URLRequest(url: URL(string: "\(APIEnvironment.defaultEnv.donationBaseURL)/payment-sheet")!)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let json = paymentSheetPayload(accountId: accountId, email: email, amount: amount, isAnonymous: false, name: name)
 
-        req.httpBody = try? JSONSerialization.data(withJSONObject: json, options: [])
-        
-        let dt = URLSession.shared.dataTask(with: req) {[weak self] data, urlresponse, error in
-            if let data = data, let jsonObj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                self?.trackPurchaseStorage()
-                let clientSecret = jsonObj["paymentIntent"] as? String
-                completion(clientSecret)
-            } else {
+        let operation = APIOperation(BillingEndpoint.purchaseStorage(amountInUSD: amountInUSD))
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            guard case .json(let json, _) = result,
+                  let response: StoragePurchaseResponse = JSONHelper.decoding(from: json, with: StoragePurchaseResponse.decoder),
+                  let clientSecret = response.data?.clientSecret else {
                 completion(nil)
+                return
             }
+            self?.trackPurchaseStorage()
+            completion(clientSecret)
         }
-        dt.resume()
+    }
+
+    /// The whole-dollar amount typed in the donate field. Fractions are dropped; negatives, junk and
+    /// values too large for an Int give 0 instead of trapping.
+    func wholeDollarAmount(from text: String?) -> Int {
+        guard let text, let amount = Double(text), amount > 0,
+              let wholeDollars = Int(exactly: floor(amount)) else { return 0 }
+        return wholeDollars
     }
     
     func storageSizeForAmount(_ amount: Double?) -> Int {
@@ -52,17 +44,6 @@ class DonateViewModel: ViewModelInterface {
             }
         }
         return Int(floor((amount ?? 0) / 10))
-    }
-    
-    func paymentSheetPayload(accountId: Int, email: String, amount: Int, isAnonymous: Bool, name: String) -> [String: Any] {
-        let json: [String: Any] = [
-            "accountId": accountId,
-            "email": email,
-            "amount": amount,
-            "anonymous": isAnonymous,
-            "name": name
-        ]
-        return json
     }
     
     func trackOpenStorage() {

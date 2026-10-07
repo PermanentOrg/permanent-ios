@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SortOption: Int, CaseIterable {
+enum SortOption: Int, CaseIterable, Codable {
 
     case nameAscending
     
@@ -21,14 +21,61 @@ enum SortOption: Int, CaseIterable {
     
     case typeDescending
     
+    /// The first order of each field, in menu order; picking a field starts there.
+    static let fieldDefaults: [SortOption] = [.nameAscending, .dateDescending, .typeAscending]
+
+    /// The mark between a title's field and its order, "  •  ".
+    static let titleSeparator = String(format: .sortOption, "", "")
+
+    /// A sort title as VoiceOver should read it, with a pause in place of the mark and words in place of arrows.
+    static func spoken(_ title: String) -> String {
+        allCases.reduce(title.replacingOccurrences(of: titleSeparator, with: ", ")) { spoken, option in
+            spoken.replacingOccurrences(of: option.directionTitle, with: option.spokenDirectionTitle)
+        }
+    }
+
     var title: String {
+        return String(format: .sortOption, fieldTitle, directionTitle)
+    }
+
+    var spokenTitle: String {
+        Self.spoken(title)
+    }
+
+    var fieldTitle: String {
         switch self {
-        case .dateAscending: return String(format: .sortOption, String.date, "(\(String.oldest))")
-        case .dateDescending: return String(format: .sortOption, String.date, "(\(String.newest))")
-        case .nameAscending: return String(format: .sortOption, String.name, String.aToZ)
-        case .nameDescending: return String(format: .sortOption, String.name, String.zToA)
-        case .typeAscending: return String(format: .sortOption, String.fileType, String.arrowUpCharacter)
-        case .typeDescending: return String(format: .sortOption, String.fileType, String.arrowDownCharacter)
+        case .nameAscending, .nameDescending: return .name
+        case .dateAscending, .dateDescending: return .date
+        case .typeAscending, .typeDescending: return .sortFieldType
+        }
+    }
+
+    var directionTitle: String {
+        switch self {
+        case .nameAscending: return .sortAToZ
+        case .nameDescending: return .sortZToA
+        case .dateAscending: return .sortOldestFirst
+        case .dateDescending: return .sortNewestFirst
+        case .typeAscending: return .sortAscending
+        case .typeDescending: return .sortDescending
+        }
+    }
+
+    /// The order in words, since VoiceOver reads the arrow in "A → Z" aloud.
+    var spokenDirectionTitle: String {
+        switch self {
+        case .nameAscending: return .sortAToZSpoken
+        case .nameDescending: return .sortZToASpoken
+        default: return directionTitle
+        }
+    }
+
+    /// Both orders of this option's field, in menu order.
+    var fieldOrders: [SortOption] {
+        switch self {
+        case .nameAscending, .nameDescending: return [.nameAscending, .nameDescending]
+        case .dateAscending, .dateDescending: return [.dateDescending, .dateAscending]
+        case .typeAscending, .typeDescending: return [.typeAscending, .typeDescending]
         }
     }
     
@@ -41,5 +88,25 @@ enum SortOption: Int, CaseIterable {
         case .typeAscending: return "sort.type_asc"
         case .typeDescending: return "sort.type_desc"
         }
+    }
+
+    var stelaValue: String {
+        switch self {
+        case .dateAscending: return "date-ascending"
+        case .dateDescending: return "date-descending"
+        case .nameAscending: return "alphabetical-ascending"
+        case .nameDescending: return "alphabetical-descending"
+        case .typeAscending: return "type-ascending"
+        case .typeDescending: return "type-descending"
+        }
+    }
+
+    private static let byServerValue: [String: SortOption] = Dictionary(
+        uniqueKeysWithValues: allCases.flatMap { [($0.apiValue, $0), ($0.stelaValue, $0)] }
+    )
+
+    init?(serverValue: String?) {
+        guard let value = serverValue, let match = SortOption.byServerValue[value] else { return nil }
+        self = match
     }
 }

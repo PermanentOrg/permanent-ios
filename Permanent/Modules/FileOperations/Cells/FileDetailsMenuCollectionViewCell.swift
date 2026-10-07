@@ -9,7 +9,7 @@ import UIKit
 
 class FileDetailsMenuCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
-    @IBOutlet weak var segmentedControl: UISegmentedControl!
+    @IBOutlet weak var segmentedControl: SlidingTabControl!
         
     var segmentedControlAction: ((FileDetailsMenuCollectionViewCell) -> Void)?
     
@@ -18,15 +18,13 @@ class FileDetailsMenuCollectionViewCell: FileDetailsBaseCollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        segmentedControl.setTitle("Info".localized(), forSegmentAt: 0)
-        segmentedControl.setTitle("Details".localized(), forSegmentAt: 1)
+        segmentedControl.titles = ["Info".localized(), "Details".localized()]
         segmentedControl.backgroundColor = .darkGray
-        segmentedControl.tintColor = .clear
-        segmentedControl.selectedSegmentTintColor = .black
+        segmentedControl.pillColor = .black
+        segmentedControl.titleColor = .white
+        segmentedControl.titleFont = TextFontStyle.style9.font
+        segmentedControl.selectedTitleFont = TextFontStyle.style9.font
         segmentedControl.accessibilityIdentifier = "fileDetailsSegmentedControl"
-        
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style9.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style9.font], for: .normal)
     }
 
     @IBAction func segmentedControlAction(_ sender: Any) {

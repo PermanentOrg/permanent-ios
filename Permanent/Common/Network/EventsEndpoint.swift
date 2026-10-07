@@ -62,9 +62,9 @@ extension EventsEndpoint: RequestProtocol {
         let endpointPath = APIEnvironment.defaultEnv.apiServer
         switch self {
         case .sendEvent:
-            return "\(endpointPath)api/v2/event"
+            return "\(endpointPath)api/v2/events"
         case .checklist:
-            return "\(endpointPath)api/v2/event/checklist"
+            return "\(endpointPath)api/v2/events/checklist"
         }
     }
 }

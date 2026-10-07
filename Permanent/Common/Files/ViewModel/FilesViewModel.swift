@@ -16,11 +16,36 @@ typealias VoidAction = () -> Void
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
 
 enum PublicRootRequestStatus: Equatable {
-    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
-        return true
-    }
     case success(folder: FolderVOData?)
     case error(message: String?)
+
+    /// `FolderVOData` is not `Equatable`, so a success compares by the folder's identity fields.
+    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
+        switch (lhs, rhs) {
+        case (.success(let lhsFolder), .success(let rhsFolder)):
+            return lhsFolder?.folderID == rhsFolder?.folderID && lhsFolder?.folderLinkID == rhsFolder?.folderLinkID
+        case (.error(let lhsMessage), .error(let rhsMessage)):
+            return lhsMessage == rhsMessage
+        default:
+            return false
+        }
+    }
+
+    /// Maps the V1 `getPublicRoot` result. Every case completes, so the caller's spinner always clears.
+    init(operationResult: OperationResult) {
+        switch operationResult {
+        case .json(let response, _):
+            guard let model: GetRootResponse = JSONHelper.convertToModel(from: response), model.isSuccessful == true else {
+                self = .error(message: .errorMessage)
+                return
+            }
+            self = .success(folder: model.results?.first?.data?.first?.folderVO)
+        case .error(let error, _):
+            self = .error(message: error?.localizedDescription)
+        case .file:
+            self = .error(message: .errorMessage)
+        }
+    }
 }
 
 enum CheckboxState {
@@ -31,24 +56,43 @@ enum CheckboxState {
 
 class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileModel] = []
-    var navigationStack: [FileModel] = []
+    var navigationStack: [FileModel] = [] {
+        // No folder on screen, so the next folder entered adopts its saved sort even if it is the one just left.
+        didSet {
+            if navigationStack.isEmpty {
+                listedFolderId = nil
+                // A listing of the folder just left must not land on the share list or the search results.
+                childrenFetchGeneration += 1
+                isFetchingFirstPage = false
+                resetChildrenPaging()
+            }
+        }
+    }
     var uploadQueue: [FileInfo] = []
-
-    /// Whether this screen routes folder navigation through Stela V2. Off here; opted-in workspaces
-    /// override it and declare per-child roles via `v2ChildContext(enteredFolder:)`.
-    var usesStelaNavigation: Bool { false }
 
     /// The folder a forward V2 navigation is heading into (the tapped item / resolved
     /// root). On back/refresh the target is taken from `navigationStack` instead.
     var v2NavigationTarget: FileModel?
 
-    /// Monotonic id of the newest V2 children fetch. Superseded fetches compare against
-    /// it on the main thread and report `.superseded` (see `getFolderChildrenV2`).
+    /// Monotonic id of the newest folder listing, a V2 fetch or a V1 leg. A superseded listing commits nothing:
+    /// V2 reports `.superseded` (see `getFolderChildrenV2`), V1 completes quietly (see `isCurrentListing`).
     private var childrenFetchGeneration = 0
+    /// Lets work that runs before a listing starts see whether the list was replaced meanwhile.
+    var listingGeneration: Int { childrenFetchGeneration }
 
     /// Injection seam for the V2 children fetch. Tests pin the supersede/retry policy in
     /// `navigateV2` by returning outcomes, with no network.
     var childrenFetchV2Request: ((String, @escaping (ChildrenFetchOutcome) -> Void) -> Void)?
+
+    /// Test seam for the Stela archives fetch behind root discovery and publish. Production leaves it nil.
+    var archivesFetchV2Request: ((@escaping (Result<[ArchiveV2Data], Error>) -> Void) -> Void)?
+
+    /// Test seam for the raw children fetch behind root discovery. Distinct from `getFolderChildrenV2`,
+    /// which commits to `viewModels`; this only returns the decoded items.
+    var rootChildrenFetchV2Request: ((String, @escaping (Result<[FolderChildV2Data], Error>) -> Void) -> Void)?
+
+    /// Test seam for the V1 `getPublicRoot` lookup, the publish failsafe. Production leaves it nil.
+    var publicRootV1Request: ((_ archiveNbr: String, _ completion: @escaping (PublicRootRequestStatus) -> Void) -> Void)?
 
     /// The folder the in-flight V2 fetch is listing, so `getFolderChildrenV2` can derive per-child
     /// context. Shared inherits this folder's accessRole, since the payload carries none.
@@ -56,6 +100,16 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     var downloadQueue: [FileModel] = []
     var activeSortOption: SortOption = .nameAscending
+
+    /// Re-listing this folder keeps the picker's choice; a different folder adopts its saved sort.
+    private var listedFolderId: Int?
+
+    /// Stela answered the sort PATCH with 400 this session: the field is not accepted yet.
+    static var stelaRejectsSortPatch = false
+
+    /// Test seams for the two sort writes: the Stela folder PATCH and its V1 `/folder/sort` failsafe.
+    var sortPatchV2Request: ((_ folderId: String, _ option: SortOption, _ completion: @escaping (Bool) -> Void) -> Void)?
+    var sortSaveV1Request: ((_ folderLinkId: Int, _ option: SortOption, _ completion: @escaping (Bool) -> Void) -> Void)?
     var uploadInProgress: Bool = false
     var downloadInProgress: Bool {
         downloader != nil
@@ -120,13 +174,15 @@ class FilesViewModel: NSObject, ViewModelInterface {
         switch section {
         case FileListType.downloading.rawValue: return .downloads
         case FileListType.uploading.rawValue: return .uploads
-        case FileListType.synced.rawValue: return activeSortOption.title
+        // Until root discovery names the folder, the header keeps the sort it has.
+        case FileListType.synced.rawValue: return isLoadingFirstPage && firstPageSort == nil ? activeSortOption.title : listingSortTitle
         default: return "" // We cannot have more than 3 sections.
         }
     }
     
+    /// Not while more pages are due: rows deleted from a paged folder can leave it looking empty.
     var shouldDisplayBackgroundView: Bool {
-        syncedViewModels.isEmpty && uploadQueue.isEmpty
+        !isLoadingFirstPage && childrenPagingState == .complete && syncedViewModels.isEmpty && uploadQueue.isEmpty
     }
     
     var numberOfSections: Int {
@@ -134,11 +190,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var queueItemsForCurrentFolder: [FileInfo] {
-        uploadQueue.filter { $0.folder.folderId == navigationStack.last?.folderId }
+        let folder = backPreviewStack != nil ? backPreviewStack?.last : navigationStack.last
+        return uploadQueue.filter { $0.folder.folderId == folder?.folderId }
     }
     
+    /// Empty while a folder's first page loads, so the previous folder never shows under the skeleton rows.
     var syncedViewModels: [FileModel] {
-        return viewModels
+        return isLoadingFirstPage ? [] : viewModels
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
@@ -227,10 +285,24 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return false
     }
     
+    /// Whether the folder lists this item; matched by ids, since a row with a new thumbnail is not equal to the old one.
+    func lists(_ file: FileModel) -> Bool {
+        viewModels.contains { $0.recordId == file.recordId && $0.folderLinkId == file.folderLinkId }
+    }
+
+    /// Takes the items' rows out of the listing, matched by ids, and keeps the next page's place.
+    func removeListedRows(of files: [FileModel]) {
+        let removed = viewModels.filter { row in files.contains { $0.recordId == row.recordId && $0.folderLinkId == row.folderLinkId } }
+        guard !removed.isEmpty else { return }
+        viewModels.removeAll { row in removed.contains { $0.recordId == row.recordId && $0.folderLinkId == row.folderLinkId } }
+        moveCursorOffRemovedRows(removed)
+    }
+
     func removeSyncedFiles(_ files: [FileModel]?) {
         guard let files = files else {
             return
         }
+        defer { moveCursorOffRemovedRows(files) }
         
         for file in files {
             guard let index = viewModels.firstIndex(where: { $0 == file }) else {
@@ -324,10 +396,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// by returning per-record outcomes; production leaves it nil.
     var copyRecordV2Request: ((_ recordId: String, _ destinationFolderId: String, _ completion: @escaping (Bool) -> Void) -> Void)?
 
-    /// Eligible for the idempotent V2 copy only when the flag is on, it is a saved record, and it is
-    /// in the current archive — the bearer-only V2 call would reject a foreign one.
+    /// Eligible for the idempotent V2 copy only when it is a saved record and it is in
+    /// the current archive — the bearer-only V2 call would reject a foreign one.
     func isEligibleForStelaCopy(_ file: FileModel) -> Bool {
-        guard usesStelaNavigation, !file.type.isFolder, file.recordId > 0,
+        guard !file.type.isFolder, file.recordId > 0,
               let currentArchiveId = currentArchive?.archiveID else { return false }
         return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
@@ -411,12 +483,21 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var relocateV1Request: ((_ files: [FileModel], _ destination: FileModel, _ completion: @escaping ServerResponse) -> Void)?
 
     private func performV1Relocate(files: [FileModel], to destination: FileModel, then handler: @escaping ServerResponse) {
+        sendV1Relocate(files: files, to: destination, action: fileAction) { [weak self] status in
+            self?.selectedFiles = []
+            self?.fileAction = .none
+            handler(status)
+        }
+    }
+
+    /// A drop's move. It passes the action in, so no pending Move is set first or cleared after.
+    func moveDropped(_ files: [FileModel], to destination: FileModel, then handler: @escaping ServerResponse) {
+        sendV1Relocate(files: files, to: destination, action: .move, then: handler)
+    }
+
+    private func sendV1Relocate(files: [FileModel], to destination: FileModel, action: FileAction, then handler: @escaping ServerResponse) {
         if let injected = relocateV1Request {
-            injected(files, destination) { [weak self] status in
-                self?.selectedFiles = []
-                self?.fileAction = .none
-                handler(status)
-            }
+            injected(files, destination, handler)
             return
         }
 
@@ -428,7 +509,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
         if !folders.isEmpty {
             fileGroup.enter()
-            let folderParameters: RelocateParams = ((files: folders, destination: destination), fileAction)
+            let folderParameters: RelocateParams = ((files: folders, destination: destination), action)
             let folderApiOperation = APIOperation(FilesEndpoint.relocate(params: folderParameters))
             folderApiOperation.execute(in: APIRequestDispatcher()) { result in
                 switch result {
@@ -453,7 +534,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
         if !nonFolders.isEmpty {
             fileGroup.enter()
-            let nonFolderParameters: RelocateParams = ((files: nonFolders, destination: destination), fileAction)
+            let nonFolderParameters: RelocateParams = ((files: nonFolders, destination: destination), action)
             let nonFolderApiOperation = APIOperation(FilesEndpoint.relocate(params: nonFolderParameters))
             nonFolderApiOperation.execute(in: APIRequestDispatcher()) { result in
                 switch result {
@@ -477,14 +558,31 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
 
         fileGroup.notify(queue: .main) {
-            self.selectedFiles = []
-            self.fileAction = .none
-
             if errors.isEmpty {
                 handler(.success)
             } else {
                 handler(.error(message: errors.joined(separator: "\n")))
             }
+        }
+    }
+
+    /// Resolves an archive section root from Stela reads only, as a navigation or publish target.
+    /// Nil on any failure so the caller falls back to V1. A write destination passes no display-name fallback.
+    func resolveSectionRootTargetV2(sectionType: FileType, fallbackDisplayName: String?, completion: @escaping (FileModel?) -> Void) {
+        let resolver = SectionRootResolverV2(fetchArchives: archivesFetchV2Request, fetchChildren: rootChildrenFetchV2Request)
+        resolver.resolve(sectionType: sectionType, fallbackDisplayName: fallbackDisplayName, archiveNbr: currentArchive?.archiveNbr) { [weak self] sectionChild in
+            guard let self = self, let sectionChild = sectionChild else {
+                completion(nil)
+                return
+            }
+            let model = FileModel(model: sectionChild, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
+            // Guard the ids navigation and its failsafe key on: a -1 sentinel id or an empty archiveNo is a
+            // contract break, so return nil rather than hand back a target with a bad id.
+            guard model.folderId > 0, model.folderLinkId > 0, !model.archiveNo.isEmpty else {
+                completion(nil)
+                return
+            }
+            completion(model)
         }
     }
 
@@ -498,20 +596,29 @@ class FilesViewModel: NSObject, ViewModelInterface {
             return
         }
 
-        getPublicRoot(archiveNbr: archiveNbr, then: { status in
-            switch status {
-            case .success(let folder):
-                if let rootFolder = folder {
-                    let publicRoot = FileModel(model: rootFolder)
-                    self.relocate(files: files, to: publicRoot, then: handler)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
-            case .error(let message):
-                handler(.error(message: message))
+        // The public root from the Stela archives chain first; any resolution failure falls back to the
+        // V1 lookup. The copy step itself never falls back — see `relocate`.
+        resolveSectionRootTargetV2(sectionType: .publicRootFolder, fallbackDisplayName: nil) { [weak self] publicRoot in
+            guard let self = self else { handler(.error(message: .errorMessage)); return }
+            if let publicRoot = publicRoot {
+                self.relocate(files: files, to: publicRoot, then: handler)
+                return
             }
-        })
+            self.getPublicRoot(archiveNbr: archiveNbr) { status in
+                switch status {
+                case .success(let folder):
+                    if let rootFolder = folder {
+                        self.relocate(files: files, to: FileModel(model: rootFolder), then: handler)
+                    } else {
+                        self.fileAction = .none
+                        handler(.error(message: .errorMessage))
+                    }
+                case .error(let message):
+                    self.fileAction = .none
+                    handler(.error(message: message))
+                }
+            }
+        }
     }
     
     func cancelDownload() {
@@ -652,27 +759,63 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
 
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getLeanItems(params: params))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        let generation = v1ListingGeneration
+        let request = leanItemsV1Request ?? { params, completion in
+            FilesViewModel.fetchV1Listing(FilesEndpoint.getLeanItems(params: params), then: completion)
+        }
+        request(params) { result in
+            switch result {
+            case .success(let model) where model.isSuccessful == true:
+                // A newer listing has started, so these rows belong to a folder no longer on its way.
+                guard self.isCurrentListing(generation) else { return handler(.success) }
+                self.onGetLeanItemsSuccess(model, handler)
+
+            case .success:
+                handler(.error(message: .errorMessage))
+
+            case .failure(let failure):
+                handler(.error(message: failure.message))
+            }
+        }
+    }
+
+    // MARK: - V1 listing
+
+    /// Test seams for the two V1 listing requests. Production leaves them nil.
+    var navigateMinV1Request: ((_ params: NavigateMinParams, _ completion: @escaping (Result<NavigateMinResponse, ChildrenPageFailure>) -> Void) -> Void)?
+    var leanItemsV1Request: ((_ params: GetLeanItemsParams, _ completion: @escaping (Result<NavigateMinResponse, ChildrenPageFailure>) -> Void) -> Void)?
+
+    /// The listing generation of the V1 leg under way. Each V1 step reads it as it starts, so a later step
+    /// can tell whether a newer listing has claimed the screen meanwhile.
+    private var v1ListingGeneration: Int?
+
+    /// `nil` is a V1 step started outside a claimed leg, which always commits.
+    private func isCurrentListing(_ generation: Int?) -> Bool {
+        return generation == nil || generation == childrenFetchGeneration
+    }
+
+    /// Runs `step` with `generation` as the leg under way, restoring whichever leg was under way before.
+    private func withV1Listing(_ generation: Int?, _ step: () -> Void) {
+        let outer = v1ListingGeneration
+        v1ListingGeneration = generation
+        step()
+        v1ListingGeneration = outer
+    }
+
+    private static func fetchV1Listing(_ endpoint: FilesEndpoint, then completion: @escaping (Result<NavigateMinResponse, ChildrenPageFailure>) -> Void) {
+        APIOperation(endpoint).execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
                 guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
+                    return completion(.failure(ChildrenPageFailure(message: .errorMessage)))
                 }
-                
-                if model.isSuccessful == true {
-                    self.onGetLeanItemsSuccess(model, handler)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
+                completion(.success(model))
+
             case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
+                completion(.failure(ChildrenPageFailure(message: error?.localizedDescription)))
+
             default:
-                break
+                completion(.failure(ChildrenPageFailure(message: .errorMessage)))
             }
         }
     }
@@ -684,17 +827,38 @@ class FilesViewModel: NSObject, ViewModelInterface {
     #endif
 
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
-        // V2 path where `usesStelaNavigation` allows it, with V1 as an automatic failsafe. Forward
-        // navigation consumes a one-shot target; entries that set none (deep links) fall through to V1.
+        // V2 path with V1 as an automatic failsafe. Forward navigation consumes a one-shot
+        // target; entries that set none (deep links) fall through to V1.
         let v2Target = backNavigation ? navigationStack.last : v2NavigationTarget
         if !backNavigation { v2NavigationTarget = nil }
-        if usesStelaNavigation,
-           let target = v2Target,
+        if let target = v2Target,
            target.folderId > 0 {
             navigateV2(target: target, params: params, backNavigation: backNavigation, retriesLeft: 1, then: handler)
             return
         }
-        performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
+        performV1NavigateMinListingWholeFolder(params: params, backNavigation: backNavigation, then: handler)
+    }
+
+    /// V1 has no pages: its listing is the whole folder, so paging ends once it lands. The leg claims a
+    /// generation as a V2 fetch does; a newer listing makes it complete quietly without writing anything.
+    private func performV1NavigateMinListingWholeFolder(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+        childrenFetchGeneration += 1
+        let generation = childrenFetchGeneration
+        dropNextPageInFlight()
+        isFetchingFirstPage = true
+        withV1Listing(generation) {
+            performV1NavigateMin(params: params, backNavigation: backNavigation) { [weak self] status in
+                guard let self else { return handler(status) }
+                guard generation == self.childrenFetchGeneration else { return handler(.success) }
+                self.isFetchingFirstPage = false
+                if status == .success { self.resetChildrenPaging() }
+                handler(status)
+                // The failed listing dropped or held back a next page, so the skeleton rows on screen ask again.
+                if status != .success, self.childrenPagingState == .loadingMore {
+                    NotificationCenter.default.post(name: FilesViewModel.childrenDidChangeNotification, object: self)
+                }
+            }
+        }
     }
 
     /// One V2 navigation attempt: committed → done, failed → V1 failsafe, superseded-forward →
@@ -703,6 +867,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
         // Record the folder being entered so `getFolderChildrenV2` can derive per-child
         // context from it (Shared inherits this folder's role onto its children).
         v2EnteredFolder = target
+        if isLoadingFirstPage, listingSort(for: target) != firstPageSort {
+            // Root discovery names the folder only now, so the header over the skeleton catches up.
+            firstPageSort = listingSort(for: target)
+            NotificationCenter.default.post(name: FilesViewModel.childrenDidChangeNotification, object: self)
+        }
         let fetch: (String, @escaping (ChildrenFetchOutcome) -> Void) -> Void = childrenFetchV2Request ?? { [weak self] folderId, completion in
             guard let self = self else { completion(.failed(message: .errorMessage)); return }
             self.getFolderChildrenV2(folderId: folderId, completion: completion)
@@ -711,6 +880,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             guard let self = self else { handler(.error(message: .errorMessage)); return }
             switch outcome {
             case .committed:
+                self.adoptSavedSort(folderId: target.folderId, savedSort: target.savedSortOption)
                 if !backNavigation { self.navigationStack.append(target) }
                 #if DEBUG
                 FilesViewModel.lastNavigationSource = "v2"
@@ -724,7 +894,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 }
             case .failed:
                 // Failsafe — fall back to the legacy V1 navigation transparently.
-                self.performV1NavigateMin(params: params, backNavigation: backNavigation, then: handler)
+                self.performV1NavigateMinListingWholeFolder(params: params, backNavigation: backNavigation, then: handler)
             }
         }
     }
@@ -733,26 +903,24 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Bearer token, and its 401 logs out asynchronously and clears the session later tests read.
     func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
         #if DEBUG
-        // Reached either as the primary V1 path (flag off) or as the V2 failsafe.
+        // Reached as the V2 failsafe, or directly by entries that set no V2 target (deep links).
         FilesViewModel.lastNavigationSource = "v1"
         #endif
-        let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
-
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        let generation = v1ListingGeneration
+        let request = navigateMinV1Request ?? { params, completion in
+            FilesViewModel.fetchV1Listing(FilesEndpoint.navigateMin(params: params), then: completion)
+        }
+        request(params) { result in
             switch result {
-            case .json(let response, _):
-                guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
+            case .success(let model):
+                // A newer listing has started, so the second request would only be thrown away.
+                guard self.isCurrentListing(generation) else { return handler(.success) }
+                self.withV1Listing(generation) {
+                    self.onNavigateMinSuccess(model, backNavigation, handler)
                 }
 
-                self.onNavigateMinSuccess(model, backNavigation, handler)
-
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-
-            default:
-                break
+            case .failure(let failure):
+                handler(.error(message: failure.message))
             }
         }
     }
@@ -767,81 +935,387 @@ class FilesViewModel: NSObject, ViewModelInterface {
         case failed(message: String?)
     }
 
-    /// Lists a folder's children via V2, sorts client-side (the endpoint has no sort param) and
-    /// replaces `viewModels`. The completion always runs exactly once, or the spinner hangs.
+    /// Lists the first page of a folder's children via V2, in the server's order when the folder's saved sort is
+    /// the active one, and replaces `viewModels`. The completion always runs exactly once, or the spinner hangs.
     func getFolderChildrenV2(folderId: String, completion: @escaping (ChildrenFetchOutcome) -> Void) {
-        // Request the whole folder in a single page (see FolderV2Endpoint.maxChildrenPageSize).
-        let apiOperation = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize))
-
         // Snapshot the per-child context and sort on main, so the decode, map and sort can run off-main
         // without touching main-only view-model state.
         let context = v2ChildContext(enteredFolder: v2EnteredFolder)
         let permissions = context.permissions
         let accessRole = context.accessRole
-        let sortOption = activeSortOption
+        let sortOption = listingSort(for: v2EnteredFolder)
+        let savedSort = v2EnteredFolder?.savedSortOption
+
+        let isRefresh = Int(folderId) == listedFolderId
+        let awaitedCount = expectedItemCountFolderId == Int(folderId) ? expectedItemCount ?? 0 : 0
+        // A sort the server does not hold can only be applied to the whole folder. The paste check counts
+        // children, and Select all needs every child, so those list the whole folder too.
+        let listsWholeFolder = savedSort != sortOption || awaitedCount > 0 || listsWholeFolderOnNextFetch
+        listsWholeFolderOnNextFetch = false
+        let keptCount = isRefresh ? viewModels.count : 0
+        let pageSize = listsWholeFolder ? FolderV2Endpoint.maxChildrenPageSize : FilesViewModel.firstPageSize(keeping: keptCount)
 
         // Staleness guard: decodes run concurrently, so only the newest request may commit or a stale
         // result overwrites a newer listing. Superseded fetches commit nothing but still complete.
         childrenFetchGeneration += 1
         let generation = childrenFetchGeneration
+        // This listing replaces the rows, so a next page already on its way is dropped and none starts meanwhile.
+        dropNextPageInFlight()
+        isFetchingFirstPage = true
 
-        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
-            guard let self = self else { completion(.failed(message: .errorMessage)); return }
+        fetchChildrenPage(folderId: folderId, pageSize: pageSize, cursor: nil) { [weak self] result in
             // Resolves this fetch on main exactly once, downgrading any outcome to
             // `.superseded` when a newer fetch has claimed the generation meanwhile.
             let resolve: (ChildrenFetchOutcome, (() -> Void)?) -> Void = { outcome, commit in
+                guard let self else { completion(.failed(message: .errorMessage)); return }
                 guard generation == self.childrenFetchGeneration else {
                     completion(.superseded)
                     return
                 }
+                self.isFetchingFirstPage = false
                 commit?()
                 completion(outcome)
             }
             switch result {
-            case .json(let response, _):
-                // Re-decode, map and sort off-main. A partial win only: the dispatcher already parsed the raw
-                // body on main before this callback, so a residual cost remains for very large folders.
+            case .success(let response):
+                // Map and sort off-main.
                 DispatchQueue.global(qos: .userInitiated).async {
-                    guard
-                        let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder),
-                        // `items == nil` on an otherwise-decodable 2xx is a contract failure, not an empty folder —
-                        // only a present-but-empty array means verified empty. Anything else falls back to V1.
-                        let items = model.items
-                    else {
+                    guard let items = response.items, let mapped = FilesViewModel.mapChildren(items, permissions: permissions, accessRole: accessRole) else {
                         DispatchQueue.main.async { resolve(.failed(message: .errorMessage), nil) }
                         return
                     }
-                    var mapped: [FileModel] = []
-                    for item in items {
-                        let file = FileModel(model: item, permissions: permissions, accessRole: accessRole)
-                        // A write-critical id that resolved to the -1 sentinel is a contract break, so bail to V1 rather
-                        // than render items whose move or delete would target -1. Same for a missing archiveNo.
-                        let hasBadId = (item.isFolder ? file.folderId <= 0 : file.recordId <= 0) || file.folderLinkId <= 0 || file.archiveNo.isEmpty
-                        if hasBadId {
-                            DispatchQueue.main.async { resolve(.failed(message: .errorMessage), nil) }
-                            return
-                        }
-                        mapped.append(file)
-                    }
-                    let sorted = FilesViewModel.sorted(mapped, by: sortOption)
+                    let ordered = FilesViewModel.ordered(mapped, activeSort: sortOption, savedSort: savedSort)
+                    let isLastPage = listsWholeFolder || FilesViewModel.isLastChildrenPage(items, nextCursor: response.pagination?.nextCursor, pageSize: pageSize)
                     DispatchQueue.main.async {
-                        resolve(.committed, { self.viewModels = sorted })
+                        resolve(.committed, { [weak self] in
+                            self?.viewModels = ordered
+                            self?.startChildrenPaging(folderId: folderId, nextCursor: isLastPage ? nil : response.pagination?.nextCursor)
+                        })
                     }
                 }
 
-            case .error(let error, _):
-                resolve(.failed(message: error?.localizedDescription), nil)
-
-            default:
-                resolve(.failed(message: .errorMessage), nil)
+            case .failure(let failure):
+                DispatchQueue.main.async { resolve(.failed(message: failure.message), nil) }
             }
         }
     }
 
-    /// Client-side ordering matching the six server sort options, applied here because `/children`
-    /// sorts by the folder's stored setting and takes no sort param.
-    func sortedByActiveOption(_ items: [FileModel]) -> [FileModel] {
-        return FilesViewModel.sorted(items, by: activeSortOption)
+    /// One children request, decoded. `items == nil` on an otherwise-decodable 2xx is a contract failure, not an
+    /// empty folder; only a present-but-empty array means verified empty. The completion may run on any queue.
+    private func fetchChildrenPage(folderId: String, pageSize: Int, cursor: String?, completion: @escaping (Result<FolderChildrenV2Response, ChildrenPageFailure>) -> Void) {
+        if let childrenPageV2Request {
+            childrenPageV2Request(folderId, pageSize, cursor, completion)
+            return
+        }
+        let apiOperation = APIOperation(FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: pageSize, cursor: cursor))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                // Re-decode off-main. The dispatcher already parsed the raw body on main before this callback.
+                DispatchQueue.global(qos: .userInitiated).async {
+                    guard let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder), model.items != nil else {
+                        completion(.failure(ChildrenPageFailure(message: .errorMessage, isContractBreak: true)))
+                        return
+                    }
+                    completion(.success(model))
+                }
+
+            case .error(let error, _):
+                completion(.failure(ChildrenPageFailure(message: error?.localizedDescription, isContractBreak: false)))
+
+            default:
+                completion(.failure(ChildrenPageFailure(message: .errorMessage, isContractBreak: true)))
+            }
+        }
+    }
+
+    /// `nil` when a write-critical id resolved to the -1 sentinel or `archiveNo` is missing: a contract break,
+    /// so the listing bails rather than render items whose move or delete would target -1.
+    static func mapChildren(_ items: [FolderChildV2Data], permissions: [Permission], accessRole: AccessRole) -> [FileModel]? {
+        var mapped: [FileModel] = []
+        for item in items {
+            let file = FileModel(model: item, permissions: permissions, accessRole: accessRole)
+            let hasBadId = (item.isFolder ? file.folderId <= 0 : file.recordId <= 0) || file.folderLinkId <= 0 || file.archiveNo.isEmpty
+            if hasBadId { return nil }
+            mapped.append(file)
+        }
+        return mapped
+    }
+
+    // MARK: - Children paging
+
+    enum ChildrenPagingState: Equatable {
+        case complete
+        case loadingMore
+        case failed
+    }
+
+    /// `isContractBreak` separates a response the app cannot use from a request that did not get through.
+    struct ChildrenPageFailure: Error {
+        let message: String?
+        var isContractBreak = false
+    }
+
+    /// A folder's first page, and the step a refresh grows by; small, so a folder opens fast.
+    static let childrenPageSize = 20
+    /// Later pages are bigger, so a fast scroll or a slow network seldom reaches the skeleton rows.
+    static let nextChildrenPageSize = 60
+
+    /// Posted on main, with the view model as the object, when a later page changes the list or its paging state.
+    static let childrenDidChangeNotification = Notification.Name("FilesViewModel.childrenDidChange")
+    /// In that notification's user info when rows were appended: the index of the first new one.
+    static let firstNewChildKey = "firstNewChild"
+
+    /// Test seam for one raw children request. Production leaves it nil.
+    var childrenPageV2Request: ((_ folderId: String, _ pageSize: Int, _ cursor: String?, _ completion: @escaping (Result<FolderChildrenV2Response, ChildrenPageFailure>) -> Void) -> Void)?
+
+    private(set) var childrenPagingState: ChildrenPagingState = .complete
+    private var childrenNextCursor: String?
+    private var pagingFolderId: String?
+    private var isFetchingNextPage = false
+    private var isFetchingFirstPage = false
+    private var isRelistingWholeFolder = false
+    private var listsWholeFolderOnNextFetch = false
+    /// Bumped whenever the listing is replaced, so a next page still in flight is dropped.
+    private var nextPageGeneration = 0
+
+    /// True while a folder's first page is on its way; the list shows skeleton rows instead of the old folder.
+    var isLoadingFirstPage = false {
+        didSet {
+            guard isLoadingFirstPage else { return }
+            let folder = backPreviewStack != nil ? backPreviewStack?.last : (v2NavigationTarget ?? currentFolder)
+            firstPageSort = folder.map { listingSort(for: $0) }
+        }
+    }
+    /// Nil while the folder being entered is not known yet, as during root discovery.
+    private var firstPageSort: SortOption?
+    private(set) var firstPageLoads = 0
+
+    /// Loads can overlap, such as an archive switch during a folder entry, so the skeleton ends with the last one.
+    func beginFirstPageLoad() {
+        firstPageLoads += 1
+        isLoadingFirstPage = true
+    }
+
+    /// `true` when this ended the last first-page load under way.
+    @discardableResult
+    func endFirstPageLoad() -> Bool {
+        firstPageLoads = max(0, firstPageLoads - 1)
+        if firstPageLoads == 0 { isLoadingFirstPage = false }
+        return firstPageLoads == 0
+    }
+
+    // MARK: - Back swipe preview
+
+    /// The history as it will be once a back swipe lands, while the swipe uncovers the parent's loading look.
+    private var backPreviewStack: [FileModel]?
+    private var backPreviewFolderLinkId: Int?
+
+    /// A first-page load of its own, so a real load can overlap it and the counts stay true.
+    func beginBackPreview() {
+        backPreviewStack = Array(navigationStack.dropLast())
+        backPreviewFolderLinkId = navigationStack.last?.folderLinkId
+        beginFirstPageLoad()
+    }
+
+    /// `true` when no other load is under way, so the folder's own rows come back.
+    @discardableResult
+    func endBackPreview() -> Bool {
+        backPreviewStack = nil
+        backPreviewFolderLinkId = nil
+        return endFirstPageLoad()
+    }
+
+    /// The folder the swipe began in is still on screen, and nothing else is loading.
+    var backPreviewStillApplies: Bool {
+        guard let backPreviewStack else { return false }
+        return firstPageLoads == 1 && navigationStack.count == backPreviewStack.count + 1
+            && navigationStack.last?.folderLinkId == backPreviewFolderLinkId
+    }
+
+    /// The sort the header names: while a first page loads, the one the folder being entered will list in.
+    var listingSortTitle: String {
+        return isLoadingFirstPage ? firstPageSort?.title ?? "" : activeSortOption.title
+    }
+
+    /// A refresh asks for at least one child more than is on screen, in whole pages, so a short page still marks the end.
+    static func firstPageSize(keeping count: Int) -> Int {
+        return (count / childrenPageSize + 1) * childrenPageSize
+    }
+
+    /// The server sends a cursor on every non-empty page, so a short or empty page is what ends the folder.
+    static func isLastChildrenPage(_ items: [FolderChildV2Data], nextCursor: String?, pageSize: Int) -> Bool {
+        return nextCursor == nil || items.count < pageSize
+    }
+
+    private func dropNextPageInFlight() {
+        nextPageGeneration += 1
+        isFetchingNextPage = false
+    }
+
+    private func startChildrenPaging(folderId: String, nextCursor: String?) {
+        dropNextPageInFlight()
+        pagingFolderId = folderId
+        childrenNextCursor = nextCursor
+        childrenPagingState = nextCursor == nil ? .complete : .loadingMore
+    }
+
+    /// A V1 listing, or no folder on screen, has no further pages.
+    func resetChildrenPaging() {
+        dropNextPageInFlight()
+        listsWholeFolderOnNextFetch = false
+        pagingFolderId = nil
+        childrenNextCursor = nil
+        childrenPagingState = .complete
+    }
+
+    /// Appends the next page. `completion(true)` means the list or the paging state changed and needs a reload.
+    func loadNextChildrenPage(completion: @escaping (Bool) -> Void) {
+        guard childrenPagingState == .loadingMore, !isFetchingNextPage, !isFetchingFirstPage, !isRelistingWholeFolder,
+              let folderId = pagingFolderId, let cursor = childrenNextCursor else {
+            completion(false)
+            return
+        }
+        isFetchingNextPage = true
+        let generation = nextPageGeneration
+        let context = v2ChildContext(enteredFolder: currentFolder)
+        let pageSize = FilesViewModel.nextChildrenPageSize
+
+        fetchChildrenPage(folderId: folderId, pageSize: pageSize, cursor: cursor) { [weak self] result in
+            let outcome: Result<(files: [FileModel], nextCursor: String?), ChildrenPageFailure>
+            switch result {
+            case .success(let response):
+                if let items = response.items,
+                   let mapped = FilesViewModel.mapChildren(items, permissions: context.permissions, accessRole: context.accessRole) {
+                    let isLast = FilesViewModel.isLastChildrenPage(items, nextCursor: response.pagination?.nextCursor, pageSize: pageSize)
+                    outcome = .success((mapped, isLast ? nil : response.pagination?.nextCursor))
+                } else {
+                    outcome = .failure(ChildrenPageFailure(message: .errorMessage, isContractBreak: true))
+                }
+            case .failure(let failure):
+                outcome = .failure(failure)
+            }
+            DispatchQueue.main.async {
+                guard let self, generation == self.nextPageGeneration else {
+                    completion(false)
+                    return
+                }
+                switch outcome {
+                case .success(let page):
+                    self.isFetchingNextPage = false
+                    // Rank has no tie-break on the server, so a child can come back on two pages.
+                    let listed = Set(self.viewModels.map(\.folderLinkId))
+                    let fresh = page.files.filter { !listed.contains($0.folderLinkId) }
+                    if fresh.isEmpty, let next = page.nextCursor {
+                        // A full page of repeats would ask for the same rows forever, so the folder is listed whole.
+                        self.childrenNextCursor = next
+                        self.relistAfterBrokenPage(folderId: folderId, completion: completion)
+                        return
+                    }
+                    let firstNewChild = self.viewModels.count
+                    self.viewModels.append(contentsOf: fresh)
+                    self.childrenNextCursor = page.nextCursor
+                    self.childrenPagingState = page.nextCursor == nil ? .complete : .loadingMore
+                    self.finishChildrenChange(completion, firstNewChild: firstNewChild)
+
+                case .failure(let failure) where failure.isContractBreak:
+                    // Retrying the same cursor would hit the same child, so the folder is listed whole, with V1 behind it.
+                    self.relistAfterBrokenPage(folderId: folderId, completion: completion)
+
+                case .failure:
+                    self.isFetchingNextPage = false
+                    self.childrenPagingState = .failed
+                    self.finishChildrenChange(completion)
+                }
+            }
+        }
+    }
+
+    private func relistAfterBrokenPage(folderId: String, completion: @escaping (Bool) -> Void) {
+        isRelistingWholeFolder = true
+        listWholeFolder { [weak self] status in
+            guard let self else { return completion(false) }
+            self.isRelistingWholeFolder = false
+            // The user may have moved on; a V1 re-list also clears the paging folder, so the folder on screen decides.
+            guard self.currentFolder.map({ String($0.folderId) }) == folderId else { return completion(false) }
+            // A failed re-list waits for a retry, or the skeleton rows would ask again at once.
+            if status != .success { self.childrenPagingState = .failed }
+            self.finishChildrenChange(completion)
+        }
+    }
+
+    /// The next page follows the last row the server listed, so a deleted cursor row hands that role back.
+    private func moveCursorOffRemovedRows(_ removed: [FileModel]) {
+        guard let cursor = childrenNextCursor, removed.contains(where: { String($0.folderLinkId) == cursor }),
+              let last = viewModels.last else { return }
+        childrenNextCursor = String(last.folderLinkId)
+    }
+
+    private func finishChildrenChange(_ completion: (Bool) -> Void, firstNewChild: Int? = nil) {
+        if isSelecting { updateCheckboxState() }
+        let userInfo = firstNewChild.map { [FilesViewModel.firstNewChildKey: $0] }
+        NotificationCenter.default.post(name: FilesViewModel.childrenDidChangeNotification, object: self, userInfo: userInfo)
+        completion(true)
+    }
+
+    func retryNextChildrenPage(completion: @escaping (Bool) -> Void) {
+        guard childrenPagingState == .failed, !isFetchingFirstPage, !isFetchingNextPage, !isRelistingWholeFolder else {
+            completion(false)
+            return
+        }
+        childrenPagingState = .loadingMore
+        loadNextChildrenPage(completion: completion)
+    }
+
+    /// Re-lists the folder on screen in one request when pages are still missing, for flows that need every child.
+    /// Reports an error if the folder is still incomplete, as when refreshes keep overtaking the request.
+    func listWholeFolder(then handler: @escaping ServerResponse) {
+        listWholeFolder(attemptsLeft: 2, then: handler)
+    }
+
+    private func listWholeFolder(attemptsLeft: Int, then handler: @escaping ServerResponse) {
+        guard childrenPagingState != .complete, let folder = currentFolder else {
+            handler(.success)
+            return
+        }
+        guard attemptsLeft > 0 else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        listsWholeFolderOnNextFetch = true
+        navigateMin(params: (folder.archiveNo, folder.folderLinkId, nil), backNavigation: true) { [weak self] status in
+            guard let self, status == .success, self.currentFolder?.folderLinkId == folder.folderLinkId else {
+                return handler(status)
+            }
+            self.listWholeFolder(attemptsLeft: attemptsLeft - 1, then: handler)
+        }
+    }
+
+    /// Loads further pages until `match` finds a loaded child, or the folder ends or a page fails.
+    func loadChildrenPages(until match: @escaping (FileModel) -> Bool, completion: @escaping (FileModel?) -> Void) {
+        if let found = viewModels.first(where: match) {
+            completion(found)
+            return
+        }
+        guard childrenPagingState == .loadingMore else {
+            completion(nil)
+            return
+        }
+        loadNextChildrenPage { [weak self] changed in
+            guard let self, changed else {
+                completion(nil)
+                return
+            }
+            self.loadChildrenPages(until: match, completion: completion)
+        }
+    }
+
+    var loadedFolderCount: Int { viewModels.filter { $0.type.isFolder }.count }
+    var loadedFileCount: Int { viewModels.count - loadedFolderCount }
+
+    /// Client-side sort is the failsafe for a folder whose saved sort is unknown or could not be changed.
+    static func ordered(_ items: [FileModel], activeSort: SortOption, savedSort: SortOption?) -> [FileModel] {
+        return savedSort == activeSort ? items : sorted(items, by: activeSort)
     }
 
     /// Static so it can run off-main. Date and type options precompute the sort key once per item
@@ -897,6 +1371,110 @@ class FilesViewModel: NSObject, ViewModelInterface {
             ?? sortDatePlain.date(from: raw)
             ?? .distantPast
     }
+
+    // MARK: - Folder sort
+
+    func listingSort(for folder: FileModel?) -> SortOption {
+        guard let folder, folder.folderId != listedFolderId, let saved = folder.savedSortOption else {
+            return activeSortOption
+        }
+        return saved
+    }
+
+    func adoptSavedSort(folderId: Int, savedSort: SortOption?) {
+        if folderId != listedFolderId, let savedSort {
+            activeSortOption = savedSort
+        }
+        listedFolderId = folderId
+    }
+
+    /// The backend lets editor and above change a folder's sort.
+    var canPersistSort: Bool { archivePermissions.contains(.edit) }
+
+    /// The Stela PATCH is bearer-only and not exempt from the 401 force-logout, so it runs for the
+    /// session's own archive only, and not once Stela has rejected the field this session.
+    func canPatchSortViaStela(_ folder: FileModel) -> Bool {
+        return !FilesViewModel.stelaRejectsSortPatch && folder.folderId > 0 && isInSessionArchive(folder)
+    }
+
+    /// `true` means `/children` now comes back in this order.
+    func saveSortOption(_ option: SortOption, completion: @escaping (Bool) -> Void) {
+        activeSortOption = option
+        guard canPersistSort, let folder = currentFolder, folder.folderLinkId > 0 else {
+            completion(false)
+            return
+        }
+        let finish: (Bool) -> Void = { [weak self] saved in
+            if saved { self?.recordSavedSort(option, forFolderId: folder.folderId) }
+            completion(saved)
+        }
+        if canPatchSortViaStela(folder) {
+            patchSortV2(folderId: String(folder.folderId), option: option) { [weak self] patched in
+                if patched {
+                    finish(true)
+                } else {
+                    self?.saveSortV1(folderLinkId: folder.folderLinkId, option: option, completion: finish)
+                }
+            }
+        } else {
+            saveSortV1(folderLinkId: folder.folderLinkId, option: option, completion: finish)
+        }
+    }
+
+    private func recordSavedSort(_ option: SortOption, forFolderId folderId: Int) {
+        if let index = navigationStack.lastIndex(where: { $0.folderId == folderId }) {
+            navigationStack[index].savedSortOption = option
+        }
+    }
+
+    private func patchSortV2(folderId: String, option: SortOption, completion: @escaping (Bool) -> Void) {
+        if let injected = sortPatchV2Request {
+            injected(folderId, option, completion)
+            return
+        }
+        let apiOperation = APIOperation(FolderV2Endpoint.patchFolder(folderId: folderId, fields: ["sort": option.stelaValue]))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                completion(FilesViewModel.stelaResponseSavedSort(response, as: option))
+            case .error(let error, _):
+                if error as? APIError == .badRequest { FilesViewModel.stelaRejectsSortPatch = true }
+                completion(false)
+            default:
+                completion(false)
+            }
+        }
+    }
+
+    /// A 200 that ignored the field must not count, or the V1 failsafe is skipped.
+    static func stelaResponseSavedSort(_ response: Any, as option: SortOption) -> Bool {
+        let folder = (response as? [String: Any])?["data"] as? [String: Any]
+        return SortOption(serverValue: folder?["sort"] as? String) == option
+    }
+
+    private func saveSortV1(folderLinkId: Int, option: SortOption, completion: @escaping (Bool) -> Void) {
+        if let injected = sortSaveV1Request {
+            injected(folderLinkId, option, completion)
+            return
+        }
+        let apiOperation = APIOperation(FilesEndpoint.sortFolder(params: (folderLinkId, option)))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            guard case .json(let response, _) = result else {
+                completion(false)
+                return
+            }
+            completion(FilesViewModel.legacyResponseSavedSort(response, as: option))
+        }
+    }
+
+    static func legacyResponseSavedSort(_ response: Any, as option: SortOption) -> Bool {
+        guard let object = response as? [String: Any],
+              let model: NavigateMinResponse = JSONHelper.convertToModel(from: object),
+              model.isSuccessful == true
+        else { return false }
+        let echoed = model.results?.first?.data?.first?.folderVO?.sort
+        return echoed == nil || echoed == option.apiValue
+    }
     
     func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
         guard
@@ -929,14 +1507,27 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
         
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
-        
-        if !backNavigation {
-            let file = FileModel(model: folderVO, permissions: archivePermissions, accessRole: archiveAccessRole)
-            navigationStack.append(file)
+        let entered = backNavigation ? nil : FileModel(model: folderVO, permissions: archivePermissions, accessRole: archiveAccessRole)
+        listV1Folder(entering: entered, folderId: folderVO.folderID ?? -1, savedSort: SortOption(serverValue: folderVO.sort),
+                     params: (archiveNo, folderLinkIds, folderLinkId), then: handler)
+    }
+
+    /// The second V1 step. The folder joins the history, and its saved sort is adopted, only once its rows
+    /// have landed, so a failed listing leaves the folder on screen in charge.
+    func listV1Folder(entering folder: FileModel?, folderId: Int, savedSort: SortOption?,
+                      params: (archiveNo: String, folderLinkIds: [Int], folderLinkId: Int), then handler: @escaping ServerResponse) {
+        let sort = folderId != listedFolderId ? savedSort ?? activeSortOption : activeSortOption
+        let leanParams: GetLeanItemsParams = (params.archiveNo, sort, params.folderLinkIds, params.folderLinkId)
+        let generation = v1ListingGeneration
+        getLeanItems(params: leanParams) { [weak self] status in
+            guard let self else { return handler(status) }
+            guard self.isCurrentListing(generation) else { return handler(.success) }
+            if status == .success {
+                if let folder { self.navigationStack.append(folder) }
+                self.adoptSavedSort(folderId: folderId, savedSort: savedSort)
+            }
+            handler(status)
         }
-        
-        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, folderLinkId)
-        getLeanItems(params: params, then: handler)
     }
     
     func changeArchive(withArchiveId toArchiveId: Int, archiveNbr: String, completion: @escaping ((Bool) -> Void)) {
@@ -982,8 +1573,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     /// Whether a rename may take `PATCH /records/{id}`. Own archive only: the call is bearer-only and
     /// not exempt from the 401 handler, so a foreign record would log the user out for a legal rename.
     func canRenameViaStelaPatch(_ file: FileModel, newName: String) -> Bool {
-        return usesStelaNavigation
-            && !file.type.isFolder          // folder rename has no V2 route
+        return !file.type.isFolder          // folder rename has no V2 route
             && file.recordId > 0
             && !newName.isEmpty
             && isInSessionArchive(file)
@@ -1047,37 +1637,24 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
+    /// The V1 public-root lookup, kept as the publish failsafe. Uses the injected seam in tests.
     func getPublicRoot(archiveNbr: String, then handler: @escaping (PublicRootRequestStatus) -> Void) {
+        if let injected = publicRootV1Request {
+            injected(archiveNbr, handler)
+            return
+        }
         let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: archiveNbr))
-        
         apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-                
-                if model.isSuccessful == true {
-                    handler(.success(folder: model.results?.first?.data?.first?.folderVO))
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
-            }
+            handler(PublicRootRequestStatus(operationResult: result))
         }
     }
     
+    /// Every loaded row selected is only the whole folder once no pages are missing.
     func updateCheckboxState() {
         if let numberOfSelectedItems = selectedFiles?.count {
             switch numberOfSelectedItems {
             case .zero: checkboxState = .none
-            case viewModels.count: checkboxState = .selected
+            case viewModels.count where childrenPagingState == .complete: checkboxState = .selected
             default: checkboxState = .partial
             }
         }

@@ -14,6 +14,8 @@ final class OnboardingContainerViewModelTests: XCTestCase {
     // MARK: - Initial State
 
     func testInit_NilCredentials_DefaultState() {
+        // A UI test run can leave its account signed in on this simulator, and its name would fill the form.
+        AuthenticationManager.shared.session = nil
         let vm = OnboardingContainerViewModel(username: nil, password: nil)
 
         XCTAssertFalse(vm.isBack)

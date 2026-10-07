@@ -108,9 +108,9 @@ class FilesMetadataViewModel: ObservableObject {
     }
     
     func getRecord(file: FileModel) async throws -> RecordVO? {
-        // Stela V2 read (flag-gated) for records, with the legacy V1 fetch as an
+        // Stela V2 read for records, with the legacy V1 fetch as an
         // automatic failsafe. Folders (recordId <= 0) always use V1.
-        if FeatureFlags.useStelaNavigation, file.recordId > 0, !file.type.isFolder {
+        if file.recordId > 0, !file.type.isFolder {
             if let v2Record = await getRecordV2(file: file) {
                 return v2Record
             }
@@ -166,8 +166,7 @@ class FilesMetadataViewModel: ObservableObject {
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
         // One PATCH per record, with the V1 batch as an automatic failsafe. Records only: any folder or
         // unsaved record in the selection sends the whole batch to V1.
-        if FeatureFlags.useStelaNavigation,
-           selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
+        if selectedFiles.allSatisfy({ $0.recordId > 0 && !$0.type.isFolder }) {
             selectedFiles.patchEachRecordToV2(fieldsFor: { _ in ["description": description] }) { [weak self] succeeded in
                 if succeeded {
                     self?.hasUpdates = true

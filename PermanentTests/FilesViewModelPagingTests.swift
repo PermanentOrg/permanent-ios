@@ -1,0 +1,971 @@
+//
+//  FilesViewModelPagingTests.swift
+//  PermanentTests
+//
+//  Created by Lucian Cerbu on 23.09.2026.
+//
+
+import XCTest
+@testable import Permanent
+
+final class FilesViewModelPagingTests: XCTestCase {
+
+    /// Scripted children requests: records every request and answers from `responses` in order.
+    private final class PageServer {
+        var requests: [(pageSize: Int, cursor: String?)] = []
+        var responses: [Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure>] = []
+        var heldCompletion: ((Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure>) -> Void)?
+        var holdsNextRequest = false
+
+        func attach(to viewModel: FilesViewModel) {
+            viewModel.childrenPageV2Request = { [unowned self] _, pageSize, cursor, completion in
+                self.requests.append((pageSize, cursor))
+                if self.holdsNextRequest {
+                    self.holdsNextRequest = false
+                    self.heldCompletion = completion
+                    return
+                }
+                completion(self.responses.removeFirst())
+            }
+        }
+    }
+
+    /// Falls back to a V1 listing that succeeds without the network.
+    private final class V1SucceedingViewModel: MyFilesViewModel {
+        override func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+            handler(.success)
+        }
+    }
+
+    /// The second V1 step answers with `leanStatus`, without the network.
+    private final class LeanItemsStubViewModel: MyFilesViewModel {
+        var leanStatus: RequestStatus = .success
+        override func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse) {
+            handler(leanStatus)
+        }
+    }
+
+    /// Falls back to a V1 listing that fails without the network.
+    private final class V1FailingViewModel: MyFilesViewModel {
+        override func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+            handler(.error(message: "offline"))
+        }
+    }
+
+    private var navParams: NavigateMinParams { ("0001-test", 11, nil) }
+
+    private func makeFolder(folderId: Int = 10, sort: String? = "date-descending") -> FileModel {
+        let sortField = sort.map { ", \"sort\": \"\($0)\"" } ?? ""
+        let json = """
+        { "items": [ { "folderId": "\(folderId)", "displayName": "Folder \(folderId)", "type": "private",
+          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test"\(sortField) } ] }
+        """
+        let response = try! FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: Data(json.utf8))
+        return FileModel(model: response.items![0], permissions: [.read], accessRole: .viewer)
+    }
+
+    /// Records with folderLinkIds `linkIds`, plus a folder when `withFolder` is set. `badLinkId` loses its archive number.
+    private func page(_ linkIds: [Int], nextCursor: String?, withFolder: Bool = false, badLinkId: Int? = nil) -> Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
+        var items = linkIds.map { id in
+            """
+            { "recordId": "\(1000 + id)", "displayName": "photo-\(id).jpg", "archiveNumber": "\(id == badLinkId ? "" : "0001-\(id)")",
+              "type": "type.record.image", "status": "ok", "folderLinkId": "\(id)" }
+            """
+        }
+        if withFolder {
+            items.append("""
+            { "folderId": "500", "displayName": "Trips", "archiveNumber": "0001-500", "type": "private",
+              "status": "ok", "folderLinkId": "500" }
+            """)
+        }
+        let cursorField = nextCursor.map { "\"\($0)\"" } ?? "null"
+        let json = "{ \"items\": [\(items.joined(separator: ","))], \"pagination\": { \"nextCursor\": \(cursorField) } }"
+        return .success(try! FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: Data(json.utf8)))
+    }
+
+    /// The page sizes, so each test reads the same whatever they are.
+    private let n = FilesViewModel.childrenPageSize
+    private let next = FilesViewModel.nextChildrenPageSize
+
+    /// A full page of records from `start`, whose cursor is its last row, so another page is due.
+    private func fullPage(from start: Int = 1, badLinkId: Int? = nil) -> Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
+        page(Array(start..<(start + n)), nextCursor: "\(start + n - 1)", badLinkId: badLinkId)
+    }
+
+    /// A full later page of records from `start`, so another page is due after it too.
+    private func fullNextPage(from start: Int) -> Result<FolderChildrenV2Response, FilesViewModel.ChildrenPageFailure> {
+        page(Array(start..<(start + next)), nextCursor: "\(start + next - 1)")
+    }
+
+    private func enter(_ folder: FileModel, in viewModel: FilesViewModel, backNavigation: Bool = false) {
+        if !backNavigation { viewModel.v2NavigationTarget = folder }
+        let done = expectation(description: "folder listed")
+        viewModel.navigateMin(params: navParams, backNavigation: backNavigation) { _ in done.fulfill() }
+        wait(for: [done], timeout: 5)
+    }
+
+    private func loadNextPage(in viewModel: FilesViewModel) {
+        let done = expectation(description: "next page")
+        viewModel.loadNextChildrenPage { _ in done.fulfill() }
+        wait(for: [done], timeout: 5)
+    }
+
+    // MARK: - First page
+
+    func testFirstPage_AsksForOnePageAndKeepsTheCursor() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage()]
+
+        enter(makeFolder(), in: viewModel)
+
+        XCTAssertEqual(server.requests.first?.pageSize, n)
+        XCTAssertNil(server.requests.first?.cursor)
+        XCTAssertEqual(viewModel.viewModels.count, n)
+        XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
+    }
+
+    func testFolderWithoutAKnownSort_ListsTheWholeFolderAtOnce() {
+        // The phone must sort it, and a phone sort is only right over every child.
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage()]
+
+        enter(makeFolder(sort: nil), in: viewModel)
+
+        XCTAssertEqual(server.requests.first?.pageSize, FolderV2Endpoint.maxChildrenPageSize)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testRefreshingTheSameFolder_KeepsWhatIsOnScreen() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folder = makeFolder()
+        server.responses = [fullPage(), page([n + 1, n + 2, n + 3], nextCursor: "\(n + 3)"), page(Array(1...(n + 3)), nextCursor: "\(n + 3)")]
+
+        enter(folder, in: viewModel)
+        loadNextPage(in: viewModel)
+        enter(folder, in: viewModel, backNavigation: true)
+
+        XCTAssertEqual(server.requests.last?.pageSize, 2 * n)
+        XCTAssertEqual(viewModel.viewModels.count, n + 3)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete, "a short refresh page means the list is still whole")
+    }
+
+    // MARK: - Next pages
+
+    func testNextPage_SendsTheCursor_DropsDuplicates_EndsOnAShortPage() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), page([n, n + 1, n + 2], nextCursor: "\(n + 2)")]
+
+        enter(makeFolder(), in: viewModel)
+        loadNextPage(in: viewModel)
+
+        XCTAssertEqual(server.requests.last?.cursor, "\(n)")
+        XCTAssertEqual(server.requests.last?.pageSize, next, "later pages are bigger than the first")
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1...(n + 2)), "a child the server repeats is listed once")
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testAnEmptyPage_EndsTheFolder() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), page([], nextCursor: nil)]
+
+        enter(makeFolder(), in: viewModel)
+        loadNextPage(in: viewModel)
+
+        XCTAssertEqual(viewModel.viewModels.count, n)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testAFailedPage_KeepsTheRows_AndRetryLoadsIt() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), .failure(.init(message: "offline")), page([n + 1, n + 2], nextCursor: "\(n + 2)")]
+
+        enter(makeFolder(), in: viewModel)
+        loadNextPage(in: viewModel)
+
+        XCTAssertEqual(viewModel.childrenPagingState, .failed)
+        XCTAssertEqual(viewModel.viewModels.count, n)
+
+        let retried = expectation(description: "retry")
+        viewModel.retryNextChildrenPage { _ in retried.fulfill() }
+        wait(for: [retried], timeout: 5)
+
+        XCTAssertEqual(server.requests.last?.cursor, "\(n)", "the retry asks for the same page")
+        XCTAssertEqual(viewModel.viewModels.count, n + 2)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testLeavingTheFolder_DropsAPageStillOnItsWay() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), page([1000, 1001], nextCursor: "1001")]
+
+        enter(makeFolder(folderId: 10), in: viewModel)
+        server.holdsNextRequest = true
+        var reportedChange: Bool?
+        viewModel.loadNextChildrenPage { reportedChange = $0 }
+        enter(makeFolder(folderId: 20), in: viewModel)
+
+        let late = expectation(description: "late page")
+        DispatchQueue.global().async {
+            server.heldCompletion?(self.page([self.n + 1, self.n + 2], nextCursor: "\(self.n + 2)"))
+            DispatchQueue.main.async { late.fulfill() }
+        }
+        wait(for: [late], timeout: 5)
+
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), [1000, 1001])
+        XCTAssertEqual(reportedChange, false)
+    }
+
+    func testLoadingPagesUntilAChildIsFound_StopsWhereItIs() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), fullPage(from: n + 1), page([2 * n + 1], nextCursor: "\(2 * n + 1)")]
+
+        enter(makeFolder(), in: viewModel)
+        let found = expectation(description: "found")
+        var match: FileModel?
+        let wanted = n + 5
+        viewModel.loadChildrenPages(until: { $0.folderLinkId == wanted }) { match = $0; found.fulfill() }
+        wait(for: [found], timeout: 5)
+
+        XCTAssertEqual(match?.folderLinkId, wanted)
+        XCTAssertEqual(server.requests.count, 2, "no page past the one holding the child")
+    }
+
+    // MARK: - V1 and a cleared stack
+
+    func testV1Failsafe_ListsTheWholeFolder() {
+        let viewModel = V1SucceedingViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
+
+        enter(makeFolder(folderId: 10), in: viewModel)
+        XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
+        enter(makeFolder(folderId: 20), in: viewModel)
+
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testEmptyingTheStack_EndsPaging() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage()]
+
+        enter(makeFolder(), in: viewModel)
+        viewModel.navigationStack.removeAll()
+
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testTheFirstPageSkeleton_HidesThePreviousFolder() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page(Array(1...3), nextCursor: "3", withFolder: true)]
+        enter(makeFolder(), in: viewModel)
+
+        viewModel.isLoadingFirstPage = true
+
+        XCTAssertTrue(viewModel.syncedViewModels.isEmpty)
+        XCTAssertFalse(viewModel.shouldDisplayBackgroundView, "no empty-folder message under the skeleton")
+    }
+
+    // MARK: - Flows that need the whole folder
+
+    func testAPasteIntoAPagedFolder_WaitsUntilThePastedRowIsListed() {
+        // The paste check counts children, so the screen lists the folder whole before pasting.
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folder = makeFolder()
+        let whole = n + 15
+        server.responses = [fullPage(), page(Array(1...whole), nextCursor: "\(whole)"), page(Array(1...whole), nextCursor: "\(whole)")]
+        enter(folder, in: viewModel)
+        let listed = expectation(description: "whole folder")
+        viewModel.listWholeFolder { _ in listed.fulfill() }
+        wait(for: [listed], timeout: 5)
+
+        viewModel.expectPastedItems([viewModel.viewModels[0]], destination: folder)
+        enter(folder, in: viewModel, backNavigation: true)
+
+        XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize, "the settle refetch lists the whole folder")
+        XCTAssertTrue(viewModel.isAwaitingPastedItems, "the whole folder, and the paste is still missing")
+    }
+
+    func testAPickedSortTheServerDoesNotHold_ListsTheWholeFolder() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folder = makeFolder(sort: "date-descending")
+        server.responses = [fullPage(), page(Array(1...(n + 2)), nextCursor: "\(n + 2)")]
+
+        enter(folder, in: viewModel)
+        viewModel.activeSortOption = .nameDescending
+        enter(folder, in: viewModel, backNavigation: true)
+
+        XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+        XCTAssertEqual(viewModel.viewModels.first?.name, "photo-9.jpg", "sorted on the phone by name, descending")
+    }
+
+    func testListingTheWholeFolder_AsksForEveryChildOnce() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), page(Array(1...(n + 15)), nextCursor: "\(n + 15)")]
+        enter(makeFolder(), in: viewModel)
+
+        let listed = expectation(description: "whole folder")
+        viewModel.listWholeFolder { _ in listed.fulfill() }
+        wait(for: [listed], timeout: 5)
+
+        XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize)
+        XCTAssertEqual(viewModel.viewModels.count, n + 15)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    // MARK: - Contract breaks on later pages
+
+    func testABadChildOnALaterPage_ListsTheWholeFolder() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), fullPage(from: n + 1, badLinkId: n + 5), page(Array(1...(n + 14)), nextCursor: "\(n + 14)")]
+
+        enter(makeFolder(), in: viewModel)
+        loadNextPage(in: viewModel)
+
+        XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize, "the same cursor would fail again")
+        XCTAssertEqual(viewModel.viewModels.count, n + 14)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testABadChildWhoseReListAlsoFails_WaitsForARetry() {
+        let viewModel = V1FailingViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), fullPage(from: n + 1, badLinkId: n + 5), .failure(.init(message: "offline"))]
+
+        enter(makeFolder(), in: viewModel)
+        loadNextPage(in: viewModel)
+        let requestsAfterFailure = server.requests.count
+        loadNextPage(in: viewModel)
+
+        XCTAssertEqual(viewModel.childrenPagingState, .failed)
+        XCTAssertEqual(viewModel.viewModels.count, n)
+        XCTAssertEqual(server.requests.count, requestsAfterFailure, "no request until the user taps retry")
+    }
+
+    // MARK: - One request at a time
+
+    func testTwoNextPageCalls_SendOneRequest() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage()]
+        enter(makeFolder(), in: viewModel)
+
+        server.holdsNextRequest = true
+        viewModel.loadNextChildrenPage { _ in }
+        var secondChanged: Bool?
+        viewModel.loadNextChildrenPage { secondChanged = $0 }
+
+        XCTAssertEqual(server.requests.count, 2, "the first page and one next page")
+        XCTAssertEqual(secondChanged, false)
+    }
+
+    func testARefresh_DropsTheNextPageOnItsWay() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folder = makeFolder()
+        server.responses = [fullPage(), page(Array(1...(2 * n)), nextCursor: "\(2 * n)")]
+        enter(folder, in: viewModel)
+
+        server.holdsNextRequest = true
+        var reportedChange: Bool?
+        viewModel.loadNextChildrenPage { reportedChange = $0 }
+        enter(folder, in: viewModel, backNavigation: true)
+
+        let late = expectation(description: "late page")
+        DispatchQueue.global().async {
+            server.heldCompletion?(self.page([self.n + 1, self.n + 2], nextCursor: "\(self.n + 2)"))
+            DispatchQueue.main.async { late.fulfill() }
+        }
+        wait(for: [late], timeout: 5)
+
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1...(2 * n)))
+        XCTAssertEqual(reportedChange, false)
+    }
+
+    func testNoNextPageStarts_WhileAFirstPageIsOnItsWay() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folder = makeFolder()
+        server.responses = [fullPage()]
+        enter(folder, in: viewModel)
+
+        server.holdsNextRequest = true
+        viewModel.navigateMin(params: navParams, backNavigation: true) { _ in }
+        var changed: Bool?
+        viewModel.loadNextChildrenPage { changed = $0 }
+
+        XCTAssertEqual(changed, false)
+        XCTAssertEqual(server.requests.count, 2, "the first page and the refresh, no next page")
+    }
+
+    func testALateFolderListing_DoesNotLandOnceNoFolderIsOnScreen() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page([1, 2, 3], nextCursor: nil)]
+        enter(makeFolder(), in: viewModel)
+
+        server.holdsNextRequest = true
+        let done = expectation(description: "refresh settled")
+        viewModel.navigateMin(params: navParams, backNavigation: true) { _ in done.fulfill() }
+        // The share list or the search results replace the folder while its refresh is on the way.
+        viewModel.navigationStack.removeAll()
+        viewModel.viewModels = []
+
+        server.heldCompletion?(fullPage())
+        wait(for: [done], timeout: 5)
+
+        XCTAssertTrue(viewModel.viewModels.isEmpty, "the folder's rows stay off the list that replaced it")
+        XCTAssertEqual(viewModel.childrenPagingState, .complete, "and none of its pages are due")
+    }
+
+    func testRetry_DoesNothingUnlessAPageFailed() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage()]
+        enter(makeFolder(), in: viewModel)
+
+        var changed: Bool?
+        viewModel.retryNextChildrenPage { changed = $0 }
+
+        XCTAssertEqual(changed, false)
+        XCTAssertEqual(server.requests.count, 1)
+    }
+
+    func testLoadingPagesUntilAMatch_ReturnsNothingWhenAPageFails() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
+        enter(makeFolder(), in: viewModel)
+
+        let done = expectation(description: "search ends")
+        var match: FileModel?
+        viewModel.loadChildrenPages(until: { $0.folderLinkId == 99 }) { match = $0; done.fulfill() }
+        wait(for: [done], timeout: 5)
+
+        XCTAssertNil(match)
+        XCTAssertEqual(viewModel.childrenPagingState, .failed)
+    }
+
+    // MARK: - What the screen shows
+
+    func testNoEmptyFolderView_WhileMorePagesAreDue() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage()]
+        enter(makeFolder(), in: viewModel)
+
+        viewModel.viewModels.removeAll()
+
+        XCTAssertFalse(viewModel.shouldDisplayBackgroundView, "rows deleted from a paged folder are not the whole folder")
+    }
+
+    func testTheSelectAllCheckbox_IsFullOnlyOverTheWholeFolder() {
+        let viewModel = FilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), page([n + 1, n + 2], nextCursor: "\(n + 2)")]
+        enter(makeFolder(), in: viewModel)
+        viewModel.isSelecting = true
+        viewModel.selectedFiles = viewModel.viewModels
+        viewModel.updateCheckboxState()
+        XCTAssertEqual(viewModel.checkboxState, .partial, "every loaded row is not every child")
+
+        loadNextPage(in: viewModel)
+        XCTAssertEqual(viewModel.checkboxState, .partial)
+
+        viewModel.selectedFiles = viewModel.viewModels
+        viewModel.updateCheckboxState()
+        XCTAssertEqual(viewModel.checkboxState, .selected)
+    }
+
+    func testTheHeaderOverTheSkeleton_NamesTheSortOfTheFolderBeingEntered() {
+        let viewModel = SharedFilesViewModel()
+        viewModel.v2NavigationTarget = makeFolder(sort: "date-descending")
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), "", "the share list has no sort header")
+
+        viewModel.isLoadingFirstPage = true
+
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), SortOption.dateDescending.title)
+    }
+
+    func testABackPreview_NamesTheParentsSortNotTheChilds() {
+        let viewModel = MyFilesViewModel()
+        viewModel.navigationStack = [makeFolder(folderId: 1, sort: "date-descending"), makeFolder(folderId: 2, sort: nil)]
+
+        viewModel.beginBackPreview()
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), SortOption.dateDescending.title)
+
+        XCTAssertTrue(viewModel.endBackPreview(), "no other load, so the folder's rows come back")
+        XCTAssertFalse(viewModel.isLoadingFirstPage)
+    }
+
+    func testABackPreview_StopsApplyingOnceAnotherLoadOrAnotherFolderTakesOver() {
+        let viewModel = MyFilesViewModel()
+        viewModel.navigationStack = [makeFolder(folderId: 1), makeFolder(folderId: 2)]
+        viewModel.beginBackPreview()
+        XCTAssertTrue(viewModel.backPreviewStillApplies)
+
+        viewModel.beginFirstPageLoad()
+        XCTAssertFalse(viewModel.backPreviewStillApplies, "a load started under the finger")
+        viewModel.endFirstPageLoad()
+        XCTAssertTrue(viewModel.backPreviewStillApplies)
+
+        viewModel.navigationStack.removeLast()
+        XCTAssertFalse(viewModel.backPreviewStillApplies, "the folder the swipe began in has gone")
+        viewModel.endBackPreview()
+        XCTAssertFalse(viewModel.backPreviewStillApplies)
+    }
+
+    func testASharesBackPreview_LetsAShareListThatLoadsUnderItShow() {
+        let viewModel = SharedFilesViewModel()
+        viewModel.navigationStack = [makeFolder(folderId: 1)]
+        viewModel.beginBackPreview()
+
+        // An archive switch empties the history and reloads the share list while the finger is down.
+        viewModel.navigationStack.removeAll()
+        viewModel.beginShareListLoad()
+        XCTAssertTrue(viewModel.showsShareList)
+
+        viewModel.endBackPreview()
+        XCTAssertTrue(viewModel.showsShareList)
+    }
+
+    /// Records whether the V1 route ran, without the network, with archive 1 selected and owned.
+    private final class LinkedSharedFilesViewModel: SharedFilesViewModel {
+        var v1Entries = 0
+        override var currentArchive: ArchiveVOData? { ArchiveVOData.mock() }
+        override var archivePermissions: [Permission] { ArchiveVOData.permissions(forAccessRole: "owner") }
+        override func performV1NavigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
+            v1Entries += 1
+            handler(.success)
+        }
+    }
+
+    /// Folder 77 on folder link 11, as Stela describes it; `extra` adds fields such as a role or shares.
+    private func folderDetails(archiveId: String = "1", _ extra: String = "") -> FolderV2Data {
+        let json = """
+        { "items": [ { "folderId": "77", "displayName": "Trips", "folderLinkId": "11", "sort": "date-descending",
+          "archive": { "id": "\(archiveId)", "name": "Family" }\(extra) } ] }
+        """
+        return try! FolderV2Response.decoder.decode(FolderV2Response.self, from: Data(json.utf8)).items![0]
+    }
+
+    private func openLinkedFolder(details: FolderV2Data?, in viewModel: LinkedSharedFilesViewModel) {
+        viewModel.linkedFolderId = 77
+        viewModel.folderV2Request = { folderId, completion in
+            XCTAssertEqual(folderId, "77")
+            completion(details)
+        }
+        let done = expectation(description: "linked folder entered")
+        viewModel.navigateMin(params: navParams, backNavigation: false) { _ in done.fulfill() }
+        wait(for: [done], timeout: 5)
+    }
+
+    func testAShareLinksFolder_OpensOnThePagedRouteWithTheServersRole() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage()]
+
+        openLinkedFolder(details: folderDetails(#", "accessRole": "editor""#), in: viewModel)
+
+        XCTAssertEqual(viewModel.v1Entries, 0)
+        XCTAssertEqual(server.requests.first?.pageSize, FilesViewModel.childrenPageSize, "a first page, not the whole folder")
+        XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
+        XCTAssertEqual(viewModel.navigationStack.last?.folderId, 77)
+        XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .editor)
+        XCTAssertEqual(Set(viewModel.navigationStack.last?.permissions ?? []), Set(ArchiveVOData.permissions(forAccessRole: "editor")))
+    }
+
+    func testAnotherArchivesFolder_TakesTheSelectedArchivesShareNotTheAccountsBestRole() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page([1, 2], nextCursor: nil)]
+        // The account owns the folder's archive 3 too, but archive 1 holds only a viewer share.
+        let shares = #", "accessRole": "owner", "shares": [ { "id": "9", "accessRole": "access.role.viewer", "status": "status.generic.ok", "archive": { "id": "1" } } ]"#
+
+        openLinkedFolder(details: folderDetails(archiveId: "3", shares), in: viewModel)
+
+        XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .viewer)
+        XCTAssertEqual(viewModel.navigationStack.last?.permissions, [.read])
+    }
+
+    func testAnotherArchivesFolderWithOnlyAPendingShare_OpensOnTheV1Route() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let shares = #", "accessRole": "owner", "shares": [ { "id": "9", "accessRole": "access.role.editor", "status": "status.generic.pending", "archive": { "id": "1" } } ]"#
+        openLinkedFolder(details: folderDetails(archiveId: "3", shares), in: viewModel)
+        XCTAssertEqual(viewModel.v1Entries, 1)
+    }
+
+    func testAShareLinksFolderWithoutDetails_OpensOnTheV1Route() {
+        let viewModel = LinkedSharedFilesViewModel()
+        openLinkedFolder(details: nil, in: viewModel)
+        XCTAssertEqual(viewModel.v1Entries, 1)
+    }
+
+    func testDetailsForAnotherFolderLink_AreNotUsed() {
+        let viewModel = LinkedSharedFilesViewModel()
+        openLinkedFolder(details: FolderV2Data(folderId: "77", folderLinkId: "999", sort: "date-descending", accessRole: "owner"), in: viewModel)
+        XCTAssertEqual(viewModel.v1Entries, 1, "the details must name the folder link being opened")
+    }
+
+    func testTheSelectedArchivesFolderWithoutARole_FailsClosedToViewer() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page([1, 2], nextCursor: nil)]
+
+        openLinkedFolder(details: folderDetails(), in: viewModel)
+
+        XCTAssertEqual(viewModel.navigationStack.last?.accessRole, .viewer)
+        XCTAssertEqual(viewModel.navigationStack.last?.permissions, [.read], "an owner archive still grants only what a viewer may do")
+    }
+
+    func testASwitchDuringTheDetailsRequest_EndsTheEntryQuietly() {
+        let viewModel = LinkedSharedFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        viewModel.navigationStack = [makeFolder(folderId: 5)]
+        viewModel.linkedFolderId = 77
+        var answer: ((FolderV2Data?) -> Void)?
+        viewModel.folderV2Request = { _, completion in answer = completion }
+        let done = expectation(description: "entry settled")
+        viewModel.navigateMin(params: navParams, backNavigation: false) { _ in done.fulfill() }
+
+        // A tab or archive switch empties the history while the details are on their way.
+        viewModel.navigationStack.removeAll()
+        answer?(folderDetails(#", "accessRole": "editor""#))
+        wait(for: [done], timeout: 5)
+
+        XCTAssertTrue(server.requests.isEmpty, "no listing of the linked folder starts")
+        XCTAssertEqual(viewModel.v1Entries, 0)
+        XCTAssertTrue(viewModel.navigationStack.isEmpty)
+    }
+
+    func testTheShareListSkeleton_HasNoSortHeader() {
+        let viewModel = SharedFilesViewModel()
+        viewModel.beginShareListLoad()
+
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), "")
+    }
+
+    func testTheHeaderOverARootSkeleton_KeepsTheCurrentSortUntilTheRootNamesItsOwn() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.holdsNextRequest = true
+        viewModel.activeSortOption = .dateAscending
+        viewModel.beginFirstPageLoad()
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), SortOption.dateAscending.title, "no folder yet, so the current sort stays")
+
+        let told = expectation(forNotification: FilesViewModel.childrenDidChangeNotification, object: viewModel)
+        viewModel.v2NavigationTarget = makeFolder(sort: "date-descending")
+        viewModel.navigateMin(params: navParams, backNavigation: false) { _ in }
+        wait(for: [told], timeout: 5)
+
+        XCTAssertEqual(viewModel.title(forSection: FileListType.synced.rawValue), SortOption.dateDescending.title)
+    }
+
+    func testOverlappingFirstPageLoads_EndWithTheLastOne() {
+        let viewModel = MyFilesViewModel()
+        viewModel.beginFirstPageLoad()
+        viewModel.beginFirstPageLoad()
+
+        XCTAssertFalse(viewModel.endFirstPageLoad())
+        XCTAssertTrue(viewModel.isLoadingFirstPage)
+        XCTAssertTrue(viewModel.endFirstPageLoad())
+        XCTAssertFalse(viewModel.isLoadingFirstPage)
+    }
+
+    func testAFullPageOfRepeats_ListsTheWholeFolderInsteadOfAskingAgain() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let whole = n + next + 4
+        server.responses = [fullPage(), fullNextPage(from: n + 1), fullNextPage(from: n + 1), page(Array(1...whole), nextCursor: "\(whole)")]
+
+        enter(makeFolder(), in: viewModel)
+        loadNextPage(in: viewModel)
+        loadNextPage(in: viewModel)
+
+        XCTAssertEqual(server.requests.last?.pageSize, FolderV2Endpoint.maxChildrenPageSize)
+        XCTAssertEqual(viewModel.viewModels.count, whole)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    func testRetry_WhileAFirstPageIsOnItsWay_KeepsTheRetryFooter() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folder = makeFolder()
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
+        enter(folder, in: viewModel)
+        loadNextPage(in: viewModel)
+
+        server.holdsNextRequest = true
+        viewModel.navigateMin(params: navParams, backNavigation: true) { _ in }
+        var changed: Bool?
+        viewModel.retryNextChildrenPage { changed = $0 }
+
+        XCTAssertEqual(changed, false)
+        XCTAssertEqual(viewModel.childrenPagingState, .failed)
+    }
+
+    func testAFailedRefreshThatDroppedAPage_AsksTheScreenToLoadItAgain() {
+        let viewModel = V1FailingViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folder = makeFolder()
+        server.responses = [fullPage(), .failure(.init(message: "offline"))]
+        enter(folder, in: viewModel)
+        server.holdsNextRequest = true
+        viewModel.loadNextChildrenPage { _ in }
+
+        let told = expectation(forNotification: FilesViewModel.childrenDidChangeNotification, object: viewModel)
+        enter(folder, in: viewModel, backNavigation: true)
+        wait(for: [told], timeout: 5)
+
+        XCTAssertEqual(viewModel.childrenPagingState, .loadingMore)
+    }
+
+    func testDeletingTheCursorRow_HandsTheCursorToTheLastRowLeft() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), .failure(.init(message: "offline")), page([n + 1], nextCursor: "\(n + 1)")]
+        enter(makeFolder(), in: viewModel)
+        loadNextPage(in: viewModel)
+
+        viewModel.removeSyncedFiles([viewModel.viewModels[n - 1]])
+        let retried = expectation(description: "retry")
+        viewModel.retryNextChildrenPage { _ in retried.fulfill() }
+        wait(for: [retried], timeout: 5)
+
+        XCTAssertEqual(server.requests.last?.cursor, "\(n - 1)")
+    }
+
+    func testAPageThatLands_TellsTheScreen() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [fullPage(), page([n + 1], nextCursor: "\(n + 1)")]
+        enter(makeFolder(), in: viewModel)
+
+        let posted = expectation(forNotification: FilesViewModel.childrenDidChangeNotification, object: viewModel)
+        viewModel.loadNextChildrenPage { _ in }
+        wait(for: [posted], timeout: 5)
+    }
+
+    // MARK: - V1 listing
+
+    func testAFailedV1Listing_LeavesTheHistoryAndSortAlone() {
+        let viewModel = LeanItemsStubViewModel()
+        viewModel.leanStatus = .error(message: "offline")
+        let entered = makeFolder(folderId: 30, sort: "date-descending")
+
+        var status: RequestStatus?
+        viewModel.listV1Folder(entering: entered, folderId: 30, savedSort: .dateDescending, params: ("0001-test", [1, 2], 11)) { status = $0 }
+
+        XCTAssertEqual(status, .error(message: "offline"))
+        XCTAssertTrue(viewModel.navigationStack.isEmpty, "the folder on screen stays the current folder")
+        XCTAssertEqual(viewModel.activeSortOption, .nameAscending)
+    }
+
+    func testASuccessfulV1Listing_EntersTheFolderAndAdoptsItsSort() {
+        let viewModel = LeanItemsStubViewModel()
+        let entered = makeFolder(folderId: 30, sort: "date-descending")
+
+        viewModel.listV1Folder(entering: entered, folderId: 30, savedSort: .dateDescending, params: ("0001-test", [1, 2], 11)) { _ in }
+
+        XCTAssertEqual(viewModel.navigationStack.last?.folderId, 30)
+        XCTAssertEqual(viewModel.activeSortOption, .dateDescending)
+    }
+
+    func testTheShareList_WaitsWhileAFolderIsOpenOrBeingEntered() {
+        let viewModel = SharedFilesViewModel()
+        XCTAssertTrue(viewModel.showsShareList)
+
+        viewModel.isLoadingFirstPage = true
+        XCTAssertFalse(viewModel.showsShareList)
+
+        viewModel.isLoadingFirstPage = false
+        viewModel.navigationStack = [makeFolder()]
+        XCTAssertFalse(viewModel.showsShareList)
+    }
+
+    func testTheShareListLoadingUnderItsOwnSkeleton_StillShows() {
+        let viewModel = SharedFilesViewModel()
+
+        viewModel.beginShareListLoad()
+        XCTAssertTrue(viewModel.isLoadingFirstPage)
+        XCTAssertTrue(viewModel.showsShareList, "the share list's own skeleton does not hold it back")
+
+        viewModel.beginFirstPageLoad()
+        XCTAssertFalse(viewModel.showsShareList, "a folder being entered at the same time wins")
+
+        viewModel.endFirstPageLoad()
+        XCTAssertTrue(viewModel.endShareListLoad())
+        XCTAssertFalse(viewModel.isLoadingFirstPage)
+    }
+
+    // MARK: - Late V1 replies
+
+    /// A V1 reply for folder `folderId`, whose children are records with the given folderLinkIds.
+    private func v1Listing(folderId: Int, folderLinkId: Int, sort: String = "sort.alphabetical_asc", childLinkIds: [Int]) -> Result<NavigateMinResponse, FilesViewModel.ChildrenPageFailure> {
+        let children = childLinkIds.map { id in
+            """
+            { "folder_linkId": \(id), "recordId": \(2000 + id), "displayName": "v1-\(id)", "type": "type.record.image", "archiveNbr": "0001-v1\(id)" }
+            """
+        }
+        let json = """
+        { "isSuccessful": true, "Results": [ { "data": [ { "FolderVO": {
+          "folderId": \(folderId), "folder_linkId": \(folderLinkId), "archiveNbr": "0001-test", "displayName": "V1 folder", "sort": "\(sort)",
+          "ChildItemVOs": [\(children.joined(separator: ","))] } } ] } ] }
+        """
+        return .success(try! JSONDecoder().decode(NavigateMinResponse.self, from: Data(json.utf8)))
+    }
+
+    func testALateV1RefreshReply_LeavesTheFolderOpenedSinceAlone() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folderA = makeFolder(folderId: 10)
+        let folderB = makeFolder(folderId: 20)
+        server.responses = [fullPage(), .failure(.init(message: "offline")), fullPage(from: 1000)]
+        enter(folderA, in: viewModel)
+
+        // A's refresh fails on V2 and its V1 reply is held back.
+        var heldReply: ((Result<NavigateMinResponse, FilesViewModel.ChildrenPageFailure>) -> Void)?
+        let reachedV1 = expectation(description: "V1 leg started")
+        viewModel.navigateMinV1Request = { _, completion in
+            heldReply = completion
+            reachedV1.fulfill()
+        }
+        var leanRequests = 0
+        viewModel.leanItemsV1Request = { _, completion in
+            leanRequests += 1
+            completion(self.v1Listing(folderId: 10, folderLinkId: 11, childLinkIds: [900, 901]))
+        }
+        var refreshStatus: RequestStatus?
+        viewModel.navigateMin(params: navParams, backNavigation: true) { refreshStatus = $0 }
+        wait(for: [reachedV1], timeout: 5)
+
+        enter(folderB, in: viewModel)
+        heldReply?(v1Listing(folderId: 10, folderLinkId: 11, childLinkIds: [900, 901]))
+
+        XCTAssertEqual(refreshStatus, .success, "a superseded listing completes quietly")
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1000..<(1000 + n)), "B's rows stay")
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderId), [10, 20])
+        XCTAssertEqual(viewModel.childrenPagingState, .loadingMore, "B's paging is untouched")
+        XCTAssertEqual(leanRequests, 0, "no second request for a folder no longer on its way")
+    }
+
+    func testALateV1RowsReply_NeitherEntersItsFolderNorAdoptsItsSort() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        let folderB = makeFolder(folderId: 20, sort: "date-descending")
+        server.responses = [fullPage(), fullPage(from: 1000)]
+        enter(makeFolder(folderId: 10), in: viewModel)
+
+        // A link with no V2 target goes straight to V1; its rows request is held back.
+        viewModel.navigateMinV1Request = { _, completion in
+            completion(self.v1Listing(folderId: 40, folderLinkId: 41, childLinkIds: [900]))
+        }
+        var heldRows: ((Result<NavigateMinResponse, FilesViewModel.ChildrenPageFailure>) -> Void)?
+        viewModel.leanItemsV1Request = { _, completion in heldRows = completion }
+        var linkStatus: RequestStatus?
+        viewModel.navigateMin(params: ("0001-test", 41, nil), backNavigation: false) { linkStatus = $0 }
+
+        enter(folderB, in: viewModel)
+        heldRows?(v1Listing(folderId: 40, folderLinkId: 41, childLinkIds: [900]))
+
+        XCTAssertEqual(linkStatus, .success)
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), Array(1000..<(1000 + n)))
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderId), [10, 20], "the linked folder never joins the history")
+        XCTAssertEqual(viewModel.activeSortOption, .dateDescending, "B's sort stays")
+    }
+
+    func testACurrentV1Listing_StillCommits() {
+        let viewModel = MyFilesViewModel()
+        viewModel.navigateMinV1Request = { _, completion in
+            completion(self.v1Listing(folderId: 40, folderLinkId: 41, childLinkIds: [900, 901]))
+        }
+        viewModel.leanItemsV1Request = { _, completion in
+            completion(self.v1Listing(folderId: 40, folderLinkId: 41, childLinkIds: [900, 901]))
+        }
+
+        var status: RequestStatus?
+        viewModel.navigateMin(params: ("0001-test", 41, nil), backNavigation: false) { status = $0 }
+
+        XCTAssertEqual(status, .success)
+        XCTAssertEqual(viewModel.viewModels.map(\.folderLinkId), [900, 901])
+        XCTAssertEqual(viewModel.navigationStack.last?.folderId, 40)
+        XCTAssertEqual(viewModel.childrenPagingState, .complete)
+    }
+
+    // MARK: - Sizes and footer text
+
+    func testFirstPageSize_RoundsUpAndLeavesRoomForOneMore() {
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 0), n)
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: n - 1), n)
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: n), 2 * n)
+        XCTAssertEqual(FilesViewModel.firstPageSize(keeping: 3 * n + 7), 4 * n)
+    }
+
+    func testLoadedCounts_SplitFoldersFromFiles() {
+        let viewModel = MyFilesViewModel()
+        let server = PageServer()
+        server.attach(to: viewModel)
+        server.responses = [page([1, 2, 3], nextCursor: "3", withFolder: true)]
+
+        enter(makeFolder(), in: viewModel)
+
+        XCTAssertEqual(viewModel.loadedFolderCount, 1)
+        XCTAssertEqual(viewModel.loadedFileCount, 3)
+    }
+
+    func testFooterCounts_UseSingularAndPlural() {
+        XCTAssertEqual(FileListStatusFooterView.countsText(folders: 4, files: 3), "4 Folders, 3 Files")
+        XCTAssertEqual(FileListStatusFooterView.countsText(folders: 1, files: 1), "1 Folder, 1 File")
+        XCTAssertEqual(FileListStatusFooterView.countsText(folders: 0, files: 2), "0 Folders, 2 Files")
+    }
+}

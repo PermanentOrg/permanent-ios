@@ -25,10 +25,12 @@ class ShareManagementUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
-        // Create a test folder and upload a photo
-        privateFilesPage.createNewFolder(name: "share test")
-        privateFilesPage.enterFolder(named: "share test")
+        // Create a test folder and upload a photo. A name of its own, so the cleanup deletes only this folder.
+        let folderName = "aaa_share_\(UUID().uuidString.prefix(6))"
+        privateFilesPage.createNewFolder(name: folderName)
+        privateFilesPage.enterFolder(named: folderName)
 
         privateFilesPage.enterPhotoLibrary()
 
@@ -79,7 +81,7 @@ class ShareManagementUITests: BaseUITestCase {
 
         // Go back and delete the test folder
         privateFilesPage.goBack()
-        privateFilesPage.deleteFirstElementFromFolder()
+        privateFilesPage.deleteElement(named: folderName)
 
         // Sign out
         privateFilesPage.toggleRightSideMenu()

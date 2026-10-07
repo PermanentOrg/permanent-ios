@@ -210,6 +210,15 @@ class ShareItemViewModel: ObservableObject {
     /// One-shot guard for the V1→V2 recovery bridge, which bridges back — so with both endpoints
     /// failing the two recurse forever. Reset per fetch, so a fresh open can still recover once.
     var attemptedV2FolderLinkRecovery = false
+    /// Test seams for the V2 reads behind the shared-archives list. Production leaves them nil.
+    var folderFetchV2Request: ((String, String?, @escaping (OperationResult) -> Void) -> Void)?
+    var recordFetchV2Request: ((String, String?, @escaping (OperationResult) -> Void) -> Void)?
+
+    #if DEBUG
+    /// Which path served the last shared-archives load, so a test cannot pass on the V1 failsafe
+    /// while claiming V2. DEBUG-only, with no Release behaviour.
+    static var lastSharedArchivesSource = "none"
+    #endif
 
     // Tracks original values to detect unsaved changes
     var originalExpiration: ShareExpirationOption = .none

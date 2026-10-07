@@ -47,16 +47,11 @@ class FilePreviewViewModel: ViewModelInterface {
 
     private var recordFetchAttempts = 0
 
-    /// When true (My Files with the Stela flag on), record detail is fetched via the
-    /// Stela V2 getRecordById, with the legacy V1 getRecord as an automatic failsafe.
-    private let usesStelaDetail: Bool
-
     /// Extends the V2 record read to foreign archives, for the public gallery — the same bearer-only
     /// credentials already list that archive's children. Reads only; writes stay own-archive.
     private let allowsForeignDetail: Bool
 
-    init(file: FileModel, usesStelaDetail: Bool = false, allowsForeignDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
-        self.usesStelaDetail = usesStelaDetail
+    init(file: FileModel, allowsForeignDetail: Bool = false, tagsRepository: TagsRepository = TagsRepository(), reachability: ReachabilityProviding = ReachabilityManager.shared) {
         self.allowsForeignDetail = allowsForeignDetail
         self.tagsRepository = tagsRepository
         self.reachability = reachability
@@ -147,7 +142,7 @@ class FilePreviewViewModel: ViewModelInterface {
 
         // V2 detail with V1 as an automatic failsafe: own-archive records, plus foreign ones the caller
         // says are public. Shared-with-me stays on V1, authorized server-side via share membership.
-        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file) || allowsForeignDetail {
+        if file.recordId > 0, isInCurrentArchive(file) || allowsForeignDetail {
             getRecordV2(file: file, then: handler)
             return
         }
@@ -211,10 +206,6 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
-    /// Whether this preview opted into the Stela V2 path (the in-app flag; set on every
-    /// preview presenter — per-record ownership is checked separately, see below).
-    var isStelaEnabled: Bool { usesStelaDetail }
-
     /// True when the record is in the session's selected archive. A foreign or shared record carries
     /// a different or absent archiveId and stays on V1; unknown ownership also falls to V1.
     private func isInCurrentArchive(_ file: FileModel) -> Bool {
@@ -222,10 +213,10 @@ class FilePreviewViewModel: ViewModelInterface {
         return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
 
-    /// Publish eligibility for the V2 copy: flag on, a saved record, own archive. A foreign record
+    /// Publish eligibility for the V2 copy: a saved record in the own archive. A foreign record
     /// must use the V1 relocate, since copy has no fallback and the bearer-only call would fail.
     var canPublishViaStelaCopy: Bool {
-        isStelaEnabled && !file.type.isFolder && file.recordId > 0 && isInCurrentArchive(file)
+        !file.type.isFolder && file.recordId > 0 && isInCurrentArchive(file)
     }
 
     /// Copies the record into `destinationFolderId` via V2. Copy is not idempotent, so callers must
@@ -246,94 +237,21 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
-    // Test seams for `resolvePublicRootFolderIdV2`. The two wrappers below duplicate
-    // `MyFilesViewModel`'s and are a candidate for a shared root resolver.
+    // Test seams for `resolvePublicRootFolderIdV2`.
     var archivesFetchV2Request: ((@escaping (Result<[ArchiveV2Data], Error>) -> Void) -> Void)?
     var rootChildrenFetchV2Request: ((String, @escaping (Result<[FolderChildV2Data], Error>) -> Void) -> Void)?
 
     /// Resolves the archive's public-root folder id through the archives search, matching by
     /// `archiveNbr`. Nil on any failure, so publish falls back to the V1 `getPublicRoot` lookup.
     func resolvePublicRootFolderIdV2(completion: @escaping (String?) -> Void) {
-        guard let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr, !archiveNbr.isEmpty else {
-            completion(nil)
-            return
-        }
-        fetchArchivesV2 { [weak self] result in
-            guard let self = self else { completion(nil); return }
-            guard
-                case .success(let archives) = result,
-                let rootFolderId = archives.first(where: { $0.archiveNbr == archiveNbr })?.rootFolderId,
-                !rootFolderId.isEmpty
-            else {
+        let resolver = SectionRootResolverV2(fetchArchives: archivesFetchV2Request, fetchChildren: rootChildrenFetchV2Request)
+        let archiveNbr = AuthenticationManager.shared.session?.selectedArchive?.archiveNbr
+        resolver.resolve(sectionType: .publicRootFolder, fallbackDisplayName: nil, archiveNbr: archiveNbr) { publicChild in
+            guard let folderId = publicChild?.folderId, !folderId.isEmpty, (Int(folderId) ?? -1) > 0 else {
                 completion(nil)
                 return
             }
-            self.fetchRootChildrenV2(folderId: rootFolderId) { childrenResult in
-                guard
-                    case .success(let children) = childrenResult,
-                    let publicChild = children.first(where: {
-                        $0.isFolder && FileType.fromV2(typeString: $0.type, isFolder: true) == .publicRootFolder
-                    }),
-                    let folderId = publicChild.folderId, !folderId.isEmpty, (Int(folderId) ?? -1) > 0
-                else {
-                    completion(nil)
-                    return
-                }
-                completion(folderId)
-            }
-        }
-    }
-
-    private func fetchArchivesV2(completion: @escaping (Result<[ArchiveV2Data], Error>) -> Void) {
-        if let injected = archivesFetchV2Request {
-            injected(completion)
-            return
-        }
-        let endpoint = ArchiveV2Endpoint.searchArchives(
-            callerMembershipRoles: ArchiveV2Endpoint.allMembershipRoles,
-            pageSize: ArchiveV2Endpoint.defaultPageSize
-        )
-        APIOperation(endpoint).execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: ArchivesV2Response = JSONHelper.decoding(from: response, with: ArchivesV2Response.decoder),
-                    let items = model.items
-                else {
-                    completion(.failure(APIError.parseError))
-                    return
-                }
-                completion(.success(items))
-            case .error(let error, _):
-                completion(.failure(error ?? APIError.unknown))
-            default:
-                completion(.failure(APIError.unknown))
-            }
-        }
-    }
-
-    private func fetchRootChildrenV2(folderId: String, completion: @escaping (Result<[FolderChildV2Data], Error>) -> Void) {
-        if let injected = rootChildrenFetchV2Request {
-            injected(folderId, completion)
-            return
-        }
-        let endpoint = FolderV2Endpoint.getFolderChildren(folderId: folderId, shareToken: "", pageSize: FolderV2Endpoint.maxChildrenPageSize)
-        APIOperation(endpoint).execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: FolderChildrenV2Response = JSONHelper.decoding(from: response, with: FolderChildrenV2Response.decoder),
-                    let items = model.items
-                else {
-                    completion(.failure(APIError.parseError))
-                    return
-                }
-                completion(.success(items))
-            case .error(let error, _):
-                completion(.failure(error ?? APIError.unknown))
-            default:
-                completion(.failure(APIError.unknown))
-            }
+            completion(folderId)
         }
     }
 
@@ -356,24 +274,69 @@ class FilePreviewViewModel: ViewModelInterface {
         downloader = nil
     }
     
-    /// Always the original upload: the normalised derivative may carry no playable audio track, and
-    /// probing which to use blocks main. An unplayable original retries via `convertedAVFileVO()`.
+    /// The user's own upload, found by its format. File names, saved copies and document previews use
+    /// it; audio and video play from `playbackFiles()`, photos and PDFs open from `previewFiles()`.
     func fileVO() -> FileVO? {
-        recordVO?.recordVO?.fileVOS?.first
+        recordVO?.recordVO?.fileVOS?.original
     }
 
-    /// The converted A/V rendition, used only as the fallback when the original fails to load.
-    /// Nil when the record has no such rendition, in which case the failure is terminal.
-    func convertedAVFileVO() -> FileVO? {
-        guard file.type == .video || file.type == .audio else { return nil }
-        return recordVO?.recordVO?.fileVOS?.first(where: { $0.format == "file.format.converted" })
+    private var recordType: FileType {
+        FileType(rawValue: recordVO?.recordVO?.type ?? "") ?? file.type
+    }
+
+    /// Audio and video files in play order. A file that fails moves playback on to the next one.
+    func playbackFiles() -> [FileVO] {
+        guard recordType == .video || recordType == .audio else { return [] }
+        return recordVO?.recordVO?.fileVOS?.playbackOrder ?? []
+    }
+
+    /// Photo and PDF files in open order. A file that cannot open moves on to the next one.
+    func previewFiles() -> [FileVO] {
+        guard recordType == .image || recordType == .pdf else { return [] }
+        return recordVO?.recordVO?.fileVOS?.previewOrder ?? []
+    }
+
+    /// Files not tried yet, each with its link. Each is handed out once, so failures cannot loop.
+    private var pendingFiles: [(file: FileVO, url: URL)] = []
+
+    /// Starts the play list over, for a new load or a retry.
+    func startPlayback() {
+        pendingFiles = playbackFiles().compactMap { file in file.playbackURL.map { (file, $0) } }
+    }
+
+    /// Starts the photo or PDF list over, for a new load or a retry. Empty for other types.
+    func startPreview() {
+        pendingFiles = previewFiles().compactMap { file in file.previewURL.map { (file, $0) } }
+    }
+
+    /// The next file to try and its link; nil once every file has been tried.
+    func nextFile() -> (file: FileVO, url: URL)? {
+        pendingFiles.isEmpty ? nil : pendingFiles.removeFirst()
+    }
+
+    /// Names the file type for the player when the link has no extension, so a server that labels the
+    /// file as generic data cannot stop playback. Only types the player can open are named.
+    static func assetOptions(for url: URL, contentType: String?) -> [String: Any] {
+        guard #available(iOS 17.0, *), !url.isFileURL, url.pathExtension.isEmpty,
+              let contentType, AVURLAsset.isPlayableExtendedMIMEType(contentType) else { return [:] }
+        return [AVURLAssetOverrideMIMETypeKey: contentType]
+    }
+
+    /// Options for one more try of the same link with its type named. Only after "Cannot Open", so a
+    /// file that plays is never given a guessed type.
+    static func typeHintRetryOptions(after error: Error?, url: URL?, contentType: String?) -> [String: Any]? {
+        guard let error = error as NSError?, error.domain == AVFoundationErrorDomain,
+              error.code == AVError.Code.fileFormatNotRecognized.rawValue,
+              let url else { return nil }
+        let options = assetOptions(for: url, contentType: contentType)
+        return options.isEmpty ? nil : options
     }
     
     /// The PDF rendition, for document types WebKit refuses to render inline and turns into a
     /// download. Preview only: `fileVO()` stays on the original, so Download gives the real file.
     func pdfAccessCopyURL() -> URL? {
         guard let accessCopy = recordVO?.recordVO?.fileVOS?.first(where: {
-            $0.type == "type.file.pdf.pdf" && $0.format == "file.format.archivematica.access"
+            $0.type == "type.file.pdf.pdf" && $0.format == FileVO.accessCopyFormat
         }) else { return nil }
 
         // fileURL is the plain object; downloadURL carries a content-disposition that would
@@ -409,7 +372,7 @@ class FilePreviewViewModel: ViewModelInterface {
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
         // V2 PATCH covers name, description and location, which are idempotent. Date stays on V1: the
         // PATCH exposes only the EDTF column, not the timestamp the Date row shows. Own archive only.
-        if usesStelaDetail, file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
+        if file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
             updateV2(file: file, name: name, description: description, location: location, completion: completion)
             return
         }

@@ -64,8 +64,10 @@ struct RevokeBottomAlertView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         .ignoresSafeArea()
+        // A closed card waits below the screen, and VoiceOver could still reach and press its buttons.
+        .accessibilityHidden(!isPresented)
     }
-    
+
     private var alertCard: some View {
         VStack {
             if let titleView = titleView {
@@ -107,7 +109,9 @@ struct RevokeBottomAlertView: View {
                     .shadow(color: Color.black.opacity(0.07), radius: 40, x: 0, y: 5)
                     .frame(maxWidth: .infinity)
                 }
-                
+                // UI tests still see a closed card, so only an open card names its buttons for them.
+                .accessibilityIdentifier(isPresented ? "bottomAlertConfirmButton" : "")
+
                 Button(action: cancelAction) {
                     HStack {
                         Spacer()
@@ -124,6 +128,7 @@ struct RevokeBottomAlertView: View {
                     .shadow(color: Color.black.opacity(0.07), radius: 40, x: 0, y: 5)
                     .frame(maxWidth: .infinity)
                 }
+                .accessibilityIdentifier(isPresented ? "bottomAlertCancelButton" : "")
             }
             .padding(32)
         }

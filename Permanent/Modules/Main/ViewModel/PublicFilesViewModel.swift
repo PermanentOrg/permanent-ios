@@ -17,7 +17,7 @@ class PublicFilesViewModel: MyFilesViewModel {
 
     // Land in the archive's public root instead of My Files; the rest of getRoot is inherited.
     override var rootSectionType: FileType { .publicRootFolder }
-    override var rootSectionFallbackDisplayName: String { "Public" }
+    override var rootSectionFallbackDisplayName: String { Constants.API.FileType.publicFilesFolder }
 
     /// The V1 failsafe for Public Files root discovery, reached only when V2 resolution fails. It does
     /// not seed `v2NavigationTarget`, so the root lists via V1.

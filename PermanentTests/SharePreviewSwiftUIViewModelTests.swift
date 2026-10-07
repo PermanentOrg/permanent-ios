@@ -650,7 +650,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         vm.currentArchive = ArchiveVOData.mock()
         
         var sharedWithMeParams: NavigateMinParams?
-        vm.onNavigateToSharedWithMe = { params in
+        vm.onNavigateToSharedWithMe = { params, _ in
             sharedWithMeParams = params
         }
         
@@ -678,7 +678,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
         }
         
         var sharedByMeParams: NavigateMinParams?
-        vm.onNavigateToSharedByMe = { params in
+        vm.onNavigateToSharedByMe = { params, _ in
             sharedByMeParams = params
         }
         

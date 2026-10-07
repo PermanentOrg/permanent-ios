@@ -18,10 +18,10 @@ class DownloadManagerGCD: Downloader {
     
     func fileVO(forRecordVO recordVO: RecordVO, fileType: FileType) -> FileVO? {
         if fileType == .video || fileType == .image,
-           let fileVO = recordVO.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
+           let fileVO = recordVO.recordVO?.fileVOS?.first(where: {$0.format == FileVO.convertedFormat}) {
             return fileVO
         } else {
-            return recordVO.recordVO?.fileVOS?.first
+            return recordVO.recordVO?.fileVOS?.original
         }
     }
     
@@ -111,6 +111,8 @@ class DownloadManagerGCD: Downloader {
         }
     }
     
+    /// Still V1: its consumers read the legacy `shareVOS` list, so moving it needs a FolderV2Data to
+    /// FolderVO adapter like `RecordV2Data.toRecordVOPayload()`. Stela does return pending shares to managers.
     func getFolder(_ file: FileDownloadInfo, then handler: @escaping GetFolderResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getFolder(itemInfo: (file.folderLinkId, file.parentFolderLinkId)))
         self.operation = apiOperation
@@ -158,7 +160,7 @@ class DownloadManagerGCD: Downloader {
         } else {
             var fileExtension = (uploadFileName as NSString).pathExtension
             
-            if fileVO.format == "file.format.converted" {
+            if fileVO.format == FileVO.convertedFormat {
                 if let contentType = fileVO.contentType {
                     if contentType.contains("jpeg") {
                         fileExtension = "JPG"

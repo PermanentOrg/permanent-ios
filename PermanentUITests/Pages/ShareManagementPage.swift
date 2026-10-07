@@ -30,7 +30,7 @@ class ShareManagementPage {
 
     // Revoke confirmation
     var confirmRevokeButton: XCUIElement {
-        app.buttons.matching(NSPredicate(format: "label == 'Revoke link'")).element(boundBy: 0)
+        app.buttons["bottomAlertConfirmButton"]
     }
 
     init(app: XCUIApplication) {

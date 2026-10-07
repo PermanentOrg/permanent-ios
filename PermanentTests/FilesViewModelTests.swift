@@ -207,29 +207,21 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - Client-side sort (PR3 — /children has no sort param)
 
     func testSort_NameAscending_IsCaseInsensitive() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .nameAscending
         let input = [makeRecordFile(name: "banana"), makeRecordFile(name: "Apple"), makeRecordFile(name: "cherry")]
-        XCTAssertEqual(vm.sortedByActiveOption(input).map { $0.name }, ["Apple", "banana", "cherry"])
+        XCTAssertEqual(FilesViewModel.sorted(input, by: .nameAscending).map { $0.name }, ["Apple", "banana", "cherry"])
     }
 
     func testSort_NameDescending() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .nameDescending
         let input = [makeRecordFile(name: "Apple"), makeRecordFile(name: "cherry"), makeRecordFile(name: "banana")]
-        XCTAssertEqual(vm.sortedByActiveOption(input).map { $0.name }, ["cherry", "banana", "Apple"])
+        XCTAssertEqual(FilesViewModel.sorted(input, by: .nameDescending).map { $0.name }, ["cherry", "banana", "Apple"])
     }
 
     func testSort_TypeAscending_FoldersBeforeRecords() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .typeAscending
         let input = [makeRecordFile(name: "a"), makeFolderFile(name: "b")]
-        XCTAssertEqual(vm.sortedByActiveOption(input).first?.type.isFolder, true)
+        XCTAssertEqual(FilesViewModel.sorted(input, by: .typeAscending).first?.type.isFolder, true)
     }
 
     func testSort_DateAscending_UsesCreatedDate() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .dateAscending
         let old = """
         { "items": [ { "recordId": "1", "displayName": "old", "type": "type.record.image", "displayDate": "2020-01-01T00:00:00" } ] }
         """
@@ -238,7 +230,7 @@ final class FilesViewModelTests: XCTestCase {
         """
         let oldFile = FileModel(model: decodeChildren(old)!.items![0], permissions: [.read], accessRole: .viewer)
         let newFile = FileModel(model: decodeChildren(new)!.items![0], permissions: [.read], accessRole: .viewer)
-        XCTAssertEqual(vm.sortedByActiveOption([newFile, oldFile]).map { $0.name }, ["old", "new"])
+        XCTAssertEqual(FilesViewModel.sorted([newFile, oldFile], by: .dateAscending).map { $0.name }, ["old", "new"])
     }
 
     // MARK: - Stela date parsing
@@ -267,8 +259,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testSort_DateAscending_MixedFractionalAndPostgresFormats() {
-        let vm = FilesViewModel()
-        vm.activeSortOption = .dateAscending
         // Three real instants, each in a different Stela format; expect oldest → newest.
         let a = """
         { "items": [ { "recordId": "1", "displayName": "2023", "type": "type.record.image", "displayDate": "2023-01-01 00:00:00+00" } ] }
@@ -282,7 +272,7 @@ final class FilesViewModelTests: XCTestCase {
         let fa = FileModel(model: decodeChildren(a)!.items![0], permissions: [.read], accessRole: .viewer)
         let fb = FileModel(model: decodeChildren(b)!.items![0], permissions: [.read], accessRole: .viewer)
         let fc = FileModel(model: decodeChildren(c)!.items![0], permissions: [.read], accessRole: .viewer)
-        XCTAssertEqual(vm.sortedByActiveOption([fc, fa, fb]).map { $0.name }, ["2023", "2024", "2025"])
+        XCTAssertEqual(FilesViewModel.sorted([fc, fa, fb], by: .dateAscending).map { $0.name }, ["2023", "2024", "2025"])
     }
 
     // MARK: - archiveNo listing gate (G3 — hasBadId bails the whole listing to V1 when a child
@@ -299,44 +289,6 @@ final class FilesViewModelTests: XCTestCase {
         """
         XCTAssertTrue(FileModel(model: decodeChildren(missing)!.items![0], permissions: [.read], accessRole: .viewer).archiveNo.isEmpty)
         XCTAssertFalse(FileModel(model: decodeChildren(present)!.items![0], permissions: [.read], accessRole: .viewer).archiveNo.isEmpty)
-    }
-
-    // MARK: - Stela capability matrix — which workspaces follow FeatureFlags.useStelaNavigation
-    // Pinned via the in-app constant so it stays deterministic; each test restores it in a defer.
-
-    func testStelaCapability_BaseStaysV1() {
-        // The base class hardcodes false: even with the flag forced ON, a bare
-        // FilesViewModel (and any subclass that doesn't opt in) must NOT migrate.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        XCTAssertFalse(FilesViewModel().usesStelaNavigation)
-    }
-
-    func testStelaCapability_FlagOn_OptedInWorkspacesFollowIt() {
-        // My Files, Public Files, Search, Shared drill-in, and the Public Gallery
-        // deliberately opt in; the base (and everything inheriting it) stays V1.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        XCTAssertTrue(MyFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(PublicFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(SearchFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(SharedFilesViewModel().usesStelaNavigation)
-        XCTAssertTrue(PublicArchiveViewModel().usesStelaNavigation)
-        XCTAssertFalse(FilesViewModel().usesStelaNavigation)
-    }
-
-    func testStelaCapability_FlagOff_EverythingStaysV1() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        XCTAssertFalse(MyFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(PublicFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(SearchFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(SharedFilesViewModel().usesStelaNavigation)
-        XCTAssertFalse(PublicArchiveViewModel().usesStelaNavigation)
-        XCTAssertFalse(FilesViewModel().usesStelaNavigation)
     }
 
     // MARK: - Shared-workspace V2 per-child role inheritance (v2ChildContext)
@@ -382,12 +334,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testV2ChildContext_PublicGalleryPinsViewerRegardlessOfEnteredFolder() throws {
-        // The pin is gated on the V2 flag and v2ChildContext reads through it, so set the flag here
-        // rather than inherit the scheme default, which differs between schemes.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let vm = PublicArchiveViewModel()
         // Seed an OWNER archive: with `currentArchive` nil the pin is indistinguishable from the
         // un-pinned base, so every assertion below would pass even with the override deleted.
@@ -411,10 +357,6 @@ final class FilesViewModelTests: XCTestCase {
     func testV2ChildContext_PublicGalleryIgnoresOwnerArchiveRole() throws {
         // Browsing your own archive through the gallery, where an un-pinned view would stamp owner
         // permissions onto every child. The one case where the pin narrows, and it is deliberate.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let ownerArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
         XCTAssertEqual(AccessRole.roleForValue(ownerArchive.accessRole), .owner,
                        "fixture must really be an owner archive, else this test proves nothing")
@@ -432,10 +374,6 @@ final class FilesViewModelTests: XCTestCase {
     func testPublicGallery_ArchiveRolePinnedSoTheV1FailsafeCannotDisagree() throws {
         // The pin lives on archivePermissions/archiveAccessRole, not just v2ChildContext, because the
         // V1 legs stamp children from those two — pinning one leg lets a V2 failure re-grant write.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         let vm = PublicArchiveViewModel()
         vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
 
@@ -457,31 +395,6 @@ final class FilesViewModelTests: XCTestCase {
                       "sanity: owner really does imply .edit — else the assertions above are hollow")
         XCTAssertEqual(base.archiveAccessRole, AccessRole.roleForValue(base.currentArchive?.accessRole),
                        "the base class must keep deriving its role from the session archive")
-    }
-
-    func testPublicGallery_PinLiftsWhenStelaNavigationIsOff() throws {
-        // With V2 off there is one listing path, so the disagreement the pin prevents cannot arise.
-        // Keeping it would strip Share, Publish and editable metadata from your own archive.
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
-        let vm = PublicArchiveViewModel()
-        vm.currentArchive = try XCTUnwrap(decodeArchive(accessRole: AccessRole.owner.apiValue))
-
-        XCTAssertEqual(vm.archiveAccessRole, .owner,
-                       "with V2 nav off the gallery must fall back to the archive's real role")
-        XCTAssertTrue(vm.archivePermissions.contains(.edit),
-                      "your own archive browsed with V2 nav off keeps its write permissions")
-
-        // Lifting the pin must not over-grant on someone else's archive: a null/unknown
-        // accessRole already maps to .viewer, so the foreign case is unchanged either way.
-        let foreign = PublicArchiveViewModel()
-        foreign.currentArchive = try XCTUnwrap(decodeArchive(accessRole: ""))
-        XCTAssertEqual(foreign.archiveAccessRole, .viewer,
-                       "a foreign archive must stay read-only even with the pin lifted")
-        XCTAssertFalse(foreign.archivePermissions.contains(.edit),
-                       "lifting the pin must never grant write on a foreign archive")
     }
 
     // MARK: - Record rename: V2 PATCH is own-archive only
@@ -533,14 +446,9 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testCanRenameViaStelaPatch_ForeignRecordIsRejected() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             // The reported scenario: Shares → "Shared with me" → editor role → Rename.
             let shared = SharedFilesViewModel()
-            XCTAssertTrue(shared.usesStelaNavigation, "precondition: Shared opts into the flag")
             XCTAssertFalse(shared.canRenameViaStelaPatch(makeV2Record(archiveId: 2), newName: "new.jpg"),
                            "a shared-with-me record must not reach PATCH /records/{id}")
 
@@ -550,10 +458,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testCanRenameViaStelaPatch_OwnRecordIsAllowed() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             XCTAssertTrue(MyFilesViewModel().canRenameViaStelaPatch(makeV2Record(archiveId: 1), newName: "new.jpg"),
                           "own-archive renames must keep using V2 — the gate must not over-tighten")
@@ -561,10 +465,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testCanRenameViaStelaPatch_OtherGuardsStillHold() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             let vm = MyFilesViewModel()
             let own = makeV2Record(archiveId: 1)
@@ -574,9 +474,6 @@ final class FilesViewModelTests: XCTestCase {
                            "a record with no id must not be PATCHed")
             XCTAssertFalse(vm.canRenameViaStelaPatch(makeV2Folder(role: .owner), newName: "new"),
                            "folder rename has no V2 route")
-
-            FeatureFlags.useStelaNavigation = false
-            XCTAssertFalse(vm.canRenameViaStelaPatch(own, newName: "new.jpg"), "flag off means V1")
         }
     }
 
@@ -591,10 +488,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testRename_ForeignRecord_GoesStraightToV1() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-
         withSessionArchive {
             let vm = RenameSpyViewModel()
             var status: RequestStatus?
@@ -1113,6 +1006,8 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - archivePermissions (no session)
 
     func testArchivePermissions_NoSession_DefaultsToRead() {
+        // A UI test run can leave its account signed in on this simulator.
+        AuthenticationManager.shared.session = nil
         let vm = FilesViewModel()
         XCTAssertEqual(vm.archivePermissions, [.read])
     }
@@ -1120,6 +1015,7 @@ final class FilesViewModelTests: XCTestCase {
     // MARK: - archiveAccessRole (no session)
 
     func testArchiveAccessRole_NoSession_DefaultsToViewer() {
+        AuthenticationManager.shared.session = nil
         let vm = FilesViewModel()
         XCTAssertEqual(vm.archiveAccessRole, .viewer)
     }
@@ -1137,6 +1033,55 @@ final class FilesViewModelTests: XCTestCase {
             }
         }
         wait(for: [expectation], timeout: 1.0)
+    }
+
+    // MARK: - A drop's move
+
+    func testADropsMove_SendsTheFiles_AndLeavesAPendingPasteAlone() {
+        let vm = FilesViewModel()
+        vm.fileAction = .copy
+        vm.selectedFiles = [makeRecordFile(name: "picked.jpg")]
+        var sent: [FileModel] = []
+        vm.relocateV1Request = { files, _, completion in sent = files; completion(.success) }
+        let moved = expectation(description: "moved")
+        var status: RequestStatus?
+
+        vm.moveDropped([makeRecordFile()], to: makeFolderFile()) { status = $0; moved.fulfill() }
+        wait(for: [moved], timeout: 1)
+
+        XCTAssertEqual(status, .success)
+        XCTAssertEqual(sent.map(\.name), ["photo.jpg"])
+        XCTAssertEqual(vm.fileAction, .copy, "the paste bar's action is not the drop's")
+        XCTAssertEqual(vm.selectedFiles?.map(\.name), ["picked.jpg"])
+    }
+
+    func testMoveHere_StillClearsItsPendingMove() {
+        let vm = FilesViewModel()
+        vm.fileAction = .move
+        vm.selectedFiles = [makeRecordFile()]
+        vm.relocateV1Request = { _, _, completion in completion(.success) }
+        let moved = expectation(description: "moved")
+
+        vm.relocate(files: [makeRecordFile()], to: makeFolderFile()) { _ in moved.fulfill() }
+        wait(for: [moved], timeout: 1)
+
+        XCTAssertEqual(vm.fileAction, FileAction.none)
+        XCTAssertEqual(vm.selectedFiles, [])
+    }
+
+    func testDroppedRows_AreFoundAndRemovedByTheirIds_NotByTheWholeRow() {
+        let vm = FilesViewModel()
+        func row(_ name: String, _ folderLinkId: Int) -> FileModel {
+            FileModel(name: name, recordId: 1, folderLinkId: folderLinkId, archiveNbr: "0001", type: "type.record.image", permissions: [.read])
+        }
+        vm.viewModels = [row("a.jpg", 21), row("b.jpg", 22), row("c.jpg", 23)]
+        let renamedA = row("a (new thumbnail).jpg", 21)
+
+        XCTAssertTrue(vm.lists(renamedA))
+        vm.removeListedRows(of: [renamedA, row("gone.jpg", 99), row("c.jpg", 23)])
+
+        XCTAssertEqual(vm.viewModels.map(\.name), ["b.jpg"], "a missing row does not stop the rest from going")
+        XCTAssertFalse(vm.lists(renamedA))
     }
 
     // MARK: - Stela V2 copy routing (POST /records/{id}/copies)
@@ -1165,21 +1110,14 @@ final class FilesViewModelTests: XCTestCase {
         return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
     }
 
-    /// Runs `body` with a session whose selected archive is the mock (archiveID 1) and the
-    /// Stela flag ON, restoring both afterwards.
+    /// Runs `body` with a session whose selected archive is the mock (archiveID 1),
+    /// restoring the previous session afterwards.
     private func withStelaSessionArchive(_ body: () -> Void) {
         let previousSession = AuthenticationManager.shared.session
-        let previousFlag = FeatureFlags.useStelaNavigation
         let session = PermSession(token: "test_token")
         session.selectedArchive = ArchiveVOData.mock() // archiveID 1
         AuthenticationManager.shared.session = session
-        FeatureFlags.useStelaNavigation = true
-        defer {
-            AuthenticationManager.shared.session = previousSession
-            // Restore what was there, not a literal: the ambient value is derived from APIEnvironment, so
-            // restoring a hardcoded false silently changed what every later test saw.
-            FeatureFlags.useStelaNavigation = previousFlag
-        }
+        defer { AuthenticationManager.shared.session = previousSession }
         body()
     }
 
@@ -1187,37 +1125,13 @@ final class FilesViewModelTests: XCTestCase {
         withStelaSessionArchive {
             let vm = MyFilesViewModel()
             XCTAssertTrue(vm.isEligibleForStelaCopy(makeV2Record(recordId: 100, archiveId: 1)),
-                          "own-archive saved record with the flag on is eligible")
+                          "own-archive saved record is eligible")
             XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2FolderTarget()),
                            "folders have no V2 copy route")
             XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2Record(recordId: 100, archiveId: 999)),
                            "a foreign-archive record would be rejected on the bearer-only V2 copy")
             XCTAssertFalse(vm.isEligibleForStelaCopy(makeV2Record(recordId: 0, archiveId: 1)),
                            "an unsaved record (recordId 0) is not eligible")
-        }
-    }
-
-    func testIsEligibleForStelaCopy_FlagOff_False() {
-        let previousSession = AuthenticationManager.shared.session
-        let session = PermSession(token: "test_token")
-        session.selectedArchive = ArchiveVOData.mock()
-        AuthenticationManager.shared.session = session
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer {
-            AuthenticationManager.shared.session = previousSession
-            FeatureFlags.useStelaNavigation = previousFlag
-        }
-
-        XCTAssertFalse(MyFilesViewModel().isEligibleForStelaCopy(makeV2Record()),
-                       "flag off keeps every record on V1")
-    }
-
-    func testIsEligibleForStelaCopy_BaseViewModelNeverStela() {
-        withStelaSessionArchive {
-            // Base FilesViewModel returns usesStelaNavigation == false regardless of the flag.
-            XCTAssertFalse(FilesViewModel().isEligibleForStelaCopy(makeV2Record()),
-                           "workspaces that never opt into Stela keep copy on V1")
         }
     }
 
@@ -1771,6 +1685,110 @@ final class FilesViewModelTests: XCTestCase {
         XCTAssertEqual(vm.fileAction, .none, "the guard must reset fileAction so the copy state isn't left stuck")
     }
 
+    /// A V1 `getPublicRoot` folder carrying the identity fields publish and relocate key on.
+    private func makePublicRootVO(folderId: Int = 599, folderLinkId: Int = 703) -> FolderVOData? {
+        let json = #"{"folderId": \#(folderId), "folderLinkId": \#(folderLinkId), "archiveNbr": "0001-0004", "type": "type.folder.public"}"#
+        return try? FolderVOData.decoder.decode(FolderVOData.self, from: Data(json.utf8))
+    }
+
+    // MARK: - publish via the V2 public root
+    // The root comes from the Stela archives chain with V1 `getPublicRoot` as the failsafe. The copy
+    // step keeps its own routing: own-archive records via V2, folders via the V1 batch.
+
+    func testPublish_V2PublicRootResolves_CopiesRecordIntoThatChild() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            vm.publicRootV1Request = { _, _ in XCTFail("V2 resolved the public root, so the V1 lookup must not run") }
+            var copiedInto: [String] = []
+            vm.copyRecordV2Request = { _, destinationFolderId, completion in
+                copiedInto.append(destinationFolderId)
+                completion(true)
+            }
+            vm.relocateV1Request = { _, _, _ in XCTFail("an own-archive record copies via V2, not the V1 batch") }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2Record(recordId: 1, archiveId: 1)]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(copiedInto, ["599"], "the destination is the public-root child the V2 chain selected")
+            XCTAssertEqual(vm.fileAction, .none)
+        }
+    }
+
+    func testPublish_V2ResolutionFails_FallsBackToV1PublicRoot() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            // An archive list without the selected archive, so the V2 chain returns nil.
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"9999","rootFolderId":"500"}]}"#))) }
+            var v1Lookups = 0
+            vm.publicRootV1Request = { _, completion in
+                v1Lookups += 1
+                completion(.success(folder: self.makePublicRootVO()))
+            }
+            var copiedInto: [String] = []
+            vm.copyRecordV2Request = { _, destinationFolderId, completion in
+                copiedInto.append(destinationFolderId)
+                completion(true)
+            }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2Record(recordId: 1, archiveId: 1)]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(v1Lookups, 1, "the V1 lookup is the failsafe, and runs exactly once")
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(copiedInto, ["599"], "the V1 folder's id still routes the record through the V2 copy")
+        }
+    }
+
+    func testPublish_V1FailsafeFails_CompletesWithErrorAndResetsFileAction() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            vm.archivesFetchV2Request = { $0(.failure(APIError.unknown)) }
+            vm.publicRootV1Request = { _, completion in completion(.error(message: "boom")) }
+            vm.copyRecordV2Request = { _, _, _ in XCTFail("no destination, so nothing to copy") }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2Record(recordId: 1, archiveId: 1)]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .error(message: "boom"))
+            XCTAssertEqual(vm.fileAction, .none, "an error must not leave the copy state stuck")
+        }
+    }
+
+    func testPublish_Folder_UsesV1RelocateWithTheV2ResolvedDestination() {
+        withStelaSessionArchive {
+            let vm = StelaCopyViewModel()
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            vm.copyRecordV2Request = { _, _, _ in XCTFail("folders have no V2 copy route") }
+            var destinations: [FileModel] = []
+            vm.relocateV1Request = { _, destination, completion in
+                destinations.append(destination)
+                completion(.success)
+            }
+
+            let exp = expectation(description: "completion")
+            var status: RequestStatus?
+            vm.publish(files: [makeV2FolderTarget()]) { status = $0; exp.fulfill() }
+            wait(for: [exp], timeout: 1.0)
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(destinations.map { $0.folderLinkId }, [703], "the V1 batch keys on the public root's folderLinkId")
+        }
+    }
+
     // MARK: - delete edge case
 
     func testDelete_NilFiles_ReturnsError() {
@@ -1807,10 +1825,24 @@ final class FilesViewModelTests: XCTestCase {
 
     // MARK: - PublicRootRequestStatus
 
-    func testPublicRootRequestStatus_Equatable() {
-        let a = PublicRootRequestStatus.success(folder: nil)
-        let b = PublicRootRequestStatus.error(message: "fail")
-        XCTAssertEqual(a, b)
+    func testPublicRootRequestStatus_SuccessAndErrorAreNotEqual() {
+        let success = PublicRootRequestStatus.success(folder: nil)
+        let error = PublicRootRequestStatus.error(message: "fail")
+        XCTAssertNotEqual(success, error, "the operator used to return true for every pair")
+        XCTAssertEqual(success, .success(folder: nil))
+        XCTAssertEqual(error, .error(message: "fail"))
+        XCTAssertNotEqual(error, .error(message: "other"))
+        XCTAssertEqual(PublicRootRequestStatus.success(folder: makePublicRootVO()), .success(folder: makePublicRootVO()))
+        XCTAssertNotEqual(PublicRootRequestStatus.success(folder: makePublicRootVO()), .success(folder: nil))
+        XCTAssertNotEqual(PublicRootRequestStatus.success(folder: makePublicRootVO()), .success(folder: makePublicRootVO(folderId: 1)))
+    }
+
+    func testPublicRootRequestStatus_FromOperationResult_EveryCaseCompletes() {
+        // `.file` is the case the old `default: break` swallowed, leaving the publish spinner up forever.
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .file(nil, nil)), .error(message: .errorMessage))
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .error(nil, nil)), .error(message: nil))
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .json(nil, nil)), .error(message: .errorMessage))
+        XCTAssertEqual(PublicRootRequestStatus(operationResult: .json(["isSuccessful": false], nil)), .error(message: .errorMessage))
     }
 
     // MARK: - CheckboxState
@@ -1911,13 +1943,15 @@ final class FilesViewModelTests: XCTestCase {
     // navigation retries once, and it must never run the V1 failsafe and overwrite a newer listing.
 
     /// Folder target built via the V2 decode path (folderId > 0 — the convenience
-    /// init(name:recordId:...) can't set folderId).
-    private func makeV2FolderTarget(folderId: Int = 10) -> FileModel {
+    /// init(name:recordId:...) can't set folderId). `archiveId` and `sort` are sent only when given.
+    private func makeV2FolderTarget(folderId: Int = 10, archiveId: Int? = nil, sort: String? = nil, permissions: [Permission] = [.read]) -> FileModel {
+        let archiveField = archiveId.map { ", \"archiveId\": \"\($0)\"" } ?? ""
+        let sortField = sort.map { ", \"sort\": \"\($0)\"" } ?? ""
         let json = """
         { "items": [ { "folderId": "\(folderId)", "displayName": "Folder \(folderId)", "type": "private",
-          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test" } ] }
+          "status": "ok", "folderLinkId": "11", "archiveNumber": "0001-test"\(archiveField)\(sortField) } ] }
         """
-        return FileModel(model: decodeChildren(json)!.items![0], permissions: [.read], accessRole: .viewer)
+        return FileModel(model: decodeChildren(json)!.items![0], permissions: permissions, accessRole: .viewer)
     }
 
     /// MyFilesViewModel with the flag pinned ON and the fetch seam scripted to return
@@ -1936,9 +1970,6 @@ final class FilesViewModelTests: XCTestCase {
     private var navParams: NavigateMinParams { ("0001-test", 11, nil) }
 
     func testNavigateV2_Committed_AppendsTargetAndSucceeds() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.committed])
         let target = makeV2FolderTarget()
         vm.v2NavigationTarget = target
@@ -1952,9 +1983,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_ForwardSupersededOnce_RetriesAndWins() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .committed])
         let target = makeV2FolderTarget()
         vm.v2NavigationTarget = target
@@ -1968,9 +1996,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_ForwardSupersededTwice_CompletesQuietlyWithoutNavigating() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded, .superseded])
         vm.v2NavigationTarget = makeV2FolderTarget()
 
@@ -1983,9 +2008,6 @@ final class FilesViewModelTests: XCTestCase {
     }
 
     func testNavigateV2_BackOrRefreshSuperseded_CompletesQuietlyWithoutRetry() {
-        let previousFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = previousFlag }
         let (vm, fetchCount) = makeNavVM(outcomes: [.superseded])
         let current = makeV2FolderTarget()
         vm.navigationStack.append(current)
@@ -2151,12 +2173,9 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    // --- getRoot end-to-end (flag ON): resolve → seed → V2 navigate ---
+    // --- getRoot end-to-end: resolve → seed → V2 navigate ---
 
-    func testGetRoot_StelaOn_SeedsMyFilesAndNavigatesV2() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
+    func testGetRoot_SeedsMyFilesAndNavigatesV2() {
         withMyFilesVM { vm in
             vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
             vm.rootChildrenFetchV2Request = { _, completion in
@@ -2171,25 +2190,6 @@ final class FilesViewModelTests: XCTestCase {
             XCTAssertEqual(status, .success)
             XCTAssertEqual(vm.navigationStack.last?.folderId, 600, "landed inside the My Files folder via V2")
             XCTAssertNil(vm.v2NavigationTarget, "forward navigation consumes the one-shot target")
-        }
-    }
-
-    func testGetRoot_StelaOff_RoutesToV1WithoutV2Discovery() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = false
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
-        withMyFilesVM { vm in
-            var archivesFetched = false
-            var childrenFetched = false
-            vm.archivesFetchV2Request = { _ in archivesFetched = true }
-            vm.rootChildrenFetchV2Request = { _, _ in childrenFetched = true }
-
-            // Router decision is synchronous; the V1 branch's network call is fire-and-forget
-            // and not awaited (we only assert the routing, so this stays non-flaky).
-            vm.getRoot { _ in }
-
-            XCTAssertFalse(archivesFetched, "flag OFF must not enter V2 root discovery")
-            XCTAssertFalse(childrenFetched, "flag OFF must not enter V2 root discovery")
         }
     }
 
@@ -2343,10 +2343,7 @@ final class FilesViewModelTests: XCTestCase {
         }
     }
 
-    func testPublicFiles_getRoot_StelaOn_SeedsPublicRootAndNavigatesV2() {
-        let prevFlag = FeatureFlags.useStelaNavigation
-        FeatureFlags.useStelaNavigation = true
-        defer { FeatureFlags.useStelaNavigation = prevFlag }
+    func testPublicFiles_getRoot_SeedsPublicRootAndNavigatesV2() {
         withPublicFilesVM { vm in
             vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
             vm.rootChildrenFetchV2Request = { _, completion in
@@ -2360,6 +2357,391 @@ final class FilesViewModelTests: XCTestCase {
             XCTAssertEqual(status, .success)
             XCTAssertEqual(vm.navigationStack.last?.folderId, 599, "landed inside the public root via V2")
             XCTAssertNil(vm.v2NavigationTarget, "forward navigation consumes the one-shot target")
+        }
+    }
+
+    // MARK: - Public Files V1 failsafe
+
+    /// Public Files with the V1 root leg stubbed. A real `getPublicRoot` carries a Bearer token whose
+    /// 401 logs out asynchronously and clears the session later tests read.
+    private final class StubV1PublicFilesViewModel: PublicFilesViewModel {
+        var v1GetRootCallCount = 0
+        var v1GetRootResult: RequestStatus = .success
+
+        override func performV1GetRoot(then handler: @escaping ServerResponse) {
+            v1GetRootCallCount += 1
+            handler(v1GetRootResult)
+        }
+    }
+
+    private func withStubbedV1PublicFilesVM(_ body: (StubV1PublicFilesViewModel) -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock() // archiveNbr "1001"
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        #if DEBUG
+        // A process-wide static, so a leftover value would make the assertions below pass vacuously.
+        FilesViewModel.lastNavigationSource = "none"
+        #endif
+        body(StubV1PublicFilesViewModel())
+    }
+
+    func testPublicFiles_getRoot_ArchiveMissingFromV2List_FallsBackToV1() {
+        withStubbedV1PublicFilesVM { vm in
+            // An archive list without the selected archive, so the rootFolderId lookup returns nil.
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"9999","rootFolderId":"500"}]}"#))) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(vm.v1GetRootCallCount, 1, "V2 resolution returned nil, so the V1 failsafe must run")
+            XCTAssertEqual(status, .success, "the failsafe's outcome is what the screen receives")
+            #if DEBUG
+            XCTAssertNotEqual(FilesViewModel.lastNavigationSource, "v2", "the failsafe must not report itself as V2")
+            #endif
+        }
+    }
+
+    func testPublicFiles_getRoot_NoPublicRootChild_FallsBackToV1() {
+        withStubbedV1PublicFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            // Root children carrying neither a public-root type nor the "Public" display name.
+            let json = #"""
+            { "items": [ { "folderId":"600", "displayName":"My Files", "type":"private-root",
+              "status":"ok", "folderLinkId":"702", "archiveNumber":"0001-0003" } ] }
+            """#
+            vm.rootChildrenFetchV2Request = { _, completion in completion(.success(self.decodeChildren(json)!.items!)) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(vm.v1GetRootCallCount, 1, "no public-root child to land in, so the V1 failsafe runs")
+            XCTAssertEqual(status, .success)
+        }
+    }
+
+    func testPublicFiles_getRoot_HealthyV2_MarksNavigationSourceV2AndSkipsFailsafe() {
+        withStubbedV1PublicFilesVM { vm in
+            vm.archivesFetchV2Request = { $0(.success(self.decodeArchives(#"{"items":[{"archiveNbr":"1001","rootFolderId":"500"}]}"#))) }
+            vm.rootChildrenFetchV2Request = { _, completion in
+                completion(.success(self.decodeChildren(self.archiveRootChildrenJSON())!.items!))
+            }
+            vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+
+            var status: RequestStatus?
+            vm.getRoot { status = $0 }
+
+            XCTAssertEqual(status, .success)
+            XCTAssertEqual(vm.v1GetRootCallCount, 0, "a healthy V2 chain must never reach the failsafe")
+            XCTAssertEqual(vm.navigationStack.last?.folderId, 599)
+            #if DEBUG
+            XCTAssertEqual(FilesViewModel.lastNavigationSource, "v2", "the value a device trace is read against")
+            #endif
+        }
+    }
+
+    func testPublicFiles_V1Failsafe_RequestFails_StillCallsCompletion() {
+        withPublicFilesVM { vm in
+            // The real V1 leg against the offline test session. The point is that the handler fires at
+            // all: a dropped completion leaves the caller's spinner up with no error.
+            let reported = expectation(description: "the V1 failsafe reports back")
+            var status: RequestStatus?
+            vm.performV1GetRoot { outcome in
+                status = outcome
+                reported.fulfill()
+            }
+            wait(for: [reported], timeout: 5)
+            guard case .error = status else {
+                return XCTFail("an offline V1 failsafe must surface an error, got \(String(describing: status))")
+            }
+        }
+    }
+
+    // MARK: - Folder sort: the saved order comes from the backend
+    // Listing a folder adopts its saved sort; a sort change saves through the Stela PATCH with the V1
+    // `/folder/sort` call as the failsafe, then the listing trusts the server order.
+
+    /// Runs `body` with the session on an owner-role archive (archiveID 1), which may persist a sort.
+    private func withEditingSessionArchive(_ body: () -> Void) {
+        let previous = AuthenticationManager.shared.session
+        let json = "{\"archiveId\": 1, \"archiveNbr\": \"0001-test\", \"accessRole\": \"access.role.owner\"}"
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = try? ArchiveVOData.decoder.decode(ArchiveVOData.self, from: json.data(using: .utf8)!)
+        AuthenticationManager.shared.session = session
+        defer { AuthenticationManager.shared.session = previous }
+        body()
+    }
+
+    func testFileModel_V2FolderChild_CarriesTheSavedSort() {
+        XCTAssertEqual(makeV2FolderTarget(sort: "date-descending").savedSortOption, .dateDescending)
+        XCTAssertEqual(makeV2FolderTarget(sort: "type-ascending").savedSortOption, .typeAscending)
+        XCTAssertNil(makeV2FolderTarget().savedSortOption, "a folder without a saved sort")
+        XCTAssertNil(makeV2FolderTarget(sort: "sort.brand_new").savedSortOption, "an unknown value is not guessed")
+    }
+
+    func testFileModel_RecordChildren_NeverCarryASavedSort() throws {
+        let v2 = """
+        { "items": [ { "recordId": "8", "displayName": "photo.jpg", "type": "type.record.image", "status": "ok",
+          "folderLinkId": "12", "sort": "date-descending" } ] }
+        """
+        let v2Record = FileModel(model: decodeChildren(v2)!.items![0], permissions: [.read], accessRole: .viewer)
+        XCTAssertNil(v2Record.savedSortOption, "only folders own a sort")
+
+        let v1Data = try XCTUnwrap("{ \"recordId\": 8, \"displayName\": \"photo.jpg\", \"sort\": \"sort.type_desc\" }".data(using: .utf8))
+        let v1Record = FileModel(model: try JSONDecoder().decode(ItemVO.self, from: v1Data), permissions: [.read], accessRole: .viewer)
+        XCTAssertNil(v1Record.savedSortOption, "the V1 child shape is shared by records and folders")
+    }
+
+    func testFileModel_V1Folder_CarriesTheSavedSortInTheV1Vocabulary() throws {
+        let data = try XCTUnwrap("{ \"folderId\": 10, \"folder_linkId\": 11, \"displayName\": \"Folder\", \"sort\": \"sort.type_desc\" }".data(using: .utf8))
+        let folderVO = try JSONDecoder().decode(MinFolderVO.self, from: data)
+        XCTAssertEqual(FileModel(model: folderVO, permissions: [.read], accessRole: .owner).savedSortOption, .typeDescending)
+    }
+
+    func testOrdered_TrustsTheServerOrderOnlyWhenTheSavedSortIsActive() {
+        let files = [makeRecordFile(name: "cherry"), makeRecordFile(name: "Apple"), makeRecordFile(name: "banana")]
+
+        let trusted = FilesViewModel.ordered(files, activeSort: .nameAscending, savedSort: .nameAscending)
+        XCTAssertEqual(trusted.map { $0.name }, ["cherry", "Apple", "banana"], "the server already ordered it")
+
+        let unknown = FilesViewModel.ordered(files, activeSort: .nameAscending, savedSort: nil)
+        XCTAssertEqual(unknown.map { $0.name }, ["Apple", "banana", "cherry"], "no saved sort → sorted here")
+
+        let stale = FilesViewModel.ordered(files, activeSort: .nameDescending, savedSort: .nameAscending)
+        XCTAssertEqual(stale.map { $0.name }, ["cherry", "banana", "Apple"], "the save failed → sorted here")
+    }
+
+    func testListingSort_NewFolderTakesItsSavedSort_SameFolderKeepsTheChoice() {
+        let vm = MyFilesViewModel()
+        let folder = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+        XCTAssertEqual(vm.listingSort(for: folder), .dateDescending, "a folder not yet on screen lists in its saved sort")
+        XCTAssertEqual(vm.activeSortOption, .nameAscending, "reading the rule commits nothing")
+
+        vm.adoptSavedSort(folderId: 10, savedSort: .dateDescending)
+        XCTAssertEqual(vm.activeSortOption, .dateDescending)
+
+        vm.activeSortOption = .nameDescending
+        XCTAssertEqual(vm.listingSort(for: folder), .nameDescending, "re-listing the folder on screen keeps the picker's choice")
+        XCTAssertEqual(vm.listingSort(for: makeV2FolderTarget(folderId: 20)), .nameDescending, "no saved sort → the choice stays")
+        XCTAssertEqual(vm.listingSort(for: makeV2FolderTarget(folderId: 30, sort: "type-ascending")), .typeAscending)
+    }
+
+    func testNavigateV2_CommitAdoptsTheSavedSort_RefreshingKeepsTheChoice() {
+        let vm = MyFilesViewModel()
+        vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .dateDescending, "entering the folder adopts its saved sort")
+
+        // The user picks another order and the save fails, then the same folder refreshes.
+        vm.activeSortOption = .nameDescending
+        vm.navigateMin(params: navParams, backNavigation: true) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .nameDescending, "a refresh of the same folder keeps the user's choice")
+
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 20)
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .nameDescending, "a folder with no saved sort leaves the option alone")
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 30, sort: "type-ascending")
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .typeAscending)
+    }
+
+    func testNavigateV2_FailedNavigation_AdoptsNothing() {
+        // The V2 fetch fails and the V1 failsafe runs offline, so the user stays in the current folder:
+        // its header must not announce the sort of a folder that was never entered.
+        let vm = MyFilesViewModel()
+        vm.childrenFetchV2Request = { _, completion in completion(.failed(message: "offline")) }
+        vm.v2NavigationTarget = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+
+        let reported = expectation(description: "navigation reports back")
+        var status: RequestStatus?
+        vm.navigateMin(params: navParams, backNavigation: false) { status = $0; reported.fulfill() }
+        wait(for: [reported], timeout: 5)
+
+        guard case .error = status else {
+            return XCTFail("an offline V1 failsafe must surface an error, got \(String(describing: status))")
+        }
+        XCTAssertEqual(vm.activeSortOption, .nameAscending)
+        XCTAssertEqual(vm.listingSort(for: makeV2FolderTarget(folderId: 10, sort: "date-descending")), .dateDescending,
+                       "the folder still counts as not on screen, so the next attempt adopts")
+    }
+
+    func testEmptyingTheStack_LetsTheSameFolderAdoptItsSortAgain() {
+        // Shares: enter a folder, back to the root (no folder, stack emptied), pick a sort there, re-enter.
+        let vm = SharedFilesViewModel()
+        vm.childrenFetchV2Request = { _, completion in completion(.committed) }
+        let folder = makeV2FolderTarget(folderId: 10, sort: "date-descending")
+
+        vm.v2NavigationTarget = folder
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .dateDescending)
+
+        vm.navigationStack.removeAll()
+        vm.activeSortOption = .nameDescending
+
+        vm.v2NavigationTarget = folder
+        vm.navigateMin(params: navParams, backNavigation: false) { _ in }
+        XCTAssertEqual(vm.activeSortOption, .dateDescending, "re-entering from a folderless root adopts the saved sort")
+    }
+
+    func testStelaResponseSavedSort_RequiresTheEchoedSort() {
+        let echoed: [String: Any] = ["data": ["id": "10", "sort": "date-descending"]]
+        XCTAssertTrue(FilesViewModel.stelaResponseSavedSort(echoed, as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort(echoed, as: .nameAscending), "a 200 that kept the old sort did not save")
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort(["data": ["id": "10"]], as: .dateDescending), "a 200 that ignored the field did not save")
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort([:], as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.stelaResponseSavedSort("not json", as: .dateDescending))
+    }
+
+    func testLegacyResponseSavedSort_NeedsSuccessAndAMatchingEchoIfAny() {
+        let echoed: [String: Any] = ["isSuccessful": true, "Results": [["data": [["FolderVO": ["sort": "sort.display_date_desc"]]]]]]
+        XCTAssertTrue(FilesViewModel.legacyResponseSavedSort(echoed, as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.legacyResponseSavedSort(echoed, as: .nameAscending), "the echoed folder still has another sort")
+        XCTAssertTrue(FilesViewModel.legacyResponseSavedSort(["isSuccessful": true], as: .dateDescending), "no echo → success is enough")
+        XCTAssertFalse(FilesViewModel.legacyResponseSavedSort(["isSuccessful": false], as: .dateDescending))
+        XCTAssertFalse(FilesViewModel.legacyResponseSavedSort("not json", as: .dateDescending))
+    }
+
+    func testCanPersistSort_FollowsTheEditPermission() {
+        withEditingSessionArchive {
+            XCTAssertTrue(MyFilesViewModel().canPersistSort, "the archive owner may change a folder's saved sort")
+            XCTAssertFalse(PublicArchiveViewModel().canPersistSort, "a public gallery is read-only whatever the session role")
+
+            let shared = SharedFilesViewModel()
+            XCTAssertFalse(shared.canPersistSort, "no folder on screen at the Shares root")
+            shared.navigationStack = [makeV2FolderTarget(folderId: 10, archiveId: 2, permissions: [.read])]
+            XCTAssertFalse(shared.canPersistSort, "a viewer on a shared folder must not rewrite the owner's sort")
+            shared.navigationStack = [makeV2FolderTarget(folderId: 10, archiveId: 2, permissions: [.read, .edit])]
+            XCTAssertTrue(shared.canPersistSort, "an editor on a shared folder may")
+        }
+        withSessionArchive {
+            XCTAssertFalse(MyFilesViewModel().canPersistSort, "a viewer-role archive may not")
+        }
+    }
+
+    /// A view model on the given folder, with both sort writes scripted. Returns the recorded calls.
+    private func makeSortVM(folder: FileModel, patchSucceeds: Bool, v1Succeeds: Bool)
+        -> (vm: MyFilesViewModel, patches: () -> [(String, SortOption)], saves: () -> [(Int, SortOption)]) {
+        let vm = MyFilesViewModel()
+        vm.navigationStack = [folder]
+        var patches: [(String, SortOption)] = []
+        var saves: [(Int, SortOption)] = []
+        vm.sortPatchV2Request = { folderId, option, done in
+            patches.append((folderId, option))
+            done(patchSucceeds)
+        }
+        vm.sortSaveV1Request = { folderLinkId, option, done in
+            saves.append((folderLinkId, option))
+            done(v1Succeeds)
+        }
+        return (vm, { patches }, { saves })
+    }
+
+    func testSaveSortOption_OwnFolder_PatchesV2AndSkipsTheV1Save() {
+        withEditingSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 1), patchSucceeds: true, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.dateDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, true)
+            XCTAssertEqual(patches().map { $0.0 }, ["10"])
+            XCTAssertEqual(patches().map { $0.1 }, [.dateDescending])
+            XCTAssertTrue(saves().isEmpty, "V2 succeeded, so the V1 failsafe must not run")
+            XCTAssertEqual(vm.activeSortOption, .dateDescending)
+            XCTAssertEqual(vm.navigationStack.last?.savedSortOption, .dateDescending,
+                           "the stack's copy follows the save, so the refresh trusts the server order")
+        }
+    }
+
+    func testSaveSortOption_PatchFails_FallsBackToTheV1Save() {
+        withEditingSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 1), patchSucceeds: false, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.typeAscending) { saved = $0 }
+
+            XCTAssertEqual(saved, true)
+            XCTAssertEqual(patches().count, 1)
+            XCTAssertEqual(saves().map { $0.0 }, [11], "V1 addresses the folder by folder_linkId")
+            XCTAssertEqual(saves().map { $0.1 }, [.typeAscending])
+            XCTAssertEqual(vm.navigationStack.last?.savedSortOption, .typeAscending)
+        }
+    }
+
+    func testSaveSortOption_BothWritesFail_ReportsFalseAndKeepsTheChoiceLocally() {
+        withEditingSessionArchive {
+            let folder = makeV2FolderTarget(archiveId: 1, sort: "alphabetical-ascending")
+            let (vm, patches, saves) = makeSortVM(folder: folder, patchSucceeds: false, v1Succeeds: false)
+
+            var saved: Bool?
+            vm.saveSortOption(.dateAscending) { saved = $0 }
+
+            XCTAssertEqual(saved, false)
+            XCTAssertEqual(patches().count, 1)
+            XCTAssertEqual(saves().count, 1)
+            XCTAssertEqual(vm.activeSortOption, .dateAscending, "the picker still shows what the user chose")
+            XCTAssertEqual(vm.navigationStack.last?.savedSortOption, .nameAscending,
+                           "the server still has the old sort, so the next listing is sorted client-side")
+        }
+    }
+
+    func testSaveSortOption_ForeignFolder_SkipsThePatchAndSavesOnV1() {
+        withEditingSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 2), patchSucceeds: true, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.nameDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, true)
+            XCTAssertTrue(patches().isEmpty, "a bearer-only PATCH on a foreign archive risks the 401 force-logout")
+            XCTAssertEqual(saves().count, 1)
+        }
+    }
+
+    func testSaveSortOption_WithoutEditPermission_OnlyChangesThePicker() {
+        withSessionArchive {
+            let (vm, patches, saves) = makeSortVM(folder: makeV2FolderTarget(archiveId: 1), patchSucceeds: true, v1Succeeds: true)
+
+            var saved: Bool?
+            vm.saveSortOption(.dateDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, false)
+            XCTAssertTrue(patches().isEmpty)
+            XCTAssertTrue(saves().isEmpty, "a viewer's choice stays on the device")
+            XCTAssertEqual(vm.activeSortOption, .dateDescending)
+        }
+    }
+
+    func testSaveSortOption_NoCurrentFolder_ReportsFalseWithoutRequests() {
+        withEditingSessionArchive {
+            let vm = MyFilesViewModel()
+            var requests = 0
+            vm.sortPatchV2Request = { _, _, done in requests += 1; done(true) }
+            vm.sortSaveV1Request = { _, _, done in requests += 1; done(true) }
+
+            var saved: Bool?
+            vm.saveSortOption(.dateDescending) { saved = $0 }
+
+            XCTAssertEqual(saved, false)
+            XCTAssertEqual(requests, 0)
+            XCTAssertEqual(vm.activeSortOption, .dateDescending, "the picker still shows the choice")
+        }
+    }
+
+    func testCanPatchSortViaStela_OwnArchiveWithAFolderId_UntilStelaRejectsTheField() {
+        withEditingSessionArchive {
+            let vm = MyFilesViewModel()
+            XCTAssertTrue(vm.canPatchSortViaStela(makeV2FolderTarget(archiveId: 1)))
+            XCTAssertFalse(vm.canPatchSortViaStela(makeV2FolderTarget(archiveId: 2)), "foreign archive")
+            XCTAssertFalse(vm.canPatchSortViaStela(makeFolderFile()), "the convenience init has no folderId")
+
+            FilesViewModel.stelaRejectsSortPatch = true
+            defer { FilesViewModel.stelaRejectsSortPatch = false }
+            XCTAssertFalse(vm.canPatchSortViaStela(makeV2FolderTarget(archiveId: 1)),
+                           "after a 400 the session goes straight to V1 instead of failing every time")
         }
     }
 }

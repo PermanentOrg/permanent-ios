@@ -12,6 +12,10 @@ enum ArchiveV2Endpoint {
     /// bootstraps V2 navigation without a V1 `getRoot` call.
     case searchArchives(callerMembershipRoles: [String], pageSize: Int)
 
+    /// Remaining storage on the account that pays for an archive. A 404 means the archive has no
+    /// payer the caller can see, which is not an error here.
+    case payerAccountStorage(archiveId: Int)
+
     /// Every archive-membership role. The search requires a query or a role, so passing all of them
     /// resolves the selected archive whatever the caller's role on it.
     static let allMembershipRoles = ["owner", "manager", "curator", "editor", "contributor", "viewer"]
@@ -50,6 +54,9 @@ extension ArchiveV2Endpoint: RequestProtocol {
             items.append(URLQueryItem(name: "pageSize", value: "\(pageSize)"))
             components?.queryItems = items
             return components?.url?.absoluteString
+
+        case .payerAccountStorage(let archiveId):
+            return "\(baseURL)api/v2/archives/\(archiveId)/payer-account-storage"
         }
     }
 
@@ -57,7 +64,7 @@ extension ArchiveV2Endpoint: RequestProtocol {
         return ["Content-Type": "application/json", "Request-Version": "2"]
     }
 
-    /// Root discovery has a V1 failsafe, so a 401 here must not force-logout — it can be a
-    /// foreign-archive rejection, and real expiry surfaces through the V1 call that follows.
+    /// Both reads have a fallback path, so a 401 here must not force-logout — it can be a
+    /// foreign-archive rejection, and real expiry surfaces through the call that follows.
     var ignoreErrors: Bool { true }
 }

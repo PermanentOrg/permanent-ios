@@ -108,26 +108,28 @@ class DrawerViewController: UIViewController {
     }
     
     func changeRoot(viewController: UIViewController) {
+        let workspace = Self.workspace(of: viewController)
+        // Picked files, and a Move or Copy waiting for its folder, stay in the workspace they were picked in.
+        if workspace == nil || workspace != Self.workspace(of: rootViewController.viewControllers.first) {
+            AuthenticationManager.shared.session?.selectedFiles = nil
+            AuthenticationManager.shared.session?.fileAction = nil
+        }
         rootViewController.changeRootController(viewController: viewController)
-        
-        switch viewController {
-            
-        case _ where viewController is MainViewController:
-            if (viewController as! MainViewController).viewModel is PublicFilesViewModel {
-                leftSideMenuController.selectedMenuOption = .publicFiles
-            } else {
-                leftSideMenuController.selectedMenuOption = .files
-            }
-            
-        case _ where viewController is SharesViewController:
-            leftSideMenuController.selectedMenuOption = .shares
-            
-        default:
-            break
+        if let workspace {
+            leftSideMenuController.selectedMenuOption = workspace
         }
         
         if isLeftMenuExpanded {
             toggleMenu()
+        }
+    }
+
+    /// The side menu's workspace a screen shows, or nil for any other screen.
+    static func workspace(of viewController: UIViewController?) -> DrawerOption? {
+        switch viewController {
+        case let files as MainViewController: return files.viewModel is PublicFilesViewModel ? .publicFiles : .files
+        case is SharesViewController: return .shares
+        default: return nil
         }
     }
     

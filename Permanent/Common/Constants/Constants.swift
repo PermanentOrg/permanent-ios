@@ -12,18 +12,6 @@ typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
-/// Compile-time switches, with no server-side Remote Config: flip a value and ship a build.
-/// Immutable `let`s in Release; `var`s in DEBUG only so tests can pin them and defer-restore.
-enum FeatureFlags {
-    /// Master switch for the Stela V2 path, with V1 as an automatic failsafe everywhere except publish.
-    /// Off in every build while the migration is deferred; `--forceStelaNavigation` flips it at launch.
-    #if DEBUG || STAGING_ENVIRONMENT
-    static var useStelaNavigation = false
-    #else
-    static let useStelaNavigation = false
-    #endif
-}
-
 struct Font { }
 
 struct TextFontStyle {
@@ -71,6 +59,9 @@ struct TextFontStyle {
     static let style50 = TextStyle(UIFont(name: "Usual-Medium", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style51 = TextStyle(UIFont(name: "Usual-Medium", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style52 = TextStyle(UIFont(name: "Usual-Medium", size: 8)!, TextStyle.calculateSpacing(fontSize: CGFloat(8), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    /// Usual Regular 12pt on a 16pt line.
+    static let smallRegular = TextStyle(UIFont(name: "Usual-Regular", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(16)), NSTextAlignment.natural)
+    static let smallRegularLineHeight: CGFloat = 16
 }
 
 struct Constants {
@@ -141,6 +132,7 @@ extension Constants.API {
 
 extension Constants.API.FileType {
     static let myFilesFolder = "My Files"
+    static let publicFilesFolder = "Public"
 
     static let typeFolderRootPrivate = "type.folder.root.private"
     static let typeFolderRootPublic = "type.folder.root.public"

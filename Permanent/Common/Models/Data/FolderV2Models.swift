@@ -33,6 +33,9 @@ struct FolderV2Data: Model {
     let thumbnailUrls: ThumbnailUrlsV2?
     let shares: [RecordShareV2]?
     let pendingShares: [PendingShareV2]?
+    /// The caller's effective role on this folder, as Stela computes it across membership, shares,
+    /// share token and public access. Short form ("owner"), which `AccessRole.roleForValue` accepts.
+    let accessRole: String?
 
     init(folderId: String? = nil,
          displayName: String? = nil,
@@ -52,7 +55,8 @@ struct FolderV2Data: Model {
          paths: FolderPathsV2? = nil,
          thumbnailUrls: ThumbnailUrlsV2? = nil,
          shares: [RecordShareV2]? = nil,
-         pendingShares: [PendingShareV2]? = nil) {
+         pendingShares: [PendingShareV2]? = nil,
+         accessRole: String? = nil) {
         self.folderId = folderId
         self.displayName = displayName
         self.size = size
@@ -72,6 +76,7 @@ struct FolderV2Data: Model {
         self.thumbnailUrls = thumbnailUrls
         self.shares = shares
         self.pendingShares = pendingShares
+        self.accessRole = accessRole
     }
 }
 
@@ -160,6 +165,7 @@ struct FolderChildV2Data: Model {
     // Per-item access (folder/record both carry it under Stela). Unused on the
     // Private Files path (permissions are archive-derived) but decoded for reuse.
     let shares: [RecordShareV2]?
+    let sort: String?
 
     /// Returns true if this item is a folder (has folderId but no recordId)
     var isFolder: Bool {

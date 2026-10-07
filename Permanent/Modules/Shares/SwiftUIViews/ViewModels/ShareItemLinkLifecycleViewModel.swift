@@ -286,35 +286,27 @@ extension ShareItemViewModel {
     // MARK: - V2 Load for Existing Links
 
     private func tryLoadV2DataForExistingLink() {
-        // Attempt to load V2 data for existing share links to get access restrictions info
-        // Use sharebyURLID if available, otherwise fall back to the file-based method
-        if let shareVO = self.shareVO, let sharebyURLID = shareVO.sharebyURLID {
-            shareManagementRepository.getShareLinkV2(shareLinkId: String(sharebyURLID)) { [weak self] v2Data, error in
-                Task {
-                    await MainActor.run {
-                        guard let self = self else { return }
-
-                        if let v2Data = v2Data {
-                            self.shareLinkV2Data = v2Data
-                            self.setAccessLevelFromV2Data(v2Data)
-                        }
-                        self.fetchSharedArchives()
-                    }
+        // V2 looks a share link up by id only, so an item without one skips straight to
+        // refreshing its archive list.
+        guard let sharebyURLID = self.shareVO?.sharebyURLID else {
+            Task {
+                await MainActor.run {
+                    self.fetchSharedArchives()
                 }
             }
-        } else {
-            // Fallback to the file-based method (which currently returns nil)
-            shareManagementRepository.getShareLinkV2(file: fileModel) { [weak self] v2Data, error in
-                Task {
-                    await MainActor.run {
-                        guard let self = self else { return }
+            return
+        }
 
-                        if let v2Data = v2Data {
-                            self.shareLinkV2Data = v2Data
-                            self.setAccessLevelFromV2Data(v2Data)
-                        }
-                        self.fetchSharedArchives()
+        shareManagementRepository.getShareLinkV2(shareLinkId: String(sharebyURLID)) { [weak self] v2Data, error in
+            Task {
+                await MainActor.run {
+                    guard let self = self else { return }
+
+                    if let v2Data = v2Data {
+                        self.shareLinkV2Data = v2Data
+                        self.setAccessLevelFromV2Data(v2Data)
                     }
+                    self.fetchSharedArchives()
                 }
             }
         }

@@ -9,10 +9,6 @@ import Foundation
 
 class SearchFilesViewModel: FilesViewModel {
 
-    /// Search results come from V1, but drilling into a result folder can use V2 with the V1 failsafe.
-    /// The controller seeds the target on a folder tap; back and refresh use the navigation stack.
-    override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
-
     override var currentFolderIsRoot: Bool { return navigationStack.count == 0 }
     
     var searchTimer: Timer?
@@ -64,13 +60,9 @@ class SearchFilesViewModel: FilesViewModel {
             } else {
                 return "Tags".localized() + " (\(selectedTagVOs.count))"
             }
-        case 1: return currentFolderIsRoot ? "Results".localized() : activeSortOption.title
+        case 1: return currentFolderIsRoot && !isLoadingFirstPage ? "Results".localized() : listingSortTitle
         default: return ""
         }
-    }
-    
-    override var shouldDisplayBackgroundView: Bool {
-        syncedViewModels.isEmpty && uploadQueue.isEmpty
     }
     
     override var numberOfSections: Int {
@@ -87,8 +79,7 @@ class SearchFilesViewModel: FilesViewModel {
     
     func heightForSection(_ section: Int) -> Double {
         switch section {
-        case 0: return 40
-        case 1: return 40
+        case 0, 1: return Double(FileCollectionViewHeaderCell.height)
         default: return 0
         }
     }

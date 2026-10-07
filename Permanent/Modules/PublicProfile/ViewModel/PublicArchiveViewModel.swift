@@ -19,18 +19,10 @@ class PublicArchiveViewModel: FilesViewModel {
         }
     }
     
-    /// V2 drill-in for the Public Gallery, with V1 as the failsafe. Root discovery stays on V1, since
-    /// `/archives` is membership-scoped and never lists a foreign archive; the listing itself is not.
-    override var usesStelaNavigation: Bool { FeatureFlags.useStelaNavigation }
-
-    /// Read-only while V2 navigation is on, pinned at the archive level so every listing path agrees —
-    /// otherwise capabilities depend on which backend served the listing. Governs own-archive browsing.
-    override var archivePermissions: [Permission] {
-        usesStelaNavigation ? [.read] : super.archivePermissions
-    }
-    override var archiveAccessRole: AccessRole {
-        usesStelaNavigation ? .viewer : super.archiveAccessRole
-    }
+    /// Read-only, pinned at the archive level so every listing path agrees — otherwise
+    /// capabilities depend on which backend served the listing. Governs own-archive browsing.
+    override var archivePermissions: [Permission] { [.read] }
+    override var archiveAccessRole: AccessRole { .viewer }
 
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
 
@@ -103,9 +95,7 @@ class PublicArchiveViewModel: FilesViewModel {
 
         // Stela can't discover a foreign archive's root, so V1 stays the bootstrap and seeds the public
         // root as the V2 target. The `folderId > 0` gate means this can only add an attempt.
-        if usesStelaNavigation {
-            v2NavigationTarget = FileModel(model: folderVO)
-        }
+        v2NavigationTarget = FileModel(model: folderVO)
 
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)

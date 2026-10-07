@@ -17,16 +17,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Qju-dd-gQn">
-                                <rect key="frame" x="20" y="116" width="374" height="232"/>
-                                <segments>
-                                    <segment title="First"/>
-                                    <segment title="Second"/>
-                                </segments>
+                            <control opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" placeholderIntrinsicWidth="infinite" placeholderIntrinsicHeight="32" translatesAutoresizingMaskIntoConstraints="NO" id="Qju-dd-gQn" customClass="SlidingTabControl" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="20" y="116" width="374" height="32"/>
                                 <connections>
                                     <action selector="segmentedControlValueChanged:" destination="b58-5x-32K" eventType="valueChanged" id="nTb-d1-0iI"/>
                                 </connections>
-                            </segmentedControl>
+                            </control>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eVQ-eX-BfZ">
                                 <rect key="frame" x="20" y="362" width="92.5" height="30"/>
                                 <subviews>

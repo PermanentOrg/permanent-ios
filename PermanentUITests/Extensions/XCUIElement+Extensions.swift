@@ -13,6 +13,20 @@ extension XCUIElement {
         let endCoord = startCoord.withOffset(CGVector(dx: 0.0, dy: 500));
         startCoord.press(forDuration: 0.5, thenDragTo: endCoord)
     }
+
+    /// `true` once the element can take a tap and its frame is the same on two looks in a row.
+    func waitUntilSettled(timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        var lastFrame = CGRect.null
+        while Date() < deadline {
+            if exists && isHittable {
+                if frame == lastFrame { return true }
+                lastFrame = frame
+            }
+            Thread.sleep(forTimeInterval: 0.25)
+        }
+        return false
+    }
 }
 
 extension XCUIElement {

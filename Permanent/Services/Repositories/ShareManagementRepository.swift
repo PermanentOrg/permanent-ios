@@ -57,12 +57,6 @@ class ShareManagementRepository {
         }
     }
     
-    func getShareLinkV2(file: FileModel, then completion: @escaping ShareLinkV2Handler) {
-        remoteDataSource.getShareLinkV2(file: file) { result, error in
-            completion(result, error)
-        }
-    }
-    
     func getShareLinkV2(shareLinkId: String, then completion: @escaping ShareLinkV2Handler) {
         remoteDataSource.getShareLinkV2(shareLinkId: shareLinkId) { result, error in
             completion(result, error)

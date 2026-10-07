@@ -23,13 +23,13 @@ enum ResponseType {
     case file
 }
 
-/// HTTP request methods.
+/// HTTP request methods. A method goes out as written, and iOS 27 no longer capitalises a lower-case PATCH.
 enum RequestMethod: String {
     case get = "GET"
-    case post
-    case put
-    case patch
-    case delete
+    case post = "POST"
+    case put = "PUT"
+    case patch = "PATCH"
+    case delete = "DELETE"
 }
 
 typealias RequestHeaders = [String: String]

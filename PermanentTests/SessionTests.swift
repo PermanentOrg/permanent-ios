@@ -94,4 +94,31 @@ class SessionTests: XCTestCase {
         let nav = UINavigationController(rootViewController: AuthenticationViewController())
         XCTAssertFalse(RootViewController.shouldPresentSessionExpiry(current: nav, alreadyPresenting: false))
     }
+
+    // MARK: - Where Face ID leads
+    // Face ID can finish after an expired token logged the user out. With no session left, the app must
+    // ask for a sign-in, never open the onboarding meant for accounts without an archive.
+
+    @MainActor
+    func testDestinationAfterUnlock_NoSession_SignsIn() {
+        XCTAssertEqual(BiometricsViewController.destinationAfterUnlock(session: nil), .signIn)
+    }
+
+    @MainActor
+    func testDestinationAfterUnlock_NoDefaultArchive_Onboards() {
+        var account = AccountVOData.mock()
+        account.defaultArchiveID = nil
+        let session = PermSession(token: token)
+        session.account = account
+
+        XCTAssertEqual(BiometricsViewController.destinationAfterUnlock(session: session), .onboarding)
+    }
+
+    @MainActor
+    func testDestinationAfterUnlock_DefaultArchive_OpensTheApp() {
+        let session = PermSession(token: token)
+        session.account = AccountVOData.mock()
+
+        XCTAssertEqual(BiometricsViewController.destinationAfterUnlock(session: session), .main)
+    }
 }

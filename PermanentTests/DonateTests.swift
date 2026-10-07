@@ -50,20 +50,4 @@ class DonateTests: XCTestCase {
             XCTAssertEqual(currentResult, output, "Verify if output value \(output) is equal with current value \(currentResult)")
         }
     }
-    
-    func testJsonInitWithValidValues() throws {
-        let testAccountId = 22
-        let testEmail = "test@test.com"
-        let testAmount = 3
-        let isAnonymous = true
-        let testName = "Test account"
-        
-        let currentResult = sut.paymentSheetPayload(accountId: testAccountId, email: testEmail, amount: testAmount, isAnonymous: isAnonymous, name: testName)
-        
-        XCTAssertEqual(testAccountId, currentResult["accountId"] as? Int, "Verification of account id from JSON")
-        XCTAssertEqual(testEmail, currentResult["email"] as? String, "Verification of email from JSON")
-        XCTAssertEqual(testAmount, currentResult["amount"] as? Int, "Verification of amount from JSON")
-        XCTAssertEqual(isAnonymous, currentResult["anonymous"] as? Bool, "Verification of isAnonymous from JSON")
-        XCTAssertEqual(testName, currentResult["name"] as? String, "Verification of name from JSON")
-    }
 }

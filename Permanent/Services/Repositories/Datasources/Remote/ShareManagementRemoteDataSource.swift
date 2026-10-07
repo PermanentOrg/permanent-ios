@@ -15,7 +15,6 @@ protocol ShareManagementRemoteDataSourceInterface {
     func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole, then handler: @escaping (RequestStatus, ShareVOData?) -> Void)
     func denyButtonAction(minArchiveVO: MinArchiveVO, then handler: @escaping (RequestStatus) -> Void)
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void)
-    func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
     func getShareLinkV2(shareLinkId: String, then handler: @escaping ShareLinkV2Handler)
     func getShareLinkV2ByToken(token: String, then handler: @escaping ShareLinkV2Handler)
     func createShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler)
@@ -281,12 +280,6 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
         return payloadVO
     }
     
-    func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
-        // V2 data needs a shareLinkId, which this signature doesn't carry — so it reports unavailable.
-        // A separate method taking the id directly would fix it.
-        handler(nil, nil)
-    }
-    
     func getShareLinkV2(shareLinkId: String, then handler: @escaping ShareLinkV2Handler) {
         let apiOperation = APIOperation(ShareLinksV2Endpoint.getShareLink(shareLinkId: shareLinkId))
 
@@ -481,25 +474,6 @@ class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterf
 
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
         handler(.success)
-    }
-    
-    func getShareLinkV2(file: FileModel, then handler: @escaping ShareLinkV2Handler) {
-        // Mock implementation - create a sample V2 data
-        let mockV2Data = ShareLinkV2Data(
-            id: "mock-id",
-            itemId: "mock-item-id", 
-            itemType: "record",
-            token: "mock-token-123",
-            permissionsLevel: "viewer",
-            accessRestrictions: "none",
-            maxUses: nil,
-            usesExpended: 0,
-            expirationTimestamp: nil,
-            creatorAccount: nil,
-            createdAt: "2024-01-01T00:00:00Z",
-            updatedAt: "2024-01-01T00:00:00Z"
-        )
-        handler(mockV2Data, nil)
     }
     
     func getShareLinkV2(shareLinkId: String, then handler: @escaping ShareLinkV2Handler) {

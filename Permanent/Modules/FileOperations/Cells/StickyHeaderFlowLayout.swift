@@ -1,0 +1,159 @@
+//
+//  StickyHeaderFlowLayout.swift
+//  Permanent
+//
+//  Created by Lucian Cerbu on 29.09.2026.
+//
+
+import UIKit
+
+/// The folder list's flow layout. It pins the synced section's header, the sort and Select row, to the list's top
+/// so rows scroll under it; the Downloads and Uploads headers scroll away as usual.
+final class StickyHeaderFlowLayout: UICollectionViewFlowLayout {
+    private static let headerKind = UICollectionView.elementKindSectionHeader
+    private static let stickyPath = IndexPath(item: 0, section: FileListType.synced.rawValue)
+
+    /// The spacing every folder list uses, in list and in grid.
+    static func fileList() -> StickyHeaderFlowLayout {
+        let layout = StickyHeaderFlowLayout()
+        layout.minimumInteritemSpacing = 6
+        layout.minimumLineSpacing = 0
+        layout.estimatedItemSize = .zero
+        return layout
+    }
+
+    /// Grid tiles keep the list's side insets; rows are as wide as the list and reach across them, or UIKit logs
+    /// them as too wide on every layout pass, which slows each page as it lands.
+    static func sectionInsets(in collectionView: UICollectionView, section: Int, pagingSection: Int, isGrid: Bool) -> UIEdgeInsets {
+        let isTiles = isGrid && (section == FileListType.synced.rawValue || section == pagingSection)
+        return isTiles ? .zero : UIEdgeInsets(top: 0, left: -collectionView.contentInset.left, bottom: 0, right: -collectionView.contentInset.right)
+    }
+
+    /// Hidden is alpha 0, slid up out of the list unless `slidesStickyHeader` is off.
+    var hidesStickyHeader = false {
+        didSet { if hidesStickyHeader != oldValue { invalidateStickyHeader() } }
+    }
+
+    var slidesStickyHeader = true {
+        didSet { if slidesStickyHeader != oldValue, hidesStickyHeader { invalidateStickyHeader() } }
+    }
+
+    /// Where the row sits when the list is at its top, across the list's full width; nil when there is no row.
+    var stickyHeaderSlot: CGRect? {
+        naturalStickyHeader().map { fullWidth($0.frame) }
+    }
+
+    /// Where the row shows now, in the list's coordinates; nil while it is hidden, off screen or missing.
+    var shownStickyHeaderFrame: CGRect? {
+        guard let collectionView, let pinned = pinnedStickyHeader(), pinned.alpha > 0 else { return nil }
+        let frame = Self.restingFrame(of: pinned)
+        return frame.intersects(collectionView.bounds) ? frame : nil
+    }
+
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        let attributes = super.layoutAttributesForElements(in: rect)
+        guard let pinned = pinnedStickyHeader() else { return attributes }
+        var elements = (attributes ?? []).filter { !Self.isStickyHeader($0) }
+        if Self.restingFrame(of: pinned).intersects(rect) { elements.append(pinned) }
+        return elements
+    }
+
+    override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        if elementKind == Self.headerKind, indexPath == Self.stickyPath, let pinned = pinnedStickyHeader() {
+            return pinned
+        }
+        return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
+    }
+
+    override func prepare() {
+        super.prepare()
+        // The row stays put while the list is pulled down, so the refresh spinner draws under it.
+        let drop = stickyHeaderSlot.flatMap { Self.isAtListTop($0) ? $0.height : nil } ?? 0
+        collectionView?.refreshControl?.layer.sublayerTransform = CATransform3DMakeTranslation(0, drop, 0)
+    }
+
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        true
+    }
+
+    /// A scroll moves only the pinned row, so the rows keep their cached frames even in a folder listed whole.
+    override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
+        let context = super.invalidationContext(forBoundsChange: newBounds)
+        guard let collectionView, hasStickySection else { return context }
+        if newBounds.size == collectionView.bounds.size, let flowContext = context as? UICollectionViewFlowLayoutInvalidationContext {
+            flowContext.invalidateFlowLayoutAttributes = false
+            flowContext.invalidateFlowLayoutDelegateMetrics = false
+        }
+        context.invalidateSupplementaryElements(ofKind: Self.headerKind, at: [Self.stickyPath])
+        return context
+    }
+
+    // MARK: - Pinned copy
+
+    private var hasStickySection: Bool {
+        (collectionView?.numberOfSections ?? 0) > Self.stickyPath.section
+    }
+
+    private static func isStickyHeader(_ attributes: UICollectionViewLayoutAttributes) -> Bool {
+        attributes.representedElementCategory == .supplementaryView
+            && attributes.representedElementKind == headerKind
+            && attributes.indexPath == stickyPath
+    }
+
+    /// The frame before the slide, so a row sliding away still counts as on screen and keeps its view.
+    private static func restingFrame(of attributes: UICollectionViewLayoutAttributes) -> CGRect {
+        let size = attributes.size
+        return CGRect(x: attributes.center.x - size.width / 2, y: attributes.center.y - size.height / 2, width: size.width, height: size.height)
+    }
+
+    /// Super's own attributes for the row, or nil when the section is missing or the row is 0pt high.
+    private func naturalStickyHeader() -> UICollectionViewLayoutAttributes? {
+        guard hasStickySection,
+              let attributes = super.layoutAttributesForSupplementaryView(ofKind: Self.headerKind, at: Self.stickyPath),
+              attributes.frame.height > 0 else { return nil }
+        return attributes
+    }
+
+    /// Whether nothing sits above the row: no download or upload rows.
+    private static func isAtListTop(_ slot: CGRect) -> Bool {
+        slot.minY < 1
+    }
+
+    /// Covers the side gutters too, so rows passing under the row never show beside it.
+    private func fullWidth(_ frame: CGRect) -> CGRect {
+        guard let collectionView else { return frame }
+        return CGRect(x: -collectionView.contentInset.left, y: frame.minY, width: collectionView.bounds.width, height: frame.height)
+    }
+
+    private func pinnedStickyHeader() -> UICollectionViewLayoutAttributes? {
+        guard let collectionView,
+              let natural = naturalStickyHeader(),
+              let pinned = natural.copy() as? UICollectionViewLayoutAttributes else { return nil }
+        let slot = fullWidth(natural.frame)
+        // Not the adjusted inset, which grows by the refresh control's height while it spins.
+        let top = collectionView.contentOffset.y + collectionView.contentInset.top
+        // A row at the list's top stays there while the list is pulled down, too.
+        let y = Self.isAtListTop(slot) ? top : max(slot.minY, top)
+        pinned.frame = CGRect(x: slot.minX, y: y, width: slot.width, height: slot.height)
+        pinned.zIndex = 1
+        if hidesStickyHeader, top > slot.minY {
+            pinned.alpha = 0
+            // A point short of the height: a frame wholly above the list's bounds would lose its view mid-animation.
+            let slide = max(0, slot.height - 1)
+            pinned.transform = slidesStickyHeader ? CGAffineTransform(translationX: 0, y: -slide) : .identity
+        }
+        return pinned
+    }
+
+    private func invalidateStickyHeader() {
+        guard hasStickySection else {
+            invalidateLayout()
+            return
+        }
+        let context = UICollectionViewFlowLayoutInvalidationContext()
+        context.invalidateFlowLayoutAttributes = false
+        context.invalidateFlowLayoutDelegateMetrics = false
+        context.invalidateSupplementaryElements(ofKind: Self.headerKind, at: [Self.stickyPath])
+        invalidateLayout(with: context)
+    }
+}

@@ -15,12 +15,6 @@ class BaseUITestCase: XCTestCase {
         app.launchArguments.append("--DiscardSession")
         app.launchArguments.append("--AddTextClearButton")
 
-        // Pass `TEST_RUNNER_STELA_NAV=1` or `=0` to xcodebuild to force V2 or V1; it arrives here as
-        // `STELA_NAV` and is forwarded as a launch arg, so one suite covers both paths.
-        if let stelaNav = ProcessInfo.processInfo.environment["STELA_NAV"] {
-            app.launchArguments.append(stelaNav == "0" ? "--forceLegacyNavigation" : "--forceStelaNavigation")
-        }
-
         app.launch()
         sleep(5)
         continueAfterFailure = false

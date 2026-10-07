@@ -15,14 +15,12 @@ class MainFileOperationsUITests: BaseUITestCase {
     override func tearDownWithError() throws {
     }
 
-    /// The navigation path this run should exercise. Default DEV-Debug is Stela V2;
-    /// `TEST_RUNNER_STELA_NAV=0` forces the V1 failsafe (see BaseUITestCase).
-    private var expectedNavSource: String {
-        ProcessInfo.processInfo.environment["STELA_NAV"] == "0" ? "v1" : "v2"
-    }
+    /// The navigation path this run should exercise. V2 is always tried first; V1 remains
+    /// only as the automatic failsafe, so a healthy run must load via V2.
+    private var expectedNavSource: String { "v2" }
 
-    /// Folder drill-in must give the same outcome on V2 and V1, and runs under both flag states. The
-    /// nav-source accessibility id proves which path ran, so V2 can't pass on the V1 failsafe.
+    /// Folder drill-in loads via Stela V2, with V1 as the automatic failsafe. The nav-source
+    /// accessibility id proves which path ran, so V2 can't pass on the V1 failsafe.
     func testFolderNavigationParity() throws {
         let accountEmail = uiTestCredentials.username
         let accountPassword = uiTestCredentials.password
@@ -32,6 +30,7 @@ class MainFileOperationsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         let folderName = "aaae2e_nav_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: folderName)
@@ -109,6 +108,7 @@ class MainFileOperationsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Toggle list/grid view twice to verify both layouts render.
         privateFilesPage.toggleListGridView()
@@ -122,7 +122,7 @@ class MainFileOperationsUITests: BaseUITestCase {
         privateFilesPage.assertElementExists(named: originalName)
 
         // Rename the folder via the file menu.
-        privateFilesPage.renameFirstElementFromFolder(name: renamedName)
+        privateFilesPage.renameElement(named: originalName, to: renamedName)
         privateFilesPage.assertElementExists(named: renamedName)
 
         // Cleanup: target the renamed folder by name so we never tap a real archive item.
@@ -148,9 +148,10 @@ class MainFileOperationsUITests: BaseUITestCase {
 
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
+        privateFilesPage.removeLeftoverTestFolders()
 
         // Create a couple of folders so multi-select has something to act on. The
-        // "aaa_" prefix keeps them at the top of the Name (A-Z) list.
+        // "aaa_" prefix keeps them at the top of the A to Z name order.
         let firstFolder = "aaa_multi_a_\(UUID().uuidString.prefix(6))"
         let secondFolder = "aaa_multi_b_\(UUID().uuidString.prefix(6))"
         privateFilesPage.createNewFolder(name: firstFolder)

@@ -125,16 +125,12 @@
                                     <constraint firstAttribute="height" constant="200" id="uXs-tJ-Nzb"/>
                                 </constraints>
                             </view>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="aoh-dL-wFE">
+                            <control opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" placeholderIntrinsicWidth="infinite" placeholderIntrinsicHeight="32" translatesAutoresizingMaskIntoConstraints="NO" id="aoh-dL-wFE" customClass="SlidingTabControl" customModule="Permanent" customModuleProvider="target">
                                 <rect key="frame" x="32" y="256" width="350" height="32"/>
-                                <segments>
-                                    <segment title="Archive"/>
-                                    <segment title="Profile"/>
-                                </segments>
                                 <connections>
                                     <action selector="segmentedControlValueChanged:" destination="cje-R0-eyw" eventType="valueChanged" id="o7f-pL-7Oa"/>
                                 </connections>
-                            </segmentedControl>
+                            </control>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I8Q-zq-uKp">
                                 <rect key="frame" x="0.0" y="295" width="414" height="601"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>

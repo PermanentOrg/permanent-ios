@@ -67,74 +67,76 @@ final class DonateViewModelTests: XCTestCase {
         XCTAssertEqual(vm.storageSizeForAmount(10.5), 1)
     }
 
-    // MARK: - paymentSheetPayload
+    // MARK: - wholeDollarAmount
 
-    func testPaymentPayload_ContainsAccountId() {
+    func testWholeDollarAmount_NilText_ReturnsZero() {
         let vm = DonateViewModel()
-        let payload = vm.paymentSheetPayload(accountId: 42, email: "test@test.com", amount: 100, isAnonymous: false, name: "John")
-        XCTAssertEqual(payload["accountId"] as? Int, 42)
+        XCTAssertEqual(vm.wholeDollarAmount(from: nil), 0)
     }
 
-    func testPaymentPayload_ContainsEmail() {
+    func testWholeDollarAmount_EmptyText_ReturnsZero() {
         let vm = DonateViewModel()
-        let payload = vm.paymentSheetPayload(accountId: 1, email: "user@example.com", amount: 50, isAnonymous: false, name: "Jane")
-        XCTAssertEqual(payload["email"] as? String, "user@example.com")
+        XCTAssertEqual(vm.wholeDollarAmount(from: ""), 0)
     }
 
-    func testPaymentPayload_ContainsAmount() {
+    func testWholeDollarAmount_WholeNumber_ReturnsIt() {
         let vm = DonateViewModel()
-        let payload = vm.paymentSheetPayload(accountId: 1, email: "a@b.com", amount: 200, isAnonymous: false, name: "Bob")
-        XCTAssertEqual(payload["amount"] as? Int, 200)
+        XCTAssertEqual(vm.wholeDollarAmount(from: "20"), 20)
     }
 
-    func testPaymentPayload_ContainsAnonymousTrue() {
+    func testWholeDollarAmount_Fraction_FloorsToWholeDollars() {
         let vm = DonateViewModel()
-        let payload = vm.paymentSheetPayload(accountId: 1, email: "a@b.com", amount: 10, isAnonymous: true, name: "Anon")
-        XCTAssertEqual(payload["anonymous"] as? Bool, true)
+        XCTAssertEqual(vm.wholeDollarAmount(from: "10.99"), 10)
     }
 
-    func testPaymentPayload_ContainsName() {
+    func testWholeDollarAmount_UnderOneDollar_ReturnsZero() {
         let vm = DonateViewModel()
-        let payload = vm.paymentSheetPayload(accountId: 1, email: "a@b.com", amount: 10, isAnonymous: false, name: "Alice")
-        XCTAssertEqual(payload["name"] as? String, "Alice")
+        XCTAssertEqual(vm.wholeDollarAmount(from: ".5"), 0)
     }
 
-    func testPaymentPayload_HasFiveKeys() {
+    func testWholeDollarAmount_Negative_ReturnsZero() {
         let vm = DonateViewModel()
-        let payload = vm.paymentSheetPayload(accountId: 1, email: "a@b.com", amount: 10, isAnonymous: false, name: "X")
-        XCTAssertEqual(payload.count, 5)
+        XCTAssertEqual(vm.wholeDollarAmount(from: "-5"), 0)
     }
 
-    func testPaymentPayload_AnonymousFalse() {
+    func testWholeDollarAmount_Junk_ReturnsZero() {
         let vm = DonateViewModel()
-        let payload = vm.paymentSheetPayload(accountId: 1, email: "a@b.com", amount: 10, isAnonymous: false, name: "X")
-        XCTAssertEqual(payload["anonymous"] as? Bool, false)
+        XCTAssertEqual(vm.wholeDollarAmount(from: "abc"), 0)
     }
 
-    // MARK: - Session-dependent computed properties (no session)
-
-    func testAccountId_NoSession_ReturnsNil() {
+    func testWholeDollarAmount_UpperLimit_ReturnsIt() {
         let vm = DonateViewModel()
-        XCTAssertNil(vm.accountId)
+        XCTAssertEqual(vm.wholeDollarAmount(from: "10000"), 10000)
     }
 
-    func testAccountName_NoSession_ReturnsNil() {
+    func testWholeDollarAmount_Infinity_ReturnsZero() {
         let vm = DonateViewModel()
-        XCTAssertNil(vm.accountName)
+        XCTAssertEqual(vm.wholeDollarAmount(from: "inf"), 0)
     }
 
-    func testEmail_NoSession_ReturnsNil() {
+    func testWholeDollarAmount_BeyondIntRange_ReturnsZero() {
         let vm = DonateViewModel()
-        XCTAssertNil(vm.email)
+        XCTAssertEqual(vm.wholeDollarAmount(from: "1e300"), 0)
     }
 
-    // MARK: - createPaymentIntent edge case
+    // MARK: - createStoragePurchase edge cases
 
-    func testCreatePaymentIntent_NoSession_ReturnsNil() {
+    func testCreateStoragePurchase_NoSession_ReturnsNil() {
         let vm = DonateViewModel()
         let expectation = expectation(description: "completion")
 
-        vm.createPaymentIntent(amount: 100) { secret in
+        vm.createStoragePurchase(amountInUSD: 10) { secret in
+            XCTAssertNil(secret)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1.0)
+    }
+
+    func testCreateStoragePurchase_ZeroAmount_ReturnsNil() {
+        let vm = DonateViewModel()
+        let expectation = expectation(description: "completion")
+
+        vm.createStoragePurchase(amountInUSD: 0) { secret in
             XCTAssertNil(secret)
             expectation.fulfill()
         }

@@ -15,8 +15,18 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var trailingConstraint: NSLayoutConstraint!
     var isCheckingBiometrics = false
-    
-    
+
+    enum UnlockDestination {
+        case signIn, onboarding, main
+    }
+
+    /// Where the app goes once Face ID succeeds. A session that ended meanwhile, for example after an expired
+    /// token, needs a new sign-in; an account without a default archive still needs onboarding.
+    static func destinationAfterUnlock(session: PermSession?) -> UnlockDestination {
+        guard let account = session?.account else { return .signIn }
+        return account.defaultArchiveID == nil ? .onboarding : .main
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -76,14 +86,16 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         PermanentLocalAuthentication.instance.authenticate(onSuccess: {
             self.isCheckingBiometrics = false
             DispatchQueue.main.async {[weak self] in
-                let defaultArchive: Int? = AuthenticationManager.shared.session?.account.defaultArchiveID
-                
-                if defaultArchive == nil {
+                switch BiometricsViewController.destinationAfterUnlock(session: AuthenticationManager.shared.session) {
+                case .signIn:
+                    self?.navigationController?.display(.signUp, from: .authentication)
+                    return
+                case .onboarding:
                     let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: nil, password: nil))
                     let host = UIHostingController(rootView: screenView)
                     host.modalPresentationStyle = .fullScreen
                     AppDelegate.shared.rootViewController.present(host, animated: true)
-                } else {
+                case .main:
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 }
                 

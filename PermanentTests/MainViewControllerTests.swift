@@ -152,6 +152,33 @@ final class MainViewControllerTests: XCTestCase {
         XCTAssertFalse(vc.fabView.isHidden, "deselect restores the FAB when permissions allow")
     }
 
+    func testClosingTheMoveBar_BringsThePlusButtonBack() {
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read, .create, .upload]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+        vm.isSelectingDestination = true
+        vc.updateFABViewVisibility()
+        XCTAssertTrue(vc.fabView.isHidden, "precondition: no plus button while a Move waits for its folder")
+
+        vc.cancelRelocate()
+
+        XCTAssertFalse(vm.isSelectingDestination)
+        XCTAssertFalse(vc.fabView.isHidden, "the X on the bar brings the plus button back")
+    }
+
+    func testClosingTheMoveBar_ViewerArchive_KeepsThePlusButtonHidden() {
+        let vm = PermissionAwareMyFilesViewModel()
+        vm.testArchivePermissions = [.read]
+        let (vc, retained) = makeSelectModeHarness(vm)
+        defer { _ = retained }
+        vm.isSelectingDestination = true
+
+        vc.cancelRelocate()
+
+        XCTAssertTrue(vc.fabView.isHidden, "an archive without write access still gets no plus button")
+    }
+
     func testUpdateFABViewVisibility_HiddenWhileSelecting() {
         // The gate itself must treat select mode as hidden, so any stray refresh that
         // recomputes visibility mid-selection cannot re-show the FAB either.
@@ -250,7 +277,7 @@ final class MainViewControllerTests: XCTestCase {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         vc.collectionView = collectionView
         
-        XCTAssertEqual(vc.numberOfSections(in: collectionView), 3)
+        XCTAssertEqual(vc.numberOfSections(in: collectionView), 4, "the view model's three sections plus the paging section")
     }
     
     func testNumberOfItemsInSyncedSectionUsesViewModelRows() {
@@ -505,7 +532,7 @@ final class MainViewControllerTests: XCTestCase {
         XCTAssertEqual(size.height, 0)
     }
     
-    func testReferenceSizeForHeaderIsFortyWhenSectionHasRows() {
+    func testReferenceSizeForHeaderIsTheRowHeightWhenSectionHasRows() {
         let vc = MainViewController()
         let vm = MyFilesViewModel()
         vm.viewModels = [makeFolder(name: "Folder C", folderLinkId: 50)]
@@ -739,6 +766,552 @@ final class MainViewControllerTests: XCTestCase {
         XCTAssertEqual(errorVC.lastAlertMessage, "Network down")
     }
 
+    /// A main screen with a real view, whose navigation waits until the test answers it.
+    private func makeSkeletonTestController(list: UICollectionView? = nil) -> (vc: AlertTrackingMainViewController, answer: () -> ((RequestStatus) -> Void)?) {
+        let vc = AlertTrackingMainViewController()
+        vc.viewModel = MyFilesViewModel()
+        let rootView = UIView(frame: .init(x: 0, y: 0, width: 390, height: 844))
+        let collectionView = list ?? UICollectionView(frame: rootView.bounds, collectionViewLayout: UICollectionViewFlowLayout())
+        let switchViewButton = UIButton(type: .system)
+        let bottomView = BottomActionSheet(frame: .zero)
+        let directoryLabel = UILabel()
+        let backButton = UIButton(type: .system)
+        let fabView = FABView(frame: .zero)
+        [collectionView, switchViewButton, bottomView, directoryLabel, backButton, fabView].forEach { rootView.addSubview($0) }
+        vc.view = rootView
+        vc.collectionView = collectionView
+        vc.switchViewButton = switchViewButton
+        vc.fileActionBottomView = bottomView
+        vc.directoryLabel = directoryLabel
+        vc.backButton = backButton
+        vc.fabView = fabView
+        collectionView.dataSource = vc
+        collectionView.delegate = vc
+
+        var pending: ((RequestStatus) -> Void)?
+        vc.navigateMinRequest = { _, _, completion in pending = completion }
+        return (vc, { pending })
+    }
+
+    func testEnteringAFolder_ShowsSkeletonRowsAndHoldsTouchesUntilItsPageLands() {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewCount = vc.view.subviews.count
+
+        vc.viewModel?.activeSortOption = .dateAscending
+        vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: false)
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, true)
+        XCTAssertEqual(vc.view.subviews.count, viewCount + 1, "a clear view holds touches, as the spinner did")
+        XCTAssertEqual(vc.collectionView(vc.collectionView, layout: vc.collectionView.collectionViewLayout, referenceSizeForHeaderInSection: FileListType.synced.rawValue).height, 40,
+                       "the sort header stays over the skeleton")
+        XCTAssertEqual(vc.viewModel?.title(forSection: FileListType.synced.rawValue), SortOption.dateAscending.title,
+                       "before the folder is known, the header keeps the current sort")
+
+        answer()?(.success)
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, false)
+        XCTAssertEqual(vc.view.subviews.count, viewCount)
+    }
+
+    func testTheBackSwipe_WorksOnlyWhereTheBackArrowCouldBeTapped() throws {
+        let (vc, _) = makeSkeletonTestController()
+        let viewModel = try XCTUnwrap(vc.viewModel)
+        viewModel.navigationStack = [makeFolder(name: "Root", folderLinkId: 1), makeFolder(name: "Trips", folderLinkId: 2)]
+        vc.backButton.isHidden = false
+        XCTAssertTrue(vc.canSwipeBack)
+
+        viewModel.isSelecting = true
+        XCTAssertFalse(vc.canSwipeBack, "not while files are being selected")
+        viewModel.isSelecting = false
+
+        vc.backButton.isUserInteractionEnabled = false
+        XCTAssertFalse(vc.canSwipeBack, "not while the arrow is disabled")
+        vc.backButton.isUserInteractionEnabled = true
+
+        vc.showSpinner()
+        XCTAssertFalse(vc.canSwipeBack, "not while the spinner covers the arrow")
+        vc.hideSpinner()
+        XCTAssertTrue(vc.canSwipeBack)
+
+        viewModel.navigationStack.removeLast()
+        XCTAssertFalse(vc.canSwipeBack, "the root has nowhere to go back to")
+    }
+
+    func testTheVoiceOverEscapeGesture_GoesUpAFolderLikeTheArrow() throws {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewModel = try XCTUnwrap(vc.viewModel)
+        viewModel.navigationStack = [
+            makeFolder(name: "Root", folderLinkId: 1), makeFolder(name: "Trips", folderLinkId: 2), makeFolder(name: "2024", folderLinkId: 3)
+        ]
+        vc.backButton.isHidden = false
+
+        XCTAssertTrue(vc.accessibilityPerformEscape())
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderLinkId), [1, 2])
+        XCTAssertEqual(viewModel.isLoadingFirstPage, true, "the parent loads under skeleton rows")
+
+        XCTAssertTrue(vc.accessibilityPerformEscape(), "a busy folder keeps the gesture, so no sheet around the list closes")
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderLinkId), [1, 2], "and does not go back again")
+        answer()?(.success)
+
+        viewModel.navigationStack.removeLast()
+        XCTAssertFalse(vc.accessibilityPerformEscape(), "at the root the gesture is left to the system")
+    }
+
+    func testAFailedFolderEntry_BringsThePreviousRowsBack() {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewCount = vc.view.subviews.count
+
+        vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: false)
+        answer()?(.error(message: "Network down"))
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, false)
+        XCTAssertEqual(vc.view.subviews.count, viewCount, "touches are free again")
+        XCTAssertTrue(vc.didShowAlert)
+    }
+
+    func testEnteringAFolder_NamesItAtOnce_AndPutsTheOldNameBackIfItFails() {
+        let (vc, answer) = makeSkeletonTestController()
+        let folder = makeFolder(name: "Trips", folderLinkId: 20)
+        vc.viewModel?.viewModels = [folder]
+        vc.directoryLabel.text = "Private Files"
+        vc.backButton.isHidden = true
+
+        vc.collectionView(vc.collectionView, didSelectItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
+
+        XCTAssertEqual(vc.directoryLabel.text, "Trips", "the name shows over the skeleton, before the rows land")
+        XCTAssertFalse(vc.backButton.isHidden)
+
+        answer()?(.error(message: "offline"))
+
+        XCTAssertEqual(vc.directoryLabel.text, "Private Files")
+        XCTAssertTrue(vc.backButton.isHidden)
+    }
+
+    func testAFolderEntryAnotherLoadOvertook_PutsTheOldNameBack() {
+        let (vc, answer) = makeSkeletonTestController()
+        vc.viewModel?.viewModels = [makeFolder(name: "Trips", folderLinkId: 20)]
+        vc.directoryLabel.text = "Private Files"
+        vc.backButton.isHidden = true
+
+        vc.collectionView(vc.collectionView, didSelectItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
+        answer()?(.success)
+
+        XCTAssertEqual(vc.directoryLabel.text, "Private Files", "a success that never entered the folder is not an entry")
+        XCTAssertTrue(vc.backButton.isHidden)
+    }
+
+    func testAFolderEntryThatLands_KeepsItsName() {
+        let (vc, answer) = makeSkeletonTestController()
+        let folder = makeFolder(name: "Trips", folderLinkId: 20)
+        vc.viewModel?.viewModels = [folder]
+        vc.directoryLabel.text = "Private Files"
+
+        vc.collectionView(vc.collectionView, didSelectItemAt: IndexPath(row: 0, section: FileListType.synced.rawValue))
+        vc.viewModel?.navigationStack.append(folder)
+        answer()?(.success)
+
+        XCTAssertEqual(vc.directoryLabel.text, "Trips")
+        XCTAssertFalse(vc.backButton.isHidden)
+    }
+
+    func testAFailedBack_KeepsTheFolderOnScreenAndOnTheHistory() {
+        let (vc, answer) = makeSkeletonTestController()
+        let viewModel = vc.viewModel as! MyFilesViewModel
+        viewModel.navigationStack = [makeFolder(name: "My Files", folderLinkId: 100), makeFolder(name: "Child", folderLinkId: 200)]
+        vc.directoryLabel.text = "Child"
+        vc.backButton.isHidden = false
+
+        vc.backButtonAction(vc.backButton)
+
+        XCTAssertEqual(vc.directoryLabel.text, viewModel.rootFolderName)
+        XCTAssertTrue(vc.backButton.isHidden)
+
+        answer()?(.error(message: "offline"))
+
+        XCTAssertEqual(viewModel.navigationStack.map(\.folderLinkId), [100, 200], "the next Back must not skip a level")
+        XCTAssertEqual(vc.directoryLabel.text, "Child")
+        XCTAssertFalse(vc.backButton.isHidden)
+    }
+
+    func testTheHeader_KeepsOneHeightWithOrWithoutTheArrow() {
+        let row = UIStackView()
+        row.alignment = .center
+        let backButton = UIButton(type: .system)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let label = UILabel()
+        label.font = TextFontStyle.style3.font
+        label.text = "Private Files"
+        row.addArrangedSubview(backButton)
+        row.addArrangedSubview(label)
+        let header = FolderHeaderTransition(backButton: backButton, titleLabel: label)
+
+        header.show(title: "Private Files", showsBack: false, animated: false)
+        let rootHeight = row.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        header.show(title: "Trips", showsBack: true, animated: false)
+        let folderHeight = row.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+
+        XCTAssertEqual(rootHeight, 30, accuracy: 0.5)
+        XCTAssertEqual(folderHeight, rootHeight, accuracy: 0.5)
+    }
+
+    func testRefreshingTheFolderOnScreen_NeverShowsTheSkeleton() {
+        let (vc, answer) = makeSkeletonTestController()
+
+        vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: true, resetScroll: false)
+
+        XCTAssertEqual(vc.viewModel?.isLoadingFirstPage, false)
+        answer()?(.success)
+    }
+
+    // MARK: - The pinned sort and Select row
+
+    private static let header = UICollectionView.elementKindSectionHeader
+
+    /// The main screen over a 390 x 844pt list in a window, with the screen's own cells and header registered:
+    /// a folder of 30 files under 1 upload.
+    private func makeHostedController() -> (vc: AlertTrackingMainViewController, list: StickyHeaderTestList, answer: () -> ((RequestStatus) -> Void)?) {
+        let list = StickyHeaderTestList()
+        list.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
+        list.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        list.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: Self.header, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
+        let (vc, answer) = makeSkeletonTestController(list: list)
+        let viewModel = vc.viewModel!
+        viewModel.navigationStack = [makeFolder(name: "Trips", folderLinkId: 20)]
+        viewModel.viewModels = (0..<30).map { makeFile(name: "File \($0)", folderLinkId: 100 + $0) }
+        viewModel.uploadQueue = [FileInfo(withURL: URL(fileURLWithPath: "/tmp/photo.jpg"), named: "photo.jpg", folder: FolderInfo(folderId: -1, folderLinkId: 20))]
+        let window = UIWindow(frame: vc.view.frame)
+        window.addSubview(vc.view)
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+        list.reloadData()
+        list.scroll(to: 0)
+        return (vc, list, answer)
+    }
+
+    private func stickyLayout(of list: UICollectionView) throws -> StickyHeaderFlowLayout {
+        try XCTUnwrap(list.collectionViewLayout as? StickyHeaderFlowLayout)
+    }
+
+    private func headerView(in list: UICollectionView, section: FileListType) throws -> FileCollectionViewHeaderCell {
+        list.layoutIfNeeded()
+        let path = IndexPath(item: 0, section: section.rawValue)
+        return try XCTUnwrap(list.supplementaryView(forElementKind: Self.header, at: path) as? FileCollectionViewHeaderCell)
+    }
+
+    /// Scrolls past the row's slot in code, then drags 60pt further down, which hides the row, and lifts the finger.
+    private func hideTheRowWithAFinger(_ list: StickyHeaderTestList, file: StaticString = #filePath, line: UInt = #line) throws {
+        list.scroll(to: 600)
+        list.isDragging = true
+        list.scroll(to: 630)
+        list.scroll(to: 660)
+        list.isDragging = false
+        XCTAssertTrue(try stickyLayout(of: list).hidesStickyHeader, "precondition: a finger scroll down hides the row", file: file, line: line)
+    }
+
+    func testTheListSetUp_InstallsThePinningLayout() throws {
+        let (vc, _) = makeSkeletonTestController()
+        XCTAssertFalse(vc.collectionView.collectionViewLayout is StickyHeaderFlowLayout, "precondition: a plain layout")
+
+        vc.setupCollectionView()
+
+        let layout = try stickyLayout(of: vc.collectionView)
+        XCTAssertEqual(layout.minimumInteritemSpacing, 6)
+        XCTAssertEqual(layout.minimumLineSpacing, 0)
+    }
+
+    func testTheGridListToggle_KeepsThePinningLayout() throws {
+        let (vc, _) = makeSkeletonTestController()
+
+        vc.switchViewButtonPressed(self)
+
+        let layout = try stickyLayout(of: vc.collectionView)
+        XCTAssertEqual(layout.minimumInteritemSpacing, 6)
+        XCTAssertEqual(layout.minimumLineSpacing, 0)
+    }
+
+    func testTheGridListToggle_ShowsAHiddenRow_AndItsTravelStartsAfresh() throws {
+        let (vc, list, _) = makeHostedController()
+        try hideTheRowWithAFinger(list)
+
+        vc.switchViewButtonPressed(self)
+        list.layoutIfNeeded()
+        let grid = try stickyLayout(of: list)
+        XCTAssertFalse(grid.hidesStickyHeader)
+
+        // Back past the slot in code, which keeps the row's state, then a drag short of the 24pt a hide needs.
+        list.scroll(to: 600)
+        list.isDragging = true
+        list.scroll(to: 620)
+        XCTAssertFalse(grid.hidesStickyHeader, "the hide before the toggle is forgotten")
+    }
+
+    func testInAList_OnlyTheSyncedHeaderOpensTheSortMenu() throws {
+        let (vc, list, _) = makeHostedController()
+        let synced = try headerView(in: list, section: .synced)
+        let uploads = try headerView(in: list, section: .uploading)
+
+        XCTAssertTrue(synced.sortMenu === vc.sortMenu)
+        XCTAssertNil(synced.leftButtonAction, "the menu opens from the button itself")
+        XCTAssertEqual(synced.leftButton.accessibilityIdentifier, "folderSortButton")
+        XCTAssertEqual(synced.gutterWidth, list.contentInset.left)
+        XCTAssertEqual(synced.rightButtonTitle, "Select")
+        XCTAssertEqual(synced.rightButton.configuration?.image, FileCollectionViewHeaderCell.selectIcon, "the circled check beside Select")
+
+        XCTAssertNil(uploads.sortMenu)
+        XCTAssertEqual(uploads.leftButton.accessibilityIdentifier, "headerSortButton")
+        XCTAssertEqual(uploads.gutterWidth, 0)
+        XCTAssertEqual(uploads.rightButtonTitle, "Cancel All")
+    }
+
+    func testPickingAProfilePicture_HidesSelectAndClear_EvenOnAReusedHeader() throws {
+        let (vc, list, _) = makeHostedController()
+        XCTAssertFalse(try headerView(in: list, section: .synced).rightButton.isHidden, "precondition: Select shows")
+
+        vc.viewModel?.isPickingImage = true
+        list.reloadData()
+
+        let synced = try headerView(in: list, section: .synced)
+        XCTAssertTrue(synced.rightButton.isHidden, "no Select while picking a picture")
+        XCTAssertTrue(synced.clearButton.isHidden)
+    }
+
+    func testSelectMode_NamesSelectAllWithoutPaddingSpaces() throws {
+        let (vc, list, _) = makeHostedController()
+
+        vc.viewModel?.isSelecting = true
+        list.reloadData()
+
+        XCTAssertEqual(try headerView(in: list, section: .synced).rightButtonTitle, "Select all")
+    }
+
+    func testInAList_AFingerScrollHidesTheRow_ButTheSameOffsetsInCodeDoNot() throws {
+        let (_, list, _) = makeHostedController()
+        let layout = try stickyLayout(of: list)
+
+        for offset: CGFloat in [300, 330, 600, 660] { list.scroll(to: offset) }
+        XCTAssertFalse(layout.hidesStickyHeader, "offsets set in code, as by a reload or the back swipe, keep the row")
+
+        list.isDragging = true
+        list.scroll(to: 690)
+        XCTAssertTrue(layout.hidesStickyHeader, "30pt of finger travel down past the slot")
+
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.4))
+        let hidden = try headerView(in: list, section: .synced)
+        XCTAssertTrue(list.visibleSupplementaryViews(ofKind: Self.header).contains(hidden), "the hidden row keeps its view")
+        XCTAssertEqual(hidden.alpha, 0)
+
+        list.scroll(to: 678)
+        XCTAssertFalse(layout.hidesStickyHeader, "12pt back up")
+    }
+
+    func testSelectMode_KeepsTheRowShown() throws {
+        let (vc, list, _) = makeHostedController()
+        vc.viewModel?.isSelecting = true
+
+        list.scroll(to: 600)
+        list.isDragging = true
+        list.scroll(to: 700)
+
+        XCTAssertFalse(try stickyLayout(of: list).hidesStickyHeader)
+    }
+
+    func testEnteringAFolder_ShowsAHiddenRow() throws {
+        let (vc, list, answer) = makeHostedController()
+        try hideTheRowWithAFinger(list)
+
+        vc.navigateToFolder(withParams: ("0000", 123, nil), backNavigation: false)
+
+        XCTAssertFalse(try stickyLayout(of: list).hidesStickyHeader)
+        answer()?(.success)
+    }
+
+    func testResettingTheList_ShowsAHiddenRow() throws {
+        let (vc, list, _) = makeHostedController()
+        try hideTheRowWithAFinger(list)
+
+        vc.resetCollectionViewState()
+
+        XCTAssertFalse(try stickyLayout(of: list).hidesStickyHeader)
+    }
+
+    func testAStatusBarTap_ShowsAHiddenRow() throws {
+        let (vc, list, _) = makeHostedController()
+        try hideTheRowWithAFinger(list)
+
+        vc.scrollViewDidScrollToTop(list)
+
+        XCTAssertFalse(try stickyLayout(of: list).hidesStickyHeader)
+    }
+
+    func testAStatusBarTap_ShowsAHiddenRowAsTheScrollStarts() throws {
+        let (vc, list, _) = makeHostedController()
+        try hideTheRowWithAFinger(list)
+
+        XCTAssertTrue(vc.scrollViewShouldScrollToTop(list), "the list still scrolls to the top")
+
+        XCTAssertFalse(try stickyLayout(of: list).hidesStickyHeader)
+        XCTAssertEqual(list.contentOffset.y, 660, "before the scroll moves the list")
+    }
+
+    func testApplySort_SavesAndRefreshesTheFolder_ThenListsItFromTheTop() throws {
+        // A UI test run can leave an editor signed in, and the sort would then wait for a real server.
+        AuthenticationManager.shared.session = nil
+        let (vc, list, _) = makeHostedController()
+        var refreshed: NavigateMinParams?
+        vc.navigateMinRequest = { params, _, completion in
+            refreshed = params
+            completion(.success)
+        }
+        list.scroll(to: 600)
+
+        vc.applySort(.dateDescending)
+
+        XCTAssertEqual(vc.viewModel?.activeSortOption, .dateDescending)
+        XCTAssertEqual(refreshed?.folderLinkId, 20, "the folder on screen is listed again")
+        XCTAssertEqual(list.contentOffset.y, -list.adjustedContentInset.top, "the new order starts at the top")
+    }
+
+    func testTheScreen_IsFreedAfterBuildingItsSortMenuAndRowReveal() {
+        let list = UICollectionView(frame: .zero, collectionViewLayout: StickyHeaderFlowLayout.fileList())
+        weak var released: MainViewController?
+        autoreleasepool {
+            let vc = MainViewController()
+            vc.viewModel = MyFilesViewModel()
+            vc.collectionView = list
+            _ = vc.sortMenu
+            _ = vc.stickyHeaderReveal
+            released = vc
+        }
+
+        XCTAssertNil(released, "the menu and the reveal hold the screen weakly")
+    }
+
+    // MARK: - The drop's progress circle
+
+    /// The main screen in a window, inside Trips with the folder Beach and the photo Lake, on a writable archive
+    /// unless the test brings its own view model. Every move waits until the test answers it.
+    private func makeDropController(viewModel: MyFilesViewModel? = nil) -> (vc: AlertTrackingMainViewController, photo: FileModel, beach: FileModel, answers: () -> [ServerResponse]) {
+        let (vc, _) = makeSkeletonTestController()
+        let writable = PermissionAwareMyFilesViewModel()
+        writable.testArchivePermissions = [.read, .create, .upload]
+        let viewModel = viewModel ?? writable
+        vc.viewModel = viewModel
+        let beach = makeFolder(name: "Beach", folderLinkId: 30)
+        let photo = makeFile(name: "Lake", folderLinkId: 101)
+        viewModel.navigationStack = [makeFolder(name: "Trips", folderLinkId: 20)]
+        viewModel.viewModels = [beach, photo]
+        var answers: [ServerResponse] = []
+        viewModel.relocateV1Request = { _, _, completion in answers.append(completion) }
+        let window = UIWindow(frame: vc.view.frame)
+        window.addSubview(vc.view)
+        window.isHidden = false
+        addTeardownBlock { window.isHidden = true }
+        return (vc, photo, beach, { answers })
+    }
+
+    private func waitUntil(_ condition: @autoclosure () -> Bool, timeout: TimeInterval = 3) {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition(), Date() < deadline {
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        }
+    }
+
+    func testADrop_ShowsTheMoveHereCircle_ThenClosesAfterTheCheck() throws {
+        let (vc, photo, beach, answers) = makeDropController()
+
+        vc.startDroppedMove([photo], to: beach)
+
+        let island = try XCTUnwrap(vc.floatingActionIsland, "the drop opens the island Move Here uses")
+        XCTAssertTrue(island.opensAsCircle, "as the 64 pt circle, never the full bar")
+        XCTAssertEqual(answers().count, 1)
+
+        answers().first?(.success)
+
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland, "the check mark shows, then the island closes")
+    }
+
+    func testADropInsideTheOpenFolder_KeepsTheCircle_UntilThePhotoIsListed() throws {
+        let (vc, _, _, answers) = makeDropController()
+        let viewModel = try XCTUnwrap(vc.viewModel)
+        let trips = try XCTUnwrap(viewModel.currentFolder)
+        var refresh: ((RequestStatus) -> Void)?
+        vc.navigateMinRequest = { _, _, completion in refresh = completion }
+        let dunes = makeFile(name: "Dunes", folderLinkId: 201)
+
+        vc.startDroppedMove([dunes], to: trips)
+        answers().first?(.success)
+
+        let island = try XCTUnwrap(vc.floatingActionIsland)
+        XCTAssertNotNil(refresh, "the folder refetches to find the photo")
+        RunLoop.main.run(until: Date().addingTimeInterval(0.6))
+        XCTAssertTrue(vc.floatingActionIsland === island, "the circle spins until the photo is listed")
+
+        viewModel.viewModels.append(dunes)
+        refresh?(.success)
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland, "listed, so the check mark shows and the island closes")
+    }
+
+    func testAFailedDrop_ClosesTheCircle() {
+        let (vc, photo, beach, answers) = makeDropController()
+        vc.startDroppedMove([photo], to: beach)
+        XCTAssertNotNil(vc.floatingActionIsland)
+
+        answers().first?(.error(message: nil))
+
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland)
+    }
+
+    func testTwoQuickDrops_ShareOneCircle_UntilTheLastMoveEnds() throws {
+        let (vc, photo, beach, answers) = makeDropController()
+        let dunes = makeFile(name: "Dunes", folderLinkId: 102)
+        vc.startDroppedMove([photo], to: beach)
+        let island = try XCTUnwrap(vc.floatingActionIsland)
+
+        vc.startDroppedMove([dunes], to: beach)
+        XCTAssertTrue(vc.floatingActionIsland === island, "the second drop keeps the circle")
+        answers()[0](.success)
+        RunLoop.main.run(until: Date().addingTimeInterval(0.8))
+        XCTAssertTrue(vc.floatingActionIsland === island, "it spins on while the second move runs")
+
+        answers()[1](.success)
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertNil(vc.floatingActionIsland)
+    }
+
+    func testThePlusButton_HidesWhileTheCircleShows_AndComesBack() {
+        let (vc, photo, beach, answers) = makeDropController()
+        vc.updateFABViewVisibility()
+        XCTAssertFalse(vc.fabView.isHidden, "precondition: a writable archive shows the plus button")
+
+        vc.startDroppedMove([photo], to: beach)
+        vc.updateFABViewVisibility()
+        XCTAssertTrue(vc.fabView.isHidden, "a refresh during the wait keeps it hidden")
+
+        answers().first?(.success)
+        waitUntil(vc.floatingActionIsland == nil)
+        XCTAssertFalse(vc.fabView.isHidden, "it comes back once the island closes")
+    }
+
+    func testASelectionMadeWhileTheCircleShows_GetsItsBarOnceTheCircleCloses() throws {
+        let viewModel = MockMyFilesViewModel()
+        let (vc, photo, beach, answers) = makeDropController(viewModel: viewModel)
+        vc.startDroppedMove([photo], to: beach)
+        let circle = try XCTUnwrap(vc.floatingActionIsland)
+
+        viewModel.isSelecting = true
+        viewModel.selectedFiles = [beach]
+        answers().first?(.success)
+
+        waitUntil(vc.floatingActionIsland != nil && vc.floatingActionIsland !== circle)
+        let bar = try XCTUnwrap(vc.floatingActionIsland)
+        XCTAssertFalse(bar === circle)
+        XCTAssertFalse(bar.opensAsCircle, "the selection bar opens once the circle has gone")
+    }
 
     private func makeFolder(name: String, folderLinkId: Int) -> FileModel {
         FileModel(

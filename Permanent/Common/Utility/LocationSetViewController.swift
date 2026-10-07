@@ -69,6 +69,9 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         
         resultsViewController = GMSAutocompleteResultsViewController()
         resultsViewController?.delegate = self
+        // The search controller already insets Google's list to sit under the field, so the list
+        // must not add the top safe area a second time.
+        resultsViewController?.view.subviews.compactMap { $0 as? UITableView }.forEach { $0.contentInsetAdjustmentBehavior = .never }
         
         searchController = UISearchController(searchResultsController: resultsViewController)
         searchController?.searchResultsUpdater = resultsViewController

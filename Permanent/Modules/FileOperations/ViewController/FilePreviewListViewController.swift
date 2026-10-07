@@ -28,6 +28,8 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     var nextFile: FileModel?
     var nextTitle: String?
     var hasChanges: Bool = false
+    private var isTransitioning = false
+    private var needsPagesReset = false
 
     // Info (details) and share/more both lead to network-dependent screens — disabled offline.
     private weak var infoBarButton: UIBarButtonItem?
@@ -54,10 +56,18 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
 
         NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .filePreviewVMDidSaveData, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onReachabilityChanged), name: ReachabilityManager.reachabilityDidChangeNotifName, object: nil)
+        // Pages can land from the list behind the pager too, not only from requests the pager makes.
+        NotificationCenter.default.addObserver(self, selector: #selector(childrenDidChange), name: FilesViewModel.childrenDidChangeNotification, object: viewModel)
+    }
+
+    @objc private func childrenDidChange() {
+        resetPages()
+        loadNextPageIfNearLastLoadedFile()
     }
 
     @objc private func onReachabilityChanged() {
         updateNetworkDependentButtons()
+        if ReachabilityManager.shared.isConnected { loadNextPageIfNearLastLoadedFile(retryingFailedPage: true) }
     }
 
     /// Details (info) shows record-backed metadata and the share menu performs network
@@ -102,6 +112,30 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
             
             pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
         }
+        loadNextPageIfNearLastLoadedFile()
+    }
+
+    /// The folder behind the pager loads in pages, so nearing its last loaded file asks for the next one.
+    /// A failed page is asked again only on a swipe or a reconnect, so a failure never retries itself in a loop.
+    private func loadNextPageIfNearLastLoadedFile(retryingFailedPage: Bool = false) {
+        let files = filteredFiles
+        guard let viewModel, let index = files.firstIndex(of: currentFile), index >= files.count - 3 else { return }
+        switch viewModel.childrenPagingState {
+        case .loadingMore: viewModel.loadNextChildrenPage { _ in }
+        case .failed where retryingFailedPage: viewModel.retryNextChildrenPage { _ in }
+        default: break
+        }
+    }
+
+    /// The pager keeps the "no next page" it was given until its pages are set again, which a swipe must not see.
+    private func resetPages() {
+        guard !isTransitioning else {
+            needsPagesReset = true
+            return
+        }
+        needsPagesReset = false
+        guard let current = pageVC.viewControllers?.first else { return }
+        pageVC.setViewControllers([current], direction: .forward, animated: false)
     }
     
     private func createFilePreviewViewController(for file: FileModel) -> FilePreviewViewController {
@@ -188,18 +222,22 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
 // MARK: - UIPageViewControllerDataSource, UIPageViewControllerDelegate
 extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        isTransitioning = true
         let nextVC = pendingViewControllers.first as! FilePreviewViewController
         nextFile = nextVC.file
         nextTitle = nextVC.viewModel?.name
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        isTransitioning = false
         if completed {
             title = nextTitle
             currentFile = nextFile
             
             navigationController?.setNavigationBarHidden(false, animated: true)
+            loadNextPageIfNearLastLoadedFile(retryingFailedPage: true)
         }
+        if needsPagesReset { resetPages() }
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {

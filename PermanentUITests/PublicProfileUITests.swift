@@ -19,8 +19,8 @@ class PublicProfileUITests: BaseUITestCase {
         navigateToPublicProfile()
         
         let profilePage = PublicProfilePage(app: app)
-        profilePage.aboutEditButton.tap()
-        
+        profilePage.tapEdit(profilePage.aboutEditButton)
+
         let aboutPage = PublicProfileAboutPage(app: app)
         let shortUUID = aboutPage.addShortDescription()
         let longUUID = aboutPage.addLongDescription()
@@ -35,7 +35,8 @@ class PublicProfileUITests: BaseUITestCase {
         let longDescriptionCell = app.collectionViews.cells.containing(.staticText, identifier: longUUID).firstMatch
         XCTAssertTrue(longDescriptionCell.waitForExistence(timeout: 5))
 
-        profilePage.aboutEditButton.tap()
+        profilePage.tapEdit(profilePage.aboutEditButton)
+        XCTAssertTrue(aboutPage.shortDescriptionElement.waitUntilSettled(timeout: 10))
         aboutPage.shortDescriptionElement.tap()
         aboutPage.shortDescriptionElement.selectAndDeleteText(inApp: app)
         aboutPage.longDescriptionElement.tap()
@@ -47,7 +48,7 @@ class PublicProfileUITests: BaseUITestCase {
         navigateToPublicProfile()
         
         let profilePage = PublicProfilePage(app: app)
-        profilePage.personInformationEditButton.tap()
+        profilePage.tapEdit(profilePage.personInformationEditButton)
         
         let personInfoPage = PublicProfilePersonInfoPage(app: app)
         let fullNameUUID = personInfoPage.fillFullName()
@@ -66,7 +67,8 @@ class PublicProfileUITests: BaseUITestCase {
         let genderCell = app.collectionViews.cells.containing(.staticText, identifier: genderUUID).firstMatch
         XCTAssertTrue(genderCell.waitForExistence(timeout: 5))
 
-        profilePage.personInformationEditButton.tap()
+        profilePage.tapEdit(profilePage.personInformationEditButton)
+        XCTAssertTrue(personInfoPage.fullNameTextField.waitUntilSettled(timeout: 10))
         personInfoPage.fullNameTextField.tap()
         personInfoPage.fullNameTextField.selectAndDeleteText(inApp: app)
         personInfoPage.nicknameTextField.tap()
@@ -80,10 +82,12 @@ class PublicProfileUITests: BaseUITestCase {
         navigateToPublicProfile()
         
         app.swipeUp()
-        
-        let personInformationHeader = app.collectionViews.otherElements.containing(.staticText, identifier: "Online Presence").firstMatch
-        personInformationHeader.staticTexts["Edit"].tap()
-        
+
+        let profilePage = PublicProfilePage(app: app)
+        profilePage.tapEdit(profilePage.onlinePresenceEditButton)
+        // The profile shows only the first rows, so this run's rows must be the only ones.
+        removeLeftoverRows()
+
         app.buttons["Add Email"].tap()
         
         let emailUUID = UUID().uuidString
@@ -124,16 +128,10 @@ class PublicProfileUITests: BaseUITestCase {
         let linkCollectionCell = app.collectionViews.cells.containing(.staticText, identifier: linkUUID).firstMatch
         XCTAssertTrue(linkCollectionCell.waitForExistence(timeout: 5))
 
-        personInformationHeader.staticTexts["Edit"].tap()
-        
-        emailCell.buttons.firstMatch.tap()
-        app.otherElements.containing(.staticText, identifier: "Delete").firstMatch.buttons.element(boundBy: 1).tap()
-        
-        app.waitForActivityIndicators()
-        
-        linkCell.buttons.firstMatch.tap()
-        app.otherElements.containing(.staticText, identifier: "Delete").firstMatch.buttons.element(boundBy: 1).tap()
-        sleep(1)
+        profilePage.tapEdit(profilePage.onlinePresenceEditButton)
+
+        deleteRow(emailCell)
+        deleteRow(linkCell)
     }
     
     func testMilestones() {
@@ -142,9 +140,9 @@ class PublicProfileUITests: BaseUITestCase {
         app.swipeUp()
         app.swipeUp()
 
-        let milestonesHeader = app.collectionViews.otherElements.containing(.staticText, identifier: "Milestones").firstMatch
-        XCTAssertTrue(milestonesHeader.waitForExistence(timeout: 5))
-        milestonesHeader.staticTexts["Edit"].tap()
+        let profilePage = PublicProfilePage(app: app)
+        profilePage.tapEdit(profilePage.milestonesEditButton)
+        removeLeftoverRows()
 
         app.buttons["Add Milestone"].tap()
 
@@ -174,11 +172,29 @@ class PublicProfileUITests: BaseUITestCase {
         let milestoneCollectionCell = app.collectionViews.cells.containing(.staticText, identifier: titleUUID).firstMatch
         XCTAssertTrue(milestoneCollectionCell.waitForExistence(timeout: 5))
 
-        milestonesHeader.staticTexts["Edit"].tap()
+        profilePage.tapEdit(profilePage.milestonesEditButton)
 
-        milestoneCell.buttons.firstMatch.tap()
-        app.otherElements.containing(.staticText, identifier: "Delete").firstMatch.buttons.element(boundBy: 1).tap()
-        sleep(1)
+        deleteRow(milestoneCell)
+    }
+
+    /// Deletes a row in an edit screen. The list reloads after each delete, and a tap during the reload is lost.
+    private func deleteRow(_ cell: XCUIElement) {
+        XCTAssertTrue(cell.waitUntilSettled(timeout: 10), "the row is not on screen")
+        cell.buttons.firstMatch.tap()
+        let menu = app.otherElements.containing(.staticText, identifier: "Delete").firstMatch
+        XCTAssertTrue(menu.waitForExistence(timeout: 10), "the row's menu did not open")
+        menu.buttons.element(boundBy: 1).tap()
+        XCTAssertTrue(cell.waitForNonExistence(timeout: 15), "the row was not deleted")
+    }
+
+    /// Deletes the rows a failed run left in an edit screen. The tests name every row they add with a UUID.
+    private func removeLeftoverRows() {
+        _ = app.tables.firstMatch.waitForExistence(timeout: 10)
+        for _ in 0..<20 {
+            let labels = app.tables.cells.staticTexts.allElementsBoundByIndex.map(\.label)
+            guard let leftover = labels.first(where: { UUID(uuidString: $0) != nil }) else { return }
+            deleteRow(app.tables.cells.containing(.staticText, identifier: leftover).firstMatch)
+        }
     }
     
     func navigateToPublicProfile() {
@@ -190,5 +206,7 @@ class PublicProfileUITests: BaseUITestCase {
 
         let leftMenu = LeftSideMenuPage(app: app, testCase: self)
         leftMenu.goToPublicProfile()
+        // A swipe while the profile still slides in scrolls nothing.
+        XCTAssertTrue(PublicProfilePage(app: app).aboutEditButton.waitUntilSettled(timeout: 15), "the profile did not open")
     }
 }

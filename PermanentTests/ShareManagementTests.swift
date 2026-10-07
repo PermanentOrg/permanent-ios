@@ -128,15 +128,6 @@ class ShareManagementTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
-    func testGetFolder() {
-        let expectation = XCTestExpectation(description: "Get folder")
-        sut.getFolder { folder in
-            XCTAssertNotNil(folder)
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
-    }
-
     func testShareVOs() {
         let expectation = XCTestExpectation(description: "Get share VOs")
         sut.getRecord { record in

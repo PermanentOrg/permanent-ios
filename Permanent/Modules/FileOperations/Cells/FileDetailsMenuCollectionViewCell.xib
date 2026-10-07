@@ -17,16 +17,12 @@
                 <rect key="frame" x="0.0" y="0.0" width="386" height="240"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Bhu-Rx-2Jv">
+                    <control opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" placeholderIntrinsicWidth="infinite" placeholderIntrinsicHeight="32" translatesAutoresizingMaskIntoConstraints="NO" id="Bhu-Rx-2Jv" customClass="SlidingTabControl" customModule="Permanent" customModuleProvider="target">
                         <rect key="frame" x="22" y="0.0" width="342" height="32"/>
-                        <segments>
-                            <segment title="First"/>
-                            <segment title="Second"/>
-                        </segments>
                         <connections>
                             <action selector="segmentedControlAction:" destination="gTV-IL-0wX" eventType="valueChanged" id="qYg-SV-152"/>
                         </connections>
-                    </segmentedControl>
+                    </control>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>

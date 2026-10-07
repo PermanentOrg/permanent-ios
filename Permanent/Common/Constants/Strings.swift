@@ -109,10 +109,17 @@ extension String {
     static var downloads: String { return "Downloads".localized() }
     static var cannotUpload: String { return "CannotUpload".localized() }
     static var date: String { return "Date".localized() }
-    static var fileType: String { return "FileType".localized() }
-    static var ascending: String { return "Ascending".localized() }
-    static var descending: String { return "Descending".localized() }
-    static var sortOption: String { return "%@ %@" }
+    static var sortOption: String { return "%@  \u{2022}  %@" }
+    static var sortBy: String { return "SortBy".localized() }
+    static var sortFieldType: String { return "SortFieldType".localized() }
+    static var sortAToZ: String { return "SortAToZ".localized() }
+    static var sortZToA: String { return "SortZToA".localized() }
+    static var sortAToZSpoken: String { return "SortAToZSpoken".localized() }
+    static var sortZToASpoken: String { return "SortZToASpoken".localized() }
+    static var sortNewestFirst: String { return "SortNewestFirst".localized() }
+    static var sortOldestFirst: String { return "SortOldestFirst".localized() }
+    static var sortAscending: String { return "SortAscending".localized() }
+    static var sortDescending: String { return "SortDescending".localized() }
     static var copyHere: String { return "CopyHere".localized() }
     static var moveHere: String { return "MoveHere".localized() }
     static var `public`: String { return "Public".localized() }
@@ -228,12 +235,5 @@ extension String {
     static var errorServer: String { return "ErrorServer".localized() }
     static var downloadCancelled: String { return "DownloadCancelled".localized() }
     
-    static let arrowUpCharacter: String = "\u{2191}"
-    static let arrowDownCharacter: String = "\u{2193}"
-    
-    static let aToZ: String = "(A-Z)"
-    static let zToA: String = "(Z-A)"
-    static var oldest: String { return "Oldest".localized() }
-    static var newest: String { return "Newest".localized() }
     static var linkSettings: String { return "LinkSettings".localized() }
 }

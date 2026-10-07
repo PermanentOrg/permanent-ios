@@ -254,6 +254,21 @@ final class OnboardingViewRenderingTests: XCTestCase {
         XCTAssertNotNil(host.view)
     }
 
+    // Without a session the archive fetch fails before the view appears; the view must still leave its blank state.
+    func testOnboardingView_WithoutASession_ShowsTheFirstStep() {
+        let savedSession = AuthenticationManager.shared.session
+        AuthenticationManager.shared.session = nil
+        defer { AuthenticationManager.shared.session = savedSession }
+
+        let container = OnboardingContainerViewModel(username: nil, password: nil)
+        let host = hostView(OnboardingView(viewModel: container))
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.3))
+
+        XCTAssertNotNil(host.view)
+        XCTAssertEqual(container.contentType, .welcome)
+        XCTAssertTrue(container.showAlert)
+    }
+
     func testOnboardingView_RendersWithWelcomeContentType() {
         let container = OnboardingContainerViewModel(username: nil, password: nil)
         container.contentType = .welcome
