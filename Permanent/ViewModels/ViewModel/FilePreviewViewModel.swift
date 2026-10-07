@@ -274,24 +274,69 @@ class FilePreviewViewModel: ViewModelInterface {
         downloader = nil
     }
     
-    /// Always the original upload: the normalised derivative may carry no playable audio track, and
-    /// probing which to use blocks main. An unplayable original retries via `convertedAVFileVO()`.
+    /// The user's own upload, found by its format. File names, saved copies and document previews use
+    /// it; audio and video play from `playbackFiles()`, photos and PDFs open from `previewFiles()`.
     func fileVO() -> FileVO? {
-        recordVO?.recordVO?.fileVOS?.first
+        recordVO?.recordVO?.fileVOS?.original
     }
 
-    /// The converted A/V rendition, used only as the fallback when the original fails to load.
-    /// Nil when the record has no such rendition, in which case the failure is terminal.
-    func convertedAVFileVO() -> FileVO? {
-        guard file.type == .video || file.type == .audio else { return nil }
-        return recordVO?.recordVO?.fileVOS?.first(where: { $0.format == "file.format.converted" })
+    private var recordType: FileType {
+        FileType(rawValue: recordVO?.recordVO?.type ?? "") ?? file.type
+    }
+
+    /// Audio and video files in play order. A file that fails moves playback on to the next one.
+    func playbackFiles() -> [FileVO] {
+        guard recordType == .video || recordType == .audio else { return [] }
+        return recordVO?.recordVO?.fileVOS?.playbackOrder ?? []
+    }
+
+    /// Photo and PDF files in open order. A file that cannot open moves on to the next one.
+    func previewFiles() -> [FileVO] {
+        guard recordType == .image || recordType == .pdf else { return [] }
+        return recordVO?.recordVO?.fileVOS?.previewOrder ?? []
+    }
+
+    /// Files not tried yet, each with its link. Each is handed out once, so failures cannot loop.
+    private var pendingFiles: [(file: FileVO, url: URL)] = []
+
+    /// Starts the play list over, for a new load or a retry.
+    func startPlayback() {
+        pendingFiles = playbackFiles().compactMap { file in file.playbackURL.map { (file, $0) } }
+    }
+
+    /// Starts the photo or PDF list over, for a new load or a retry. Empty for other types.
+    func startPreview() {
+        pendingFiles = previewFiles().compactMap { file in file.previewURL.map { (file, $0) } }
+    }
+
+    /// The next file to try and its link; nil once every file has been tried.
+    func nextFile() -> (file: FileVO, url: URL)? {
+        pendingFiles.isEmpty ? nil : pendingFiles.removeFirst()
+    }
+
+    /// Names the file type for the player when the link has no extension, so a server that labels the
+    /// file as generic data cannot stop playback. Only types the player can open are named.
+    static func assetOptions(for url: URL, contentType: String?) -> [String: Any] {
+        guard #available(iOS 17.0, *), !url.isFileURL, url.pathExtension.isEmpty,
+              let contentType, AVURLAsset.isPlayableExtendedMIMEType(contentType) else { return [:] }
+        return [AVURLAssetOverrideMIMETypeKey: contentType]
+    }
+
+    /// Options for one more try of the same link with its type named. Only after "Cannot Open", so a
+    /// file that plays is never given a guessed type.
+    static func typeHintRetryOptions(after error: Error?, url: URL?, contentType: String?) -> [String: Any]? {
+        guard let error = error as NSError?, error.domain == AVFoundationErrorDomain,
+              error.code == AVError.Code.fileFormatNotRecognized.rawValue,
+              let url else { return nil }
+        let options = assetOptions(for: url, contentType: contentType)
+        return options.isEmpty ? nil : options
     }
     
     /// The PDF rendition, for document types WebKit refuses to render inline and turns into a
     /// download. Preview only: `fileVO()` stays on the original, so Download gives the real file.
     func pdfAccessCopyURL() -> URL? {
         guard let accessCopy = recordVO?.recordVO?.fileVOS?.first(where: {
-            $0.type == "type.file.pdf.pdf" && $0.format == "file.format.archivematica.access"
+            $0.type == "type.file.pdf.pdf" && $0.format == FileVO.accessCopyFormat
         }) else { return nil }
 
         // fileURL is the plain object; downloadURL carries a content-disposition that would

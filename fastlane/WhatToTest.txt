@@ -30,4 +30,6 @@ Please focus on:
 
 13. iOS 27. On a device with iOS 27, open the app, sign in, and repeat a few of the steps above. Tap a push notification: the app must open. The app must still work on older iOS versions too.
 
+14. Video, audio, photos and PDFs. Open a video, an audio file, a photo and a PDF you uploaded more than an hour ago. Each must play or open.
+
 The app also gets its built-in parts (Firebase, Google Maps, Stripe, image loading) in a new way. Nothing should look different, but please report anything odd with maps, notifications, payments or thumbnails.

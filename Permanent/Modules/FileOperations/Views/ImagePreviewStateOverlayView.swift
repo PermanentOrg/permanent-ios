@@ -136,19 +136,19 @@ class ImagePreviewStateOverlayView: UIView {
     }
 
     @objc private func overlayTapped() {
+        // Only the failure and offline card retries; a tap while loading would restart a live load.
+        guard !messageCard.isHidden else { return }
         // Acknowledge the tap with a press animation, so there is feedback even when the retry can't
         // proceed or fails again immediately.
-        if !messageCard.isHidden {
+        UIView.animate(withDuration: 0.12, delay: 0, options: [.allowUserInteraction], animations: {
+            self.messageCard.transform = CGAffineTransform(scaleX: 0.94, y: 0.94)
+            self.messageCard.alpha = 0.6
+        }, completion: { _ in
             UIView.animate(withDuration: 0.12, delay: 0, options: [.allowUserInteraction], animations: {
-                self.messageCard.transform = CGAffineTransform(scaleX: 0.94, y: 0.94)
-                self.messageCard.alpha = 0.6
-            }, completion: { _ in
-                UIView.animate(withDuration: 0.12, delay: 0, options: [.allowUserInteraction], animations: {
-                    self.messageCard.transform = .identity
-                    self.messageCard.alpha = 1
-                })
+                self.messageCard.transform = .identity
+                self.messageCard.alpha = 1
             })
-        }
+        })
         onRetryTapped?()
     }
 

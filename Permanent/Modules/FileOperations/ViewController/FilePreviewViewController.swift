@@ -11,6 +11,7 @@ import AVKit
 import PDFKit
 import SwiftUI
 import SDWebImage
+import os.log
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -71,9 +72,15 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     /// deactivation, so an image or PDF preview doesn't poke a session it never touched.
     private var didActivatePlaybackAudioSession = false
 
-    /// One-shot: the A/V original failed to load and we retried with the converted rendition.
-    /// Without this the retry would re-enter the same `.failed` handler and loop.
-    private var didFallBackToConvertedAV = false
+    /// The copy on screen or in the player; nil for a saved copy.
+    private var currentFile: FileVO?
+    private var playbackIsAudio = false
+    private var previewIsPDF = false
+    /// The file in the player already had one more try with its type named.
+    private var typeHintTried = false
+    #if DEBUG
+    private static let previewLog = Logger(subsystem: "com.permanent.ios", category: "Preview")
+    #endif
 
     /// Set by a pager that owns the audio session across its cached pages. Non-nil means this
     /// controller must not deactivate in deinit, or an evicted page silences the playing one.
@@ -263,6 +270,22 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                                            : .offline(hasThumbnail: hasBlur))
     }
 
+    /// No copy to open: a photo fails through its own loading states, other previews show the failure card.
+    private func showNoPreview() {
+        if file.type == .image {
+            viewModel?.imageLoadDidFail(error: nil)
+        } else {
+            showPreviewLoadFailure()
+        }
+    }
+
+    /// A load replaced by a newer one reports a cancel; only a real failure moves on to the next copy.
+    private static func isCancellation(_ error: Error?) -> Bool {
+        guard let error = error as NSError? else { return false }
+        return (error.domain == SDWebImageErrorDomain && error.code == SDWebImageError.cancelled.rawValue)
+            || (error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled)
+    }
+
     private func resumeImageLoad() {
         if viewModel?.recordVO == nil {
             viewModel?.getRecord(file: file, then: { [weak self] record in
@@ -344,17 +367,25 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             return
         }
         let fileType = FileType(rawValue: self.viewModel?.recordVO?.recordVO?.type ?? "") ?? .miscellaneous
-        
+        let isAudioOrVideo = fileType == .video || fileType == .audio
+        currentFile = nil
+        if isAudioOrVideo {
+            viewModel?.startPlayback()
+            playbackIsAudio = fileType == .audio
+        } else {
+            viewModel?.startPreview()
+            previewIsPDF = fileType == .pdf
+        }
+
         if let localURL = self.fileHelper.url(forFileNamed: FileHelper.recordScopedName(fileName, recordId: file.recordId)),
             let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
-                // Use download URL for full-res; fall back to thumbnail URL
-                let fullResURL = fileVO.downloadURL ?? self.viewModel?.fileThumbnailURL()
-                if let urlString = fullResURL, let url = URL(string: urlString) {
-                    self.loadImage(withURL: url)
+                // Photos load from the server even when saved; the thumbnail stands in when no copy has a link.
+                if !openNextPreviewFile(), let thumbnailURL = viewModel?.fileThumbnailURL().flatMap({ URL(string: $0) }) {
+                    loadImage(withURL: thumbnailURL)
                 }
-        
+
             case FileType.video:
                 self.loadVideo(withURL: localURL, contentType: contentType)
                 
@@ -367,38 +398,29 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             default:
                 self.loadMisc(withURL: localURL)
             }
-        } else if let downloadURLString = fileVO.downloadURL,
-            let contentType = fileVO.contentType,
-            let downloadURL = URL(string: downloadURLString) {
-            switch fileType {
-            case FileType.image:
-                // Use download URL for full-resolution image
-                self.loadImage(withURL: downloadURL)
-                
-            case FileType.video:
-                self.loadVideo(withURL: downloadURL, contentType: contentType)
-                
-            case FileType.audio:
-                self.loadAudio(withURL: downloadURL, contentType: contentType)
-                
-            case FileType.pdf:
-                self.loadPDF(withURL: downloadURL)
-
-            default:
-                // WebKit refuses spreadsheet MIME types and turns the navigation into a download, rendering
-                // nothing — so preview the PDF access copy through PDFKit. Download still gets the original.
-                if let accessCopyURL = self.viewModel?.pdfAccessCopyURL() {
-                    self.loadPDF(withURL: accessCopyURL)
-                } else {
-                    // No rendition available, but still prefer the inline URL: `downloadURL` carries an
-                    // `attachment` content disposition and so guarantees a download rather than a render.
-                    self.loadMisc(withURL: fileVO.fileURL.flatMap { URL(string: $0) } ?? downloadURL)
-                }
+        } else if isAudioOrVideo {
+            if !playNextPendingFile() {
+                showPreviewLoadFailure()
             }
-        } else if file.type == .image {
-            self.viewModel?.imageLoadDidFail(error: nil)
+        } else if fileType == .image || fileType == .pdf {
+            // The original opens first; a copy that cannot open hands over to the next one.
+            if !openNextPreviewFile() {
+                showNoPreview()
+            }
+        } else if let downloadURLString = fileVO.downloadURL,
+            fileVO.contentType != nil,
+            let downloadURL = URL(string: downloadURLString) {
+            // WebKit refuses spreadsheet MIME types and turns the navigation into a download, rendering
+            // nothing — so preview the PDF access copy through PDFKit. Download still gets the original.
+            if let accessCopyURL = self.viewModel?.pdfAccessCopyURL() {
+                self.loadPDF(withURL: accessCopyURL)
+            } else {
+                // No rendition available, but still prefer the inline URL: `downloadURL` carries an
+                // `attachment` content disposition and so guarantees a download rather than a render.
+                self.loadMisc(withURL: fileVO.fileURL.flatMap { URL(string: $0) } ?? downloadURL)
+            }
         } else {
-            self.showPreviewLoadFailure()
+            showNoPreview()
         }
 
         if recordLoaded != true {
@@ -457,7 +479,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             progress: nil
         ) { [weak self, weak previewVC] image, error, _, _ in
             guard let previewVC = previewVC, let image = image, error == nil else {
-                // Full-res failed (S6) — keep the thumbnail beneath the blur so retry can reuse it.
+                // A copy that cannot open hands over to the next one. When none is left, the failure card
+                // keeps the thumbnail beneath the blur so retry can reuse it.
+                if previewVC != nil, !Self.isCancellation(error), self?.openNextPreviewFile(after: error) == true { return }
                 self?.viewModel?.imageLoadDidFail(error: error)
                 return
             }
@@ -500,6 +524,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     var debugForceNoThumbnail: Bool {
         CommandLine.arguments.contains("--forceNoThumbnail")
     }
+
+    /// QA hook: launch with `--failFirstFile` to break a record's first copy and watch the next one open.
+    private func debugBreakingFirstFile(_ url: URL) -> URL {
+        guard CommandLine.arguments.contains("--failFirstFile"), currentFile == nil else { return url }
+        return URL(fileURLWithPath: "/missing-first-file")
+    }
     #endif
 
     func loadImage(withURL url: URL) {
@@ -540,6 +570,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self.thumbnailImageView.isHidden = true
 
                     if error != nil {
+                        // A copy that cannot open hands over to the next one.
+                        if !Self.isCancellation(error), self.openNextPreviewFile(after: error) { return }
                         self.viewModel?.imageLoadDidFail(error: error)
                     } else {
                         previewVC.newImageLoaded()
@@ -577,6 +609,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
                     pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
+                    // Size the view before it gets the document: an unsized one sits under the top bars
+                    // and starts scrolled down by their height, which the jump below can miss.
+                    view.layoutIfNeeded()
                     pdfView.document = document
                     imageStateOverlay.render(.loaded)
 
@@ -591,13 +626,15 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 }
             } else {
                 DispatchQueue.main.async { [self] in
+                    // A copy that cannot open hands over to the next one.
+                    if openNextPreviewFile() { return }
                     showPreviewLoadFailure()
                 }
             }
         }
     }
         
-    func loadVideo(withURL url: URL, contentType: String) {
+    func loadVideo(withURL url: URL, contentType: String, options: [String: Any] = [:]) {
         activatePlaybackAudioSession()
         // file.type from the listing is unreliable (often .miscellaneous), so the
         // blurred placeholder is rendered here, where the record type is authoritative.
@@ -607,12 +644,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         // placeholder observable on fast networks.
         if debugFullResDelay > 0 {
             DispatchQueue.main.asyncAfter(deadline: .now() + debugFullResDelay) { [weak self] in
-                self?.loadAV(withURL: url, contentType: contentType)
+                self?.loadAV(withURL: url, contentType: contentType, options: options)
             }
             return
         }
         #endif
-        loadAV(withURL: url, contentType: contentType)
+        loadAV(withURL: url, contentType: contentType, options: options)
     }
 
     private var isLikelyVideoFile: Bool {
@@ -660,9 +697,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         videoPlayer?.player?.play()
     }
     
-    func loadAudio(withURL url: URL, contentType: String) {
+    func loadAudio(withURL url: URL, contentType: String, options: [String: Any] = [:]) {
         activatePlaybackAudioSession()
-        loadAV(withURL: url, contentType: contentType)
+        loadAV(withURL: url, contentType: contentType, options: options)
         // Audio has no frames for `isReadyForDisplay`, so snapshot the player's QuickTime artwork
         // behind an opaque cover and blur the snapshot — the artwork is never sharp before the blur.
         audioRevealStarted = false
@@ -679,6 +716,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             self?.startAudioBlurRevealIfPossible()
         }
 
+        overlayView.isHidden = true   // revealed together with the sharp artwork
+        // A retry with the next file keeps the play button from the first try.
+        guard overlayView.superview == nil else { return }
+
         let playButton = UIButton(type: .custom)
         playButton.translatesAutoresizingMaskIntoConstraints = false
         playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)), for: .normal)
@@ -690,7 +731,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 
         overlayView.translatesAutoresizingMaskIntoConstraints = false
         overlayView.backgroundColor = .clear
-        overlayView.isHidden = true   // revealed together with the sharp artwork
         view.addSubview(overlayView)
         overlayView.addSubview(playButton)
 
@@ -706,8 +746,76 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         ])
     }
     
-    func loadAV(withURL url: URL, contentType: String) {
-        let asset = AVURLAsset(url: url)
+    /// Starts the next audio or video file in play order. Returns false when every file has been tried.
+    @discardableResult
+    private func playNextPendingFile() -> Bool {
+        guard let next = viewModel?.nextFile() else { return false }
+        #if DEBUG
+        let url = debugBreakingFirstFile(next.url)
+        #else
+        let url = next.url
+        #endif
+        typeHintTried = false
+        play(next.file, url: url)
+        return true
+    }
+
+    /// Opens the next photo or PDF copy in open order: first from `loadRecord()`, then after each copy
+    /// that cannot open. Returns false when every copy has been tried.
+    @discardableResult
+    private func openNextPreviewFile(after error: Error? = nil) -> Bool {
+        #if DEBUG
+        if let failed = currentFile {
+            let error = error as NSError?
+            Self.previewLog.error("Could not open \(failed.format ?? "a file", privacy: .public) for record \(self.file.recordId, privacy: .public): \(error?.domain ?? "no error", privacy: .public) \(error?.code ?? 0, privacy: .public)")
+        }
+        #endif
+        guard let next = viewModel?.nextFile() else { return false }
+        #if DEBUG
+        let url = debugBreakingFirstFile(next.url)
+        Self.previewLog.info("Opening \(next.file.format ?? "a file", privacy: .public) for record \(self.file.recordId, privacy: .public)")
+        #else
+        let url = next.url
+        #endif
+        currentFile = next.file
+        if previewIsPDF {
+            loadPDF(withURL: url)
+        } else {
+            loadImage(withURL: url)
+        }
+        return true
+    }
+
+    /// Loads one file as audio or video, with player options such as a named type.
+    private func play(_ file: FileVO, url: URL, options: [String: Any] = [:]) {
+        currentFile = file
+        #if DEBUG
+        Self.previewLog.info("Playing \(file.format ?? "a file", privacy: .public) for record \(self.file.recordId, privacy: .public)")
+        #endif
+        if playbackIsAudio {
+            loadAudio(withURL: url, contentType: file.contentType ?? "", options: options)
+        } else {
+            loadVideo(withURL: url, contentType: file.contentType ?? "", options: options)
+        }
+    }
+
+    #if DEBUG
+    /// Debug builds only: logs why a file did not play, so QA can follow the hand-over to the next file.
+    /// A remote link drops its query, which holds the signature.
+    private func logPlaybackFailure(of item: AVPlayerItem?) {
+        let error = item?.error as NSError?
+        let underlying = error?.userInfo[NSUnderlyingErrorKey] as? NSError
+        let url = (item?.asset as? AVURLAsset)?.url
+        let link = url.map { $0.isFileURL ? "a saved copy" : "\($0.host ?? "")\($0.path)" } ?? "no link"
+        let format = currentFile?.format ?? "saved copy"
+        Self.previewLog.error("Playback failed for record \(self.file.recordId, privacy: .public), \(format, privacy: .public) at \(link, privacy: .public): \(error?.domain ?? "no error", privacy: .public) \(error?.code ?? 0, privacy: .public), underlying \(underlying?.domain ?? "none", privacy: .public) \(underlying?.code ?? 0, privacy: .public)")
+    }
+    #endif
+
+    func loadAV(withURL url: URL, contentType: String, options: [String: Any] = [:]) {
+        // A reload over a live player must stop watching the old item first, or KVO raises on the new one.
+        removeVideoPlayer()
+        let asset = AVURLAsset(url: url, options: options)
         let playerItem = AVPlayerItem(asset: asset)
 
         let player = AVPlayer(playerItem: playerItem)
@@ -765,7 +873,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     private func startAudioBlurRevealIfPossible() {
         // Both the loadAudio timer and the viewDidAppear deferred path can call this;
         // run the reveal exactly once to avoid a double snapshot / re-blur flicker.
-        guard let playerView = videoPlayer?.view, audioCover != nil, !audioRevealStarted else { return }
+        guard let playerView = videoPlayer?.view, let cover = audioCover, !audioRevealStarted else { return }
         guard playerView.window != nil else {
             pendingAudioReveal = true
             return
@@ -779,8 +887,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         imageStateOverlay.setSourceImage(snapshot)
         imageStateOverlay.render(.loadingFullRes(hasThumbnail: true))
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
-            guard let self = self else { return }
-            self.audioCover?.removeFromSuperview()
+            // A failed or replaced player took this cover away; its play button must stay hidden.
+            guard let self = self, self.audioCover === cover else { return }
+            cover.removeFromSuperview()
             self.audioCover = nil
             self.imageStateOverlay.render(.loaded)
             self.overlayView.isHidden = false
@@ -830,6 +939,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func removeVideoPlayer() {
         stopObservingPlayerItem()
         videoPlayButton.removeFromSuperview()
+        overlayView.isHidden = true
         audioCover?.removeFromSuperview()
         audioCover = nil
         videoPlayer?.player?.replaceCurrentItem(with: nil)
@@ -971,24 +1081,30 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 
         // AVPlayerItem.status KVO may be delivered on a background thread; hop to main
         // before touching any UIKit state.
+        let failedItem = object as? AVPlayerItem
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.activityIndicator.stopAnimating()
             self.thumbnailImageView.isHidden = true
 
             if status == .failed {
+                #if DEBUG
+                self.logPlaybackFailure(of: failedItem)
+                #endif
                 self.stopObservingPlayerItem()
                 self.removeVideoPlayer()
 
-                // Retry once with the converted rendition before declaring failure. Cheaper than a synchronous
-                // `AVAsset.isPlayable` probe on main: only a genuinely unplayable original pays anything.
-                if !self.didFallBackToConvertedAV,
-                   let converted = self.viewModel?.convertedAVFileVO(),
-                   let url = URL(string: converted.downloadURL) {
-                    self.didFallBackToConvertedAV = true
-                    self.loadAV(withURL: url, contentType: converted.contentType ?? "")
+                // "Cannot Open" on a link without an extension gets one more try with the file's type named.
+                if !self.typeHintTried, let file = self.currentFile,
+                   let failedURL = (failedItem?.asset as? AVURLAsset)?.url,
+                   let options = FilePreviewViewModel.typeHintRetryOptions(after: failedItem?.error, url: failedURL, contentType: file.contentType) {
+                    self.typeHintTried = true
+                    self.play(file, url: failedURL, options: options)
                     return
                 }
+
+                // A file that cannot play hands over to the next one, so one bad copy never hides a good one.
+                if self.playNextPendingFile() { return }
 
                 self.showPreviewLoadFailure()
             }
