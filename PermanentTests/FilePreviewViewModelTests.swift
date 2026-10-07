@@ -6,6 +6,9 @@
 //
 
 import XCTest
+import AVFoundation
+import AVKit
+import PDFKit
 @testable import Permanent
 
 final class FilePreviewViewModelTests: XCTestCase {
@@ -20,12 +23,12 @@ final class FilePreviewViewModelTests: XCTestCase {
 
     /// Builds a RecordVO through the real V2 adapter, so these tests exercise the same
     /// `fileVOS` shape the app receives from Stela rather than a hand-built stand-in.
-    private func makeRecordWithFiles(_ filesJSON: String) -> RecordVO {
+    private func makeRecordWithFiles(_ filesJSON: String, recordType: String = "type.record.spreadsheet") -> RecordVO {
         let json = """
         { "data": {
             "recordId": "89793", "displayName": "file_example_ODS_100", "archiveId": "3227",
             "archiveNumber": "01on-0006", "uploadFileName": "file_example_ODS_100.ods",
-            "size": 68446, "type": "type.record.spreadsheet", "folderLinkId": "137946",
+            "size": 68446, "type": "\(recordType)", "folderLinkId": "137946",
             "files": [ \(filesJSON) ]
         } }
         """
@@ -87,6 +90,15 @@ final class FilePreviewViewModelTests: XCTestCase {
         vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(accessCopyPDFJSON)")
 
         XCTAssertEqual(vm.fileVO()?.type, "type.file.spreadsheet.ods")
+        XCTAssertEqual(vm.fileName(), "file_example_ODS_100.ods")
+    }
+
+    func testFileVO_PicksTheOriginal_WhenTheServerListsTheAccessCopyFirst() {
+        // Stela lists a record's files in no fixed order, so the original is found by its format.
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(accessCopyPDFJSON), \(odsOriginalJSON)")
+
+        XCTAssertEqual(vm.fileVO()?.format, "file.format.original")
         XCTAssertEqual(vm.fileName(), "file_example_ODS_100.ods")
     }
 
@@ -152,30 +164,328 @@ final class FilePreviewViewModelTests: XCTestCase {
         XCTAssertNil(vm.fileVO())
     }
 
-    func testFileVO_VideoPlaysTheOriginal_ConvertedIsOnlyTheFallback() {
-        // The normalised derivative may carry no playable audio track and may not be muxed for
-        // streaming, so the original plays and the conversion is only the post-failure retry.
-        let vm = makeVideoVM()
-        vm.recordVO = makeRecordWithFiles("\(videoOriginalJSON), \(videoConvertedJSON)")
+    // MARK: - playbackFiles()
+    // Playback follows the web: the access copy, then the original, then the conversion, which may
+    // carry no playable audio track. The server's order of the files never matters.
 
-        XCTAssertEqual(vm.fileVO()?.format, "file.format.original",
-                       "playback must use the user's own file, not the derivative")
-        XCTAssertEqual(vm.convertedAVFileVO()?.format, "file.format.converted",
-                       "the derivative must still be reachable as the fallback")
+    func testPlaybackFiles_AccessCopyThenOriginalThenConversion_WhateverTheServerOrder() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoConvertedJSON), \(videoOriginalJSON), \(videoAccessCopyJSON)",
+                                          recordType: FileType.video.rawValue)
+
+        XCTAssertEqual(vm.playbackFiles().map(\.format),
+                       ["file.format.archivematica.access", "file.format.original", "file.format.converted"])
+        XCTAssertEqual(vm.fileVO()?.format, "file.format.original", "file names keep the user's own file")
     }
 
-    func testConvertedAVFileVO_NilForNonAV() {
-        // The fallback is A/V-only: a document must never silently swap to a converted rendition.
+    func testPlaybackFiles_OriginalBeforeTheConversion_WhenThereIsNoAccessCopy() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoConvertedJSON), \(videoOriginalJSON)", recordType: FileType.video.rawValue)
+
+        XCTAssertEqual(vm.playbackFiles().map(\.format), ["file.format.original", "file.format.converted"])
+    }
+
+    func testPlaybackFiles_LeavesOutAFileWithoutALink() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoAccessCopyWithoutLinksJSON), \(videoOriginalJSON)",
+                                          recordType: FileType.video.rawValue)
+
+        XCTAssertEqual(vm.playbackFiles().map(\.format), ["file.format.original"])
+    }
+
+    func testPlaybackFiles_EmptyForADocument() {
+        // Only audio and video walk the list: a document must never silently swap to a rendition.
         let vm = makeVM()
         vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(videoConvertedJSON)")
 
-        XCTAssertNil(vm.convertedAVFileVO())
+        XCTAssertTrue(vm.playbackFiles().isEmpty)
+    }
+
+    func testPlaybackURL_PrefersThePlainLink_ThenTheDownloadLink() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoAccessCopyJSON), \(videoOriginalWithDownloadLinkOnlyJSON)",
+                                          recordType: FileType.video.rawValue)
+        let files = vm.playbackFiles()
+
+        XCTAssertEqual(files.first?.playbackURL?.absoluteString, "https://cdn/access_copies/2000.mp4")
+        XCTAssertEqual(files.last?.playbackURL?.absoluteString,
+                       "https://cdn/originals/2000?response-content-disposition=attachment")
+    }
+
+    // MARK: - assetOptions(for:contentType:)
+
+    func testAssetOptions_NameTheTypeOnlyForALinkWithoutAnExtension() throws {
+        guard #available(iOS 17.0, *) else { throw XCTSkip("The player takes a named type from iOS 17.") }
+        let original = try XCTUnwrap(URL(string: "https://cdn/originals/2000/2000"))
+        let accessCopy = try XCTUnwrap(URL(string: "https://cdn/access_copies/2000.mp4"))
+
+        let named = FilePreviewViewModel.assetOptions(for: original, contentType: "video/mp4")
+        XCTAssertEqual(named[AVURLAssetOverrideMIMETypeKey] as? String, "video/mp4")
+        XCTAssertTrue(FilePreviewViewModel.assetOptions(for: accessCopy, contentType: "video/mp4").isEmpty)
+        XCTAssertTrue(FilePreviewViewModel.assetOptions(for: original, contentType: "application/octet-stream").isEmpty)
+        XCTAssertTrue(FilePreviewViewModel.assetOptions(for: original, contentType: nil).isEmpty)
+        XCTAssertTrue(FilePreviewViewModel.assetOptions(for: URL(fileURLWithPath: "/saved/clip"), contentType: "video/mp4").isEmpty,
+                      "a saved copy on the phone needs no hint")
+    }
+
+    func testTypeHintRetry_OnlyAfterCannotOpen_OnALinkWithoutAnExtension() throws {
+        guard #available(iOS 17.0, *) else { throw XCTSkip("The player takes a named type from iOS 17.") }
+        let original = try XCTUnwrap(URL(string: "https://cdn/originals/2000/2000"))
+        let accessCopy = try XCTUnwrap(URL(string: "https://cdn/access_copies/2000.mp4"))
+        let cannotOpen = NSError(domain: AVFoundationErrorDomain, code: AVError.Code.fileFormatNotRecognized.rawValue)
+        let otherFailure = NSError(domain: AVFoundationErrorDomain, code: AVError.Code.unknown.rawValue)
+
+        let retry = FilePreviewViewModel.typeHintRetryOptions(after: cannotOpen, url: original, contentType: "video/mp4")
+        XCTAssertEqual(retry?[AVURLAssetOverrideMIMETypeKey] as? String, "video/mp4")
+        XCTAssertNil(FilePreviewViewModel.typeHintRetryOptions(after: cannotOpen, url: accessCopy, contentType: "video/mp4"))
+        XCTAssertNil(FilePreviewViewModel.typeHintRetryOptions(after: otherFailure, url: original, contentType: "video/mp4"))
+        XCTAssertNil(FilePreviewViewModel.typeHintRetryOptions(after: nil, url: original, contentType: "video/mp4"))
+    }
+
+    // MARK: - Play list
+
+    func testPlayList_HandsOutEachFileOnce_InPlayOrder() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoConvertedJSON), \(videoOriginalJSON), \(videoAccessCopyJSON)",
+                                          recordType: FileType.video.rawValue)
+        vm.startPlayback()
+
+        XCTAssertEqual(vm.nextFile()?.file.format, "file.format.archivematica.access")
+        XCTAssertEqual(vm.nextFile()?.file.format, "file.format.original")
+        XCTAssertEqual(vm.nextFile()?.file.format, "file.format.converted")
+        XCTAssertNil(vm.nextFile(), "each file is tried once, so failures cannot loop")
+    }
+
+    func testPlayList_StartsOverOnANewLoad() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoOriginalJSON), \(videoAccessCopyJSON)", recordType: FileType.video.rawValue)
+        vm.startPlayback()
+        _ = vm.nextFile()
+
+        vm.startPlayback()
+
+        XCTAssertEqual(vm.nextFile()?.file.format, "file.format.archivematica.access")
+    }
+
+    func testPlayList_HandsOutNothing_WhenTheOnlyFileHasNoLink() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles(unknownFormatWithoutLinksJSON, recordType: FileType.video.rawValue)
+        vm.startPlayback()
+
+        XCTAssertNil(vm.nextFile())
+    }
+
+    func testPlaybackFiles_AudioPlaysTheAccessCopyFirst() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(audioOriginalJSON), \(audioAccessCopyJSON)", recordType: FileType.audio.rawValue)
+
+        XCTAssertEqual(vm.playbackFiles().map(\.format), ["file.format.archivematica.access", "file.format.original"])
+    }
+
+    func testPlaybackFiles_FallBackToTheFirstFile_WhenNoFormatIsKnown() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles(unknownFormatJSON, recordType: FileType.video.rawValue)
+
+        XCTAssertEqual(vm.playbackFiles().map(\.format), ["file.format.1920x1080"])
+    }
+
+    func testFileVO_FallsBackToTheFirstFile_WhenNoneIsMarkedOriginal() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(accessCopyPDFJSON), \(videoConvertedJSON)")
+
+        XCTAssertEqual(vm.fileVO()?.format, "file.format.archivematica.access")
+    }
+
+    // MARK: - previewFiles()
+    // Photos and PDFs open the user's own upload first, as they always did. The access copy and the
+    // conversion only stand in when it cannot open.
+
+    func testPreviewFiles_OriginalThenAccessCopyThenConversion_WhateverTheServerOrder() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(imageConvertedJSON), \(imageAccessCopyJSON), \(imageOriginalJSON)",
+                                          recordType: FileType.image.rawValue)
+
+        XCTAssertEqual(vm.previewFiles().map(\.format),
+                       ["file.format.original", "file.format.archivematica.access", "file.format.converted"])
+    }
+
+    func testPreviewFiles_OnlyForPhotosAndPDFs() {
+        let vm = makeVideoVM()
+        vm.recordVO = makeRecordWithFiles("\(videoOriginalJSON), \(videoAccessCopyJSON)", recordType: FileType.video.rawValue)
+        XCTAssertTrue(vm.previewFiles().isEmpty, "audio and video play in the web's order")
+
+        vm.recordVO = makeRecordWithFiles("\(odsOriginalJSON), \(accessCopyPDFJSON)")
+        XCTAssertTrue(vm.previewFiles().isEmpty, "a document keeps its own PDF rendition preview")
+    }
+
+    func testPreviewURL_PrefersTheDownloadLink_ThenThePlainLink() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(imageOriginalJSON), \(imageAccessCopyWithPlainLinkOnlyJSON)",
+                                          recordType: FileType.image.rawValue)
+        let files = vm.previewFiles()
+
+        XCTAssertEqual(files.first?.previewURL?.absoluteString,
+                       "https://cdn/originals/4000?response-content-disposition=attachment")
+        XCTAssertEqual(files.last?.previewURL?.absoluteString, "https://cdn/access_copies/4000.jpg")
+    }
+
+    func testPreviewList_HandsOutEachFileOnce_InOpenOrder() {
+        let vm = makeVM()
+        vm.recordVO = makeRecordWithFiles("\(imageConvertedJSON), \(imageAccessCopyJSON), \(imageOriginalJSON)",
+                                          recordType: FileType.image.rawValue)
+        vm.startPreview()
+
+        XCTAssertEqual(vm.nextFile()?.file.format, "file.format.original")
+        XCTAssertEqual(vm.nextFile()?.file.format, "file.format.archivematica.access")
+        XCTAssertEqual(vm.nextFile()?.file.format, "file.format.converted")
+        XCTAssertNil(vm.nextFile(), "each file is tried once, so failures cannot loop")
+    }
+
+    // MARK: - Preview screen
+
+    func testLoadAV_OverALivePlayer_ReplacesIt() throws {
+        // A reload over a live player must stop watching the old item first, or KVO raises on the new one.
+        let vc = try XCTUnwrap(UIViewController.create(withIdentifier: .filePreview, from: .main) as? FilePreviewViewController)
+        vc.file = FileModel(name: "clip.mov", recordId: 89793, folderLinkId: 137946, archiveNbr: "01on-0006",
+                            type: FileType.video.rawValue, permissions: [.read])
+        vc.loadViewIfNeeded()
+
+        vc.loadAV(withURL: URL(fileURLWithPath: "/missing-first.mp4"), contentType: "")
+        vc.loadAV(withURL: URL(fileURLWithPath: "/missing-second.mp4"), contentType: "")
+
+        XCTAssertEqual(vc.children.filter { $0 is AVPlayerViewController }.count, 1)
+    }
+
+    func testRemoveVideoPlayer_HidesTheAudioPlayButton() throws {
+        // A failed audio file must not leave a play button with no player behind it.
+        let vc = try XCTUnwrap(UIViewController.create(withIdentifier: .filePreview, from: .main) as? FilePreviewViewController)
+        vc.file = FileModel(name: "voice.wav", recordId: 89794, folderLinkId: 137947, archiveNbr: "01on-0007",
+                            type: FileType.audio.rawValue, permissions: [.read])
+        vc.loadViewIfNeeded()
+        vc.loadAudio(withURL: URL(fileURLWithPath: "/missing-audio.wav"), contentType: "")
+        vc.overlayView.isHidden = false
+
+        vc.removeVideoPlayer()
+
+        XCTAssertTrue(vc.overlayView.isHidden)
+    }
+
+    func testPDF_ThatCannotOpen_HandsOverToTheNextCopy() throws {
+        let pdf = try writeTemporaryFile(UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 200, height: 200)).pdfData { $0.beginPage() },
+                                         extension: "pdf")
+        let vc = try makePreviewScreen(type: .pdf, files: """
+            { "fileId": "5000", "format": "file.format.original", "type": "type.file.pdf.pdf",
+              "downloadUrl": "\(missingFileURL(extension: "pdf"))" },
+            { "fileId": "5001", "format": "file.format.archivematica.access", "type": "type.file.pdf.pdf",
+              "downloadUrl": "\(pdf.absoluteString)" }
+            """)
+
+        vc.loadRecord()
+
+        let opened = expectation(for: NSPredicate { _, _ in
+            vc.view.subviews.contains { ($0 as? PDFView)?.document != nil }
+        }, evaluatedWith: nil)
+        wait(for: [opened], timeout: 10)
+    }
+
+    func testPhoto_ThatCannotOpen_HandsOverToTheNextCopy() throws {
+        let png = UIGraphicsImageRenderer(size: CGSize(width: 4, height: 4)).pngData { context in
+            UIColor.systemTeal.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 4, height: 4))
+        }
+        let photo = try writeTemporaryFile(png, extension: "png")
+        let vc = try makePreviewScreen(type: .image, files: """
+            { "fileId": "6000", "format": "file.format.original", "type": "type.file.image.png",
+              "downloadUrl": "\(missingFileURL(extension: "png"))" },
+            { "fileId": "6001", "format": "file.format.converted", "type": "type.file.image.png",
+              "downloadUrl": "\(photo.absoluteString)" }
+            """)
+        let opened = expectation(description: "the next copy shows")
+        vc.viewModel?.onImagePreviewStateChanged = { state in
+            if state == .loaded { opened.fulfill() }
+        }
+
+        vc.loadRecord()
+
+        wait(for: [opened], timeout: 10)
+    }
+
+    func testPDF_HasItsSizeWhenTheDocumentArrives() throws {
+        // A PDF view that gets its document before its first layout starts scrolled down by the top
+        // bars' height, and the jump to page 1 cannot undo that when it runs before the layout.
+        let pdf = try writeTemporaryFile(UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 612, height: 792)).pdfData { $0.beginPage() },
+                                         extension: "pdf")
+        let vc = try XCTUnwrap(UIViewController.create(withIdentifier: .filePreview, from: .main) as? FilePreviewViewController)
+        vc.file = FileModel(name: "scan", recordId: 89796, folderLinkId: 137949, archiveNbr: "01on-0009",
+                            type: FileType.pdf.rawValue, permissions: [.read])
+        vc.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        vc.view.layoutIfNeeded()
+        var sizeWhenTheDocumentArrived: CGSize?
+        let arrived = expectation(forNotification: .PDFViewDocumentChanged, object: nil) { notification in
+            sizeWhenTheDocumentArrived = (notification.object as? PDFView)?.bounds.size
+            return true
+        }
+
+        vc.loadPDF(withURL: pdf)
+
+        wait(for: [arrived], timeout: 10)
+        XCTAssertEqual(sizeWhenTheDocumentArrived, CGSize(width: 402, height: 874))
+    }
+
+    func testRetryTap_RestartsOnlyFromTheFailureCard() {
+        // A tap while a file is still loading must not restart the load under the live player.
+        let overlay = ImagePreviewStateOverlayView()
+        var retries = 0
+        overlay.onRetryTapped = { retries += 1 }
+
+        overlay.render(.loadingFullRes(hasThumbnail: false))
+        overlay.perform(NSSelectorFromString("overlayTapped"))
+        XCTAssertEqual(retries, 0)
+
+        overlay.render(.failed(hasThumbnail: false))
+        overlay.perform(NSSelectorFromString("overlayTapped"))
+        XCTAssertEqual(retries, 1)
+    }
+
+    // MARK: - Download
+
+    func testDownloadFile_IsTheOriginal_WhenTheServerListsTheAccessCopyFirst() {
+        let record = makeRecordWithFiles("\(audioAccessCopyJSON), \(audioOriginalJSON)", recordType: FileType.audio.rawValue)
+
+        XCTAssertEqual(DownloadManagerGCD().fileVO(forRecordVO: record, fileType: .audio)?.format, "file.format.original")
     }
 
     private func makeVideoVM() -> FilePreviewViewModel {
         FilePreviewViewModel(file: FileModel(name: "clip.mov", recordId: 89793, folderLinkId: 137946,
                                              archiveNbr: "01on-0006", type: FileType.video.rawValue,
                                              permissions: [.read]))
+    }
+
+    /// A preview screen that already holds its record, so `loadRecord()` runs with no server call.
+    private func makePreviewScreen(type: FileType, files: String) throws -> FilePreviewViewController {
+        let vc = try XCTUnwrap(UIViewController.create(withIdentifier: .filePreview, from: .main) as? FilePreviewViewController)
+        vc.file = FileModel(name: "scan", recordId: 89795, folderLinkId: 137948, archiveNbr: "01on-0008",
+                            type: type.rawValue, permissions: [.read])
+        let vm = FilePreviewViewModel(file: vc.file)
+        vm.recordVO = makeRecordWithFiles(files, recordType: type.rawValue)
+        vc.viewModel = vm
+        vc.loadViewIfNeeded()
+        return vc
+    }
+
+    private func writeTemporaryFile(_ data: Data, extension pathExtension: String) throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("preview-\(UUID().uuidString).\(pathExtension)")
+        try data.write(to: url)
+        addTeardownBlock { try? FileManager.default.removeItem(at: url) }
+        return url
+    }
+
+    private func firstScrollView(in view: UIView) -> UIScrollView? {
+        (view as? UIScrollView) ?? view.subviews.lazy.compactMap { self.firstScrollView(in: $0) }.first
+    }
+
+    private func missingFileURL(extension pathExtension: String) -> String {
+        FileManager.default.temporaryDirectory.appendingPathComponent("missing-\(UUID().uuidString).\(pathExtension)").absoluteString
     }
 
     private let videoOriginalJSON = """
@@ -190,6 +500,77 @@ final class FilePreviewViewModelTests: XCTestCase {
       "type": "type.file.video.mp4",
       "fileUrl": "https://cdn/converted/2001",
       "downloadUrl": "https://cdn/converted/2001?response-content-disposition=attachment" }
+    """
+
+    private let videoAccessCopyJSON = """
+    { "fileId": "2002", "size": 300000, "format": "file.format.archivematica.access",
+      "type": "type.file.video.mp4",
+      "fileUrl": "https://cdn/access_copies/2000.mp4",
+      "downloadUrl": "https://cdn/access_copies/2000.mp4?response-content-disposition=clip.mp4" }
+    """
+
+    private let videoAccessCopyWithoutLinksJSON = """
+    { "fileId": "2002", "size": 300000, "format": "file.format.archivematica.access",
+      "type": "type.file.video.mp4" }
+    """
+
+    private let videoOriginalWithDownloadLinkOnlyJSON = """
+    { "fileId": "2000", "size": 900000, "format": "file.format.original",
+      "type": "type.file.video.mp4",
+      "downloadUrl": "https://cdn/originals/2000?response-content-disposition=attachment" }
+    """
+
+    private let audioOriginalJSON = """
+    { "fileId": "3000", "size": 88174598, "format": "file.format.original",
+      "type": "type.file.audio.wav",
+      "fileUrl": "https://cdn/originals/3000",
+      "downloadUrl": "https://cdn/originals/3000?response-content-disposition=attachment" }
+    """
+
+    private let unknownFormatJSON = """
+    { "fileId": "2003", "size": 120000, "format": "file.format.1920x1080",
+      "type": "type.file.video.mp4",
+      "fileUrl": "https://cdn/1920/2003.mp4",
+      "downloadUrl": "https://cdn/1920/2003.mp4?response-content-disposition=clip.mp4" }
+    """
+
+    private let unknownFormatWithoutLinksJSON = """
+    { "fileId": "2004", "size": 120000, "format": "file.format.1920x1080",
+      "type": "type.file.video.mp4" }
+    """
+
+    private let audioAccessCopyJSON = """
+    { "fileId": "3001", "size": 39990055, "format": "file.format.archivematica.access",
+      "type": "type.file.audio.mp3",
+      "fileUrl": "https://cdn/access_copies/3000.mp3",
+      "downloadUrl": "https://cdn/access_copies/3000.mp3?response-content-disposition=interview.mp3" }
+    """
+
+    private let imageOriginalJSON = """
+    { "fileId": "4000", "size": 2808983, "format": "file.format.original",
+      "type": "type.file.image.heic",
+      "fileUrl": "https://cdn/originals/4000",
+      "downloadUrl": "https://cdn/originals/4000?response-content-disposition=attachment" }
+    """
+
+    private let imageAccessCopyJSON = """
+    { "fileId": "4001", "size": 900000, "format": "file.format.archivematica.access",
+      "type": "type.file.image.jpg",
+      "fileUrl": "https://cdn/access_copies/4000.jpg",
+      "downloadUrl": "https://cdn/access_copies/4000.jpg?response-content-disposition=photo.jpg" }
+    """
+
+    private let imageAccessCopyWithPlainLinkOnlyJSON = """
+    { "fileId": "4001", "size": 900000, "format": "file.format.archivematica.access",
+      "type": "type.file.image.jpg",
+      "fileUrl": "https://cdn/access_copies/4000.jpg" }
+    """
+
+    private let imageConvertedJSON = """
+    { "fileId": "4002", "size": 4718504, "format": "file.format.converted",
+      "type": "type.file.image.jpg",
+      "fileUrl": "https://cdn/converted/4002",
+      "downloadUrl": "https://cdn/converted/4002?response-content-disposition=attachment" }
     """
 
     // MARK: - fileThumbnailURL()
