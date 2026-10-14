@@ -8,7 +8,6 @@
 import UIKit.UINavigationController
 
 extension UINavigationController {
-    
     func display(viewController: UIViewController, modally: Bool = false) {
         if modally {
             viewController.modalPresentationStyle = .popover

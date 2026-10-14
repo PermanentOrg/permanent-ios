@@ -10,7 +10,6 @@ import SwiftUI
 @testable import Permanent
 
 final class TwoStepEmailPhoneViewModelTests: XCTestCase {
-
     private func makeContainer() -> TwoStepConfirmationContainerViewModel {
         var refreshSecurity = false
         var methodForDelete: TwoFactorMethod? = nil

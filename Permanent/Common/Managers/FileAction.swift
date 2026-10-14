@@ -8,7 +8,6 @@
 import Foundation
 
 enum FileAction: Codable {
-    
     case copy
     
     case move

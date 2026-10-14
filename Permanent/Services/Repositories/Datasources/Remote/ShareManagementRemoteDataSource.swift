@@ -305,6 +305,7 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
 
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
+
             default:
                 handler(nil, .errorMessage)
             }
@@ -336,6 +337,7 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
 
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
+
             default:
                 handler(nil, .errorMessage)
             }

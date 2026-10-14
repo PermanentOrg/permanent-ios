@@ -8,7 +8,6 @@
 import Foundation
 
 enum MemberOperation {
-    
     case add
     
     case edit

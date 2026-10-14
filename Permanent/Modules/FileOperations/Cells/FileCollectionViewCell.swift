@@ -139,10 +139,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(moreButtonBadgeView)
         
-        //moreButtonBadgeWidthConstraint = moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 10)
+        // moreButtonBadgeWidthConstraint = moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 10)
         
         NSLayoutConstraint.activate([
-            //moreButtonBadgeWidthConstraint!,
+            // moreButtonBadgeWidthConstraint!,
             moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 20),
             moreButtonBadgeView.heightAnchor.constraint(equalToConstant: 16),
             moreButtonBadgeView.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
@@ -255,7 +255,6 @@ class FileCollectionViewCell: UICollectionViewCell {
                     fileNameLabel.textColor = .darkBlue
                     rightButtonImageView.tintColor = .darkBlue
                 }
-                
             }
         }
     }

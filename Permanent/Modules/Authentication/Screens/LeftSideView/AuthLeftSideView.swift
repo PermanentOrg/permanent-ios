@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 09.09.2024.
+//
 
 import SwiftUI
 
@@ -14,7 +15,7 @@ struct AuthLeftSideView: View {
         HStack {
             ZStack() {
                 AuthImageForRightSidePageView(page: .login)
-                    VStack(spacing: 0){
+                    VStack(spacing: 0) {
                         Spacer()
                         VStack(alignment: .leading, spacing: 32) {
                             AuthTextForRightSidePageView(page: .login)

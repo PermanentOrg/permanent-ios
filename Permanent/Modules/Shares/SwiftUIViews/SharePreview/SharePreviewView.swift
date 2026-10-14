@@ -642,7 +642,6 @@ struct SharePreviewView: View {
                                 }
                                 
                                 archiveTypeSelectionIndicator(isSelected: viewModel.isArchiveTypeSelected(type))
-                                
                             }
                             .padding(.horizontal, 24)
                             .padding(.vertical, 32)
@@ -716,7 +715,6 @@ struct SharePreviewView: View {
     private var onboardingArchiveTypeOptions: [ArchiveType] {
         ArchiveType.allCases.filter { $0 != .nonProfit }
     }
-    
 }
 
 private struct ArchiveTypeOpenButtonStyle: ButtonStyle {

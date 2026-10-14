@@ -28,7 +28,6 @@ class FileHelper {
             let libraryURL = try FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             try FileManager.default.createDirectory(at: libraryURL.appendingPathComponent("uploads"), withIntermediateDirectories: true, attributes: nil)
             uploadDirectoryURL = libraryURL.appendingPathComponent("uploads")
-            
         } catch {
             print("Error. Could not get documents directory URL.", error)
         }

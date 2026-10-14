@@ -59,6 +59,7 @@ class UploadManager {
              .cannotConnectToHost, .cannotFindHost, .dnsLookupFailed,
              .internationalRoamingOff, .dataNotAllowed, .resourceUnavailable:
             return true
+
         default:
             return false
         }
@@ -397,8 +398,10 @@ class UploadManager {
         switch decision {
         case .runNow:
             performRefreshQueue()
+
         case .alreadyScheduled:
             break
+
         case .schedule(let delay):
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 guard let self = self else { return }
@@ -434,8 +437,6 @@ class UploadManager {
             // No mismatch — re-stamp in case it was missing (older builds).
             UserDefaults.standard.set(currentAccountId, forKey: ownerKey)
         }
-
-
 
         do {
             let selectedArchive = PermSession.currentSession?.selectedArchive
@@ -955,6 +956,7 @@ class UploadManager {
                         self.folderCacheLock.unlock()
                         DispatchQueue.main.async { completion(items) }
                     }
+
                 default:
                     self.performV1FetchFolderContents(archiveNo: archiveNo, folderLinkId: folderLinkId, completion: completion) // failsafe
                 }
@@ -1007,10 +1009,12 @@ class UploadManager {
                         self.folderListingCache[folderLinkId] = (Date(), hydrated)
                         self.folderCacheLock.unlock()
                         completion(hydrated)
+
                     default:
                         completion(nil)
                     }
                 }
+
             default:
                 completion(nil)
             }

@@ -8,7 +8,6 @@
 import UIKit
 
 class FileDetailsMenuCollectionViewCell: FileDetailsBaseCollectionViewCell {
-
     @IBOutlet weak var segmentedControl: SlidingTabControl!
         
     var segmentedControlAction: ((FileDetailsMenuCollectionViewCell) -> Void)?

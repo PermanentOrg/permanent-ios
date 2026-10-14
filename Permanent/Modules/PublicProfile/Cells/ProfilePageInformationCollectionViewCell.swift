@@ -8,7 +8,6 @@
 import UIKit
 
 class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
-    
     static let identifier = "ProfilePageInformationCollectionViewCell"
     
     @IBOutlet weak var titleLabel: UILabel!

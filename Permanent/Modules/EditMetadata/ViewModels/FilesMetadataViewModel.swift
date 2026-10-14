@@ -3,17 +3,17 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 29.06.2023.
+//
 
 import SwiftUI
 import Foundation
 
 class FilesMetadataViewModel: ObservableObject {
-    
     @Published var isLoading: Bool = false
     
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
-            let tags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
+            let tags = Array(Set(selectedFiles.flatMap { $0.tagVOS ?? [] }.map { TagVO(tagVO: $0)}))
             allTags = tags.sorted()
             if !descriptionWasSaved {
                 haveDiffDescription = !selectedFiles.allSatisfy({$0.description == selectedFiles.first?.description})
@@ -82,7 +82,7 @@ class FilesMetadataViewModel: ObservableObject {
             guard let strongSelf = self else { return }
             let records = try await strongSelf.selectedFiles.asyncMap(strongSelf.getRecord)
             await MainActor.run {
-                strongSelf.setLocationsSectionText(records: records.compactMap{$0})
+                strongSelf.setLocationsSectionText(records: records.compactMap {$0})
                 
                 strongSelf.selectedFiles = records.compactMap { record in
                     if let recordVO = record?.recordVO {
@@ -201,7 +201,7 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
-    //MARK: Sections
+    // MARK: Sections
     
     private func setLocationsSectionText(records: [RecordVO]) {
         guard records.filter({ $0.recordVO?.locnVO != nil}).count > 0 else {
@@ -232,7 +232,7 @@ class FilesMetadataViewModel: ObservableObject {
         return address
     }
     
-    //MARK: Delete Tag
+    // MARK: Delete Tag
     
     func unassignTag(tagName: String, isLoading: Binding<Bool>) {
         isLoading.wrappedValue = true
@@ -250,8 +250,7 @@ class FilesMetadataViewModel: ObservableObject {
                     isLoading.wrappedValue = false
                     strongSelf.allTags.removeAll(where: { $0.tagVO.name == tagName })
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     isLoading.wrappedValue = false
                     strongSelf.showAlert = true
@@ -273,7 +272,7 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
-    //MARK: Assign Tags
+    // MARK: Assign Tags
     
     func assignAllTagsToAll() {
         Task {[weak self] in
@@ -286,8 +285,7 @@ class FilesMetadataViewModel: ObservableObject {
                 await MainActor.run {
                     strongSelf.refreshFiles()
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     strongSelf.showAlert = true
                 }
@@ -309,8 +307,7 @@ class FilesMetadataViewModel: ObservableObject {
                     isLoading.wrappedValue = false
                     strongSelf.refreshFiles()
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     isLoading.wrappedValue = false
                     strongSelf.showAlert = true

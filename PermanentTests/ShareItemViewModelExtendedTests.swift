@@ -3,6 +3,7 @@
 //  PermanentTests
 //
 //  Created by Lucian Cerbu on 07.05.2026.
+//
 
 import XCTest
 import Combine
@@ -10,7 +11,6 @@ import Combine
 
 @MainActor
 final class ShareItemViewModelExtendedTests: XCTestCase {
-
     // MARK: - Finalize Shared Archives Tests
 
     func testFinalizeSharedArchives_EmptyBaseNoPending_ResultsInEmptyList() {
@@ -1946,7 +1946,6 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 // MARK: - Test Helpers
 
 extension ShareItemViewModelExtendedTests {
-
     private func makeViewModel(isFolder: Bool = false, repository: ShareManagementRepository? = nil) -> ShareItemViewModel {
         let fileModel = isFolder ? FileModel.mockFolder() : FileModel.mockFile()
         let repo = repository ?? TrackingShareManagementRepository()

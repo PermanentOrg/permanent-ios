@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 11.03.2024.
+//
 
 import SwiftUI
 
@@ -29,7 +30,7 @@ struct RoundButtonRightImageView: View {
                     Color(.white)
                     HStack(spacing: 16) {
                         Spacer()
-                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
+                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone) {
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.blue700)
@@ -60,10 +61,11 @@ struct RoundButtonRightImageView: View {
                 .frame(height: 56)
                 .cornerRadius(12)
                 .frame(maxWidth: .infinity)
+
             case .noColor:
                 ZStack {
                     HStack() {
-                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
+                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone) {
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.white)
@@ -97,13 +99,13 @@ struct RoundButtonRightImageView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .inset(by: 0.5)
                         .stroke(.white.opacity(0.32), lineWidth: 1)
-                    
                 )
+
             case .noBorder:
                 ZStack {
                     HStack() {
                         Spacer()
-                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
+                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone) {
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.white)

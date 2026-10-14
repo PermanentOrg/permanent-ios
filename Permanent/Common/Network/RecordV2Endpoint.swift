@@ -43,8 +43,10 @@ extension RecordV2Endpoint: RequestProtocol {
         switch self {
         case .getRecordById:
             return nil
+
         case .patchRecord(_, let fields):
             return try? JSONSerialization.data(withJSONObject: fields)
+
         case .copyRecord(_, let destinationFolderId):
             return try? JSONSerialization.data(withJSONObject: ["destinationFolderId": destinationFolderId])
         }
@@ -55,8 +57,10 @@ extension RecordV2Endpoint: RequestProtocol {
         switch self {
         case .getRecordById(let recordId, _):
             return "\(baseURL)api/v2/records/\(recordId)"
+
         case .patchRecord(let recordId, _):
             return "\(baseURL)api/v2/records/\(recordId)"
+
         case .copyRecord(let recordId, _):
             return "\(baseURL)api/v2/records/\(recordId)/copies"
         }
@@ -67,6 +71,7 @@ extension RecordV2Endpoint: RequestProtocol {
         case .getRecordById(_, let token):
             guard let token, !token.isEmpty else { return nil }
             return token
+
         case .patchRecord, .copyRecord:
             return nil
         }

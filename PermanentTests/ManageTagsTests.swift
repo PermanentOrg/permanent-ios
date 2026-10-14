@@ -8,7 +8,6 @@ import XCTest
 import KeychainSwift
 @testable import Permanent
 
-
 class ManageTagsTests: XCTestCase {
     var sut: ManageTagsViewModel!
 

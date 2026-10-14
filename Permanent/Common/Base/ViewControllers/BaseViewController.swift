@@ -146,7 +146,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             floatingActionIsland!.view.widthAnchor.constraint(equalToConstant: view.frame.width - 64),
             // Explicit height so the view has a proper touch target (required on iOS 26 where
             // toolbar uses centerY rather than top+bottom anchors to define view height)
-            floatingActionIsland!.view.heightAnchor.constraint(equalToConstant: 64),
+            floatingActionIsland!.view.heightAnchor.constraint(equalToConstant: 64)
         ])
 
         floatingActionIsland?.didMove(toParent: self)

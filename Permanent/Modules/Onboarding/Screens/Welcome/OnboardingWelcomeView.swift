@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 11.03.2024.
+//
 
 import SwiftUI
 import UIKit
@@ -93,7 +94,6 @@ struct OnboardingWelcomeView: View {
     return ZStack {
         Color(.primary)
         OnboardingWelcomeView(viewModel: viewModel, buttonAction: {
-            
         })
     }
     .ignoresSafeArea()

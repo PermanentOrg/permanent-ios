@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ArchivesViewModelTests: XCTestCase {
-
     private func makeArchive(archiveNbr: String = "0001", status: ArchiveVOData.Status = .ok, archiveID: Int = 1, fullName: String? = "Test") -> ArchiveVOData {
         return ArchiveVOData(
             childFolderVOS: nil, folderSizeVOS: nil, recordVOS: nil,

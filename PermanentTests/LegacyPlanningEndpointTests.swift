@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class LegacyPlanningEndpointTests: XCTestCase {
-
     private let apiServer = APIEnvironment.defaultEnv.apiServer
 
     // MARK: - Helper

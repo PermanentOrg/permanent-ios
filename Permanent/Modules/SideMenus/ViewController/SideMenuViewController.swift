@@ -161,11 +161,13 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
                 
                 cell = tableViewCell
             }
+
         case .archiveSettings:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
                 tableViewCell.updateCell(with: menuOption, isExpanded: viewModel?.archiveSetingsWasPressed)
                 cell = tableViewCell
             }
+
         default:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
                 tableViewCell.updateCell(with: menuOption)
@@ -244,10 +246,13 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         switch section {
         case LeftDrawerSection.publicGallery.rawValue, LeftDrawerSection.header.rawValue:
             return 0
+
         case LeftDrawerSection.files.rawValue:
             return 40
+
         case LeftDrawerSection.archiveSettings.rawValue:
             return 40
+
         default:
             return 32
         }

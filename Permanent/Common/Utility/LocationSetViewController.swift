@@ -15,7 +15,6 @@ protocol LocationSetViewControllerDelegate: AnyObject {
 }
 
 class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
-    
     var file: FileModel!
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
@@ -156,7 +155,7 @@ extension LocationSetViewController: GMSAutocompleteResultsViewControllerDelegat
   }
 
   func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
-                         didFailAutocompleteWithError error: Error){
+                         didFailAutocompleteWithError error: Error) {
     print("Error: ", error.localizedDescription)
   }
 

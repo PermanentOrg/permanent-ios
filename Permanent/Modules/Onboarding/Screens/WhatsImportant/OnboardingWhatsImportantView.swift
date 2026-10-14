@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 27.05.2024.
+//
 
 import SwiftUI
 
@@ -176,11 +177,8 @@ struct OnboardingWhatsImportantView: View {
     return ZStack {
         Color(.primary)
         OnboardingWhatsImportantView(viewModel: onboardingViewModel) {
-            
         } nextButton: {
-            
         } skipButton: {
-            
         }
     }
     .ignoresSafeArea()

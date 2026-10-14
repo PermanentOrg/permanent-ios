@@ -20,6 +20,7 @@ enum StorageQuotaError: Error {
         switch self {
         case .insufficientSpace:
             return "Not enough storage space available. Please free up space or upgrade your storage plan."
+
         case .apiError:
             return "Unable to check storage space. Please try again."
         }
@@ -113,8 +114,10 @@ class ShareExtensionViewModel: ViewModelInterface {
                 switch data {
                 case let fileURL as URL:
                     url = fileURL
+
                 case let raw as Data:
                     url = Self.persistToTempFile(raw, preferredExtension: Self.preferredExtension(for: provider) ?? "dat")
+
                 case let image as UIImage:
                     // Preserve transparency: a forced JPEG would flatten and re-type an image with an alpha channel,
                     // so encode those as PNG. Opaque images stay JPEG, which is far smaller for photos.
@@ -125,6 +128,7 @@ class ShareExtensionViewModel: ViewModelInterface {
                     } else {
                         url = image.jpegData(compressionQuality: 1.0).flatMap { Self.persistToTempFile($0, preferredExtension: "jpg") }
                     }
+
                 default:
                     url = nil
                 }
@@ -258,6 +262,7 @@ class ShareExtensionViewModel: ViewModelInterface {
                 DispatchQueue.main.async {
                     completion(.apiError)
                 }
+
             default:
                 DispatchQueue.main.async {
                     completion(.apiError)

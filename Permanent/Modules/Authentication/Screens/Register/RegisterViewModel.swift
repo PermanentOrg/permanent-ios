@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.10.2024.
+//
 
 import SwiftUI
 
@@ -32,8 +33,10 @@ class RegisterViewModel: ObservableObject {
             switch newStatus {
             case .error(let message):
                 self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .error)
+
             case .unknown:
                 self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
+
             default:
                 break
             }
@@ -48,6 +51,7 @@ class RegisterViewModel: ObservableObject {
             switch status {
             case .success:
                 self?.signIn(then: handler)
+
             case .error(message: _):
                 handler(.error(message: .errorMessage))
             }
@@ -58,8 +62,7 @@ class RegisterViewModel: ObservableObject {
         AuthenticationManager.shared.login(withUsername: email, password: password) { status in
             if status == .success {
                 handler(.success)
-            }
-            else {
+            } else {
                 handler(.error(message: .errorMessage))
             }
         }

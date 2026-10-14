@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ActivityFeedAndInviteViewModelTests: XCTestCase {
-
     // MARK: - ActivityFeedViewModel
 
     func testActivityFeed_InitialState() {
@@ -96,5 +95,4 @@ final class ActivityFeedAndInviteViewModelTests: XCTestCase {
             XCTFail("Expected error")
         }
     }
-
 }

@@ -8,7 +8,6 @@
 import UIKit
 
 class ProfilePageFooterCollectionViewCell: UICollectionReusableView {
-
     static let identifier = "ProfilePageFooterCollectionViewCell"
     
     @IBOutlet weak var lineView: UIView!
@@ -51,5 +50,4 @@ class ProfilePageFooterCollectionViewCell: UICollectionReusableView {
         readMoreButtonAction?()
         updateButtonTitle()
     }
-
 }

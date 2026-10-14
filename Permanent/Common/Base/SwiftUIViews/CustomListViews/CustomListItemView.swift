@@ -3,12 +3,12 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 15.12.2023.
+//
 
 import SwiftUI
 
 /// A list row: leading icon, title and description, an optional badge, and a trailing chevron.
 /// The description is limited to two lines; the badge defaults to a yellow "NEW".
-
 
 struct CustomListItemView: View {
     var image: Image

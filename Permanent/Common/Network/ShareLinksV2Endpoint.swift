@@ -38,6 +38,7 @@ extension ShareLinksV2Endpoint: RequestProtocol {
                 maxUses: maxUses, 
                 expirationTimestamp: expirationTimestamp
             )
+
         case .updateShareLink(_, let permissionsLevel, let accessRestrictions, let maxUses, let expirationTimestamp):
             return updateShareLinkParameters(
                 permissionsLevel: permissionsLevel,
@@ -45,10 +46,13 @@ extension ShareLinksV2Endpoint: RequestProtocol {
                 maxUses: maxUses,
                 expirationTimestamp: expirationTimestamp
             )
+
         case .getShareLink:
             return nil
+
         case .getShareLinkByToken:
             return nil
+
         case .deleteShareLink:
             return nil
         }
@@ -62,12 +66,16 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         switch self {
         case .createShareLink:
             return .post
+
         case .updateShareLink:
             return .patch
+
         case .getShareLink:
             return .get
+
         case .getShareLinkByToken:
             return .get
+
         case .deleteShareLink:
             return .delete
         }
@@ -77,12 +85,16 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         switch self {
         case .createShareLink:
             return ["content-type": "application/json; charset=utf-8"]
+
         case .updateShareLink:
             return ["content-type": "application/json; charset=utf-8"]
+
         case .getShareLink:
             return nil
+
         case .getShareLinkByToken:
             return ["Content-Type": "application/json", "Request-Version": "2"]
+
         case .deleteShareLink:
             return nil
         }
@@ -96,6 +108,7 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         switch self {
         case .getShareLinkByToken:
             return true
+
         default:
             return false
         }
@@ -121,12 +134,16 @@ extension ShareLinksV2Endpoint: RequestProtocol {
         switch self {
         case .createShareLink:
             return "\(endpointPath)api/v2/share-links"
+
         case .updateShareLink(let shareLinkId, _, _, _, _):
             return "\(endpointPath)api/v2/share-links/\(shareLinkId)"
+
         case .getShareLink(let shareLinkId):
             return "\(endpointPath)api/v2/share-links?shareLinkIds[]=\(shareLinkId)"
+
         case .getShareLinkByToken(let token):
             return "\(endpointPath)api/v2/share-links?shareTokens[]=\(token)"
+
         case .deleteShareLink(let shareLinkId):
             return "\(endpointPath)api/v2/share-links/\(shareLinkId)"
         }
@@ -207,4 +224,3 @@ extension ShareLinksV2Endpoint {
         return parameters
     }
 }
-

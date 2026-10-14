@@ -66,11 +66,8 @@ class FileBrowserViewModel: ViewModelInterface {
     }
     
     func uploadFiles(_ files: [FileModel]) {
-        
     }
     
     func downloadFile(_ file: FileModel) {
-        
     }
-    
 }

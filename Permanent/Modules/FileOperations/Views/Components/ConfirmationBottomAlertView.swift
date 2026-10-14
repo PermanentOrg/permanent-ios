@@ -26,10 +26,13 @@ struct ConfirmationBottomAlertView: View {
             switch self {
             case .delete:
                 return "Are you sure you want to delete the selected \(isFolder ? "folder" : "file")"
+
             case .leaveShare:
                 return "Are you sure you want to give up your access to the"
+
             case .cancelUploads:
                 return "Are you sure you want to cancel all uploads?"
+
             case .uploadToPublicFolder:
                 return "This is a public folder. Are you sure you want to upload here?"
             }
@@ -48,6 +51,7 @@ struct ConfirmationBottomAlertView: View {
                 + Text("?")
                     .font(.custom("Usual-Regular", size: 14))
                     .foregroundColor(.blue700)
+
             case .leaveShare:
                 return Text("Are you sure you want to give up your access to the ")
                     .font(.custom("Usual-Regular", size: 14))
@@ -59,10 +63,12 @@ struct ConfirmationBottomAlertView: View {
                 + Text("?")
                     .font(.custom("Usual-Regular", size: 14))
                     .foregroundColor(.blue700)
+
             case .cancelUploads:
                 return Text("Are you sure you want to cancel all uploads?")
                     .font(.custom("Usual-Regular", size: 14))
                     .foregroundColor(.blue700)
+
             case .uploadToPublicFolder:
                 return Text("This is a public folder. Are you sure you want to upload here?")
                     .font(.custom("Usual-Regular", size: 14))
@@ -74,10 +80,13 @@ struct ConfirmationBottomAlertView: View {
             switch self {
             case .delete:
                 return "Delete"
+
             case .leaveShare:
                 return "Leave share"
+
             case .cancelUploads:
                 return "Cancel All"
+
             case .uploadToPublicFolder:
                 return "Upload"
             }

@@ -70,7 +70,7 @@ class MemberTableViewCell: UITableViewCell {
         editButton.addTarget(self, action: #selector(editButtonPressed(_:)), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
-            vStack.leadingAnchor.constraint(equalTo:contentView.leadingAnchor, constant: 20),
+            vStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             vStack.rightAnchor.constraint(equalTo: editButton.leftAnchor, constant: -10),
             vStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             vStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
@@ -83,5 +83,4 @@ class MemberTableViewCell: UITableViewCell {
     @objc func editButtonPressed(_ sender: Any) {
         editButtonAction?(self)
     }
-
 }

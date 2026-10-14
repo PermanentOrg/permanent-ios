@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 22.12.2023.
+//
 
 import Combine
 import SwiftUI
@@ -25,19 +26,17 @@ class KeyboardResponder: ObservableObject {
 
     @objc func keyBoardWillShow(notification: Notification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-
-            guard let duration:TimeInterval = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+            guard let duration: TimeInterval = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
             keyboardDuration = duration
 
             withAnimation(.easeInOut(duration: duration)) {
                 self.currentHeight = keyboardSize.height
             }
-
         }
     }
 
     @objc func keyBoardWillHide(notification: Notification) {
-        guard let duration:TimeInterval = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+        guard let duration: TimeInterval = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
 
         withAnimation(.easeInOut(duration: duration)) {
             currentHeight = 0

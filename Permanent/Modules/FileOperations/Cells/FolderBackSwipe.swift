@@ -129,14 +129,18 @@ final class FolderBackSwipe: NSObject, UIGestureRecognizerDelegate {
         case .began:
             begin(list, in: container)
             move(to: travel)
+
         case .changed:
             move(to: travel)
+
         case .ended:
             let speed = pan.velocity(in: container).x * direction
             // Something may have changed the folder under the finger, and then going back would undo it.
             Self.goesBack(travel: travel, speed: speed, width: width) && handlers.previewStillApplies() ? finish() : springBack()
+
         case .cancelled, .failed:
             springBack()
+
         default:
             break
         }

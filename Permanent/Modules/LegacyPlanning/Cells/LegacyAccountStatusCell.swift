@@ -9,12 +9,10 @@
 import UIKit
 
 class LegacyAccountStatusCell: UITableViewCell {
-    
     var goToEdit: (() -> Void)?
     var turnOff: (() -> Void)?
     
     func setup(account: AccountSteward?) {
-        
         name.text = account?.name != nil ? account?.name : "No Legacy Contact Added"
     }
     

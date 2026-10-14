@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class FilesViewModelTests: XCTestCase {
-
     private func makeRecordFile(name: String = "photo.jpg") -> FileModel {
         return FileModel(
             name: name,

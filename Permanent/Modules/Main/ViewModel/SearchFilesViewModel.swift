@@ -8,7 +8,6 @@
 import Foundation
 
 class SearchFilesViewModel: FilesViewModel {
-
     override var currentFolderIsRoot: Bool { return navigationStack.count == 0 }
     
     var searchTimer: Timer?
@@ -60,6 +59,7 @@ class SearchFilesViewModel: FilesViewModel {
             } else {
                 return "Tags".localized() + " (\(selectedTagVOs.count))"
             }
+
         case 1: return currentFolderIsRoot && !isLoadingFirstPage ? "Results".localized() : listingSortTitle
         default: return ""
         }
@@ -165,12 +165,14 @@ class SearchFilesViewModel: FilesViewModel {
                     return
                 }
                 
-                let tagVO: [TagVO]? =  model.results.first?.data
+                let tagVO: [TagVO]? = model.results.first?.data
                 self.tagVOs = tagVO?.map({ $0.tagVO }).sorted(by: { ($0.name ?? "") < ($1.name ?? "") }) ?? []
                 
                 completion(.success)
+
             case .error(_, _):
                 completion(.error(message: .errorMessage))
+
             default:
                 completion(.error(message: .errorMessage))
             }

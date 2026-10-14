@@ -14,7 +14,6 @@ extension UIButton {
 }
 
 class BigAreaButton: UIButton {
-    
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return bounds.insetBy(dx: -20, dy: -10).contains(point)
     }

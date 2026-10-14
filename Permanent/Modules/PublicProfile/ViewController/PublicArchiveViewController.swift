@@ -191,7 +191,6 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             profilePhotoImageView.image = UIColor.lightGray.imageWithColor(width: 48, height: 48)
         }
         
-        
         viewModel?.getPublicRoot(then: { status in
             if status == .success, let bannerURL = self.viewModel?.bannerURL {
                 self.profileBannerImageView.sd_setImage(with: bannerURL)
@@ -431,6 +430,7 @@ extension PublicArchiveViewController: MyFilesViewModelPickerDelegate {
                                     switch status {
                                     case .success:
                                         self?.profilePhotoImageView.sd_setImage(with: thumbURL)
+
                                     case .error(message: _):
                                         self?.showErrorAlert(message: .errorMessage)
                                     }

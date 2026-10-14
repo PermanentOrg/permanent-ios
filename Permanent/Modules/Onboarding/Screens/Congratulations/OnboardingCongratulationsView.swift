@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.06.2024.
+//
 
 import SwiftUI
 
@@ -69,11 +70,9 @@ struct OnboardingCongratulationsView: View {
                     }
                     Spacer()
                 }
-                
-                
             }
             HStack(alignment: .center) {
-                SmallRoundButtonImageView(text: "Done", image: Image(.onboardingCheckmark),  action: nextButton)
+                SmallRoundButtonImageView(text: "Done", image: Image(.onboardingCheckmark), action: nextButton)
             }
             .padding(.bottom, 40)
         }
@@ -170,14 +169,12 @@ struct OnboardingCongratulationsView: View {
         OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Text", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 4444, thumbnailURL: "", isThumbnailGenerated: false)
-        ]
+    ]
     
     return ZStack {
         Color(.primary)
         OnboardingCongratulationsView(viewModel: onboardingViewModel) {
-            
         } nextButton: {
-            
         }
     }
     .ignoresSafeArea()

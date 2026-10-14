@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 24.08.2023.
+//
 
 import SwiftUI
 import CoreLocation
@@ -104,7 +105,6 @@ struct AddLocationView: View {
                             Text("\(item.attributedSecondaryText?.string ?? "")")
                                 .foregroundColor(.lightGray)
                                 .textStyle(SmallXXXXRegularTextStyle())
-                            
                         })
                     }
                     .onTapGesture {

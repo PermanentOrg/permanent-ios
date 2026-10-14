@@ -100,7 +100,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     
     // MARK: - Actions
     @IBAction func createNewArchiveAction(_ sender: Any) {
-        var archiveTypes = ArchiveType.allCases.map{$0.archiveTypeName}
+        var archiveTypes = ArchiveType.allCases.map {$0.archiveTypeName}
         
         if let removeItemIdx = archiveTypes.firstIndex(of: ArchiveType.nonProfit.archiveTypeName) {
             archiveTypes.remove(at: removeItemIdx)
@@ -272,8 +272,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         return { [weak self] cell in
             guard let archiveVO = cell.archiveData else { return }
             var actions: [PRMNTAction] = []
-            if archiveVO.archiveID != self?.viewModel?.defaultArchiveId
-            {
+            if archiveVO.archiveID != self?.viewModel?.defaultArchiveId {
                 actions.insert(PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { action in
                     guard let archiveId = archiveVO.archiveID else { return }
                     self?.showSpinner()

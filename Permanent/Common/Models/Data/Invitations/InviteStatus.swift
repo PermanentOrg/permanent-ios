@@ -8,7 +8,6 @@
 import Foundation
 
 enum InviteStatus: String {
-    
     /// Invite has been accepted.
     case accepted
     
@@ -33,5 +32,4 @@ enum InviteStatus: String {
         default: return .unknown
         }
     }
-    
 }

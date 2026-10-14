@@ -15,7 +15,6 @@ private struct ShareInviteResponse: Decodable {
 private typealias ResendInviteResponse = ShareInviteResponse
 
 extension ShareItemViewModel {
-
     // MARK: - Find Archive by Email Flow
 
     func openFindArchiveByEmail() {
@@ -80,9 +79,11 @@ extension ShareItemViewModel {
         case .findByEmail:
             showFindArchiveByEmail = true
             showSelectArchiveFromPastShares = false
+
         case .pastShares:
             showFindArchiveByEmail = false
             showSelectArchiveFromPastShares = true
+
         case .none:
             showFindArchiveByEmail = false
             showSelectArchiveFromPastShares = false

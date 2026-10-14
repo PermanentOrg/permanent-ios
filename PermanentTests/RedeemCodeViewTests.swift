@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class RedeemCodeViewTests: XCTestCase {
-
     // MARK: - RedeemCodeView Rendering
 
     func testRedeemCodeView_RendersWithDefaultViewModel() {

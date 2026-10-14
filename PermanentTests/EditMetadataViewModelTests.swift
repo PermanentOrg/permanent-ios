@@ -10,7 +10,6 @@ import SwiftUI
 @testable import Permanent
 
 final class EditMetadataViewModelTests: XCTestCase {
-
     // MARK: - Helpers
 
     private func mockFile(name: String = "TestFile.jpg") -> FileModel {

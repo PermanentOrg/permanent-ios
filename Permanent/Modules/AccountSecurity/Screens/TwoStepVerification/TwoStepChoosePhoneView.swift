@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 29.01.2025.
+//
 
 import SwiftUI
 
@@ -31,7 +32,6 @@ struct TwoStepChoosePhoneView: View {
                     }
                     .onDisappear {
                         UIScrollView.appearance().bounces = true
-                        
                     }
                     .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
                         if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
@@ -102,7 +102,6 @@ struct TwoStepChoosePhoneView: View {
                     .frame(height: 1)
                     .background(Color.blue100)
                     .layoutPriority(0.5)
-                
             }
             RoundButtonUsualBlue50View(isDisabled: viewModel.remainingTime > 0 || viewModel.isLoadingCodeVerification, isLoading: false, text: viewModel.sendCodeButtonTitle) {
                 viewModel.sendTwoFactorCode()
@@ -129,8 +128,6 @@ struct TwoStepChoosePhoneView: View {
             Spacer()
         }
         .padding(.horizontal, 32)
-        
-        
     }
     
     var addPhoneView: some View {

@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class AddLocationViewTests: XCTestCase {
-
     // MARK: - AddLocationViewModel Initial State
 
     func testViewModel_InitialState() {

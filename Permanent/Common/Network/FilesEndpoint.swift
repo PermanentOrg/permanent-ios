@@ -55,7 +55,7 @@ enum FilesEndpoint {
     /// Saves a folder's sort on V1. The failsafe behind `FolderV2Endpoint.patchFolder`.
     case sortFolder(params: SortFolderParams)
     
-    //UNSHARE
+    // UNSHARE
     case unshareRecord(archiveId: Int, folderLinkId: Int)
     
     case updateRootColumns(params: UpdateRootColumnsParams)
@@ -66,18 +66,25 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .getRoot:
             return "/folder/getRoot"
+
         case .getPublicRoot:
             return "/folder/getPublicRoot"
+
         case .navigateMin:
             return "/folder/navigateMin"
+
         case .getLeanItems:
             return "/folder/getLeanItems"
+
         case .getPresignedUrl:
             return "/record/getPresignedUrl"
+
         case .registerRecord:
             return "/record/registerRecord"
+
         case .newFolder:
             return "/folder/post"
+
         case .delete(let parameters):
             let allFolders = parameters.allSatisfy { $0.type.isFolder }
             if allFolders {
@@ -85,10 +92,13 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/delete"
             }
+
         case .getRecord:
             return "/record/get"
+
         case .getFolder:
             return "/folder/get"
+
         case .relocate(let parameters):
             let allFolders = parameters.items.files.allSatisfy { $0.type.isFolder }
             if allFolders {
@@ -96,16 +106,22 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
+
         case .update, .multipleUpdate, .multipleFilesUpdate:
             return "/record/update"
+
         case .renameFolder:
             return "/folder/update"
+
         case .sortFolder:
             return "/folder/sort"
+
         case .updateRootColumns:
             return "/folder/updateRootColumns"
+
         case .unshareRecord:
             return "/share/delete"
+
         default:
             return ""
         }
@@ -462,7 +478,7 @@ class FilesEndpointPayloads {
             }
             
             return [
-                "RecordVO": recordVO as [String : Any]
+                "RecordVO": recordVO as [String: Any]
             ]
         }
 
@@ -484,7 +500,7 @@ class FilesEndpointPayloads {
                     "description": $0.description,
                     "displayName": $0.name,
                     "displayDT": $0.date
-                ] as [String : Any]
+                ] as [String: Any]
             ]
         }
 

@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class SearchEndpointTests: XCTestCase {
-
     // MARK: - Paths
 
     func testFolderAndRecord_Path() {

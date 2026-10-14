@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 02.08.2023.
+//
 
 import Foundation
 import SwiftUI
@@ -12,7 +13,7 @@ class AppendFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol {
     
     @Published var textToAppend: String = ""
     @Published var positionForText: String = ""
-    @Published var closeAllSelections:Bool = false
+    @Published var closeAllSelections: Bool = false
 
     var selectedFiles: [FileModel]
     var whereOptions = [
@@ -58,8 +59,6 @@ class AppendFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol {
             fileName = String("\(fileName)\(textToAppend)")
         }
         
-
         fileNamePreview.wrappedValue = fileName
     }
 }
-

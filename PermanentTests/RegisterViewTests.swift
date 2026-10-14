@@ -12,7 +12,6 @@ import XCTest
 
 @MainActor
 final class RegisterViewTests: XCTestCase {
-
     func testRendersRegisterViewWithInitialState() async {
         let viewModel = RegisterViewModel(containerViewModel: AuthenticatorContainerViewModel())
         let view = RegisterView(viewModel: viewModel, loginSuccess: {})

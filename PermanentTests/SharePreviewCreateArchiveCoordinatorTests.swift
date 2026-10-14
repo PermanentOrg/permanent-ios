@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class SharePreviewCreateArchiveCoordinatorTests: XCTestCase {
-
     func testPerformCreateArchive_SelectsNewArchiveNotInExistingIDs() async throws {
         let sut = SharePreviewCreateArchiveCoordinator()
         let expected = makeArchive(id: 200, name: "Family")

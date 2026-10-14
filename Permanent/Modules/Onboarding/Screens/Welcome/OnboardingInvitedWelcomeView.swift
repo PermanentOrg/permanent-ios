@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 16.07.2024.
+//
 
 import SwiftUI
 import UIKit
@@ -65,7 +66,6 @@ struct OnboardingInvitedWelcomeView: View {
                                     .opacity(0.16)
                                     .cornerRadius(30)
                             }
-
                         }
                     }
                 }
@@ -152,7 +152,6 @@ struct OnboardingInvitedWelcomeView: View {
 #Preview {
     var viewModel = OnboardingInvitedWelcomeViewModel(containerViewModel: OnboardingContainerViewModel(username: "", password: ""))
     
-    
     viewModel.containerViewModel.fullName = "long archive name name name"
     viewModel.containerViewModel.allArchives = [
         OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
@@ -163,9 +162,7 @@ struct OnboardingInvitedWelcomeView: View {
     return ZStack {
         Color(.primary)
         OnboardingInvitedWelcomeView(viewModel: viewModel, nextButtonAction: {
-            
         }, newArchiveButtonAction: {
-            
         })
     }
     .ignoresSafeArea()

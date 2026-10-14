@@ -455,7 +455,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
     }
-
 }
 
 // MARK: - UICollectionViewDataSource
@@ -608,10 +607,11 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
                     currentRowWidth += width
                 }
             }
-            //Set tags cell height in regard with screen width and total tag cells width
-            let cellHeightByTagsWidth :CGFloat = currentRowCount != 0 ? tagLabelCellHeight + CGFloat(currentRowCount) * tagCellHeight : tagLabelCellHeight + tagCellHeight
+            // Set tags cell height in regard with screen width and total tag cells width
+            let cellHeightByTagsWidth: CGFloat = currentRowCount != 0 ? tagLabelCellHeight + CGFloat(currentRowCount) * tagCellHeight : tagLabelCellHeight + tagCellHeight
             
             return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsWidth)
+
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 65)
         }

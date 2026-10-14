@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class OnboardingExtendedTests: XCTestCase {
-
     // MARK: - OnboardingContainerViewModel Extended Properties
 
     func testContainerVM_AllPropertiesCanBeSet() {

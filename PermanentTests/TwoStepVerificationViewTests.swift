@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class TwoStepVerificationViewTests: XCTestCase {
-
     // MARK: - TwoStepVerificationViewModel Initial State
 
     func testViewModel_InitialState_NoMethods() {

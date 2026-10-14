@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 15.12.2023.
+//
 
 import SwiftUI
 
@@ -34,12 +35,14 @@ struct GradientProgressBarView: View {
                     .frame(height: 12)
                     .padding(.horizontal)
                     .id(redraw)
+
             case .gradientWithWhiteBar:
                 ProgressView(value: sizeRatio)
                     .progressViewStyle(CustomBarProgressStyle(color: .white, height: 8, cornerRadius: 3))
                     .frame(height: 12)
                     .padding(.horizontal)
                     .id(redraw)
+
             case .solidGreenWithWhiteBar:
                 ProgressView(value: sizeRatio)
                     .progressViewStyle(CustomBarProgressGradientStyle(colorScheme: .lightWithGradientBar, height: 8, cornerRadius: 3))
@@ -54,7 +57,7 @@ struct GradientProgressBarView: View {
         .frame(maxHeight: colorScheme.frameHeightSize)
         .background(colorScheme.backgroundColor)
         .cornerRadius(12)
-        .padding(colorScheme == .gradientWithWhiteBar ? 16  : 0)
+        .padding(colorScheme == .gradientWithWhiteBar ? 16 : 0)
     }
     
     func updateRedraw() {
@@ -71,8 +74,10 @@ enum ColorSchemeForProgressBar {
         switch self {
         case .lightWithGradientBar:
             return Gradient.whiteGradient
+
         case .gradientWithWhiteBar:
             return Gradient.purpleYellowGradient
+
         case .solidGreenWithWhiteBar:
             return Gradient.whiteGradient
         }
@@ -81,8 +86,10 @@ enum ColorSchemeForProgressBar {
         switch self {
         case .lightWithGradientBar:
             return Gradient.purpleYellowGradient
+
         case .gradientWithWhiteBar:
             return Gradient.whiteGradient
+
         case .solidGreenWithWhiteBar:
             return Gradient.greenGradient
         }
@@ -92,8 +99,10 @@ enum ColorSchemeForProgressBar {
         switch self {
         case .lightWithGradientBar:
             return Color.black
+
         case .gradientWithWhiteBar:
             return Color.white
+
         case .solidGreenWithWhiteBar:
             return Color.black
         }
@@ -103,8 +112,10 @@ enum ColorSchemeForProgressBar {
         switch self {
         case .lightWithGradientBar:
             return Color.middleGray
+
         case .gradientWithWhiteBar:
             return Color.white
+
         case .solidGreenWithWhiteBar:
             return Color.middleGray
         }
@@ -114,8 +125,10 @@ enum ColorSchemeForProgressBar {
         switch self {
         case .lightWithGradientBar:
             return 60
+
         case .gradientWithWhiteBar:
             return 72
+
         case .solidGreenWithWhiteBar:
             return 60
         }

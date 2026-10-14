@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class FABMenuViewTests: XCTestCase {
-
     // MARK: - FABMenuViewModel Initial State
 
     func testViewModel_InitialState() {

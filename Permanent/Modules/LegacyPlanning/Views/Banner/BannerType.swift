@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 30.05.2023.
+//
 
 import Foundation
 import UIKit
@@ -14,11 +15,11 @@ enum BannerType: String {
 }
 
 extension BannerType {
-    
     var title: String? {
         switch self {
         case .legacy:
             return "Legacy Planning"
+
         default:
             return ""
         }
@@ -28,6 +29,7 @@ extension BannerType {
         switch self {
         case .legacy:
             return "Your Legacy Plan will determine when, how, and with whom your materials will be shared when you are gone."
+
         default:
             return ""
         }
@@ -37,6 +39,7 @@ extension BannerType {
         switch self {
         case .legacy:
             return UIImage(named: "legacyPlanning")
+
         default:
             return UIImage(named: "")
         }
@@ -44,7 +47,6 @@ extension BannerType {
 }
 
 extension BannerType {
-    
     func getKey() -> String? {
         guard let accountId: Int = PermSession.currentSession?.account?.accountID else {
             return nil

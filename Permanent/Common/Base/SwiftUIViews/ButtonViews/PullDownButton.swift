@@ -3,11 +3,11 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 02.08.2023.
+//
 
 import SwiftUI
 
 struct PullDownButton: View {
-    
     @Binding var isSelecting: Bool
     @Binding var selectedItem: PullDownItem?
     let items: [PullDownItem]
@@ -46,7 +46,6 @@ struct PullDownButton: View {
                                 Image(systemName: "chevron.down")
                                     .rotationEffect(.degrees( isSelecting ? -180 : 0))
                             }
-                            
                         }
                         .onTapGesture {
                             isSelecting.toggle()

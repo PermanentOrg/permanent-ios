@@ -25,6 +25,7 @@ struct BannerBackground: ViewModifier {
         switch UploadActivityStyle.bannerBackground {
         case .systemGlass:
             content.activityBackgroundTint(UploadActivityStyle.lockScreenGlassTint)
+
         case .opaqueFill:
             if #available(iOS 17.0, *) {
                 content

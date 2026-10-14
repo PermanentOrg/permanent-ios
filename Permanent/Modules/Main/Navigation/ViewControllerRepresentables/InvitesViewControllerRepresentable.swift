@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 06.02.2024.
+//
 
 import Foundation
 
@@ -21,6 +22,5 @@ struct InvitesViewControllerRepresentable: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        
     }
 }

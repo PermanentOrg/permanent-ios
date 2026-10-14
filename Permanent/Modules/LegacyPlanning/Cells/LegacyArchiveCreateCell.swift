@@ -9,7 +9,6 @@
 import UIKit
 
 class LegacyArchiveCreateCell: UITableViewCell {
-    
     var goToCreate: (() -> Void)?
     
     func setup(data: (archive: ArchiveVOData, steward: ArchiveSteward?)) {

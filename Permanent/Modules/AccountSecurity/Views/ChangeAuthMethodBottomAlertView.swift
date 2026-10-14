@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 24.02.2025.
+//
 import SwiftUI
 
 struct ChangeAuthMethodBottomAlertView: View {
@@ -60,7 +61,6 @@ struct ChangeAuthMethodBottomAlertView: View {
                                         .font(.custom("Usual-Regular", size: 14))
                                         .foregroundColor(Color(.white))
                                     Spacer()
-                                       
                                 }
                                 .padding(16)
                                 .frame(height: 56)
@@ -95,7 +95,6 @@ struct ChangeAuthMethodBottomAlertView: View {
                             })
                         }
                         .padding(32)
-                        
                     }
                 }
                 .frame(maxWidth: .infinity)

@@ -11,7 +11,6 @@ import Foundation
 
 @MainActor
 class FileMenuViewModel: ObservableObject {
-    
     // MARK: - MenuItem Definition
     struct MenuItem: Equatable {
         enum ItemType: String, Equatable, CaseIterable {
@@ -217,7 +216,6 @@ class FileMenuViewModel: ObservableObject {
             bottomPadding += additionalBottomPaddingiOS26
         }
 
-        
         return topPadding + menuItemsHeight + bottomPadding
     }
     
@@ -577,10 +575,13 @@ class FileMenuViewModel: ObservableObject {
         switch menuItem.type {
         case .shareToAnotherApp:
             shareWithOtherApps(from: viewController)
+
         case .shareToPermanent:
             shareWithPermanent(from: viewController)
+
         case .rename:
             rename(from: viewController)
+
         default:
             presentNotImplementedAlert(from: viewController)
         }
@@ -882,22 +883,31 @@ class FileMenuViewModel: ObservableObject {
         switch itemType {
         case .download:
             return Image(.downloadV1)
+
         case .copy:
             return Image(.copyV1)
+
         case .move:
             return Image(.moveV1)
+
         case .delete:
             return Image(.deleteV1)
+
         case .unshare:
             return Image(.publishRevokeLink)
+
         case .rename:
             return Image(.renameV1)
+
         case .publish:
             return Image(.publishOnWebV1)
+
         case .shareToPermanent:
             return Image(.shareAndManageV1)
+
         case .shareToAnotherApp:
             return Image(.saveOrShareV1)
+
         case .editMetadata, .fileInformation:
             return Image(.fileInfoV1)
         }

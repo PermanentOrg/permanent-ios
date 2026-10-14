@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class IntExtensionTests: XCTestCase {
-
     // MARK: - Int.bytesToReadableForm
 
     func testInt_ZeroBytes() {

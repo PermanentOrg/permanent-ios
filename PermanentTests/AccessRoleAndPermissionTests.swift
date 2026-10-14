@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class AccessRoleAndPermissionTests: XCTestCase {
-
     // MARK: - AccessRole rawValue
 
     func testAccessRole_RawValues() {

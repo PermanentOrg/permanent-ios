@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 14.12.2023.
+//
 
 import SwiftUI
 import UIKit
@@ -15,6 +16,5 @@ struct DonateStorageView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        
     }
 }

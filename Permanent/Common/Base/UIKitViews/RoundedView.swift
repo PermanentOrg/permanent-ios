@@ -9,7 +9,6 @@
 import UIKit
 
 class RoundedView: UIView {
-    
     @IBInspectable var cornerRadius: Double {
         get {
             return Double(self.layer.cornerRadius)
@@ -66,5 +65,4 @@ class RoundedView: UIView {
             self.layer.shadowOffset = newValue
         }
     }
-    
 }

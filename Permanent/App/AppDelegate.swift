@@ -92,8 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         switch url.pathComponents[1] {
         case "share":
-            if url.absoluteString.contains("targetArchiveNbr")
-            {
+            if url.absoluteString.contains("targetArchiveNbr") {
                 let pathComponents = url.pathComponents
                 let queryItems = URLComponents(string: url.absoluteString)?.queryItems
                 
@@ -242,17 +241,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
         case "app":
-            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-            {
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true) {
                 if components.path == "/app/auth/signup",
                    let inviteCode = components.queryItems?.first(where: { $0.name == "inviteCode" })?.value {
-                    
                     // Check if user is already logged in
                     if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
                        let session = try? JSONDecoder().decode(PermSession.self, from: authData),
                        let archiveId = session.selectedArchive?.archiveID,
                        archiveId != .zero {
-                        
                         // User is logged in - show popup that they can't create an account
                         DispatchQueue.main.async {
                             self.showAlreadyLoggedInAlert()

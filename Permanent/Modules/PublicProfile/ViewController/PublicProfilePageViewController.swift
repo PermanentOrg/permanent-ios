@@ -73,7 +73,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         initCollectionView()
         
         NotificationCenter.default.addObserver(forName: PublicProfilePageViewModel.profileItemsUpdatedNotificationName, object: nil, queue: .main) { [weak self] notification in
-
             // Safety check: if archiveData is missing, try to restore it from session
             if self?.archiveData == nil || self?.archiveData?.archiveID == nil {
                 if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive {
@@ -100,12 +99,10 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         // Add observer for when session sync completes after app restart
         // This ensures we refresh profile data with the latest information
         NotificationCenter.default.addObserver(forName: NSNotification.Name("SessionSyncCompleted"), object: nil, queue: .main) { [weak self] _ in
-            
             // Check if our current archive data matches the session after sync
             if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive,
                let currentArchive = self?.archiveData,
                sessionArchive.archiveID == currentArchive.archiveID {
-                
                 // Update local archive data to match session
                 self?.archiveData = sessionArchive
                 self?.viewModel?.archiveData = sessionArchive
@@ -170,7 +167,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             if viewModel?.archiveType != nil {
                 collectionView.reloadSections([1])
             }
-           
         } else {
             let bottomSectionsSet = IndexSet(integersIn: 1...4)
             collectionView.reloadSections(bottomSectionsSet)
@@ -234,7 +230,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         let isEditingSelectedArchive = currentArchive.archiveID == localArchiveData.archiveID
         
         if isEditingSelectedArchive {
-            
             // First update local data immediately to prevent race conditions
             let updatedLocalArchive = createUpdatedArchive(from: localArchiveData, withNewName: updatedArchiveName)
             self.archiveData = updatedLocalArchive
@@ -250,14 +245,12 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             // Notify parent view controller to update title and other UI elements
             if let parentVC = self.parent as? PublicArchiveViewController {
                 parentVC.handleLocalArchiveDataUpdate(updatedLocalArchive)
-    
             }
             
             // No notification and no session sync here: the archives list refreshes when navigated back to,
             // and syncing during profile editing returns stale data and switches the user's archive.
 
         } else if localArchiveData.fullName != updatedArchiveName {
-
             // Just update local data for non-selected archives
             let updatedLocalArchive = createUpdatedArchive(from: localArchiveData, withNewName: updatedArchiveName)
             self.archiveData = updatedLocalArchive
@@ -404,6 +397,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 })
             }
             returnedCell = cell
+
         case .archiveName:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
             let title = "Archive name"

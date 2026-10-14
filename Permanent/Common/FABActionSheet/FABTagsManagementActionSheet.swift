@@ -8,16 +8,13 @@
 import Foundation
 import UIKit
 
-
 class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
-    
     @IBOutlet weak var headerView: UIView!
     @IBOutlet weak var contentView: UIView!
     
     @IBOutlet weak var topBarView: UIView!
     @IBOutlet weak var headerImageView: UIImageView!
     @IBOutlet weak var headerTitleLabel: UILabel!
-    
     
     @IBOutlet weak var tagNameLabel: UILabel!
     @IBOutlet weak var cancelButton: RoundedButton!
@@ -73,8 +70,10 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
         switch menuType {
         case .newTag:
             headerTitleLabel.text = "New tag".localized()
+
         case .editTag:
             headerTitleLabel.text = "Edit tag".localized()
+
         default:
             headerTitleLabel.text = ""
         }
@@ -141,7 +140,7 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
             }
             
         case .editTag:
-            if let index = self.index, let isNewTagNameValid = viewModel?.isNewTagNameValid(withText: tagNameTextField.text), isNewTagNameValid  {
+            if let index = self.index, let isNewTagNameValid = viewModel?.isNewTagNameValid(withText: tagNameTextField.text), isNewTagNameValid {
                 viewModel?.updateTagName(newTagName: tagNameTextField.text, index: index, completion: { error in
                     if let _ = error {
                         self.showAlert(title: .error, message: .errorMessage)
@@ -152,6 +151,7 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
             } else {
                 self.showAlert(title: .error, message: "Enter a valid Tag Name".localized())
             }
+
         default:
             break
         }

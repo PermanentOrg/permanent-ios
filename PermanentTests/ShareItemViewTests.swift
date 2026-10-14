@@ -12,7 +12,6 @@ import UIKit
 
 @MainActor
 final class ShareItemViewTests: XCTestCase {
-
     func testRendersWhileLoadingState() async {
         let vm = ShareItemViewModel(
             fileModel: FileModel.mockFile(),
@@ -91,7 +90,6 @@ final class ShareItemViewTests: XCTestCase {
             try? await Task.sleep(nanoseconds: 50_000_000)
         }
     }
-
 }
 
 private final class FastNoLinkShareManagementRepository: ShareManagementRepository {

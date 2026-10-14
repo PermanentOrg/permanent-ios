@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class FileMenuViewModelTests: XCTestCase {
-
     // MARK: - Initialization Tests
 
     func testInit_SingleFile_SetsFormattedSizeAndDate() {
@@ -1063,5 +1062,4 @@ final class FileMenuViewModelTests: XCTestCase {
             permissions: [.read, .edit, .share]
         )
     }
-
 }

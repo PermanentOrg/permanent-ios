@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class GiftStorageViewTests: XCTestCase {
-
     // MARK: - GiftStorageView Rendering Tests
 
     func testGiftStorageView_RendersWithNilAccount() {

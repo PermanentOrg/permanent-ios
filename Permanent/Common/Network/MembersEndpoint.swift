@@ -8,19 +8,17 @@
 import Foundation
 
 enum MembersEndpoint {
-    
     case members(archiveNbr: String)
     
     case modifyMember(operation: MemberOperation, archiveNbr: String, params: AddMemberParams)
-
 }
 
 extension MembersEndpoint: RequestProtocol {
-    
     var path: String {
         switch self {
         case .members:
             return "/archive/getShares"
+
         case .modifyMember(let operation, _, _):
             return operation.endpoint
         }
@@ -61,5 +59,4 @@ extension MembersEndpoint: RequestProtocol {
     var customURL: String? {
         nil
     }
-    
 }

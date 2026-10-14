@@ -12,7 +12,6 @@ import Combine
 
 @MainActor
 final class SharePreviewViewModelTests: XCTestCase {
-    
     // MARK: - Initialization Tests
     
     func testInitialization() {

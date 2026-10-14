@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 22.01.2025.
+//
 
 import SwiftUI
 
@@ -29,7 +30,6 @@ struct TwoStepChooseVerificationView: View {
                     } else {
                         TwoStepConfirmationItemView(isSelected: !(self.viewModel.isEmailMethodSelected ?? true), type: item)
                     }
-                    
                 }
                 .transaction { transaction in
                     transaction.animation = nil
@@ -38,7 +38,7 @@ struct TwoStepChooseVerificationView: View {
             Spacer()
                 .frame(maxHeight: .infinity)
             RoundButtonUsualFontView(isDisabled: viewModel.isEmailMethodSelected == nil, isLoading: false, text: "Continue") {
-                if viewModel.isEmailMethodSelected ?? false{
+                if viewModel.isEmailMethodSelected ?? false {
                     viewModel.containerViewModel.setContentType(.chooseEmail)
                 } else {
                     viewModel.containerViewModel.setContentType(.choosePhoneNumber)
@@ -90,7 +90,6 @@ struct TwoStepConfirmationItemView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
-                        
                         Image(isSelected ? .twoStepCheckMark : .twoStepEmptyCheckmark)
                             .frame(width: 24, height: 24)
                     }
@@ -140,7 +139,6 @@ struct TwoStepConfirmationItemView: View {
                         .padding(.vertical, 0)
                         .background(isSelected ? .white : .fadeGray)
                         .cornerRadius(6)
-                        
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     Image(isSelected ? .twoStepCheckMark : .twoStepEmptyCheckmark)
@@ -164,9 +162,9 @@ enum TwoStepMethodType: String, Identifiable, CaseIterable {
         switch self {
         case .email:
             return "Email"
+
         case .sms:
             return "Text message (SMS)"
         }
     }
 }
-

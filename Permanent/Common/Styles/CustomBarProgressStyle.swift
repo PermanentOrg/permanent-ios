@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 31.10.2023.
+//
 
 import SwiftUI
 
@@ -19,7 +20,6 @@ struct CustomBarProgressStyle: ProgressViewStyle {
     var cornerRadius: Double = 2.0
     
     func makeBody(configuration: Configuration) -> some View {
-        
         let progress = configuration.fractionCompleted ?? 0.0
         
         GeometryReader { geometry in

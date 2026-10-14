@@ -8,7 +8,6 @@
 import Foundation
 
 class WorkspacesContentViewModel: FolderContentViewModel {
-    
     override var files: [FileModel] {
         get {
             let privateFolder = FileModel(name: "Private", recordId: 0, folderLinkId: 0, archiveNbr: "", type: "", permissions: [], thumbnailURL2000: "https://www.jeffbullas.com/wp-content/uploads/2018/05/the-Detailed-Targeting-section-1-768x313.png")
@@ -19,7 +18,6 @@ class WorkspacesContentViewModel: FolderContentViewModel {
         }
         
         set {
-            
         }
     }
     
@@ -31,5 +29,4 @@ class WorkspacesContentViewModel: FolderContentViewModel {
             NotificationCenter.default.post(name: Self.didUpdateFilesNotification, object: self, userInfo: nil)
         }
     }
-    
 }

@@ -8,7 +8,6 @@
 import UIKit.UIApplication
 
 class ScreenLockManager {
-
     func disableIdleTimer(_ disable: Bool) {
         UIApplication.shared.isIdleTimerDisabled = disable
     }

@@ -222,7 +222,6 @@ class RootViewController: UIViewController {
     }
     
     func presentFullscreen() {
-        
     }
     
     fileprivate func setupChild(_ viewController: UIViewController?) {

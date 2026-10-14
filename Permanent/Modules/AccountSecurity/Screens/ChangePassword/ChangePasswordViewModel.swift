@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 26.03.2025.
+//
 import SwiftUI
 
 class ChangePasswordViewModel: ObservableObject {
@@ -85,6 +86,7 @@ class ChangePasswordViewModel: ObservableObject {
                 self?.currentPassword = ""
                 self?.newPassword = ""
                 self?.confirmPassword = ""
+
             case .error:
                 self?.showBanner = true
                 self?.bottomBannerMessage = .generalError
@@ -97,7 +99,6 @@ class ChangePasswordViewModel: ObservableObject {
         }
     }
 
-    
     func displayBanner() {
         if showBottomBanner {
             withAnimation {
@@ -155,11 +156,12 @@ enum PasswordStrength: String {
         switch self {
         case .weak:
             return Color(red: 0.94, green: 0.27, blue: 0.22)
+
         case .medium:
             return Color(red: 0.97, green: 0.56, blue: 0.03)
+
         case .strong:
             return Color(red: 0.07, green: 0.72, blue: 0.42)
         }
     }
 }
-

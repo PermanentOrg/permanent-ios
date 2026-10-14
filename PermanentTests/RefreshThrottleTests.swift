@@ -12,7 +12,6 @@ import Testing
 /// The throttle that stops `UploadManager.refreshQueue()` spinning offline, where failures
 /// return in microseconds and bypass the retry cap. Clock injected, so nothing here is timed.
 struct RefreshThrottleTests {
-
     /// `Decision` carries a `TimeInterval`, so exact equality is the wrong tool —
     /// `minInterval - elapsed` lands on values like 0.9000000000000057.
     private func expectSchedule(
@@ -103,8 +102,10 @@ struct RefreshThrottleTests {
             switch t.request(now: now) {
             case .runNow:
                 runs += 1
+
             case .schedule(let delay):
                 pendingFireAt = now + delay
+
             case .alreadyScheduled:
                 break
             }

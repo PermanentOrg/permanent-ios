@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 27.06.2023.
+//
 
 import SwiftUI
 
@@ -28,7 +29,7 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
             let navigationBarAppearance = UINavigationBarAppearance()
             navigationBarAppearance.configureWithOpaqueBackground()
             navigationBarAppearance.titleTextAttributes = [
-                NSAttributedString.Key.foregroundColor : UIColor.white,
+                NSAttributedString.Key.foregroundColor: UIColor.white,
                 NSAttributedString.Key.font: TextFontStyle.style51.font
             ]
             navigationBarAppearance.backgroundColor = UIColor.darkBlue
@@ -74,7 +75,6 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
                         } else {
                             leftButtons
                         }
-
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         if !(rightButtons is EmptyView) {

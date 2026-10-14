@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 03.09.2024.
+//
 
 import SwiftUI
 
@@ -97,7 +98,6 @@ struct LoginView: View {
                             .frame(height: 1)
                             .background(Color(red: 0.54, green: 0.55, blue: 0.64))
                             .layoutPriority(0.5)
-                        
                     }
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Sign Up", image: Image(.iconauthUserPlus), action: {
                         self.viewModel.containerViewModel.setContentType(.register)
@@ -131,6 +131,7 @@ struct LoginView: View {
                 case .mfaToken:
                     self.viewModel.containerViewModel.setContentType(.verifyIdentity)
                     break
+
                 default:
                     break
                 }
@@ -150,7 +151,7 @@ struct LoginView: View {
         }.onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 if keyboardSize.size.height > 120 {
-                    if keyboardOpenend && self.focusedField == nil{
+                    if keyboardOpenend && self.focusedField == nil {
                         keyboardOpenend = false
                         withAnimation(.linear(duration: 0.3)) {
                             showEmptySpace = true
@@ -191,7 +192,6 @@ struct LoginView: View {
                 }
                 VStack(spacing: 0) {
                     LoginView(viewModel: LoginViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
-                        
                     })
                     Spacer()
                 }

@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class ShareItemViewModelFormatTests: XCTestCase {
-
     // MARK: - ShareItemViewModel.formatDate
 
     func testFormatDate_ValidDate() {

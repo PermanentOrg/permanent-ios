@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ProfilePageDataTests: XCTestCase {
-
     // MARK: - nameTitle
 
     func testNameTitle_Person_ReturnsFullName() {

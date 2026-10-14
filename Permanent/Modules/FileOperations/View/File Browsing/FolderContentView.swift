@@ -91,7 +91,7 @@ class FolderContentView: UIView {
             emptyView.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor, constant: 0),
             emptyView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor, constant: 0),
             emptyView.topAnchor.constraint(equalTo: collectionView.topAnchor, constant: 0),
-            emptyView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 0),
+            emptyView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 0)
         ])
 
         showAnimatedGradientSkeleton()

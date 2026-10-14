@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ShareEndpointTests: XCTestCase {
-
     // MARK: - Helpers
 
     private func makeFile() -> FileModel {

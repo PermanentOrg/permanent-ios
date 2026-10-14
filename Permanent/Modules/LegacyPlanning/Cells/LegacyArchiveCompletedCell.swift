@@ -10,7 +10,6 @@ import UIKit
 import SDWebImage
 
 class LegacyArchiveCompletedCell: UITableViewCell {
-    
     var goToEdit: (() -> Void)?
     var turnOff: (() -> Void)?
     

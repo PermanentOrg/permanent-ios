@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class AccountOnboardingViewModelTests: XCTestCase {
-
     // MARK: - Page rightButtonTitle
 
     func testPage_GetStarted_RightTitle() {

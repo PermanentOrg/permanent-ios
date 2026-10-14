@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class EventsEndpointTests: XCTestCase {
-
     private let apiServer = APIEnvironment.defaultEnv.apiServer
 
     // MARK: - Helpers

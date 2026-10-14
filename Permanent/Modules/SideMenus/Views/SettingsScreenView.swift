@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 30.01.2024.
+//
 
 import SwiftUI
 
@@ -154,7 +155,7 @@ struct SettingsScreenView: View {
                                 Button {
                                     settingsRouter.navigate(to: .loginAndSecurity, router: settingsRouter)
                                 } label: {
-                                    CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Login & Security", notificationIcon: !(viewModel.twoFactorAuthenticationEnabled == true)&&(viewModel.isLoading2FAStatus == false))
+                                    CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Login & Security", notificationIcon: !(viewModel.twoFactorAuthenticationEnabled == true) && (viewModel.isLoading2FAStatus == false))
                                 }
                                 .accessibilityIdentifier("settingsLoginSecurityOption")
                                 Button {
@@ -202,5 +203,3 @@ struct SettingsScreenView: View {
         presentationMode.wrappedValue.dismiss()
     }
 }
-
-

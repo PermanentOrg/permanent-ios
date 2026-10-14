@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 15.05.2025.
+//
 import SwiftUI
 
 struct ChecklistCongratsView: View {

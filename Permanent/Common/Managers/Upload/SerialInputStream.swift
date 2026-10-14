@@ -17,7 +17,6 @@
 import Foundation
 
 class SerialInputStream: InputStream {
-
     let inputStreams: [InputStream]
 
     private var currentIndex: Int
@@ -30,7 +29,7 @@ class SerialInputStream: InputStream {
         self.currentIndex = 0
         self._streamStatus = .notOpen
         self._streamError = nil
-        super.init(data: Data()) //required because `init()` is not marked as a designated initializer
+        super.init(data: Data()) // required because `init()` is not marked as a designated initializer
     }
 
     override var streamStatus: Stream.Status {
@@ -51,7 +50,7 @@ class SerialInputStream: InputStream {
     }
 
     override func read(_ buffer: UnsafeMutablePointer<UInt8>, maxLength: Int) -> Int {
-        if _streamStatus == .closed{
+        if _streamStatus == .closed {
             return 0
         }
 
@@ -123,11 +122,8 @@ class SerialInputStream: InputStream {
     }
 
     override func schedule(in aRunLoop: RunLoop, forMode mode: RunLoop.Mode) {
-
     }
 
     override func remove(from aRunLoop: RunLoop, forMode mode: RunLoop.Mode) {
-
     }
-
 }

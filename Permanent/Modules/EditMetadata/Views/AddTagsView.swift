@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 17.07.2023.
+//
 
 import SwiftUI
 
@@ -19,7 +20,7 @@ struct AddTagsView: View {
                     VStack {
                         tagView(tag: item)
                     }
-                }
+            }
         }
         .frame(maxHeight: .infinity)
     }
@@ -53,8 +54,8 @@ struct AddTagsView: View {
 
 struct AddTagsView_Previews: PreviewProvider {
     @State static var tags: [TagVO] = [
-        TagVO(tagVO: TagVOData(name: "Nature",status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil)),
-        TagVO(tagVO: TagVOData(name: "Blue Sky",status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil))
+        TagVO(tagVO: TagVOData(name: "Nature", status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil)),
+        TagVO(tagVO: TagVOData(name: "Blue Sky", status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil))
     ]
     @State static var addedTags: [TagVO] = []
     

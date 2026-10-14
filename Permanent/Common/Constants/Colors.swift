@@ -105,7 +105,7 @@ extension Gradient {
     static var purpleYellowGradient2 = LinearGradient(
         stops: [
             Gradient.Stop(color: Color(red: 0.5, green: 0, blue: 0.5), location: 0.00),
-            Gradient.Stop(color: Color(red: 1, green: 0.6, blue: 0.2), location: 1.00),
+            Gradient.Stop(color: Color(red: 1, green: 0.6, blue: 0.2), location: 1.00)
         ],
         startPoint: UnitPoint(x: 0, y: 0),
         endPoint: UnitPoint(x: 1, y: 1)
@@ -114,7 +114,7 @@ extension Gradient {
     static var purpleYellowGradientForText = LinearGradient(
         stops: [
             Gradient.Stop(color: Color(red: 0.5, green: 0, blue: 0.5), location: 0.00),
-            Gradient.Stop(color: Color(red: 1, green: 0.6, blue: 0.2), location: 1.00),
+            Gradient.Stop(color: Color(red: 1, green: 0.6, blue: 0.2), location: 1.00)
         ],
         startPoint: UnitPoint(x: 0, y: 1),
         endPoint: UnitPoint(x: 1, y: 1)
@@ -150,7 +150,7 @@ extension Gradient {
     static var darkLightBlueGradient = LinearGradient(stops:
                                                         [
                                                             Gradient.Stop(color: Color(red: 0.07, green: 0.11, blue: 0.29), location: 0.00),
-                                                            Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00),
+                                                            Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00)
                                                         ],
                                                       startPoint: UnitPoint(x: 0, y: 0),
                                                       endPoint: UnitPoint(x: 1, y: 1)
@@ -159,7 +159,7 @@ extension Gradient {
     static var lightDarkPurpleGradient = LinearGradient(stops:
                                                         [
                                                             Gradient.Stop(color: Color(red: 0.5, green: 0, blue: 0.5), location: 0.00),
-                                                            Gradient.Stop(color: Color(red: 0.72, green: 0.26, blue: 0.65), location: 1.00),
+                                                            Gradient.Stop(color: Color(red: 0.72, green: 0.26, blue: 0.65), location: 1.00)
                                                         ],
                                                       startPoint: UnitPoint(x: 0, y: 0),
                                                       endPoint: UnitPoint(x: 1, y: 1)

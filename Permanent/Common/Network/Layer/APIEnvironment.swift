@@ -29,8 +29,10 @@ enum APIEnvironment: String, EnvironmentProtocol {
         switch self {
         case .staging:
             return "https://app.staging.permanent.org/api"
+
         case .development:
             return "https://dev.permanent.org/api"
+
         case .production:
             return "https://app.permanent.org/api"
         }
@@ -40,8 +42,10 @@ enum APIEnvironment: String, EnvironmentProtocol {
         switch self {
         case .staging:
             return "https://api.staging.permanent.org/"
+
         case .development:
             return "https://dev.permanent.org/"
+
         case .production:
             return "https://api.permanent.org/"
         }
@@ -51,8 +55,10 @@ enum APIEnvironment: String, EnvironmentProtocol {
         switch self {
         case .staging:
             return "https://staging.permanent.org/add-storage/"
+
         case .development:
             return "https://dev.permanent.org/add-storage/"
+
         case .production:
             return "https://www.permanent.org/add-storage/"
         }
@@ -66,8 +72,10 @@ enum APIEnvironment: String, EnvironmentProtocol {
         switch self {
         case .staging:
             return "https://app.staging.permanent.org/p"
+
         case .development:
             return "https://dev.permanent.org/p"
+
         case .production:
             return "https://app.permanent.org/p"
         }
@@ -77,8 +85,10 @@ enum APIEnvironment: String, EnvironmentProtocol {
         switch self {
         case .staging:
             return "https://permanent-dev.fusionauth.io/oauth2/authorize"
+
         case .development:
             return "https://permanent-dev.fusionauth.io/oauth2/authorize"
+
         case .production:
             return "https://auth.permanent.org/oauth2/authorize"
         }
@@ -88,8 +98,10 @@ enum APIEnvironment: String, EnvironmentProtocol {
         switch self {
         case .staging:
             return "https://permanent-dev.fusionauth.io/oauth2/token"
+
         case .development:
             return "https://permanent-dev.fusionauth.io/oauth2/token"
+
         case .production:
             return "https://auth.permanent.org/oauth2/token"
         }
@@ -100,8 +112,10 @@ enum APIEnvironment: String, EnvironmentProtocol {
         switch self {
         case .staging:
             return "https://permanent-dev.fusionauth.io/api"
+
         case .development:
             return "https://permanent-dev.fusionauth.io/api"
+
         case .production:
             return "https://permanent.fusionauth.io/api"
         }

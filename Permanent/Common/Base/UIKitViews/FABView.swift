@@ -166,7 +166,6 @@ class FABView: UIView {
         checklistImageView.layer.shadowOpacity = 1
         checklistImageView.layer.shadowOffset = CGSize(width: 0, height: 0)
         
-        
         memberChecklistBanner.layer.shadowRadius = 6
         memberChecklistBanner.layer.shadowColor = UIColor.black.withAlphaComponent(0.2).cgColor
         memberChecklistBanner.layer.shadowOpacity = 1

@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ArrayAndSequenceExtensionTests: XCTestCase {
-
     // MARK: - Array prepend
 
     func testPrepend_ToEmptyArray() {

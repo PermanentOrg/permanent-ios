@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class UploadOperationTests: XCTestCase {
-
     // MARK: - Stale-call restart heuristic (H3: don't cancel healthy foreground uploads)
     // The restart on foreground must target only calls iOS may have suspended during a long
     // background stint — never a healthy upload that is merely slow while in the foreground.

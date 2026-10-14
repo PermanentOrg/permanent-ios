@@ -3,10 +3,10 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 19.09.2024.
+//
 
 import SwiftUI
 import Combine
-
 
 enum FocusPinType: Hashable {
     case pin(Int)
@@ -38,13 +38,11 @@ struct Login2FAFieldView: View {
                             } else {
                                 pinFocusState = nil
                             }
-                        }
-                        else if newVal.count == numberOfFields, let intValue = Int(newVal) {
+                        } else if newVal.count == numberOfFields, let intValue = Int(newVal) {
                             code = newVal
                             updatePinsFromOTP()
                             pinFocusState = FocusPinType.pin(numberOfFields - 1)
-                        }
-                        else if newVal.isEmpty {
+                        } else if newVal.isEmpty {
                             if index > 0 {
                                 pinFocusState = FocusPinType.pin(index - 1)
                             }
@@ -109,7 +107,6 @@ struct CodeModifier: ViewModifier {
 
 struct Login2FAFieldView_Previews: PreviewProvider {
     static var previews: some View {
-        
         ZStack {
             Gradient.darkLightBlueGradient
             Login2FAFieldView(numberOfFields: 4, code: .constant("4321"), digitsDisabled: .constant(false))
@@ -117,5 +114,3 @@ struct Login2FAFieldView_Previews: PreviewProvider {
         .ignoresSafeArea()
     }
 }
-
-

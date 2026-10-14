@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class FilesViewModelPagingTests: XCTestCase {
-
     /// Scripted children requests: records every request and answers from `responses` in order.
     private final class PageServer {
         var requests: [(pageSize: Int, cursor: String?)] = []

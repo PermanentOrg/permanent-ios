@@ -10,7 +10,6 @@ import CoreLocation
 import GoogleMaps
 
 class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCell {
-
     static let identifier = "FileDetailsMapViewCellCollectionViewCell"
  
     @IBOutlet weak var titleLabelField: UILabel!
@@ -60,7 +59,7 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
         detailsLabelField.baselineAdjustment = .alignCenters
         
         let locationDetails = getLocationDetails()
-        mapViewContainer.isHidden = locationDetails == (0,0)
+        mapViewContainer.isHidden = locationDetails == (0, 0)
         
         setLocation(locationDetails.latitude, locationDetails.longitude)
         
@@ -84,9 +83,9 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
     func getLocationDetails() -> (latitude: Double, longitude: Double) {
         if let latitude = viewModel?.recordVO?.recordVO?.locnVO?.latitude,
            let longitude = viewModel?.recordVO?.recordVO?.locnVO?.longitude {
-            return (latitude,longitude)
+            return (latitude, longitude)
         } else {
-            return (0,0)
+            return (0, 0)
         }
     }
 }

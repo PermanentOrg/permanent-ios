@@ -10,7 +10,6 @@ import XCTest
 /// The full-screen image preview's loading and failure states, driven deterministically through
 /// the DEBUG-only launch arguments.
 class FilePreviewStateUITests: BaseUITestCase {
-
     override func setUpWithError() throws {
         // Launch arguments must be appended before BaseUITestCase launches the app.
         if name.contains("LoadFailed") {

@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class AuthContainerAndContentTypeTests: XCTestCase {
-
     // MARK: - AuthBannerMessage
 
     func testAuthBannerMessage_AllNonNoneCasesHaveText() {

@@ -116,7 +116,7 @@ struct SharePreviewGridView: View {
                         }
                     }
                 }
-            }
+                }
             .padding(.horizontal, lateralPadding)
             .padding(.top, 8)
             }

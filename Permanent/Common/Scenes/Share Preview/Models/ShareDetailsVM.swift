@@ -68,7 +68,7 @@ struct ShareDetailsVM: ShareDetails {
         
         if let recordType = model.recordData?.type {
             fileType = FileType.init(rawValue: recordType )
-        } else  {
+        } else {
             fileType = FileType.publicFolder
         }
         

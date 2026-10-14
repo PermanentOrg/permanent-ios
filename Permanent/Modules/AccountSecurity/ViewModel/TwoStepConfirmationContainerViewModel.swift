@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 28.11.2024.
+//
 
 import Foundation
 import SwiftUI
@@ -20,14 +21,19 @@ enum TwoStepConfirmationContentType {
             switch self {
             case .confirmPassword:
                 return "Confirm Password"
+
             case .chooseVerification:
                 return "Choose Verification"
+
             case .register:
                 return "Register"
+
             case .chooseEmail:
                 return "Add email verification method"
+
             case .choosePhoneNumber:
                 return "Add text verification method"
+
             case .none:
                 return ""
             }
