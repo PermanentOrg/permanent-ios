@@ -93,8 +93,10 @@ platform :ios do
       release_notes: changelog,
       service_credentials_json_data: ENV['FIREBASE_SERVICE_ACCOUNT_KEY']
     )
+
+    upload_crash_symbols
   end
-  
+
   lane :app_store do 
     setup_ci
 
@@ -196,6 +198,22 @@ platform :ios do
     #upload to TestFlight
     upload_to_testflight(app_identifier: "org.permanent.PermanentArchive",
                          changelog: test_notes.to_s[0, 4000])
+
+    upload_crash_symbols
+  end
+
+  # Crashlytics shows a crash's file and line only with the build's symbols (dSYM).
+  # A failed upload must never stop a release, so it only warns.
+  private_lane :upload_crash_symbols do
+    begin
+      upload_symbols_to_crashlytics(
+        dsym_path: lane_context[SharedValues::DSYM_OUTPUT_PATH],
+        app_id: ENV['GOOGLE_APP_ID'].to_s.delete(%q('")),
+        binary_path: File.expand_path("../SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols", __dir__)
+      )
+    rescue => e
+      UI.important("⚠️  Could not upload crash symbols to Crashlytics: #{e.message}")
+    end
   end
 
   lane :update_devices do     
