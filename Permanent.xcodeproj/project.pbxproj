@@ -599,6 +599,7 @@
 		5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */; };
 		5EA70D8F2B2C793A00175D9C /* GradientCustomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8E2B2C793A00175D9C /* GradientCustomBarView.swift */; };
 		5EA7C10230A10002000A1851 /* UploadQuotaGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA7C10130A10001000A1851 /* UploadQuotaGateTests.swift */; };
+		A8ECEF86E64C557150570451 /* RootNavigationControllerTitleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E148CCD0200929B81BF0F0A /* RootNavigationControllerTitleTests.swift */; };
 		5EA7C10330A10003000A1851 /* ArchiveV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */; };
 		5EA7C10430A10004000A1851 /* ArchiveV2Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63C8F1300FD2B10094665D /* ArchiveV2Models.swift */; };
 		5EA7C10630A10006000A1851 /* PayerAccountStorageV2Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA7C10530A10005000A1851 /* PayerAccountStorageV2Data.swift */; };
@@ -1795,6 +1796,7 @@
 		5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomListItemView.swift; sourceTree = "<group>"; };
 		5EA70D8E2B2C793A00175D9C /* GradientCustomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientCustomBarView.swift; sourceTree = "<group>"; };
 		5EA7C10130A10001000A1851 /* UploadQuotaGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadQuotaGateTests.swift; sourceTree = "<group>"; };
+		0E148CCD0200929B81BF0F0A /* RootNavigationControllerTitleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootNavigationControllerTitleTests.swift; sourceTree = "<group>"; };
 		5EA7C10530A10005000A1851 /* PayerAccountStorageV2Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayerAccountStorageV2Data.swift; sourceTree = "<group>"; };
 		5EA94A112B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomInvalidAlertMessageView.swift; sourceTree = "<group>"; };
 		5EA9C2B52E45FF78003BA1E9 /* ShareComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareComponents.swift; sourceTree = "<group>"; };
@@ -3801,6 +3803,7 @@
 				CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */,
 				C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */,
 				5EA7C10130A10001000A1851 /* UploadQuotaGateTests.swift */,
+				0E148CCD0200929B81BF0F0A /* RootNavigationControllerTitleTests.swift */,
 				5E7B9B9E2FB1300200C1D3D0 /* EditMetadataViewModelTests.swift */,
 				5E7B9B9F2FB1300200C1D3D0 /* FABViewModelTests.swift */,
 				5E7B9BA02FB1300200C1D3D0 /* GiftStorageViewModelTests.swift */,
@@ -6271,6 +6274,7 @@
 				13F57C8DB2DB4A4EB984A0BE /* FolderV2ModelsTests.swift in Sources */,
 				615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */,
 				5EA7C10230A10002000A1851 /* UploadQuotaGateTests.swift in Sources */,
+				A8ECEF86E64C557150570451 /* RootNavigationControllerTitleTests.swift in Sources */,
 				5E7B9BAF2FB1300200C1D3D0 /* GiftStorageViewModelTests.swift in Sources */,
 				5E7B9B7B2FB0D11B00C1D3D0 /* GiftStorageViewTests.swift in Sources */,
 				5E7B9B7C2FB0D11B00C1D3D0 /* ChecklistAndDialogViewTests.swift in Sources */,

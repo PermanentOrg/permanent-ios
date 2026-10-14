@@ -57,7 +57,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         appearance.backgroundColor = .darkBlue
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.white,
-            .font: TextFontStyle.style14.font
+            .font: TextFontStyle.navigationBarTitle.font
         ]
 
         navigationController?.navigationBar.standardAppearance = appearance

@@ -62,6 +62,8 @@ struct TextFontStyle {
     /// Usual Regular 12pt on a 16pt line.
     static let smallRegular = TextStyle(UIFont(name: "Usual-Regular", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(16)), NSTextAlignment.natural)
     static let smallRegularLineHeight: CGFloat = 16
+    /// The dark navigation bar's title, shared by `styleNavBar()` and the root container that restyles the bar.
+    static let navigationBarTitle = style14
 }
 
 struct Constants {
