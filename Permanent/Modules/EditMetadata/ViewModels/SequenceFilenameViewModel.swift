@@ -139,7 +139,7 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         
         switch selectedAdditionalOption?.title {
         case "Created":
-            date = dateFormatter.date(from: file?.createdDT ?? "")
+            date = DateUtils.date(fromDisplayTime: file?.displayTime) ?? dateFormatter.date(from: file?.createdDT ?? "")
 
         case "Last modified":
             date = dateFormatter.date(from: file?.modifiedDT ?? "")

@@ -47,6 +47,12 @@ class FilePreviewViewModel: ViewModelInterface {
 
     private var recordFetchAttempts = 0
 
+    /// Test seams for a save: the V2 PATCH, the V1 update and the session's archive stand in for the
+    /// server and the sign-in. Production leaves the requests nil.
+    var patchRecordRequest: ((_ recordId: Int, _ fields: [String: Any], _ completion: @escaping (Bool) -> Void) -> Void)?
+    var updateV1Request: ((_ params: UpdateRecordParams, _ completion: @escaping (Bool) -> Void) -> Void)?
+    var sessionArchiveId: () -> Int? = { AuthenticationManager.shared.session?.selectedArchive?.archiveID }
+
     /// Extends the V2 record read to foreign archives, for the public gallery — the same bearer-only
     /// credentials already list that archive's children. Reads only; writes stay own-archive.
     private let allowsForeignDetail: Bool
@@ -211,7 +217,7 @@ class FilePreviewViewModel: ViewModelInterface {
     /// True when the record is in the session's selected archive. A foreign or shared record carries
     /// a different or absent archiveId and stays on V1; unknown ownership also falls to V1.
     private func isInCurrentArchive(_ file: FileModel) -> Bool {
-        guard let currentArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return false }
+        guard let currentArchiveId = sessionArchiveId() else { return false }
         return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
 
@@ -374,8 +380,11 @@ class FilePreviewViewModel: ViewModelInterface {
     } 
     
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
-        // V2 PATCH covers name, description and location, which are idempotent. Date stays on V1: the
-        // PATCH exposes only the EDTF column, not the timestamp the Date row shows. Own archive only.
+        if let date = date, name == nil, description == nil, location == nil, file.savesDateToV2(sessionArchiveId: sessionArchiveId()) {
+            updateDateV2(file: file, date: date, completion: completion)
+            return
+        }
+        // V2 PATCH covers name, description and location, which are idempotent. Own archive only.
         if file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
             updateV2(file: file, name: name, description: description, location: location, completion: completion)
             return
@@ -414,27 +423,70 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
-    private func updateV1(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
-        let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo)
-        let apiOperation = APIOperation(FilesEndpoint.update(params: params))
-
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+    /// A date goes to `displayTime`, the field both apps read first. After a V2 failure the V1 retry runs
+    /// only while the old field is the date the app shows; otherwise V1 would write a date nobody sees.
+    private func updateDateV2(file: FileModel, date: Date, completion: @escaping ((Bool) -> Void)) {
+        sendPatchRecord(recordId: file.recordId, fields: DateUtils.displayTimeFields(for: date)) { [weak self] succeeded in
             DispatchQueue.main.async {
-                switch result {
-                case .json( _, _):
-                    self.getRecord(file: file) { (record) in
+                guard let self = self else { completion(false); return }
+                if succeeded {
+                    self.getRecord(file: file) { _ in
                         NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
                         completion(true)
                     }
-
-                case .error(_, _):
-                    NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
-                    completion(false)
-
-                default:
+                } else if DateUtils.showsLegacyDate(displayTimes: [self.recordVO?.recordVO?.displayTime, file.displayTime]) {
+                    self.updateV1(file: file, name: nil, description: nil, date: date, location: nil, completion: completion) // failsafe
+                } else {
                     NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
                     completion(false)
                 }
+            }
+        }
+    }
+
+    private func sendPatchRecord(recordId: Int, fields: [String: Any], completion: @escaping (Bool) -> Void) {
+        if let injected = patchRecordRequest {
+            injected(recordId, fields, completion)
+            return
+        }
+        let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(recordId), fields: fields))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            if case .json = result {
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }
+
+    private func updateV1(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+        let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo)
+        sendUpdateV1(params) { succeeded in
+            DispatchQueue.main.async {
+                if succeeded {
+                    self.getRecord(file: file) { _ in
+                        NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
+                        completion(true)
+                    }
+                } else {
+                    NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
+                    completion(false)
+                }
+            }
+        }
+    }
+
+    private func sendUpdateV1(_ params: UpdateRecordParams, completion: @escaping (Bool) -> Void) {
+        if let injected = updateV1Request {
+            injected(params, completion)
+            return
+        }
+        let apiOperation = APIOperation(FilesEndpoint.update(params: params))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            if case .json = result {
+                completion(true)
+            } else {
+                completion(false)
             }
         }
     }

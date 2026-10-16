@@ -26,7 +26,7 @@ struct RecordV2Data: Model {
     let uploadPayerAccountId: String?
     let size: Int?
     let displayDate: String?
-    let displayTimeInEDTF: String?
+    let displayTime: String?
     let fileCreatedAt: String?
     let imageRatio: Double?
     let thumbnail256: String?
@@ -112,6 +112,7 @@ extension RecordV2Data {
         if let value = size { record["size"] = value }
         if let value = type { record["type"] = value }
         if let value = displayDate { record["displayDT"] = value }
+        if let value = displayTime { record["displayTime"] = value }
         if let value = createdAt { record["createdDT"] = value }
         if let value = updatedAt { record["updatedDT"] = value }
         if let value = fileCreatedAt { record["derivedCreatedDT"] = value } // note: V2 has no derivedDT ("Created" row blank)
@@ -235,6 +236,7 @@ struct LocationV2: Model {
     let country: String?
     let countryCode: String?
     let displayName: String?
+    let timezone: String?
 }
 
 struct TagV2: Model {
