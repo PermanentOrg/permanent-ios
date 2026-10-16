@@ -25,38 +25,22 @@ struct CustomBarProgressStyle: ProgressViewStyle {
         GeometryReader { geometry in
             VStack(alignment: .leading) {
                 configuration.label
-                if #available(iOS 15, *) {
-                    RoundedRectangle(cornerRadius: 2.0)
-                        .fill(color.opacity(0.16))
-                        .frame(height: height)
-                        .frame(width: geometry.size.width)
-                        .overlay(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .fill(color)
-                                .frame(width: width)
-                                .overlay {
-                                    if let currentValueLabel = configuration.currentValueLabel {
-                                        currentValueLabel
-                                            .font(.headline)
-                                            .foregroundColor(.white)
-                                    }
+                RoundedRectangle(cornerRadius: 2.0)
+                    .fill(color.opacity(0.16))
+                    .frame(height: height)
+                    .frame(width: geometry.size.width)
+                    .overlay(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(color)
+                            .frame(width: width)
+                            .overlay {
+                                if let currentValueLabel = configuration.currentValueLabel {
+                                    currentValueLabel
+                                        .font(.headline)
+                                        .foregroundColor(.white)
                                 }
-                        }
-                } else {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(color.opacity(0.16))
-                            .frame(height: height)
-                            .frame(width: geometry.size.width)
-                        HStack {
-                            RoundedRectangle(cornerRadius: 2)
-                                .fill(color)
-                                .frame(height: height)
-                                .frame(width: width)
-                            Spacer()
-                        }
+                            }
                     }
-            }
             }
             .onAppear {
                 withAnimation(.linear(duration: 0.6)) {

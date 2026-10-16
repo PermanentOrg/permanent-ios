@@ -17,6 +17,7 @@
 "AuthenticationTimedOut" = "Local authentication timed out.";
 "BiometricsReason" = "Authenticate to log into your Permanent account.";
 "Cancel" = "Cancel";
+"Close" = "Close";
 "CopyrightText" = "© The Permanent Legacy Foundation 2020";
 "Decline" = "Decline";
 "Delete" = "Delete";
@@ -216,6 +217,7 @@
 "FolderCountOther" = "%d Folders";
 "FileCountOne" = "%d File";
 "FileCountOther" = "%d Files";
+"FileProcessing" = "Processing";
 "LoadingItems" = "Loading items";
 "LoadingMoreItems" = "Loading more items";
 "TabPosition" = "%1$d of %2$d";

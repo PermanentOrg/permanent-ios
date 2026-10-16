@@ -13,6 +13,8 @@ final class FloatingActionIslandTests: XCTestCase {
     /// The island widths on 375, 390, 393, 402 and 440 pt wide phones.
     private let phoneWidths: [CGFloat] = [311, 326, 329, 338, 376]
 
+    private static let rowOnlySkipReason = "Before iOS 26 the pill is a UIToolbar with 28 pt items; this test covers the iOS 26 row."
+
     /// The select-mode bar as the file screens build it: the count, then Copy, Move and More.
     private func makeIsland(width: CGFloat, more: @escaping () -> Void = {}) -> FloatingActionIslandViewController {
         let blank = UIColor.clear.imageWithColor(width: 0, height: 0)
@@ -46,7 +48,8 @@ final class FloatingActionIslandTests: XCTestCase {
         return all(island.view).compactMap { $0 as? UIButton }.filter { $0.window != nil && !$0.isHidden }
     }
 
-    func testEveryItem_StaysInsideThePill_OnEveryPhoneWidth() {
+    func testEveryItem_StaysInsideThePill_OnEveryPhoneWidth() throws {
+        guard #available(iOS 26, *) else { throw XCTSkip(Self.rowOnlySkipReason) }
         for width in phoneWidths {
             let island = makeIsland(width: width)
             let shown = buttons(in: island)
@@ -59,7 +62,8 @@ final class FloatingActionIslandTests: XCTestCase {
         }
     }
 
-    func testTheIcons_KeepATapTargetOf44Points() {
+    func testTheIcons_KeepATapTargetOf44Points() throws {
+        guard #available(iOS 26, *) else { throw XCTSkip(Self.rowOnlySkipReason) }
         let island = makeIsland(width: phoneWidths[0])
         let icons = buttons(in: island).filter { $0.bounds.width < 60 }
 

@@ -16,8 +16,8 @@ class ShareManagementUITests: BaseUITestCase {
     }
 
     func testShareLinkCreateRestrictAndRevoke() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         // Login
         let loginPage = LoginPage(app: app, testCase: self)
@@ -66,11 +66,8 @@ class ShareManagementUITests: BaseUITestCase {
 
         // Close share management (tap the X button)
         let closeButton = app.buttons["Close"].firstMatch
-        if closeButton.waitForExistence(timeout: 3) {
-            closeButton.tap()
-        } else {
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.05)).tap()
-        }
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 5))
+        closeButton.tap()
         sleep(2)
 
         // Delete the uploaded file

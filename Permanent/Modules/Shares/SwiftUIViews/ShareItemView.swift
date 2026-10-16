@@ -176,6 +176,7 @@ struct ShareItemView: View {
                             .frame(width: 20, height: 20)
                             .contentShape(Rectangle())
                     }
+                    .accessibilityLabel("Close".localized())
                 }
             }
         }

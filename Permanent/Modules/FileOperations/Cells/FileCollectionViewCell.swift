@@ -71,6 +71,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileImageView.sd_cancelCurrentImageLoad()
         awaitedThumbnail = nil
         showThumbnailSkeleton(false)
+        showProcessing(false)
         fileImageView.image = nil
         progressView.setProgress(.zero, animated: false)
         activityIndicator.stopAnimating()
@@ -175,6 +176,14 @@ class FileCollectionViewCell: UICollectionViewCell {
         thumbnailSkeleton.isHidden = !shows
         thumbnailSkeleton.shimmer.isOn = shows && sweeping
         thumbnailSkeleton.shimmer.update()
+    }
+
+    /// While the server has not made the picture yet, VoiceOver reads the square as "Processing".
+    private func showProcessing(_ shows: Bool) {
+        thumbnailSkeleton.accessibilityElementsHidden = !shows
+        thumbnailSkeleton.isAccessibilityElement = shows
+        thumbnailSkeleton.accessibilityLabel = shows ? "FileProcessing".localized() : nil
+        thumbnailSkeleton.accessibilityIdentifier = shows ? "fileProcessing" : nil
     }
 
     private func loadThumbnail(_ url: URL) {
@@ -303,6 +312,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileImageView.sd_cancelCurrentImageLoad()
         awaitedThumbnail = nil
         showThumbnailSkeleton(false)
+        showProcessing(false)
         if model.type.isFolder {
             fileImageView.contentMode = .scaleAspectFit
             fileImageView.image = UIImage.folder.templated
@@ -317,6 +327,8 @@ class FileCollectionViewCell: UICollectionViewCell {
                 showThumbnailSkeleton(true)
                 if let fileURL = URL(string: model.thumbnailURL) {
                     loadThumbnail(fileURL)
+                } else {
+                    showProcessing(true)
                 }
 
             case .downloading:
