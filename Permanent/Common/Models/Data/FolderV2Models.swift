@@ -25,6 +25,7 @@ struct FolderV2Data: Model {
     let imageRatio: Double?
     let description: String?
     let displayTimestamp: String?
+    let displayTime: String?
     let createdAt: String?
     let updatedAt: String?
     let archive: FolderArchiveV2?
@@ -48,6 +49,7 @@ struct FolderV2Data: Model {
          imageRatio: Double? = nil,
          description: String? = nil,
          displayTimestamp: String? = nil,
+         displayTime: String? = nil,
          createdAt: String? = nil,
          updatedAt: String? = nil,
          archive: FolderArchiveV2? = nil,
@@ -68,6 +70,7 @@ struct FolderV2Data: Model {
         self.imageRatio = imageRatio
         self.description = description
         self.displayTimestamp = displayTimestamp
+        self.displayTime = displayTime
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.archive = archive
@@ -162,6 +165,8 @@ struct FolderChildV2Data: Model {
     let thumbnailUrls: ThumbnailUrlsV2?
     // Folders date themselves via displayTimestamp; records use displayDate.
     let displayTimestamp: String?
+    // The EDTF date, on records and folders alike; the list shows it before the two fields above.
+    let displayTime: String?
     // Per-item access (folder/record both carry it under Stela). Unused on the
     // Private Files path (permissions are archive-derived) but decoded for reuse.
     let shares: [RecordShareV2]?

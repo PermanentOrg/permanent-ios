@@ -91,6 +91,15 @@ extension RecordV2Endpoint: RequestProtocol {
     }
 }
 
+extension FileModel {
+    /// A saved record in the session's archive, whose date saves to Stela V2 `displayTime`. Shared
+    /// records stay on the V1 save, because the app reads them through V1, which shows the old field.
+    func savesDateToV2(sessionArchiveId: Int?) -> Bool {
+        guard let sessionArchiveId, recordId > 0, !type.isFolder else { return false }
+        return archiveId > 0 && archiveId == sessionArchiveId
+    }
+}
+
 extension Array where Element == FileModel {
     /// PATCHes each record serially, sending only the fields `fieldsFor` returns. `true` only if every
     /// one succeeded. Each PATCH sets absolute values, so a V1 re-apply rewrites rather than doubles.
