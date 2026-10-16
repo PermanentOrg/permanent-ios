@@ -85,14 +85,19 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         switch cellType {
         case .uploaded:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.createdDT)
+
         case .lastModified:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.updatedDT)
+
         case .date:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.displayDT)
+
         case .created:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedDT)
+
         case .fileCreated:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedCreatedDT)
+
         default:
             return nil
         }

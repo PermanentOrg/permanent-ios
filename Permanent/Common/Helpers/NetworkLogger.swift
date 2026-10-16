@@ -9,7 +9,6 @@ import Foundation
 import os.log
 
 class NetworkLogger {
-    
     /// Enum to define different logging levels
     enum LogLevel: Int {
         case none = 0    // No logging
@@ -173,4 +172,3 @@ class NetworkLogger {
         }
     }
 }
-

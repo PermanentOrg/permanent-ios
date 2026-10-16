@@ -29,8 +29,10 @@ extension LegacyPlanningEndpoint: RequestProtocol {
         switch self {
         case .getArchiveSteward(_), .getLegacyContact:
             return .get
+
         case .setArchiveSteward(_), .setAccountSteward(_, _):
             return .post
+
         case .updateAccountSteward(_, _, _), .updateArchiveSteward:
             return .put
         }
@@ -48,14 +50,19 @@ extension LegacyPlanningEndpoint: RequestProtocol {
         switch self {
         case .getArchiveSteward(_):
             return getArchiveSteward()
+
         case .setArchiveSteward(let archiveDetails):
             return setArchiveSteward(archiveDetails: archiveDetails)
+
         case .getLegacyContact:
             return getLegacyPlanning()
-        case .setAccountSteward(let name,let stewardEmail):
+
+        case .setAccountSteward(let name, let stewardEmail):
             return setAccountSteward(name: name, stewardEmail: stewardEmail)
+
         case .updateAccountSteward(let legacyContactId, let name, let stewardEmail):
             return updateAccountSteward(legacyContactId: legacyContactId, name: name, stewardEmail: stewardEmail)
+
         case .updateArchiveSteward(_, stewardDetails: let stewardDetails):
             return updateArchiveSteward(archiveDetails: stewardDetails)
         }
@@ -77,12 +84,16 @@ extension LegacyPlanningEndpoint: RequestProtocol {
         switch self {
         case .getArchiveSteward(let archiveId):
             return "\(endpointPath)api/v2/directive/archive/\(archiveId)"
+
         case .setArchiveSteward(_):
             return "\(endpointPath)api/v2/directive"
+
         case .getLegacyContact, .setAccountSteward(_, _):
             return "\(endpointPath)api/v2/legacy-contact"
+
         case .updateAccountSteward(let legacyContactId, _, _):
             return "\(endpointPath)api/v2/legacy-contact/\(legacyContactId)"
+
         case .updateArchiveSteward(directiveId: let directiveId, _):
             return "\(endpointPath)api/v2/directive/\(directiveId)"
         }
@@ -90,7 +101,6 @@ extension LegacyPlanningEndpoint: RequestProtocol {
 }
 
 extension LegacyPlanningEndpoint {
-    
     func getLegacyPlanning() -> RequestParameters {
         return [Any]()
     }
@@ -100,7 +110,7 @@ extension LegacyPlanningEndpoint {
     }
     
     func setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails) -> RequestParameters {
-        var parameters: [String : Any] = [
+        var parameters: [String: Any] = [
             "archiveId": "\(String(describing: archiveDetails.archiveId ?? 0))",
             "stewardEmail": archiveDetails.stewardEmail,
             "type": archiveDetails.type,
@@ -116,7 +126,7 @@ extension LegacyPlanningEndpoint {
     }
     
     func updateArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails) -> RequestParameters {
-        var parameters: [String : Any] = [
+        var parameters: [String: Any] = [
             "stewardEmail": archiveDetails.stewardEmail,
             "type": archiveDetails.type,
             "trigger": [
@@ -133,7 +143,7 @@ extension LegacyPlanningEndpoint {
         return [
             "name": name,
             "email": stewardEmail
-        ] as [String : Any]
+        ] as [String: Any]
     }
     
     func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?) -> RequestParameters {

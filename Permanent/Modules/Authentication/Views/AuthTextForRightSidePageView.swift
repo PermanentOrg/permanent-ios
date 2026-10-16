@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 17.09.2024.
+//
 import SwiftUI
 
 struct AuthTextForRightSidePageView: View {
@@ -23,6 +24,7 @@ struct AuthTextForRightSidePageView: View {
                     .kerning(1.6)
                     .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
             }
+
         case .verifyIdentity:
             if isDescription {
                 Text("At Permanent, we celebrate our members' hard work through our public gallery and archive spotlights. Explore our gallery and, when you're ready, publish or share your own public archive!")
@@ -35,6 +37,7 @@ struct AuthTextForRightSidePageView: View {
                     .kerning(1.6)
                     .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
             }
+
         default: Text("")
         }
     }

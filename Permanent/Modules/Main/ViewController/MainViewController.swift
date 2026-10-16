@@ -411,7 +411,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let subtitle = selectedFiles.count == 1 ? selectedFiles.first!.name : "\(selectedFiles.count) files"
         let leftItems = [
             fileIconItem,
-            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil),
+            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil)
         ]
 
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
@@ -426,7 +426,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.askBeforePublicRelocate(action) { [weak self] in
                     self?.relocate(files: selectedFiles, to: destination)
                 }
-            },
+            }
         ]
         // On iOS 26 the toolbar is transparent so items sit flush; add a gap before the X.
         // Pre-iOS 26 the white pill layout looks correct without an extra gap.
@@ -533,12 +533,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let blankImage = UIColor.clear.imageWithColor(width: 0, height: 0)
         let numberOfItems = viewModel?.selectedFiles?.count ?? 0
         let itemsText = numberOfItems > 1 ? "Items".localized() : "Item".localized()
-        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>" , with: String(numberOfItems)), action: nil)
+        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>", with: String(numberOfItems)), action: nil)
         itemsNumber.barButtonItem?.tintColor = .middleGray
 
         let leftItems = [itemsNumber]
         let rightItems = [
-            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _,_  in
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _, _  in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
@@ -554,7 +554,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 })
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
-            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: { [weak self] _,_  in
+            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: { [weak self] _, _  in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
@@ -570,7 +570,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 })
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
-            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _,_  in
+            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _, _  in
                 self?.showFileActionSheetForSelection()
             })
         ]
@@ -915,7 +915,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func navigationToShareFolderLink() {
         if let navParamsOptional: NavigationDataForShareFolderLink? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink),
-           let navParams = navParamsOptional  {
+           let navParams = navParamsOptional {
             // A link may carry no name, so the header takes the folder's own name once it loads.
             let knownName = navParams.folderName.flatMap { $0.isEmpty ? nil : $0 }
             let revertHeader = showHeaderWhileLoading(title: knownName ?? folderHeader?.current.title, showsBack: true, entering: navParams.folderLinkId)
@@ -1142,9 +1142,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     let filtered = files.filter { !duplicateIds.contains($0.id) }
                     self.showSpinner()
                     self.upload(files: filtered, completion: completion)
+
                 case .uploadAll:
                     self.showSpinner()
                     self.upload(files: files, completion: completion)
+
                 case .cancel:
                     completion(false)
                 }
@@ -1792,6 +1794,7 @@ extension MainViewController {
                 } else {
                     self.dropProgress.moveEnded(succeeded: true)
                 }
+
             case .error:
                 self.dropProgress.moveEnded(succeeded: false)
                 self.showErrorAlert(message: .relocateError) { [weak self] in self?.refreshCurrentFolder() }
@@ -2116,7 +2119,6 @@ extension MainViewController: FABActionSheetDelegate {
                 self?.viewModel?.download(
                     file,
                     onDownloadStart: {
-
                     },
                     onFileDownloaded: { url, error in
                         DispatchQueue.main.async {

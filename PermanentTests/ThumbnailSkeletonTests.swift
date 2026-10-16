@@ -105,6 +105,7 @@ final class ThumbnailSkeletonTests: XCTestCase {
         XCTAssertFalse(cell.thumbnailSkeleton.isHidden, "the picture is still on its way")
         XCTAssertEqual(cell.thumbnailSkeleton.shimmer.isSweeping, sweeps)
         XCTAssertNil(cell.fileImageView.image, "no grey placeholder over the square")
+        XCTAssertFalse(cell.thumbnailSkeleton.isAccessibilityElement, "the server has made the picture, so nothing is processing")
         XCTAssertEqual(cell.fileImageView.sd_imageTransition?.duration, FileCollectionViewCell.thumbnailFade, "it fades in rather than snaps")
 
         waitUntil({ cell.thumbnailSkeleton.isHidden }, "the picture faded in and the square went")
@@ -130,7 +131,7 @@ final class ThumbnailSkeletonTests: XCTestCase {
         XCTAssertNil(cell.fileImageView.image)
     }
 
-    func testAPictureNotMadeYet_SweepsWithoutASpinner() throws {
+    func testAPictureNotMadeYet_SweepsWithoutASpinner_AndVoiceOverHearsProcessing() throws {
         let cell = try makeRow()
         cell.updateCell(model: try photo(thumbnail: nil), fileAction: .none, isGridCell: false, isSearchCell: false)
 
@@ -141,6 +142,8 @@ final class ThumbnailSkeletonTests: XCTestCase {
         XCTAssertEqual(cell.thumbnailSkeleton.bounds.size, CGSize(width: 38, height: 38))
         XCTAssertFalse(cell.activityIndicator.isAnimating, "one look for every wait")
         XCTAssertNil(cell.fileImageView.image, "the nib's folder image does not cover the square")
+        XCTAssertTrue(cell.thumbnailSkeleton.isAccessibilityElement)
+        XCTAssertEqual(cell.thumbnailSkeleton.accessibilityLabel, "Processing", "VoiceOver hears what the square shows")
     }
 
     func testAFolder_AndAReusedRow_ShowNoSquare() throws {
@@ -148,6 +151,7 @@ final class ThumbnailSkeletonTests: XCTestCase {
         cell.updateCell(model: try photo(thumbnail: nil), fileAction: .none, isGridCell: false, isSearchCell: false)
         cell.prepareForReuse()
         XCTAssertTrue(cell.thumbnailSkeleton.isHidden, "a reused row starts clean")
+        XCTAssertFalse(cell.thumbnailSkeleton.isAccessibilityElement, "and VoiceOver no longer hears Processing")
 
         let folder = try file("\"folderId\": \"10\", \"displayName\": \"Trips\", \"type\": \"private\", \"status\": \"ok\", \"folderLinkId\": \"11\", \"archiveNumber\": \"0001-test\"")
         cell.updateCell(model: folder, fileAction: .none, isGridCell: false, isSearchCell: false)

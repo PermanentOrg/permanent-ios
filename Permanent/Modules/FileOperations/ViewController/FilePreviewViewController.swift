@@ -912,7 +912,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         isObservingPlayerItem = false
     }
 
-    
     @objc func playAudioFile(_ sender: UIButton) {
         overlayView.isHidden = true
         imageStateOverlay.render(.loaded)
@@ -1314,7 +1313,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
     }
-
 }
 
 // MARK: - WKNavigationDelegate

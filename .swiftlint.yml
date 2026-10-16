@@ -4,8 +4,12 @@ excluded:
   - Pods
   - Cartography
   - build
-  - Permanent/EnvVars.stencil
-  - Permanent/EnvVars.generated.swift
+  - SourcePackages
+  - Permanent/App/EnvVars.stencil
+  - Permanent/App/EnvVars.generated.swift
+
+# Old violations live in the baseline; lint reports only new ones.
+baseline: .swiftlint-baseline.json
 
 disabled_rules:
   - duplicate_enum_cases
@@ -83,7 +87,7 @@ file_header:
   required_pattern: |
                     \/\/( *?)
                     \/\/.*?\.swift
-                    \/\/( *?)(Permanent.*?)
+                    \/\/( *?)(Permanent.*?|ShareExtension|PushExtension)
                     \/\/( *?)
                     \/\/( *?)Created by .*? on .*?
                     \/\/( *?)

@@ -8,7 +8,6 @@
 import Foundation
 
 enum ActionDialogStyle {
-    
     /// Simple dialog with title and action buttons.
     case simple
     

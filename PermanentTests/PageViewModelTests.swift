@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class PageViewModelTests: XCTestCase {
-
     // MARK: - Mock Delegate
 
     private class MockPageDelegate: PageViewModelDelegate {

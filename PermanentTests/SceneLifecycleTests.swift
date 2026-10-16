@@ -11,7 +11,6 @@ import UIKit
 
 @MainActor
 struct SceneLifecycleTests {
-
     // MARK: - Manifest
 
     @Test("Info.plist declares one window scene served by SceneDelegate, built in code")

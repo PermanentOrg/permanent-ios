@@ -65,8 +65,10 @@ class FilePreviewViewModel: ViewModelInterface {
         switch imagePreviewState {
         case .loadingFullRes(let hasThumbnail), .failed(let hasThumbnail), .offline(let hasThumbnail):
             return hasThumbnail
+
         case .loadingThumbnail, .loaded:
             return true
+
         case .idle:
             return false
         }
@@ -228,8 +230,10 @@ class FilePreviewViewModel: ViewModelInterface {
                 switch result {
                 case .json:
                     completion(nil)
+
                 case .error(let error, _):
                     completion(error ?? APIError.unknown)
+
                 default:
                     completion(APIError.unknown)
                 }
@@ -401,6 +405,7 @@ class FilePreviewViewModel: ViewModelInterface {
                         NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
                         completion(true)
                     }
+
                 default:
                     // Failsafe — re-apply the edit via V1 (idempotent).
                     self.updateV1(file: file, name: name, description: description, date: nil, location: location, completion: completion)

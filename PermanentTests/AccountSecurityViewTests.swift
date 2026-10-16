@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class AccountSecurityViewTests: XCTestCase {
-
     // MARK: - LoginSecurityViewModel Initial State
 
     func testLoginSecurityViewModel_InitialState() {

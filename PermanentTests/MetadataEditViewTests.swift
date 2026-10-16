@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class MetadataEditViewTests: XCTestCase {
-
     // MARK: - FilesMetadataViewModel Initial State
 
     func testFilesMetadataViewModel_InitialState() {

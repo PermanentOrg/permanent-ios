@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.09.2025.
+//
 import SwiftUI
 
 struct SelectableOptionView<T: SelectableOption>: View {
@@ -34,7 +35,7 @@ struct SelectableOptionView<T: SelectableOption>: View {
                         .font(.custom("Usual-Regular", size: 12))
                         .foregroundColor(Color.blue900)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        //.lineLimit(0)
+                        // .lineLimit(0)
                         .lineSpacing(4)
                 }
                 

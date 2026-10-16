@@ -3,11 +3,11 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 12.03.2024.
+//
 
 import SwiftUI
 
 struct SmallRoundButtonImageView: View {
-    
     enum ButtonType {
         case fillColor, noColor
     }
@@ -38,7 +38,7 @@ struct SmallRoundButtonImageView: View {
                                     .frame(width: 24, height: 24, alignment: .center)
                                     .accentColor(.blue700)
                             }
-                            if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
+                            if Constants.Design.isPhone || (ignoreDeviceType && isPhone) {
                                 Text(text)
                                     .textStyle(UsualSmallXMediumTextStyle())
                                     .foregroundColor(.blue700)
@@ -79,7 +79,7 @@ struct SmallRoundButtonImageView: View {
                                     Spacer()
                                 }
                             }
-                            if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
+                            if Constants.Design.isPhone || (ignoreDeviceType && isPhone) {
                                 Text(text)
                                     .textStyle(UsualSmallXMediumTextStyle())
                                     .foregroundColor(.white)
@@ -113,7 +113,6 @@ struct SmallRoundButtonImageView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .inset(by: 0.5)
                             .stroke(.white.opacity(0.32), lineWidth: 1)
-                        
                     )
                 }
             }

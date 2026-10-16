@@ -117,10 +117,10 @@ class PRMNTActionSheetViewController: UIViewController {
             
             let labelLeadingConstraint = titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
             
-            thumbImageView.sd_setImage(with: URL(string: titleThumbnail)) {image,_,_,_ in
+            thumbImageView.sd_setImage(with: URL(string: titleThumbnail)) {image, _, _, _ in
                 if image != nil {
                     NSLayoutConstraint.activate([
-                        thumbImageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+                        thumbImageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
                     ])
                     
                     labelLeadingConstraint.constant = 54

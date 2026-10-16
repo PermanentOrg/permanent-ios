@@ -3,11 +3,11 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 19.05.2023.
+//
 
 import Foundation
 
 class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
-    
     var didLoad: (() -> Void)?
     var isLoading: ((Bool) -> Void)?
     var showError: ((APIError) -> Void)?
@@ -46,8 +46,7 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
                     strongSelf.isLoading?(false)
                     strongSelf.didLoad?()
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     strongSelf.isLoading?(false)
                     if let apiError = error as? APIError {
@@ -66,6 +65,7 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
                 switch result {
                 case .failure(let error):
                     continuation.resume(throwing: error)
+
                 case .success(let contact):
                     continuation.resume(returning: contact?.first)
                 }
@@ -85,6 +85,7 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
                 switch result {
                 case .failure(let error):
                     continuation.resume(throwing: error)
+
                 case .success(let archivesVO):
                     let archives = archivesVO.compactMap { $0.archiveVO }
                     continuation.resume(returning: archives)
@@ -106,6 +107,7 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
                     } else {
                         continuation.resume(throwing: error)
                     }
+
                 case .success(let steward):
                     continuation.resume(returning: (archive, steward?.first))
                 }

@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ManageTagsViewModelTests: XCTestCase {
-
     // MARK: - Notification Names
 
     func testNotificationName_DidUpdateTags() {

@@ -19,5 +19,4 @@ struct InviteVM: Invite {
         self.email = invite.email ?? ""
         self.status = InviteStatus.status(forValue: invite.status)
     }
-    
 }

@@ -55,7 +55,7 @@ struct LocnVO: Model {
     }
     enum CodingKeys: String, CodingKey {
         case locnID = "locnId"
-        case displayName, geoCodeLookup, streetNumber, streetName, postalCode, locality, adminOneName, adminOneCode, adminTwoName, adminTwoCode, country, countryCode, geometryType,  boundSouth, boundWest, boundNorth, boundEast, geometryAsArray, geoCodeType
+        case displayName, geoCodeLookup, streetNumber, streetName, postalCode, locality, adminOneName, adminOneCode, adminTwoName, adminTwoCode, country, countryCode, geometryType, boundSouth, boundWest, boundNorth, boundEast, geometryAsArray, geoCodeType
         case geoCodeResponseAsXML = "geoCodeResponseAsXml"
         case timeZoneID = "timeZoneId"
         case status, type, createdDT, updatedDT

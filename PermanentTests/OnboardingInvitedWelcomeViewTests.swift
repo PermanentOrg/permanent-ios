@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class OnboardingInvitedWelcomeViewTests: XCTestCase {
-
     // MARK: - OnboardingInvitedWelcomeViewModel Initial State
 
     func testViewModel_InitialState() {

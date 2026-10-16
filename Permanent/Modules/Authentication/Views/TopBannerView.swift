@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 17.01.2025.
+//
 
 import SwiftUI
 
@@ -42,7 +43,7 @@ struct TopBannerView: View {
                 }
                 .background(Color(.blue900))
                 .cornerRadius(12)
-                //.transition(.move(edge: .top))
+                // .transition(.move(edge: .top))
                 .animation(.easeInOut, value: isVisible)
             }
             Spacer()

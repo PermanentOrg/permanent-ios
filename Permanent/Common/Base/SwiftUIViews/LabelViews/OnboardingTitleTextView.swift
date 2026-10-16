@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 03.06.2024.
+//
 
 import SwiftUI
 
@@ -28,7 +29,6 @@ struct OnboardingTitleTextView: View {
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)
             .lineSpacing(8.0)
-            
         }
     }
 }

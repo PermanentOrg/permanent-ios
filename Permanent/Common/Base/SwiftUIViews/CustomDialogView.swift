@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 05.09.2023.
+//
 
 import SwiftUI
 
@@ -23,99 +24,67 @@ struct CustomDialogView: View {
     @State private var offset: CGFloat = 1000
     
     var body: some View {
-        if #available(iOS 15.0, *) {
+        ZStack {
+            Color(.black)
+                .opacity(0.2)
+                .onTapGesture {
+                    close()
+                }
             ZStack {
-                Color(.black)
-                    .opacity(0.2)
-                    .onTapGesture {
-                        close()
-                    }
-                ZStack {
-                    VStack(spacing: 32) {
-                        VStack(spacing: 16) {
-                            Text(title)
-                                .textStyle(RegularBoldTextStyle())
+                VStack(spacing: 32) {
+                    VStack(spacing: 16) {
+                        Text(title)
+                            .textStyle(RegularBoldTextStyle())
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.darkBlue)
+                            .frame(width: 216)
+                            .padding()
+                        if let message = message {
+                            Text(message)
+                                .textStyle(SmallXRegularTextStyle())
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.darkBlue)
                                 .frame(width: 216)
-                                .padding()
-                            if let message = message {
-                                Text(message)
-                                    .textStyle(SmallXRegularTextStyle())
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(.darkBlue)
-                                    .frame(width: 216)
-                                    .padding(.horizontal)
-                            }
-                        }
-                        VStack(spacing: 8) {
-                            Button {
-                                action()
-                                close()
-                            } label: {
-                                Text(buttonTitle)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
-                            .cornerRadius(addCornerRadius ? 8 : 0)
-                            Button {
-                                close()
-                            } label: {
-                                Text("Cancel")
-                                    .multilineTextAlignment(.center)
-                            }
-                            .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
-                            .cornerRadius(addCornerRadius ? 8 : 0)
+                                .padding(.horizontal)
                         }
                     }
-                    .padding(.top, 32)
-                    .padding(.bottom, 24)
-                    .padding(.horizontal, 24)
-                    .background(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .shadow(radius: 20)
-                    .padding(30)
-                    .offset(x: 0, y: offset)
-                    .onAppear {
-                        withAnimation(.spring()) {
-                            offset = 0
+                    VStack(spacing: 8) {
+                        Button {
+                            action()
+                            close()
+                        } label: {
+                            Text(buttonTitle)
+                                .multilineTextAlignment(.center)
                         }
+                        .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
+                        .cornerRadius(addCornerRadius ? 8 : 0)
+                        Button {
+                            close()
+                        } label: {
+                            Text("Cancel".localized())
+                                .multilineTextAlignment(.center)
+                        }
+                        .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
+                        .cornerRadius(addCornerRadius ? 8 : 0)
                     }
                 }
-                .padding(.horizontal, 48)
-            }
-            .ignoresSafeArea()
-        } else {
-            VStack {
-                Text(title)
-                    .font(.title2)
-                    .bold()
-                    .padding()
-                if let message = message {
-                    Text(message)
-                        .font(.body)
-                        .multilineTextAlignment(.center)
-                }
-                Button {
-                    action ()
-                } label: {
-                    ZStack {
-                        RoundedRectangle (cornerRadius: 20)
-                            .foregroundColor(.red)
-                        Text(buttonTitle)
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding()
+                .padding(.top, 32)
+                .padding(.bottom, 24)
+                .padding(.horizontal, 24)
+                .background(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .shadow(radius: 20)
+                .padding(30)
+                .offset(x: 0, y: offset)
+                .onAppear {
+                    withAnimation(.spring()) {
+                        offset = 0
                     }
-                    .padding()
                 }
             }
-            .fixedSize(horizontal: false, vertical: true)
-            .padding()
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(radius: 20)
-            .padding(30)
+            .padding(.horizontal, 48)
         }
+        .ignoresSafeArea()
     }
     
     func close() {

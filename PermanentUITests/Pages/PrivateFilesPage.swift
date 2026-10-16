@@ -27,7 +27,7 @@ class PrivateFilesPage {
         app.buttons["Upload Photos from Library"]
     }
     var photoLibraryElementLoading: XCUIElement {
-        app.collectionViews.activityIndicators["In progress"]
+        app.collectionViews.descendants(matching: .any)["fileProcessing"]
     }
     var uploadInProgress: XCUIElement {
         app.collectionViews.buttons["Uploads"]
@@ -118,16 +118,12 @@ class PrivateFilesPage {
     }
     
     func processUpload() {
-        XCTAssertTrue(uploadInProgress.waitForExistence(timeout: 10))
-        
+        XCTAssertTrue(uploadInProgress.waitForExistence(timeout: 30))
+
         XCTAssertTrue(uploadFinishedButton.waitForExistence(timeout: 40))
         
         XCTAssertTrue(photoLibraryElementLoading.waitForExistence(timeout: 20))
-        var numberOfSleeps = 0
-        while photoLibraryElementLoading.exists && numberOfSleeps < 60 {
-            sleep(1)
-            numberOfSleeps += 1
-        }
+        XCTAssertTrue(photoLibraryElementLoading.waitForNonExistence(timeout: 60), "the server did not make the picture")
         XCTAssertTrue(firstElementFromFolder.waitForExistence(timeout: 20))
         
         XCTAssertFalse(firstElementFromFolder.staticTexts.element(boundBy: 0).label.isEmpty)

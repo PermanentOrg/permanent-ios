@@ -70,9 +70,8 @@ class RCValues {
         var popularArchives: [PopularArchive]
         let json = RemoteConfig.remoteConfig()["popular_public_galleries"].jsonValue ?? []
         
-        if let value = json as? [String: [[String : Any]]],
-           let valueArchives = value["archives"]
-        {
+        if let value = json as? [String: [[String: Any]]],
+           let valueArchives = value["archives"] {
             for item in valueArchives {
                 if let name = item["name"] as? String,
                    let archiveID = item["archiveID"] as? Int,

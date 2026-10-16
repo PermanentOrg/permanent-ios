@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.09.2024.
+//
 import SwiftUI
 
 class AuthVerifyIdentityViewModel: ObservableObject {
@@ -38,6 +39,7 @@ class AuthVerifyIdentityViewModel: ObservableObject {
             case .success:
                 handler(.success)
                 self?.trackLoginEvent()
+
             case .error(_):
                 self?.pinCode = ""
                 self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPinCode)
@@ -57,6 +59,7 @@ class AuthVerifyIdentityViewModel: ObservableObject {
             switch status {
             case .error(message: _):
                 self.containerViewModel.displayErrorBanner(bannerErrorMessage: .resentCodeError)
+
             default:
                 self.pinCode = ""
                 self.containerViewModel.displayErrorBanner(bannerErrorMessage: .successResendCode)

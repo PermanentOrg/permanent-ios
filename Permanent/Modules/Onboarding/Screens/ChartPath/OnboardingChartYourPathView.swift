@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 08.05.2024.
+//
 
 import SwiftUI
 
@@ -145,11 +146,8 @@ struct OnboardingChartYourPathView: View {
     return ZStack {
         Color(.primary)
         OnboardingChartYourPathView(viewModel: onboardingViewModel) {
-            
         } nextButton: {
-            
         } skipButton: {
-            
         }
     }
     .ignoresSafeArea()

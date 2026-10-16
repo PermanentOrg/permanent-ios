@@ -413,17 +413,14 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
         guard section == pagingSection.sectionIndex else { return .zero }
         return pagingSection.footerSize(width: collectionView.bounds.width - collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right)
     }
-    
 }
 
 // MARK: - Table View Delegates
 extension SearchViewController {
     private func cellRightButtonAction(atPosition position: Int) {
-        
     }
     
     private func handleCellRightButtonAction(for file: FileModel, atIndexPath indexPath: IndexPath) {
-
     }
 }
 
@@ -450,7 +447,6 @@ extension SearchViewController: UISearchBarDelegate {
 
 // MARK: - FileActionSheetDelegate
 extension SearchViewController {
-
 }
 
 // MARK: - FilePreviewNavigationControllerDelegate
@@ -462,7 +458,6 @@ extension SearchViewController: FilePreviewNavigationControllerDelegate {
     }
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
-        
     }
     
     func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {

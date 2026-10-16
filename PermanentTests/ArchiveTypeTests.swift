@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ArchiveTypeTests: XCTestCase {
-
     // MARK: - CaseIterable
 
     func testAllCases_Has9Cases() {

@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class ShareContainerViewTests: XCTestCase {
-
     // MARK: - ShareContainerView Rendering
 
     func testShareContainerView_RendersWithMockFile() {

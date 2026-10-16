@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 22.01.2025.
+//
 
 import SwiftUI
 
@@ -55,12 +56,14 @@ class TwoStepChooseEmailViewModel: ObservableObject {
                 withAnimation {
                     self?.emailAlreadyConfirmed = true
                 }
+
             case .error(let error, _):
                 if let apiError = error as? APIError, apiError == .badRequest {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidEmail)
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
@@ -92,12 +95,14 @@ class TwoStepChooseEmailViewModel: ObservableObject {
                 withAnimation {
                     self?.emailAlreadyConfirmed = true
                 }
+
             case .error(let error, _):
                 if let apiError = error as? APIError, apiError == .badRequest {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
@@ -134,6 +139,7 @@ class TwoStepChooseEmailViewModel: ObservableObject {
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
@@ -165,7 +171,6 @@ class TwoStepChooseEmailViewModel: ObservableObject {
                     self?.containerViewModel.removeSelectedMethod()
                     self?.containerViewModel.setContentType(.chooseVerification)
                     self?.containerViewModel.displayBannerWithAutoClose(.successEmailDeleted)
-                    
                 } else {
                     self?.containerViewModel.refreshSecurityView = true
                     self?.containerViewModel.twoStepVerificationBottomBannerMessage = .successEmailDeleted
@@ -178,6 +183,7 @@ class TwoStepChooseEmailViewModel: ObservableObject {
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }

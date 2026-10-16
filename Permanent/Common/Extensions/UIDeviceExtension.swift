@@ -3,17 +3,17 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 09.12.2022.
+//
 
 import Foundation
 
 import UIKit
 
 extension UIDevice {
-
     private struct InterfaceNames {
         static let wifi = ["en0"]
         static let wired = ["en2", "en3", "en4"]
-        static let cellular = ["pdp_ip0","pdp_ip1","pdp_ip2","pdp_ip3"]
+        static let cellular = ["pdp_ip0", "pdp_ip1", "pdp_ip2", "pdp_ip3"]
         static let supported = wifi + wired + cellular
     }
 

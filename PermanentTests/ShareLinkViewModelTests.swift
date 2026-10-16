@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ShareLinkViewModelTests: XCTestCase {
-
     // MARK: - Helpers
 
     private func makeFileModel(minArchiveVOS: [MinArchiveVO] = []) -> FileModel {

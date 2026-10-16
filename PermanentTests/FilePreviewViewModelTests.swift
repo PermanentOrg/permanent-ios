@@ -12,7 +12,6 @@ import PDFKit
 @testable import Permanent
 
 final class FilePreviewViewModelTests: XCTestCase {
-
     // MARK: - Helpers
 
     private func makeVM(permissions: [Permission] = [.read, .edit, .share]) -> FilePreviewViewModel {
@@ -691,7 +690,6 @@ private final class MockReachability: ReachabilityProviding {
 }
 
 extension FilePreviewViewModelTests {
-
     private func makeImageVM(isConnected: Bool = true) -> (FilePreviewViewModel, MockReachability) {
         let reachability = MockReachability(isConnected: isConnected)
         let vm = FilePreviewViewModel(file: FileModel.mockFile(), reachability: reachability)
@@ -1097,7 +1095,6 @@ extension FilePreviewViewModelTests {
 // current scrollView frame, so applying it before the blur lifts gives the right size at once.
 
 final class ImagePreviewViewControllerGeometryTests: XCTestCase {
-
     /// A loaded controller with a fixed scrollView frame and no layout passes, so `setZoomScale()`
     /// reads exactly the frame set here.
     private func makeVC(width: CGFloat = 400, height: CGFloat = 800) -> ImagePreviewViewController {

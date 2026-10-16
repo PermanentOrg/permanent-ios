@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 10.07.2023.
+//
 
 import SwiftUI
 
@@ -118,11 +119,10 @@ struct AddNewTagView: View {
     }
 }
 
-
 struct AddNewTagView_Previews: PreviewProvider {
     @State static var tags: [TagVO] = [
-        TagVO(tagVO: TagVOData(name: "Nature",status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil)),
-        TagVO(tagVO: TagVOData(name: "Blue Sky",status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil))
+        TagVO(tagVO: TagVOData(name: "Nature", status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil)),
+        TagVO(tagVO: TagVOData(name: "Blue Sky", status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil))
     ]
     
     static var previews: some View {

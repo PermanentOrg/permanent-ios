@@ -306,7 +306,6 @@ struct FileModel: Equatable, Codable {
         self.tagVOS = nil
         
         self.permissions = []
-
     }
     
     /// Maps a V2 child into `FileModel`. Permissions come from the caller — the per-item `shares[]` is

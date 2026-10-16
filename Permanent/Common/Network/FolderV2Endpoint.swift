@@ -45,6 +45,7 @@ extension FolderV2Endpoint: RequestProtocol {
         switch self {
         case .getFolderById, .getFolderChildren:
             return nil
+
         case .patchFolder(_, let fields):
             return try? JSONSerialization.data(withJSONObject: fields)
         }
@@ -57,12 +58,14 @@ extension FolderV2Endpoint: RequestProtocol {
             // Canonical plural route; the singular `/folder` alias is deprecated. `pageSize` is required even for
             // one id (400 without it); 9999 also covers a future multi-id call without paging.
             return "\(baseURL)api/v2/folders?folderIds[]=\(folderId)&pageSize=9999"
+
         case .getFolderChildren(let folderId, _, let pageSize, let cursor):
             var components = URLComponents(string: "\(baseURL)api/v2/folders/\(folderId)/children")
             var items = [URLQueryItem(name: "pageSize", value: "\(pageSize)")]
             if let cursor { items.append(URLQueryItem(name: "cursor", value: cursor)) }
             components?.queryItems = items
             return components?.url?.absoluteString
+
         case .patchFolder(let folderId, _):
             return "\(baseURL)api/v2/folders/\(folderId)"
         }
@@ -72,6 +75,7 @@ extension FolderV2Endpoint: RequestProtocol {
         switch self {
         case .getFolderById(_, let token), .getFolderChildren(_, let token, _, _):
             return token.isEmpty ? nil : token
+
         case .patchFolder:
             return nil
         }

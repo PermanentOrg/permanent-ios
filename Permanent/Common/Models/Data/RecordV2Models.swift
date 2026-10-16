@@ -168,12 +168,16 @@ extension FileV2Data {
         case "image":
             if sub == "jpg" { sub = "jpeg" }
             return sub.isEmpty ? genericMimeType : "image/\(sub)"
+
         case "video":
             return sub.isEmpty ? genericMimeType : "video/\(sub)"
+
         case "audio":
             return sub.isEmpty ? genericMimeType : "audio/\(sub)"
+
         case "pdf":
             return "application/pdf"
+
         default:
             // The preview requires a non-nil contentType in both branches and only needs presence, not
             // accuracy — so a generic MIME keeps docs and archives previewable rather than blank.

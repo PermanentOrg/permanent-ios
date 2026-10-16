@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension ShareItemViewModel {
-
     // MARK: - Expiration Display
 
     private func parseExpirationDate(_ dateString: String) -> Date? {

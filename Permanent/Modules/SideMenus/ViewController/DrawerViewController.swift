@@ -62,7 +62,6 @@ class DrawerViewController: UIViewController {
         let offset: CGFloat = view.safeAreaInsets.top > 47 ? 6 : 0
         let menuWidth: CGFloat = view.bounds.width * (Constants.Design.isPhone ? 0.75 : 0.33)
         
-        
         isLeftMenuExpanded.toggle()
         rootViewController.view.hideKeyboard()
         

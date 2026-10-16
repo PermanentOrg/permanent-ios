@@ -413,7 +413,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let subtitle = selectedFiles.count == 1 ? selectedFiles.first!.name : "\(selectedFiles.count) files"
         let leftItems = [
             fileIconItem,
-            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil),
+            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil)
         ]
         
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
@@ -426,7 +426,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 }
                 
                 self?.relocate(files: selectedFiles, to: destination)
-            },
+            }
         ]
         if #available(iOS 26, *) {
             rightItems.append(FloatingActionImageItem(image: UIColor.clear.imageWithColor(width: 0, height: 0), action: nil))
@@ -450,12 +450,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let blankImage = UIColor.clear.imageWithColor(width: 0, height: 0)
         let numberOfItems = viewModel?.selectedFiles?.count ?? 0
         let itemsText = numberOfItems > 1 ? "Items".localized() : "Item".localized()
-        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>" , with: String(numberOfItems)), action: nil)
+        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>", with: String(numberOfItems)), action: nil)
         itemsNumber.barButtonItem?.tintColor = .middleGray
         
         let leftItems = [itemsNumber]
         let rightItems = [
-            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _,_  in
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _, _  in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
@@ -472,7 +472,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
             FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: {
-                [weak self] _,_  in
+                [weak self] _, _  in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
@@ -488,7 +488,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 })
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
-            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _,_  in
+            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _, _  in
                 self?.showFileActionSheetForSelection()
             })
         ]
@@ -1709,9 +1709,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     let filtered = files.filter { !duplicateIds.contains($0.id) }
                     self.showSpinner()
                     self.upload(files: filtered, completion: completion)
+
                 case .uploadAll:
                     self.showSpinner()
                     self.upload(files: files, completion: completion)
+
                 case .cancel:
                     completion(false)
                 }
@@ -1939,6 +1941,7 @@ extension SharesViewController {
                 } else if destination.folderLinkId == folder.folderLinkId {
                     self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
                 }
+
             case .error(let message):
                 self.showErrorAlert(message: message)
                 self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
@@ -2086,7 +2089,6 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
             }
             self.refreshCollectionView()
         } else {
-
             if file.type.isFolder {
                 // Seed the V2 forward-nav target so drill-in engages and children inherit this folder's
                 // accessRole. Nil falls through to V1 safely.
@@ -2397,7 +2399,6 @@ extension SharesViewController: FABViewDelegate {
         checklistView.modalPresentationStyle = .formSheet
         checklistView.view.backgroundColor = .clear
         checklistView.sheetPresentationController?.detents = [.large()]
-        
         
         present(checklistView, animated: true)
     }

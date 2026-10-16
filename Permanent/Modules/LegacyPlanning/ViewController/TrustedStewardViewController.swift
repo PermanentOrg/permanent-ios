@@ -195,7 +195,6 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
 
         let attributedText = NSMutableAttributedString(string: "Thank you for being the steward of my archive. I appreciate you taking care of my legacy when I am gone.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         
-        
         designateStewardSelectionInfoTextView.attributedText = attributedText
         designateStewardSelectionInfoTextView.textAlignment = .left
         designateStewardSelectionInfoTextView.textColor = .black
@@ -230,9 +229,11 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             case designateStewardNameTextField:
                 attributedPlaceholder = NSMutableAttributedString(string: "Steward name...".localized(), attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
                 break
+
             case designateStewardEmailTextField:
                 attributedPlaceholder = NSMutableAttributedString(string: "Steward email address...".localized(), attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
                 break
+
             default:
                 break
             }
@@ -341,7 +342,6 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     }
     
     @IBAction func inviteUserToPermanentTapped(_ sender: Any) {
-        
     }
     
     private func updateEmailValidationUI(isValid: Bool) {

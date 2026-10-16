@@ -12,7 +12,6 @@ import Testing
 /// The folder card's item count. The point is the `nil` handling: an unknown count must stay
 /// unknown rather than collapse to `0` and count only this batch.
 struct FolderItemCountMathTests {
-
     // MARK: - displayed(base:completedFiles:)
 
     @Test("The displayed count is the folder's own count plus what has landed")

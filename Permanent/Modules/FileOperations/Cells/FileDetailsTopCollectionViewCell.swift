@@ -9,7 +9,6 @@ import UIKit
 import SDWebImage
 
 class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
-    
     @IBOutlet var imageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
@@ -80,5 +79,4 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
     }
-    
 }

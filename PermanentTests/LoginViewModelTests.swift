@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class LoginViewModelTests: XCTestCase {
-
     private func makeSUT() -> LoginViewModel {
         let container = AuthenticatorContainerViewModel()
         return LoginViewModel(containerViewModel: container)

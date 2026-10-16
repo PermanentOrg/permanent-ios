@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class InfoViewModelTests: XCTestCase {
-
     // MARK: - Init
 
     func testInit_UserDataFieldsNil() {

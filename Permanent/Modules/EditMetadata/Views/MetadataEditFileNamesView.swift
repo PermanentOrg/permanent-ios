@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 28.07.2023.
+//
 
 import SwiftUI
 import SDWebImageSwiftUI
@@ -25,7 +26,7 @@ struct MetadataEditFileNamesView: View {
     private var menuItems: [MenuItem] = [
         MenuItem(name: "Replace", image: UIImage(named: "metadataReplace")!),
         MenuItem(name: "Append", image: UIImage(named: "metadataAppend")!),
-        MenuItem(name: "Sequence", image: UIImage(named: "metadataSequence")!),
+        MenuItem(name: "Sequence", image: UIImage(named: "metadataSequence")!)
     ]
 
     init(viewModel: MetadataEditFileNamesViewModel) {
@@ -77,10 +78,13 @@ struct MetadataEditFileNamesView: View {
                     switch newValue?.name {
                     case "Replace":
                         setCurrentViewModel(editViewModel: replaceViewModel)
+
                     case "Append":
                         setCurrentViewModel(editViewModel: appendViewModel)
+
                     case "Sequence":
                         setCurrentViewModel(editViewModel: sequenceViewModel)
+
                     default:
                         break
                     }

@@ -8,7 +8,6 @@
 import UIKit
 
 class FileSearchTagsCollectionViewCell: UICollectionViewCell {
-    
     @IBOutlet weak var collectionView: UICollectionView!
 
     var viewModel: SearchFilesViewModel?
@@ -44,7 +43,6 @@ class FileSearchTagsCollectionViewCell: UICollectionViewCell {
             NotificationCenter.default.removeObserver(observer)
         }
     }
-
 }
 
 extension FileSearchTagsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -86,7 +84,6 @@ extension FileSearchTagsCollectionViewCell: UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-
         // Read `filteredTags`, the data source the layout uses — indexing the unfiltered array desyncs
         // sizing and can go out of bounds while a query is active.
         if let filtered = viewModel?.filteredTags, filtered.indices.contains(indexPath.row) {
@@ -95,7 +92,7 @@ extension FileSearchTagsCollectionViewCell: UICollectionViewDataSource, UICollec
             let additionalSpace: CGFloat = isChecked ? ( 45 ) : ( 35 )
             let attributedName = NSAttributedString(string: tag.name ?? "", attributes: [NSAttributedString.Key.font: TextFontStyle.style2.font as Any])
             let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
-            return CGSize(width: additionalSpace + width , height: 40)
+            return CGSize(width: additionalSpace + width, height: 40)
         }
         return CGSize(width: 0, height: 0)
     }

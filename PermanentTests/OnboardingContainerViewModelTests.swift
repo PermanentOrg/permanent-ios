@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class OnboardingContainerViewModelTests: XCTestCase {
-
     // MARK: - Initial State
 
     func testInit_NilCredentials_DefaultState() {

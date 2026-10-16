@@ -117,7 +117,6 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
         showSpinner(colored: .white)
         
         viewModel?.update(for: String(accountID), data: updateData, then: { status in
-            
             switch status {
             case .success:
                 self.sendVerificationCodeSMS(forAccount: String(accountID), email: email)

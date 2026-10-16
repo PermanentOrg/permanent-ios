@@ -3,12 +3,12 @@
 //  PermanentTests
 //
 //  Created by Lucian Cerbu on 11.05.2026.
+//
 
 import XCTest
 @testable import Permanent
 
 final class AccountDeleteViewModelTests: XCTestCase {
-
     // MARK: - Initialization Tests
 
     func testViewModel_CanBeInstantiated() {

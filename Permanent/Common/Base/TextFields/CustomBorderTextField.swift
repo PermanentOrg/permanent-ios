@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 19.04.2024.
+//
 
 import SwiftUI
 
@@ -42,7 +43,6 @@ struct CustomBorderTextField: View {
                 RoundedRectangle(cornerRadius: 12)
                     .inset(by: 0.5)
                     .stroke(.white.opacity(0.16), lineWidth: 1)
-                
             )
         } else {
             HStack(alignment: .center, spacing: 8) {
@@ -71,7 +71,6 @@ struct CustomBorderTextField: View {
                 RoundedRectangle(cornerRadius: 12)
                     .inset(by: 0.5)
                     .stroke(.white.opacity(0.16), lineWidth: 1)
-                
             )
         }
     }

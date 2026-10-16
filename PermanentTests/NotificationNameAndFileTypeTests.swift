@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class NotificationNameAndFileTypeTests: XCTestCase {
-
     // MARK: - Notification Names
 
     func testNotificationNames_HaveExpectedValues() {

@@ -14,7 +14,6 @@ protocol FilePreviewNavigationControllerDelegate: AnyObject {
 }
 
 class FilePreviewNavigationController: UINavigationController {
-    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return topViewController?.supportedInterfaceOrientations ?? (UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all])
     }

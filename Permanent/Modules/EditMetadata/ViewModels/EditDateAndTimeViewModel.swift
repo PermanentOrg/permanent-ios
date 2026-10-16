@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 30.08.2023.
+//
 
 import SwiftUI
 
@@ -13,7 +14,7 @@ class EditDateAndTimeViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var changesConfirmed: Bool = false
     @Published var selectedDate = Date()
-    @Published var showConfirmation:Bool = false
+    @Published var showConfirmation: Bool = false
     @Published var changesWereSaved: Bool = false
     @Published var showAlert: Bool = false
     
@@ -73,8 +74,10 @@ class EditDateAndTimeViewModel: ObservableObject {
                 case .json( _, _):
                     self?.hasUpdates.wrappedValue = true
                     self?.changesWereSaved = true
+
                 case .error(_, _):
                     self?.showAlert = true
+
                 default:
                     self?.showAlert = true
                 }

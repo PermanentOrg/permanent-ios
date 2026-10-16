@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 01.08.2023.
+//
 
 import SwiftUI
 
@@ -17,6 +18,5 @@ struct CustomButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, alignment: .center)
             .background(backgroundColor)
             .opacity(configuration.isPressed ? 0.6 : 1.0)
-        
     }
 }

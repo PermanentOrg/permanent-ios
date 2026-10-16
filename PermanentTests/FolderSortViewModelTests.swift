@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class FolderSortViewModelTests: XCTestCase {
-
     // MARK: - Initial State
 
     func testViewModel_DefaultSortOption_IsNameAscending() {

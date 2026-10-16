@@ -79,8 +79,10 @@ final class SectionRootResolverV2 {
                     return
                 }
                 completion(.success(items))
+
             case .error(let error, _):
                 completion(.failure(error ?? APIError.unknown))
+
             default:
                 completion(.failure(APIError.unknown))
             }
@@ -100,8 +102,10 @@ final class SectionRootResolverV2 {
                     return
                 }
                 completion(.success(items))
+
             case .error(let error, _):
                 completion(.failure(error ?? APIError.unknown))
+
             default:
                 completion(.failure(APIError.unknown))
             }

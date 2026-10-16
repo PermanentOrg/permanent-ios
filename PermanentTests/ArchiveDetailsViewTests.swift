@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class ArchiveDetailsViewTests: XCTestCase {
-
     // MARK: - OnboardingArchive Construction
 
     func testOnboardingArchive_CanBeCreated() {

@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.04.2024.
+//
 
 import SwiftUI
 
@@ -11,4 +12,3 @@ extension TextField {
         ModifiedContent(content: self, modifier: style)
     }
 }
-

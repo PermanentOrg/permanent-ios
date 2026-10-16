@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class AuthenticationViewRenderingTests: XCTestCase {
-
     // MARK: - AuthVerifyIdentityViewModel Tests
 
     func testAuthVerifyIdentityViewModel_InitialState() {

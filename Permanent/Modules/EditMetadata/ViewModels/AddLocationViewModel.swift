@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 28.08.2023.
+//
 
 import Foundation
 import MapKit
@@ -10,7 +11,6 @@ import GooglePlaces
 import Combine
 
 class AddLocationViewModel: ObservableObject {
-    
     @Published var isLoading: Bool = false
     
     @Published var selectedPlace: GMSAutocompletePrediction?
@@ -73,7 +73,7 @@ class AddLocationViewModel: ObservableObject {
                         if self?.debouncedText != t && t != self?.getAddressString() {
                             self?.debouncedText = t
                         }
-                    } )
+                    })
                     .store(in: &subscriptions)
     }
     
@@ -121,6 +121,7 @@ class AddLocationViewModel: ObservableObject {
                 }
                 let locnVO = model.results.first?.data?.first?.locnVO
                 self?.locnVO = locnVO
+
             default:
                 self?.locnVO = nil
             }
@@ -156,6 +157,7 @@ class AddLocationViewModel: ObservableObject {
                 switch result {
                 case .json( _, _):
                     completion(true)
+
                 default:
                     completion(false)
                 }

@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 31.01.2024.
+//
 
 import SwiftUI
 
@@ -99,6 +100,7 @@ class SettingsScreenViewModel: ObservableObject {
                 
             case .error(let error, _):
                 self.showFinishSetUpAccount = false
+
             default:
                 self.showFinishSetUpAccount = false
             }
@@ -280,7 +282,7 @@ class SettingsScreenViewModel: ObservableObject {
               let payload = EventsPayloadBuilder.build(accountId: accountId,
                                                        eventAction: AccountEventAction.openAccountMenu,
                                                        entityId: String(accountId),
-                                                       data: ["page":"Account Menu"]) else { return }
+                                                       data: ["page": "Account Menu"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }

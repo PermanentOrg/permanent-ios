@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 22.05.2025.
+//
 
 import UIKit
 import SwiftUI
@@ -20,7 +21,6 @@ class ChecklistCoordinator {
                 if Constants.Design.isPhone {
                     navControl.modalPresentationStyle = .fullScreen
                 } else {
-                    
                     navControl.modalPresentationStyle = .formSheet
                     navControl.sheetPresentationController?.detents = [.large()]
                 }

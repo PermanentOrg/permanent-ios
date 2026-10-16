@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class PublicProfilePageViewModelTests: XCTestCase {
-
     func testGetProfileViewData_WhenNotEditable_ReturnsOnlyFilledCells() {
         let sut = PublicProfilePageViewModel(makeArchiveData(accessRole: AccessRole.viewer.apiValue, type: ArchiveType.person.rawValue))
 
@@ -649,6 +648,7 @@ final class PublicProfilePageViewModelTests: XCTestCase {
                  (.archiveGallery, .archiveGallery),
                  (.archiveName, .archiveName):
                 return true
+
             default:
                 return false
             }

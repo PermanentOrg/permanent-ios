@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 10.02.2025.
+//
 import SwiftUI
 import Combine
 
@@ -32,13 +33,11 @@ struct Add2FAFieldView: View {
                             } else {
                                 pinFocusState = nil
                             }
-                        }
-                        else if newVal.count == numberOfFields, let intValue = Int(newVal) {
+                        } else if newVal.count == numberOfFields, let intValue = Int(newVal) {
                             code = newVal
                             updatePinsFromOTP()
                             pinFocusState = FocusPinType.pin(numberOfFields - 1)
-                        }
-                        else if newVal.isEmpty {
+                        } else if newVal.isEmpty {
                             if index > 0 {
                                 pinFocusState = FocusPinType.pin(index - 1)
                             }
@@ -110,5 +109,3 @@ struct Add2FAFieldView_Previews: PreviewProvider {
         .ignoresSafeArea()
     }
 }
-
-

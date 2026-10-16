@@ -19,8 +19,10 @@ extension BillingEndpoint: RequestProtocol {
         switch self {
         case .claimPledge:
             return "/billing/claimpledge"
+
         case .giftStorage:
             return "/billing/giftStorage"
+
         case .purchaseStorage:
             return ""  // Not used - we use customURL
         }
@@ -59,8 +61,10 @@ extension BillingEndpoint: RequestProtocol {
         switch self {
         case .giftStorage(let gift):
             return try? APIPayload<GiftingModel>.encoder.encode(gift)
+
         case .purchaseStorage(let amountInUSD):
             return try? JSONSerialization.data(withJSONObject: ["amountInUSD": amountInUSD])
+
         default: return nil
         }
     }
@@ -70,9 +74,11 @@ extension BillingEndpoint: RequestProtocol {
         switch self {
         case .giftStorage(_):
             return "\(endpointPath)api/v2/storage/gift"
+
         case .purchaseStorage:
             return "\(endpointPath)api/v2/storage-purchases"
-        default : return nil
+
+        default: return nil
         }
     }
 }

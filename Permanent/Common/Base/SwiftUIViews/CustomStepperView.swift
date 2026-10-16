@@ -3,10 +3,11 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 01.11.2023.
+//
 
 import SwiftUI
 
-struct CustomStepper : View {
+struct CustomStepper: View {
     @Binding var value: Int
     var textColor: Color
     var step: Int = 1

@@ -1,8 +1,9 @@
 //
 //  ChipView.swift
-//  ChipsApp
+//  Permanent
 //
 //  Created by Flaviu Silaghi on 01.11.2023.
+//
 
 import SwiftUI
 

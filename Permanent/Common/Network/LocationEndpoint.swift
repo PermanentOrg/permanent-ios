@@ -19,6 +19,7 @@ extension LocationEndpoint: RequestProtocol {
         switch self {
         case .geomapLatLong:
             return "/locn/geomapLatLong"
+
         case .locnPost:
             return "/locn/post"
         }

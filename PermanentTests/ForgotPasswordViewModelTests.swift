@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ForgotPasswordViewModelTests: XCTestCase {
-
     private func makeVM() -> ForgotPasswordViewModel {
         let container = AuthenticatorContainerViewModel()
         return ForgotPasswordViewModel(containerViewModel: container)

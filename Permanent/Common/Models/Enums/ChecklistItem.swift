@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 28.04.2025.
+//
 
 import SwiftUI
 
@@ -19,16 +20,22 @@ enum ChecklistItemType: String, Codable {
         switch self {
         case .archiveCreated:
             return "Create your first archive"
+
         case .storageRedeemed:
             return "Redeem free storage"
+
         case .legacyContact:
             return "Assign a legacy Contact"
+
         case .archiveSteward:
             return "Assign an archive steward"
+
         case .archiveProfile:
             return "Update Archive Profile"
+
         case .firstUpload:
             return "Upload first file"
+
         case .publishContent:
             return "Publish a file"
         }
@@ -38,16 +45,22 @@ enum ChecklistItemType: String, Codable {
         switch self {
         case .archiveCreated:
             return "memberchecklistCreateArchive"
+
         case .storageRedeemed:
             return "memberchecklistRedeemStorage"
+
         case .legacyContact:
             return "memberchecklistAssignLegacyContact"
+
         case .archiveSteward:
             return "memberchecklistAssignSteward"
+
         case .archiveProfile:
             return "memberchecklistUpdateArchiveProfile"
+
         case .firstUpload:
             return "memberchecklistUploadFile"
+
         case .publishContent:
             return "memberchecklistPublishFile"
         }

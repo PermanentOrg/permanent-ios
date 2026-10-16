@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 28.07.2023.
+//
 
 import Foundation
 import SwiftUI
@@ -72,8 +73,10 @@ class MetadataEditFileNamesViewModel: ObservableObject {
                 case .json( _, _):
                     self?.hasUpdates.wrappedValue = true
                     self?.changesWereSaved = true
+
                 case .error(_, _):
                     self?.showAlert = true
+
                 default:
                     self?.showAlert = true
                 }

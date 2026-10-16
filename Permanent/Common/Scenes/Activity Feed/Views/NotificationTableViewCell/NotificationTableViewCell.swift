@@ -8,7 +8,6 @@
 import UIKit
 
 class NotificationTableViewCell: UITableViewCell {
-    
     // MARK: - Properties
 
     @IBOutlet var notificationLabel: UILabel!
@@ -35,5 +34,4 @@ class NotificationTableViewCell: UITableViewCell {
         dateLabel.textColor = .textPrimary
         dateLabel.font = TextFontStyle.style12.font
     }
-    
 }

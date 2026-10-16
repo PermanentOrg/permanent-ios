@@ -18,8 +18,8 @@ class SettingsMenuNavigationUITests: BaseUITestCase {
     }
 
     func testWalkThroughAllSettingsOptions() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)

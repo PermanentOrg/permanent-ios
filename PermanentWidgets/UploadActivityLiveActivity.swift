@@ -85,6 +85,7 @@ struct UploadActivityLiveActivity: Widget {
             fileLine = state.currentFileName
             fileDetail = percentText
             statusWord = "Uploading"
+
         case .paused:
             headerTitle = "Upload Paused"
             fileLine = "Tap to resume"
@@ -92,17 +93,20 @@ struct UploadActivityLiveActivity: Widget {
             statusWord = "Paused"
             ringGlyph = "pause.fill"
             hint = "Tap to resume"
+
         case .processing:
             headerTitle = "Processing Uploaded Files"
             fileLine = "Finishing up…"
             fileDetail = percentText
             statusWord = "Processing"
+
         case .completed:
             headerTitle = "Upload Complete"
             fileLine = "\(state.completedCount) file\(state.completedCount == 1 ? "" : "s") uploaded"
             fileDetail = percentText
             statusWord = "Complete"
             ringGlyph = "checkmark"
+
         case .failed:
             headerTitle = "Upload Issues"
             fileLine = state.completedCount > 0

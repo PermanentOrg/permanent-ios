@@ -8,7 +8,6 @@
 import UIKit
 
 class PublicGalleryFooterCollectionViewCell: UICollectionViewCell {
-    
     static let identifier = "PublicGalleryFooterCollectionViewCell"
 
     override func awakeFromNib() {
@@ -16,7 +15,6 @@ class PublicGalleryFooterCollectionViewCell: UICollectionViewCell {
     }
     
     func configure() {
-        
     }
     
     static func nib() -> UINib {

@@ -8,7 +8,6 @@
 import UIKit
 
 class FileDetailsBottomCollectionViewCell: FileDetailsBaseCollectionViewCell {
-
     static let identifier = "FileDetailsBottomCollectionViewCell"
     
     @IBOutlet weak var titleLabelField: UILabel!
@@ -49,18 +48,25 @@ class FileDetailsBottomCollectionViewCell: FileDetailsBaseCollectionViewCell {
         switch cellType {
         case .name:
             details = recordVO.displayName ?? ""
+
         case .description:
             details = recordVO.recordVODescription ?? ""
+
         case .tags:
             details = recordVO.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ",") ?? ""
+
         case .size:
             details = Int64(recordVO.size ?? 0).readableFileSize
+
         case .fileType:
             details = URL(string: recordVO.type)?.pathExtension ?? ""
+
         case .originalFileName:
             details = URL(string: recordVO.uploadFileName)?.deletingPathExtension().absoluteString ?? ""
+
         case .originalFileType:
             details = URL(string: recordVO.uploadFileName?.uppercased())?.pathExtension ?? ""
+
         default:
             details = "-"
         }
@@ -69,7 +75,6 @@ class FileDetailsBottomCollectionViewCell: FileDetailsBaseCollectionViewCell {
 }
 
 extension FileDetailsBottomCollectionViewCell: UITextFieldDelegate {
-    
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch cellType {
         case .name:
@@ -93,7 +98,7 @@ extension FileDetailsBottomCollectionViewCell: UITextFieldDelegate {
                 return
             } else if let file = viewModel?.file {
                 let initialValue = viewModel?.recordVO?.recordVO?.recordVODescription
-                viewModel?.update(file: file, name: nil, description:  detailsTextField.text, date: nil, location: nil, completion: { (success) in
+                viewModel?.update(file: file, name: nil, description: detailsTextField.text, date: nil, location: nil, completion: { (success) in
                     if !success {
                         textField.text = initialValue
                     }

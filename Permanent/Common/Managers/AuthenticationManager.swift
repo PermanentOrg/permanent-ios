@@ -179,6 +179,7 @@ class AuthenticationManager {
                         handler(.error(message: "Authorization error".localized()))
                     }
                 }
+
             case .failure(_):
                 handler(.error(message: "Authorization error".localized()))
             }
@@ -190,6 +191,7 @@ class AuthenticationManager {
             switch result {
             case .success(_):
                 handler(.success)
+
             case .failure(_):
                 handler(.error(message: "Sorry for the inconvenience, the action could not be completed please try again.".localized()))
             }
@@ -261,13 +263,11 @@ class AuthenticationManager {
                         if let currentArchive = currentArchive,
                            let refreshedArchive = refreshedArchive,
                            currentArchive.archiveID == refreshedArchive.archiveID {
-                            
                             // Don't overwrite the user's archive selection with server data: the local session holds what
                             // they intended.
                             if currentArchive.fullName != refreshedArchive.fullName {
                                 print("🔴 ARCHIVE_DEBUG: ⚠️⚠️⚠️ ARCHIVE NAME MISMATCH DETECTED!")
                             } else {
-            
                                 // Only update with server data if names match (safe update for other fields)
                                 self.session?.selectedArchive = refreshedArchive
                             }
@@ -364,5 +364,4 @@ class AuthenticationManager {
         // Post notification for UI updates
         NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil)
     }
-
 }

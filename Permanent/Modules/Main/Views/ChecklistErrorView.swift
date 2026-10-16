@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 08.05.2025.
+//
 import SwiftUI
 
 struct ChecklistErrorView: View {

@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.12.2023.
+//
 
 import SwiftUI
 
@@ -14,10 +15,10 @@ class RedeemCodeViewModel: ObservableObject {
         didSet {
             if redeemCode.isEmpty {
                 if firstTextFieldInput {
-                    invalidDataInserted =  false
+                    invalidDataInserted = false
                     isConfirmButtonDisabled = true
                 } else {
-                    invalidDataInserted =  true
+                    invalidDataInserted = true
                     isConfirmButtonDisabled = true
                 }
             } else {
@@ -76,6 +77,7 @@ class RedeemCodeViewModel: ObservableObject {
                 case .error(_, _):
                     self?.showAlert = true
                     self?.invalidDataInserted = true
+
                 default:
                     self?.showAlert = true
                     self?.invalidDataInserted = true
@@ -89,7 +91,7 @@ class RedeemCodeViewModel: ObservableObject {
               let payload = EventsPayloadBuilder.build(accountId: accountId,
                                                        eventAction: AccountEventAction.openRedeemGift,
                                                        entityId: String(accountId),
-                                                       data: ["page":"Redeem Gift"]) else { return }
+                                                       data: ["page": "Redeem Gift"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }

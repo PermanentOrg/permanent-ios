@@ -63,7 +63,7 @@ class SharedFilesPage {
         app.collectionViews.children(matching: .cell).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .button).element
     }
     var photoLibraryElementLoading: XCUIElement {
-        app.collectionViews.activityIndicators["In progress"]
+        app.collectionViews.descendants(matching: .any)["fileProcessing"]
     }
     var emptyFolder: XCUIElement {
         app.collectionViews.staticTexts["You haven’t shared any content with anyone. Choose an item from My Files and share it with someone!"]
@@ -213,11 +213,7 @@ class SharedFilesPage {
         XCTAssertTrue(uploadFinishedButton.waitForExistence(timeout: 40))
         
         XCTAssertTrue(photoLibraryElementLoading.waitForExistence(timeout: 20))
-        var numberOfSleeps = 0
-        while photoLibraryElementLoading.exists && numberOfSleeps < 60 {
-            sleep(1)
-            numberOfSleeps += 1
-        }
+        XCTAssertTrue(photoLibraryElementLoading.waitForNonExistence(timeout: 60), "the server did not make the picture")
         XCTAssertTrue(firstElementFromFolder.waitForExistence(timeout: 20))
         
         XCTAssertFalse(firstElementFromFolder.staticTexts.element(boundBy: 0).label.isEmpty)

@@ -25,12 +25,16 @@ extension TagEndpoint: RequestProtocol {
         switch self {
         case .post:
             return "/tag/post"
+
         case .delete:
             return "/tag/delete"
+
         case .getByArchive:
             return "/tag/getTagsByArchive"
+
         case .unlink:
             return "/tag/DeleteTagLink"
+
         case .updateTag:
             return "/tag/updateTag"
         }

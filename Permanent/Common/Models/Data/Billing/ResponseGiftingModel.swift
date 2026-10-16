@@ -3,10 +3,11 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 15.11.2023.
+//
 
 import Foundation
 
-/// MARK: - ResponseGiftingModel
+// MARK: - ResponseGiftingModel
 struct ResponseGiftingModel<T: Model>: Model {
     let storageGifted: Int
     let giftDelivered: [String?]

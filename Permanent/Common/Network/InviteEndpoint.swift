@@ -8,7 +8,6 @@
 import Foundation
 
 enum InviteEndpoint {
-    
     case getMyInvites
     
     case sendInvite(name: String, email: String)
@@ -23,13 +22,15 @@ extension InviteEndpoint: RequestProtocol {
         switch self {
         case .getMyInvites:
             return "/invite/getMyInvites"
+
         case .sendInvite:
             return "/invite/inviteSend"
+
         case .resendInvite:
             return "/invite/inviteResend"
+
         case .revokeInvite:
             return "/invite/revoke"
-            
         }
     }
     

@@ -8,7 +8,6 @@
 import Foundation
 
 extension Data {
-    
     mutating func append<T>(values: [T]) -> Bool {
         var newData = Data()
         var status = true

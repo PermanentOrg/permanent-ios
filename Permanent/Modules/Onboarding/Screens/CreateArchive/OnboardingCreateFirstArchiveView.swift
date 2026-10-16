@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 11.03.2024.
+//
 
 import SwiftUI
 
@@ -100,9 +101,7 @@ struct OnboardingCreateFirstArchiveView: View {
     return ZStack {
         Color(.primary)
         OnboardingCreateFirstArchiveView(viewModel: onboardingViewModel) {
-            
         } nextButton: {
-            
         }
     }
     .ignoresSafeArea()

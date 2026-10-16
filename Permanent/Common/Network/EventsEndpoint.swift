@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 28.10.2024.
+//
 
 import Foundation
 
@@ -20,6 +21,7 @@ extension EventsEndpoint: RequestProtocol {
         switch self {
         case .checklist:
             return .get
+
         case .sendEvent:
             return .post
         }
@@ -29,6 +31,7 @@ extension EventsEndpoint: RequestProtocol {
         switch self {
         case .sendEvent(let eventsPayload):
             getEventParameters(eventsPayload: eventsPayload)
+
         case .checklist:
             checklistMember()
         }
@@ -53,6 +56,7 @@ extension EventsEndpoint: RequestProtocol {
         switch self {
         case .sendEvent(let eventsPayload):
             return encodePayload(eventsPayload)
+
         default:
             return nil
         }
@@ -63,6 +67,7 @@ extension EventsEndpoint: RequestProtocol {
         switch self {
         case .sendEvent:
             return "\(endpointPath)api/v2/events"
+
         case .checklist:
             return "\(endpointPath)api/v2/events/checklist"
         }
@@ -71,7 +76,7 @@ extension EventsEndpoint: RequestProtocol {
 
 extension EventsEndpoint {
     func getEventParameters(eventsPayload: EventsPayload) -> RequestParameters {
-        let parameters: [String : Any] = [
+        let parameters: [String: Any] = [
             "entity": eventsPayload.entity,
             "action": eventsPayload.action,
             "version": eventsPayload.version,

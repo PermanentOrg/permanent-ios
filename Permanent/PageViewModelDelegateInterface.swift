@@ -9,6 +9,6 @@ import Foundation
 
 protocol PageViewModelDelegateInterface: ViewModelDelegateInterface {
     func createViewControllers()
-    func setViewController(of index:Int)
+    func setViewController(of index: Int)
     func numberOfViewControllers() -> Int
 }

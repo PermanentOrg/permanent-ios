@@ -13,7 +13,6 @@ import Combine
 
 @MainActor
 final class ShareFindArchiveByEmailViewTests: XCTestCase {
-
     // MARK: - Rendering Tests
 
     func testRendersInIdleState() async {

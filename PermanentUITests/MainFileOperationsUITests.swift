@@ -22,8 +22,8 @@ class MainFileOperationsUITests: BaseUITestCase {
     /// Folder drill-in loads via Stela V2, with V1 as the automatic failsafe. The nav-source
     /// accessibility id proves which path ran, so V2 can't pass on the V1 failsafe.
     func testFolderNavigationParity() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)
@@ -62,8 +62,8 @@ class MainFileOperationsUITests: BaseUITestCase {
     }
 
     func testSearchInPrivateFiles() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)
@@ -100,8 +100,8 @@ class MainFileOperationsUITests: BaseUITestCase {
     }
 
     func testListGridViewToggleAndRenameFolder() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)
@@ -140,8 +140,8 @@ class MainFileOperationsUITests: BaseUITestCase {
     }
 
     func testMultiSelectSelectAllAndCancel() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)

@@ -8,7 +8,6 @@
 import Foundation
 
 protocol InviteViewModelDelegate {
-    
     var viewDelegate: InviteViewModelViewDelegate? { get set }
     
     // Data Source
@@ -28,11 +27,9 @@ protocol InviteViewModelDelegate {
     var isBusy: Bool { get }
     
     var hasData: Bool { get }
-    
 }
 
 protocol InviteViewModelViewDelegate: AnyObject {
-    
     func refreshList(afterOperation: InviteOperation, status: RequestStatus)
     
     func updateScreen(status: RequestStatus)
@@ -40,5 +37,4 @@ protocol InviteViewModelViewDelegate: AnyObject {
     func updateSpinner(isLoading: Bool)
     
     func dismissDialog()
-    
 }

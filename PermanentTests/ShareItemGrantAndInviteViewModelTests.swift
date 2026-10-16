@@ -11,7 +11,6 @@ import Combine
 
 @MainActor
 final class ShareItemGrantAndInviteViewModelTests: XCTestCase {
-
     // MARK: - Find Archive by Email Flow
 
     func testOpenFindArchiveByEmail_SetsCorrectState() {

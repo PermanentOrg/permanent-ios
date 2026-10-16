@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class ChecklistOptionsViewModelTests: XCTestCase {
-
     // MARK: - ChecklistOptionsViewModel Initial State
 
     func testViewModel_InitialState_EmptyItems() {

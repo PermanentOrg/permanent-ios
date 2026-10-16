@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 02.08.2023.
+//
 
 import Foundation
 import SwiftUI
@@ -61,7 +62,6 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
     init(selectedFiles: [FileModel], fileNamePreview: Binding<String?>) {
         self.selectedFiles = selectedFiles
         self.fileNamePreview = fileNamePreview
-        
     }
     
     func getSelectedFiles() -> [FileModel] {
@@ -109,7 +109,6 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         }
         
         if selectedFormatOptions?.title == "Count" {
-            
             if selectedWhereOptions?.title == "Before name" {
                 fileName = String("\(calculateZeros(currentFile: 1))\(startNumberText)\(baseText)")
             } else {
@@ -141,10 +140,13 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         switch selectedAdditionalOption?.title {
         case "Created":
             date = dateFormatter.date(from: file?.createdDT ?? "")
+
         case "Last modified":
             date = dateFormatter.date(from: file?.modifiedDT ?? "")
+
         case "Uploaded":
             date = dateFormatter.date(from: file?.uploadedDT ?? "")
+
         default:
             date = dateFormatter.date(from: "")
         }
@@ -165,4 +167,3 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         return zerosToAdd
     }
 }
-

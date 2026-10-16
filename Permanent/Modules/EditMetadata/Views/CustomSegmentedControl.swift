@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 31.07.2023.
+//
 
 import SwiftUI
 
@@ -11,7 +12,7 @@ struct CustomSegmentedControl: View {
     let items: [MenuItem]
 
     var body: some View {
-        ZStack{
+        ZStack {
             HStack(spacing: 0) {
                 ForEach(items, id: \.self) { item in
                     Button(action: {

@@ -50,6 +50,7 @@ final class DropProgressIsland {
         switch step {
         case .none:
             break
+
         case .showSpinner:
             if let circle, isShowing {
                 // A new drop takes over the circle while it still shows the last one's check.
@@ -59,6 +60,7 @@ final class DropProgressIsland {
             } else {
                 openCircle()
             }
+
         case .showCheck:
             guard let circle, isShowing else { return }
             checkCount += 1
@@ -70,6 +72,7 @@ final class DropProgressIsland {
                 self.dismiss()
             }
             announce("Moved".localized())
+
         case .close:
             guard let circle, isShowing else { return }
             circle.hideActivityIndicator()

@@ -15,7 +15,6 @@ import Testing
 @MainActor
 @Suite(.serialized)
 struct ShareArchivesV2SourceTests {
-
     // MARK: - Which path served the list
 
     @Test("A manager's response serves the list without the legacy read")
@@ -161,7 +160,7 @@ struct ShareArchivesV2SourceTests {
                                                   folderLinkId: "4242",
                                                   shares: [
             Self.share(id: 9, archiveId: 3, name: "Family", status: "status.generic.ok")
-        ])
+                                                  ])
 
         vm.fetchSharedArchives()
         try await waitUntil { ShareItemViewModel.lastSharedArchivesSource != "none" }

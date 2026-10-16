@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 22.01.2025.
+//
 
 import SwiftUI
 
@@ -54,12 +55,14 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
                 self?.containerViewModel.displayBannerWithAutoClose(.successCodeSend)
                 self?.startResendTimer()
                 self?.phoneAlreadyConfirmed = true
+
             case .error(let error, _):
                 if let apiError = error as? APIError, apiError == .badRequest {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPhoneNumber)
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
@@ -91,12 +94,14 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
                 withAnimation {
                     self?.phoneAlreadyConfirmed = true
                 }
+
             case .error(let error, _):
                 if let apiError = error as? APIError, apiError == .badRequest {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
@@ -134,6 +139,7 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
@@ -170,12 +176,14 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
                     self?.containerViewModel.twoStepVerificationBottomBannerMessage = .successSmsDeleted
                     self?.containerViewModel.dismissContainer = true
                 }
+
             case .error(let error, _):
                 if let apiError = error as? APIError, apiError == .badRequest {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
                 }
+
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }

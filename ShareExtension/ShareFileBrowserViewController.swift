@@ -72,7 +72,6 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         folderNavigationView.layer.shadowOffset = .zero
         folderNavigationView.layer.shadowRadius = 3
         view.addSubview(folderNavigationView)
-        
     }
     
     func setupWorkspaceSegmentedControlView() {

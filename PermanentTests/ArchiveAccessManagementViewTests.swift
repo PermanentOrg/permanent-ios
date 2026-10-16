@@ -12,7 +12,6 @@ import UIKit
 
 @MainActor
 final class ArchiveAccessManagementViewTests: XCTestCase {
-
     func testOnAppearInitializesSelectedRoleFromArchive() async {
         let vm = makeViewModel()
         vm.selectedArchiveForEdit = makeShareVO(accessRole: AccessRole.editor.apiValue)

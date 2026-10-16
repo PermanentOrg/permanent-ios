@@ -1,4 +1,7 @@
 //
+//  ShareManagementTests.swift
+//  PermanentTests
+//
 // Created by Vlad Alexandru Rusu on 07.12.2022.
 //
 
@@ -45,7 +48,7 @@ class ShareManagementTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
-    func testUpdateLink(){
+    func testUpdateLink() {
         let expectation = XCTestExpectation(description: "Update share link")
         sut.updateLink(model: ManageLinkData(previewToggle: 1, autoApproveToggle: 1, expiresDT: "", maxUses: 2,
                 defaultAccessRole: AccessRole.viewer)) { shareLink, error in

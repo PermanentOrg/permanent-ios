@@ -297,7 +297,6 @@ struct ArchivePickerView: View {
                                 .foregroundColor(.primary)
                                 
                                 Spacer()
-                                
                             }
 
                             .padding(.horizontal, 24)

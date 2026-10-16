@@ -18,6 +18,7 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
         switch workspace {
         case .sharedByMeFiles, .shareWithMeFiles:
             return self.contentViewModels.count > 1
+
         default:
             return true
         }

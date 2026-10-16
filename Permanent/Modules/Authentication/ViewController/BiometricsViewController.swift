@@ -90,11 +90,13 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 case .signIn:
                     self?.navigationController?.display(.signUp, from: .authentication)
                     return
+
                 case .onboarding:
                     let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: nil, password: nil))
                     let host = UIHostingController(rootView: screenView)
                     host.modalPresentationStyle = .fullScreen
                     AppDelegate.shared.rootViewController.present(host, animated: true)
+
                 case .main:
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 }
@@ -111,7 +113,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         })
     }
     
-    //add a action for the biometrics button view pressed
+    // add a action for the biometrics button view pressed
     @IBAction func biometricsCheckAction(_ sender: Any) {
         attemptBiometricsAuth()
     }
@@ -130,6 +132,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 DispatchQueue.main.async {
                     self.navigationController?.display(.signUp, from: .authentication)
                 }
+
             case .error(let message):
                 DispatchQueue.main.async {
                     self.showAlert(title: .error, message: message)

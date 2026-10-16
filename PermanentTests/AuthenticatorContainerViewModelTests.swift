@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class AuthenticatorContainerViewModelTests: XCTestCase {
-
     // MARK: - AuthenticatorContainerViewModel Initial State
 
     func testViewModel_InitialState_DefaultLogin() {

@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class TwoStepVerificationTests: XCTestCase {
-
     // MARK: - Helpers
 
     private func makeTwoStepContainer() -> TwoStepConfirmationContainerViewModel {

@@ -231,6 +231,7 @@ class ActionDialogView: UIView {
             leadingStackViewConstraint.constant = 24
             trailingStackViewConstraint.constant = 24
             bottomStackViewConstraint.constant = 24
+
         default:
             break
         }

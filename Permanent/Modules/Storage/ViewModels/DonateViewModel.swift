@@ -51,7 +51,7 @@ class DonateViewModel: ViewModelInterface {
               let payload = EventsPayloadBuilder.build(accountId: accountId,
                                                        eventAction: AccountEventAction.openStorageModal,
                                                        entityId: String(accountId),
-                                                       data: ["page":"Storage"]) else { return }
+                                                       data: ["page": "Storage"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
@@ -64,5 +64,4 @@ class DonateViewModel: ViewModelInterface {
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
-    
 }

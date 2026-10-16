@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 06.03.2025.
+//
 
 import SwiftUI
 
@@ -13,11 +14,13 @@ struct SecurityDetailView: View {
         switch navigationManager.selectionState {
         case .changePassword:
             ChangePasswordView()
+
         case .twoStepVerification:
             TwoStepVerificationView(
                 isTwoFactorEnabled: false,
                 twoFactorMethods: []
             )
+
         default:
             VStack(spacing: 32) {
                 Image(systemName: "shield.fill")

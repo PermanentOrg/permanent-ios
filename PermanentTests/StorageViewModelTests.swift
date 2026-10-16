@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class StorageViewModelTests: XCTestCase {
-
     // MARK: - StorageViewModel Initial State
 
     func testViewModel_InitialState() {

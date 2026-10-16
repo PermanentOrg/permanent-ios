@@ -8,7 +8,6 @@
 import UIKit
 
 class PasswordElementView: UIView {
-
     @IBOutlet var contentView: UIView!
     @IBOutlet weak var valueLabel: UILabel!
     @IBOutlet weak var passwordTextField: UITextField!
@@ -39,7 +38,6 @@ class PasswordElementView: UIView {
         loadNib()
         setupView(contentView)
         contentView.backgroundColor = .blueGray
-        
     }
     func configurePasswordElementUI(label: String, returnKey: UIReturnKeyType = UIReturnKeyType.default, passFieldContentType: UITextContentType = .password) {
         self.contentView.backgroundColor = .white

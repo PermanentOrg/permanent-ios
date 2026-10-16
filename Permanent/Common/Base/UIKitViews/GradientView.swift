@@ -3,12 +3,12 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 30.05.2023.
+//
 
 import UIKit
 
 @IBDesignable
 class GradientView: RoundedView {
-    
     var gradientLayer: CAGradientLayer {
         return layer as! CAGradientLayer
     }
@@ -44,7 +44,6 @@ class GradientView: RoundedView {
 }
 
 extension GradientView {
-    
     internal var cgColorGradient: [CGColor]? {
         guard let startColor = startColor, let endColor = endColor else {
             return nil
