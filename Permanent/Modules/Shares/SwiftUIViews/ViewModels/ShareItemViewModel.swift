@@ -255,7 +255,7 @@ class ShareItemViewModel: ObservableObject {
     }
 
     var fileDate: String {
-        DateUtils.displayDate(from: fileModel.createdDT)
+        DateUtils.displayDate(from: fileModel.date)
     }
 
     var thumbnailURL: String? {
@@ -278,7 +278,7 @@ class ShareItemViewModel: ObservableObject {
     }
 
     var shareDisplayData: String {
-        DateUtils.displayDate(from: fileModel.createdDT)
+        DateUtils.displayDate(from: fileModel.date)
     }
 
     // MARK: - Init

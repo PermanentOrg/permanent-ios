@@ -183,6 +183,8 @@
 		5E2C064A3080148D00C579A8 /* JavaScriptCoreEDTF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C06443080148D00C579A8 /* JavaScriptCoreEDTF.swift */; };
 		5E2C064B3080148D00C579A8 /* EDTFValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C06433080148D00C579A8 /* EDTFValue.swift */; };
 		5E2C0654308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C0653308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift */; };
+		5E2C065730824E2900C579A8 /* DisplayTimeV2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C065630824E2900C579A8 /* DisplayTimeV2Tests.swift */; };
+		5E2C065830824E2900C579A8 /* DisplayTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C065530824E2900C579A8 /* DisplayTimeTests.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
 		5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2324D98EE300E2B95F /* Assets.xcassets */; };
 		5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2524D98EE300E2B95F /* Launch.storyboard */; };
@@ -1460,6 +1462,8 @@
 		5E2C064D308014B200C579A8 /* edtf-bundle.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "edtf-bundle.js"; sourceTree = "<group>"; };
 		5E2C064E308014B200C579A8 /* permanent-edtf.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "permanent-edtf.js"; sourceTree = "<group>"; };
 		5E2C0653308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavaScriptCoreEDTFTests.swift; sourceTree = "<group>"; };
+		5E2C065530824E2900C579A8 /* DisplayTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTimeTests.swift; sourceTree = "<group>"; };
+		5E2C065630824E2900C579A8 /* DisplayTimeV2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTimeV2Tests.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5E2C5D2324D98EE300E2B95F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -3760,6 +3764,8 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5E2C065530824E2900C579A8 /* DisplayTimeTests.swift */,
+				5E2C065630824E2900C579A8 /* DisplayTimeV2Tests.swift */,
 				5E2C0653308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift */,
 				5E219E10303CA0400062F4C6 /* LegacyEndpointSurfaceTests.swift */,
 				5E8B7C252FD83F8500CFC501 /* UploadActivityTerminalStateTests.swift */,
@@ -6385,6 +6391,8 @@
 				F559F87D28F9AB070015A522 /* FolderContentViewModelTests.swift in Sources */,
 				5E173EB32F6373D300C6D151 /* SharePreviewViewTests.swift in Sources */,
 				F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */,
+				5E2C065730824E2900C579A8 /* DisplayTimeV2Tests.swift in Sources */,
+				5E2C065830824E2900C579A8 /* DisplayTimeTests.swift in Sources */,
 				5E7B9C0D2FB27AC800C1D3D0 /* ArchivesEndpointTests.swift in Sources */,
 				5E7B9C082FB272E200C1D3D0 /* IntExtensionTests.swift in Sources */,
 				5E7B9C092FB272E200C1D3D0 /* ArchiveTypeTests.swift in Sources */,

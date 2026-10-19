@@ -1342,7 +1342,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         case .nameDescending: return items.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedDescending }
 
         case .dateAscending, .dateDescending:
-            let decorated = items.map { (key: parseSortDate($0.createdDT), file: $0) }
+            let decorated = items.map { (key: DateUtils.date(fromDisplayTime: $0.displayTime) ?? parseSortDate($0.createdDT), file: $0) }
             let sorted = option == .dateAscending
                 ? decorated.sorted { $0.key < $1.key }
                 : decorated.sorted { $0.key > $1.key }

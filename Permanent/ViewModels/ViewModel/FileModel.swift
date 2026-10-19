@@ -42,6 +42,8 @@ struct FileModel: Equatable, Codable {
     let createdDT: String?
     let modifiedDT: String?
     let uploadedDT: String?
+    /// The EDTF date from Stela V2, read before `createdDT` wherever a date shows; nil from V1.
+    var displayTime: String?
     
     let archiveThumbnailURL: String?
     let archiveId: Int
@@ -182,8 +184,9 @@ struct FileModel: Equatable, Codable {
     
     init(model: RecordVOData, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
-        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayDT)
         self.createdDT = model.displayDT
+        self.displayTime = model.displayTime
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
 
@@ -315,8 +318,9 @@ struct FileModel: Equatable, Codable {
         self.savedSortOption = model.isFolder ? SortOption(serverValue: model.sort) : nil
         // Records carry displayDate; folders carry displayTimestamp.
         let rawDate = model.displayDate ?? model.displayTimestamp ?? model.fileCreatedAt
-        self.date = rawDate != nil ? rawDate!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: rawDate)
         self.createdDT = rawDate
+        self.displayTime = model.displayTime
         self.uploadedDT = model.createdAt   // parity with V1: uploadedDT <- createdAt
         self.modifiedDT = model.updatedAt   // parity with V1: modifiedDT <- updatedAt
 
@@ -372,8 +376,9 @@ struct FileModel: Equatable, Codable {
     init(model: FolderV2Data, fallbackArchiveNo: String, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = SortOption(serverValue: model.sort)
-        self.date = model.displayTimestamp?.dateOnly ?? "-"
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayTimestamp)
         self.createdDT = model.displayTimestamp
+        self.displayTime = model.displayTime
         self.uploadedDT = model.createdAt
         self.modifiedDT = model.updatedAt
 

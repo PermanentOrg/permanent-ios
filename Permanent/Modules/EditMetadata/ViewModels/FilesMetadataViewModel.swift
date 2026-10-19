@@ -18,7 +18,7 @@ class FilesMetadataViewModel: ObservableObject {
             if !descriptionWasSaved {
                 haveDiffDescription = !selectedFiles.allSatisfy({$0.description == selectedFiles.first?.description})
             }
-            haveDiffDate = !selectedFiles.allSatisfy({$0.createdDT == selectedFiles.first?.createdDT})
+            haveDiffDate = !selectedFiles.allSatisfy({ $0.createdDT == selectedFiles.first?.createdDT && $0.displayTime == selectedFiles.first?.displayTime })
             if haveDiffDescription {
                 inputText = .enterTextHere
             } else {
@@ -337,7 +337,8 @@ class FilesMetadataViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
 
-        let date = dateFormatter.date(from: selectedFiles.first?.createdDT ?? "") ?? Date()
+        let first = selectedFiles.first
+        let date = DateUtils.date(fromDisplayTime: first?.displayTime) ?? dateFormatter.date(from: first?.createdDT ?? "") ?? Date()
 
         let dateFormatterChanged = DateFormatter()
         // Display-only, for the metadata date row. `en_US_POSIX` keeps the year Gregorian on devices
