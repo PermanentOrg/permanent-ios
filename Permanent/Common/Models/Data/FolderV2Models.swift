@@ -37,6 +37,7 @@ struct FolderV2Data: Model {
     /// The caller's effective role on this folder, as Stela computes it across membership, shares,
     /// share token and public access. Short form ("owner"), which `AccessRole.roleForValue` accepts.
     let accessRole: String?
+    let location: LocationV2?
 
     init(folderId: String? = nil,
          displayName: String? = nil,
@@ -58,7 +59,8 @@ struct FolderV2Data: Model {
          thumbnailUrls: ThumbnailUrlsV2? = nil,
          shares: [RecordShareV2]? = nil,
          pendingShares: [PendingShareV2]? = nil,
-         accessRole: String? = nil) {
+         accessRole: String? = nil,
+         location: LocationV2? = nil) {
         self.folderId = folderId
         self.displayName = displayName
         self.size = size
@@ -80,6 +82,7 @@ struct FolderV2Data: Model {
         self.shares = shares
         self.pendingShares = pendingShares
         self.accessRole = accessRole
+        self.location = location
     }
 }
 

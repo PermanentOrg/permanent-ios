@@ -52,6 +52,7 @@ class FilePreviewViewModel: ViewModelInterface {
     var patchRecordRequest: ((_ recordId: Int, _ fields: [String: Any], _ completion: @escaping (Bool) -> Void) -> Void)?
     var updateV1Request: ((_ params: UpdateRecordParams, _ completion: @escaping (Bool) -> Void) -> Void)?
     var sessionArchiveId: () -> Int? = { AuthenticationManager.shared.session?.selectedArchive?.archiveID }
+    var pinAddressLookup = PinAddressLookup()
 
     /// Extends the V2 record read to foreign archives, for the public gallery — the same bearer-only
     /// credentials already list that archive's children. Reads only; writes stay own-archive.
@@ -384,6 +385,10 @@ class FilePreviewViewModel: ViewModelInterface {
             updateDateV2(file: file, date: date, completion: completion)
             return
         }
+        if let location = location, name == nil, description == nil, date == nil, file.recordId > 0, file.permissions.contains(.edit) {
+            updateLocationV2(file: file, location: location, completion: completion)
+            return
+        }
         // V2 PATCH covers name, description and location, which are idempotent. Own archive only.
         if file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
             updateV2(file: file, name: name, description: description, location: location, completion: completion)
@@ -444,6 +449,27 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
+    /// Stela V2 accepts a location from any editor, shared records included. A failed save retries once through V1.
+    private func updateLocationV2(file: FileModel, location: LocnVO, completion: @escaping ((Bool) -> Void)) {
+        var service = ItemLocationService()
+        service.patchRecord = { [weak self] file, fields, done in
+            guard let self = self else { done(false); return }
+            self.sendPatchRecord(recordId: file.recordId, fields: fields, completion: done)
+        }
+        service.save(location, to: [file]) { [weak self] succeeded in
+            guard let self = self else { completion(false); return }
+            if succeeded {
+                self.getRecord(file: file) { _ in
+                    NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
+                    completion(true)
+                }
+            } else {
+                ItemLocationService.logger.notice("Location not saved through Stela V2, saving through V1.")
+                self.updateV1(file: file, name: nil, description: nil, date: nil, location: location, completion: completion) // failsafe
+            }
+        }
+    }
+
     private func sendPatchRecord(recordId: Int, fields: [String: Any], completion: @escaping (Bool) -> Void) {
         if let injected = patchRecordRequest {
             injected(recordId, fields, completion)
@@ -492,26 +518,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
-        let params: GeomapLatLongParams = (lat, long)
-        let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let json, _):
-                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
-                    completion(nil)
-                    return
-                }
-                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
-                completion(locnVO)
-                
-            case .error(_, _):
-                completion(nil)
-                
-            default:
-                completion(nil)
-            }
-        }
+        pinAddressLookup.locate(latitude: lat, longitude: long, completion: completion)
     }
     
     func getAddressString(_ items: [String?], _ inMetadataScreen: Bool = true) -> String {

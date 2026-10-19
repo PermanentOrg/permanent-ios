@@ -124,7 +124,7 @@ extension RecordV2Data {
         if let value = intOf(folderLinkId) { record["folder_linkId"] = value }
         if let value = intOf(parentFolderLinkId) { record["parentFolder_linkId"] = value }
         record["FileVOs"] = (files ?? []).map { $0.toFileVOPayload() }
-        if let location = location { record["LocnVO"] = location.toLocnVOPayload() }
+        if let locn = location?.toLocnVOPayload() { record["LocnVO"] = locn }
         if let tags = tags {
             // tagId is load-bearing: the batch-metadata screen derives its tag state from these VOs and the
             // unlink body sends it, so a nil became `tagId: 0` and unassign no-oped while the chip vanished.
@@ -199,6 +199,9 @@ extension LocnVO {
         if let value = locality, !value.isEmpty { location["city"] = value }
         if let value = adminOneName, !value.isEmpty { location["state"] = value }
         if let value = country, !value.isEmpty { location["country"] = value }
+        if let value = (postalCode?.value as? String) ?? (postalCode?.value as? Int).map(String.init), !value.isEmpty {
+            location["postalCode"] = value
+        }
         if let value = latitude { location["latitude"] = value }
         if let value = longitude { location["longitude"] = value }
         let street = [streetNumber, streetName].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
@@ -208,35 +211,50 @@ extension LocnVO {
 }
 
 extension LocationV2 {
-    /// Maps to the subset of LocnVO JSON keys the detail map cell reads
-    /// (streetNumber/streetName/locality/country + latitude/longitude).
-    func toLocnVOPayload() -> [String: Any] {
-        var locn: [String: Any] = [:]
-        if let value = streetNumber { locn["streetNumber"] = value }
-        if let value = streetName { locn["streetName"] = value }
-        if let value = locality { locn["locality"] = value }
-        if let value = country { locn["country"] = value }
-        if let value = countryCode { locn["countryCode"] = value }
-        if let value = displayName { locn["displayName"] = value }
+    /// Maps to the LocnVO JSON keys the screens read, the new Stela field first, else the old one.
+    /// Nil when there is no coordinate and no address text, because Stela sends an all-null object then.
+    func toLocnVOPayload() -> [String: Any]? {
+        func nonEmpty(_ value: String?) -> String? {
+            guard let value = value, !value.isEmpty else { return nil }
+            return value
+        }
+
+        let hasOldStreet = nonEmpty(streetNumber) != nil || nonEmpty(streetName) != nil
+        let text: [String: String?] = [
+            "streetNumber": nonEmpty(streetNumber),
+            "streetName": hasOldStreet ? nonEmpty(streetName) : nonEmpty(sublocation),
+            "locality": nonEmpty(city) ?? nonEmpty(locality),
+            "adminOneName": nonEmpty(state),
+            "postalCode": nonEmpty(postalCode),
+            "country": nonEmpty(country),
+            "countryCode": nonEmpty(countryCode),
+            "displayName": nonEmpty(name) ?? nonEmpty(displayName)
+        ]
+        var locn: [String: Any] = text.compactMapValues { $0 }
         if let value = latitude { locn["latitude"] = value }
         if let value = longitude { locn["longitude"] = value }
-        return locn
+        return locn.isEmpty ? nil : locn
     }
 }
 
 struct LocationV2: Model {
     let id: String?
+    let name: String?
+    let sublocation: String?
+    let city: String?
+    let state: String?
+    let postalCode: String?
+    let country: String?
+    let latitude: Double?
+    let longitude: Double?
+    let timezone: String?
+    // Older fields, still sent by Stela and still the only ones on locations saved through V1.
     let streetNumber: String?
     let streetName: String?
     let locality: String?
     let county: String?
-    let state: String?
-    let latitude: Double?
-    let longitude: Double?
-    let country: String?
     let countryCode: String?
     let displayName: String?
-    let timezone: String?
 }
 
 struct TagV2: Model {
