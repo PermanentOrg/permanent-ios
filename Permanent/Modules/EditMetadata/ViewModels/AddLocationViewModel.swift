@@ -17,11 +17,12 @@ class AddLocationViewModel: ObservableObject {
     
     @Published var selectedCoordinates: CLLocationCoordinate2D? {
         didSet {
-            if let selectedCoordinates = selectedCoordinates {
+            if let selectedCoordinates = selectedCoordinates, !isMovingToPickedPlace {
                 validateLocation(lat: selectedCoordinates.latitude, long: selectedCoordinates.longitude)
             }
         }
     }
+    private var isMovingToPickedPlace = false
     
     @Published var searchedLocations: [GMSAutocompletePrediction] = [GMSAutocompletePrediction]()
     
@@ -103,17 +104,29 @@ class AddLocationViewModel: ObservableObject {
     
     func fetchPlace() {
         guard var selectedPlace = selectedPlace else { return }
-        placesClient.fetchPlace(fromPlaceID: selectedPlace.placeID,
-                                placeFields: [.coordinate],
-                                sessionToken: token) { place, error in
+        placesClient.fetchPlace(fromPlaceID: selectedPlace.placeID, placeFields: PinAddressLookup.placeFields, sessionToken: token) { place, _ in
             if let place = place {
-                self.selectedCoordinates = place.coordinate
-                
+                if let picked = PinAddressLookup.locnVO(from: place) {
+                    self.pickPlace(picked)
+                } else {
+                    self.selectedCoordinates = place.coordinate
+                }
+
                 self.token = GMSAutocompleteSessionToken.init()
             }
         }
     }
-    
+
+    /// A place picked from the search keeps its own name and address, so the map moves without the pin lookup.
+    func pickPlace(_ location: LocnVO) {
+        if let latitude = location.latitude, let longitude = location.longitude {
+            isMovingToPickedPlace = true
+            selectedCoordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            isMovingToPickedPlace = false
+        }
+        locnVO = location
+    }
+
     func validateLocation(lat: Double, long: Double) {
         pinAddressLookup.locate(latitude: lat, longitude: long) { [weak self] locnVO in
             self?.locnVO = locnVO
@@ -173,8 +186,6 @@ class AddLocationViewModel: ObservableObject {
     }
     
     func getAddressString() -> String {
-        let items = [locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country]
-        let address = items.compactMap { $0 }.joined(separator: ", ")
-        return address
+        locnVO?.addressText ?? ""
     }
 }

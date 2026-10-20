@@ -194,9 +194,14 @@ extension LocnVO {
     /// Maps the picked V1 location into the V2 `LocationInput` body. The server updates the existing
     /// row in place, so re-applying is safe; only the fields it accepts are sent.
     func toLocationInputPayload() -> [String: Any] {
+        func nonEmpty(_ value: String?) -> String? {
+            guard let value = value, !value.isEmpty else { return nil }
+            return value
+        }
+
         var location: [String: Any] = [:]
-        if let value = displayName, !value.isEmpty { location["name"] = value }
-        if let value = locality, !value.isEmpty { location["city"] = value }
+        if let value = nonEmpty(displayName) ?? nonEmpty(name) { location["name"] = value }
+        if let value = nonEmpty(locality) ?? nonEmpty(city) { location["city"] = value }
         if let value = adminOneName, !value.isEmpty { location["state"] = value }
         if let value = country, !value.isEmpty { location["country"] = value }
         if let value = (postalCode?.value as? String) ?? (postalCode?.value as? Int).map(String.init), !value.isEmpty {
@@ -205,7 +210,7 @@ extension LocnVO {
         if let value = latitude { location["latitude"] = value }
         if let value = longitude { location["longitude"] = value }
         let street = [streetNumber, streetName].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
-        if !street.isEmpty { location["sublocation"] = street }
+        if let value = nonEmpty(street) ?? nonEmpty(sublocation) { location["sublocation"] = value }
         return location
     }
 }
@@ -228,7 +233,10 @@ extension LocationV2 {
             "postalCode": nonEmpty(postalCode),
             "country": nonEmpty(country),
             "countryCode": nonEmpty(countryCode),
-            "displayName": nonEmpty(name) ?? nonEmpty(displayName)
+            "displayName": nonEmpty(name) ?? nonEmpty(displayName),
+            "name": nonEmpty(name),
+            "sublocation": nonEmpty(sublocation),
+            "city": nonEmpty(city)
         ]
         var locn: [String: Any] = text.compactMapValues { $0 }
         if let value = latitude { locn["latitude"] = value }
