@@ -68,6 +68,7 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         
         resultsViewController = GMSAutocompleteResultsViewController()
         resultsViewController?.delegate = self
+        resultsViewController?.placeFields = PinAddressLookup.placeFields
         // The search controller already insets Google's list to sit under the field, so the list
         // must not add the top safe area a second time.
         resultsViewController?.view.subviews.compactMap { $0 as? UITableView }.forEach { $0.contentInsetAdjustmentBehavior = .never }
@@ -150,8 +151,14 @@ extension LocationSetViewController: GMSAutocompleteResultsViewControllerDelegat
   func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
                          didAutocompleteWith place: GMSPlace) {
     searchController?.isActive = false
-    
-    saveLocation(place.coordinate)
+
+    // A picked place keeps its own name and address; only a pin dropped on the map needs the lookup.
+    guard let location = PinAddressLookup.locnVO(from: place) else {
+        saveLocation(place.coordinate)
+        return
+    }
+    setLocation(place.coordinate.latitude, place.coordinate.longitude, preserveZoom: true)
+    pickedLocation = location
   }
 
   func resultsController(_ resultsController: GMSAutocompleteResultsViewController,

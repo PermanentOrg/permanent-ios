@@ -210,13 +210,13 @@ class FilesMetadataViewModel: ObservableObject {
         }
         let sameLocation = Set(records.compactMap { record in
             let locnVO = record.recordVO?.locnVO
-            return getAddressString([locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country])
+            return getAddressString([locnVO?.addressText])
         }).count == 1
         
         if sameLocation {
             let locnVO = records.first?.recordVO?.locnVO
             updateLocation(locnVO)
-            let address = getAddressString([locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country])
+            let address = getAddressString([locnVO?.addressText])
             locationSectionText = address
         } else {
             locationSectionText = "Various locations"

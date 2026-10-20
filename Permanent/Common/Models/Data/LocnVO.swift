@@ -18,6 +18,8 @@ struct LocnVOData: Model {
 struct LocnVO: Model {
     let locnID: Int?
     let displayName: String?
+    // The newer fields; the web saves a location with these and leaves locality and the street parts empty.
+    let name, sublocation, city: String?
     let geoCodeLookup: String?
     let streetName, streetNumber, locality, adminOneName: String?
     let postalCode, adminOneCode: JSONAny? // TODO
@@ -55,11 +57,36 @@ struct LocnVO: Model {
     }
     enum CodingKeys: String, CodingKey {
         case locnID = "locnId"
-        case displayName, geoCodeLookup, streetNumber, streetName, postalCode, locality, adminOneName, adminOneCode, adminTwoName, adminTwoCode, country, countryCode, geometryType, boundSouth, boundWest, boundNorth, boundEast, geometryAsArray, geoCodeType
+        case displayName, name, sublocation, city, geoCodeLookup, streetNumber, streetName, postalCode, locality, adminOneName, adminOneCode, adminTwoName, adminTwoCode, country, countryCode, geometryType, boundSouth, boundWest, boundNorth, boundEast, geometryAsArray, geoCodeType
         case geoCodeResponseAsXML = "geoCodeResponseAsXml"
         case timeZoneID = "timeZoneId"
         case status, type, createdDT, updatedDT
         case anyLatitude = "latitude"
         case anyLongitude = "longitude"
+    }
+}
+
+extension LocnVO {
+    /// The address the location rows show: place name, street, city, country.
+    /// The name is left out when it is the street, and no part shows twice.
+    var addressText: String {
+        let streetParts = [streetNumber, streetName].compactMap(Self.text)
+        let street = streetParts.isEmpty ? Self.text(sublocation) : streetParts.joined(separator: ", ")
+        let streetTexts = [street, Self.text(streetName)].compactMap { $0 }
+        let place = (Self.text(name) ?? Self.text(displayName)).flatMap { place in
+            streetTexts.contains { $0.localizedCaseInsensitiveContains(place) || place.localizedCaseInsensitiveContains($0) } ? nil : place
+        }
+
+        var shown: [String] = []
+        for part in [place, street, Self.text(city) ?? Self.text(locality), Self.text(country)].compactMap({ $0 })
+        where !shown.contains(where: { $0.caseInsensitiveCompare(part) == .orderedSame }) {
+            shown.append(part)
+        }
+        return shown.joined(separator: ", ")
+    }
+
+    private static func text(_ value: String?) -> String? {
+        guard let value = value, !value.isEmpty else { return nil }
+        return value
     }
 }

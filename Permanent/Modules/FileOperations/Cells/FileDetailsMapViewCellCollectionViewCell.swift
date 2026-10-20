@@ -45,7 +45,7 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
         titleLabelField.font = TextFontStyle.style9.font
 
         if let locnVO = viewModel.recordVO?.recordVO?.locnVO {
-            let address = viewModel.getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
+            let address = viewModel.getAddressString([locnVO.addressText])
             detailsLabelField.text = address
         } else {
             detailsLabelField.text = isEditable ? "Tap to set location".localized() : "No Location".localized()
