@@ -82,12 +82,12 @@ open class DateUtils {
         return legacy?.dateOnly ?? "-"
     }
 
-    /// `displayTime` as a `Date` that keeps the clock time as written on the phone's clock, as web shows
-    /// it; the UTC offset is not applied. Nil when the value is not EDTF Level 0.
+    /// `displayTime` as a `Date`: the clock time as written on the phone's clock, with any offset left out.
+    /// A `Z` time is a moment in UTC, as the old web editor writes it. Nil when not EDTF Level 0.
     static func date(fromDisplayTime raw: String?, timeZone: TimeZone = .current) -> Date? {
         guard let parts = level0Start(raw)?.parts else { return nil }
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
+        calendar.timeZone = parts.timeZone ?? timeZone
         let start = DateComponents(
             year: parts.year,
             month: parts.month ?? 1,
@@ -149,6 +149,7 @@ open class DateUtils {
         parts.hour = clock.hour
         parts.minute = clock.minute
         parts.second = clock.second
+        parts.timeZone = clock.timeZone
         return parts
     }
 
@@ -167,20 +168,28 @@ open class DateUtils {
         return DateComponents(year: year, month: month, day: day)
     }
 
-    /// `hh:mm:ss`, then nothing, `Z` or `±hh:mm`. The offset is checked but not kept.
+    /// `hh:mm:ss` with or without a fraction of a second, then nothing, `Z` or `±hh:mm`. A `Z` time keeps
+    /// UTC as its zone; an offset is checked but not kept.
     private static func level0Clock(_ text: String) -> DateComponents? {
         var clock = text
+        var zone: TimeZone?
         if clock.hasSuffix("Z") {
             clock.removeLast()
+            zone = .gmt
         } else if let sign = clock.firstIndex(where: { $0 == "+" || $0 == "-" }) {
             let offset = String(clock[clock.index(after: sign)...]).components(separatedBy: ":")
             guard let numbers = digitFields(offset, widths: [2, 2]), numbers.count == 2,
                   numbers[0] < 24, numbers[1] < 60 else { return nil }
             clock = String(clock[..<sign])
         }
-        guard let time = digitFields(clock.components(separatedBy: ":"), widths: [2, 2, 2]), time.count == 3,
+        let wholeAndFraction = clock.components(separatedBy: ".")
+        guard wholeAndFraction.count <= 2 else { return nil }
+        if let fraction = wholeAndFraction.dropFirst().first {
+            guard !fraction.isEmpty, fraction.allSatisfy({ $0.isASCII && $0.isNumber }) else { return nil }
+        }
+        guard let time = digitFields(wholeAndFraction[0].components(separatedBy: ":"), widths: [2, 2, 2]), time.count == 3,
               time[0] < 24, time[1] < 60, time[2] < 60 else { return nil }
-        return DateComponents(hour: time[0], minute: time[1], second: time[2])
+        return DateComponents(timeZone: zone, hour: time[0], minute: time[1], second: time[2])
     }
 
     /// Each field as a number, when it has exactly its width in ASCII digits.

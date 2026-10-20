@@ -26,6 +26,10 @@ struct DisplayTimeTests {
             ("2026-07-15T12:45:00Z", "2026-07-15"),
             ("2026-07-15T23:45:00+03:00", "2026-07-15"),
             ("2026-07-15T01:15:00-05:30", "2026-07-15"),
+            ("1985-10-23T23:30:00.000Z", "1985-10-23"),
+            ("1990-10-05T16:15:38.000Z", "1990-10-05"),
+            ("2026-07-15T12:45:00.5+03:00", "2026-07-15"),
+            ("2026-07-15T12:45:00.123", "2026-07-15"),
             ("1964/2008", "1964"),
             ("2004-02-01/2005-02-08", "2004-02-01")
         ]
@@ -40,6 +44,7 @@ struct DisplayTimeTests {
         arguments: [
             "", "1985~", "1985?", "198X", "1985-13", "1985-02-30", "85-10-23", "1985-10-23T25:00:00",
             "1985-10-23T12:45", "1985-10-23T12:45:00+3", "1985-10T12:45:00",
+            "1985-10-23T12:45:00.", "1985-10-23T12:45:00.5.5", "1985-10-23T12:45:00.x", "1985-10-23T12:45.5",
             "../1985", "1985/..", "1985/1990/1995", "2004-02-01T10:00:00/2005", "-1985"
         ]
     )
@@ -59,11 +64,25 @@ struct DisplayTimeTests {
 
     @Test(
         "A picker date keeps the clock time as written, with or without an offset",
-        arguments: ["2026-07-15T12:45:00", "2026-07-15T12:45:00Z", "2026-07-15T12:45:00+05:00", "2026-07-15T12:45:00-08:00"]
+        arguments: [
+            "2026-07-15T12:45:00", "2026-07-15T12:45:00+05:00", "2026-07-15T12:45:00-08:00",
+            "2026-07-15T12:45:00.250", "2026-07-15T12:45:00.000+05:00"
+        ]
     )
     func pickerKeepsWrittenClock(displayTime: String) throws {
         let date = try #require(DateUtils.date(fromDisplayTime: displayTime, timeZone: bucharest))
         #expect(clock(of: date) == [2026, 7, 15, 12, 45, 0])
+    }
+
+    @Test(
+        "A Z time is the UTC moment the old web editor wrote, read like the old field",
+        arguments: ["1985-10-23T23:30:00.000Z", "1985-10-23T23:30:00Z"]
+    )
+    func zuluTimeIsUTCMoment(displayTime: String) throws {
+        let date = try #require(DateUtils.date(fromDisplayTime: displayTime, timeZone: bucharest))
+        #expect(date == DateUtils.date(fromISO: "1985-10-23T23:30:00.000Z"))
+        let centralStandard = try #require(TimeZone(secondsFromGMT: -6 * 3600))
+        #expect(clock(of: date, in: centralStandard) == [1985, 10, 23, 17, 30, 0])
     }
 
     @Test("A year or a month alone starts the picker on its first day")
@@ -131,9 +150,9 @@ struct DisplayTimeTests {
 
     // MARK: - Helpers
 
-    private func clock(of date: Date) -> [Int?] {
+    private func clock(of date: Date, in zone: TimeZone? = nil) -> [Int?] {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = bucharest
+        calendar.timeZone = zone ?? bucharest
         let parts = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
         return [parts.year, parts.month, parts.day, parts.hour, parts.minute, parts.second]
     }
