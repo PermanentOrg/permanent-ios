@@ -10,6 +10,8 @@ import SwiftUI
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
+    /// Set when UIKit presents the screen; it is told whether the date was saved.
+    var onClose: ((Bool) -> Void)?
     
     var body: some View {
         ZStack {
@@ -45,7 +47,7 @@ struct EditDateAndTimeView: View {
             .onChange(of: viewModel.changesWereSaved, perform: { newValue in
                 if newValue {
                     viewModel.changesWereSaved = false
-                    presentationMode.wrappedValue.dismiss()
+                    close(saved: true)
                 }
             })
             .onChange(of: viewModel.changesConfirmed) { newValue in
@@ -59,7 +61,7 @@ struct EditDateAndTimeView: View {
                 })
             }
             if viewModel.showConfirmation {
-                CustomDialogView(isActive: $viewModel.showConfirmation, title: "Modify file \(viewModel.selectedFiles.count > 1 ? "names" : "name")", message: "Are you sure you want to find and replace these \(viewModel.selectedFiles.count) file \(viewModel.selectedFiles.count > 1 ? "names" : "name")?", buttonTitle: "Modify") {
+                CustomDialogView(isActive: $viewModel.showConfirmation, title: "ChangeDateAndTime".localized(), message: confirmationMessage, buttonTitle: "Modify") {
                     viewModel.applyChanges()
                 }
                 .frame(width: 294)
@@ -70,7 +72,7 @@ struct EditDateAndTimeView: View {
     var bottomButtons: some View {
         HStack {
             Button {
-                presentationMode.wrappedValue.dismiss()
+                close(saved: false)
             } label: {
                 Text("Cancel")
             }
@@ -89,6 +91,32 @@ struct EditDateAndTimeView: View {
             .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
         }
         .padding()
+    }
+
+    private var confirmationMessage: String {
+        let count = viewModel.selectedFiles.count
+        return count > 1 ? String(format: "ChangeDateAndTimeOther".localized(), count) : "ChangeDateAndTimeOne".localized()
+    }
+
+    private func close(saved: Bool) {
+        if let onClose {
+            onClose(saved)
+        } else {
+            presentationMode.wrappedValue.dismiss()
+        }
+    }
+}
+
+extension EditDateAndTimeView {
+    /// The screen for one file, for UIKit to present. It closes itself, then tells `onClose` whether the date was saved.
+    static func host(for file: FileModel, onClose: @escaping (Bool) -> Void) -> UIViewController {
+        weak var host: UIViewController?
+        let view = EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false)), onClose: { saved in
+            host?.dismiss(animated: true) { onClose(saved) }
+        })
+        let controller = UIHostingController(rootView: view)
+        host = controller
+        return controller
     }
 }
 

@@ -386,6 +386,8 @@
 		5E75228930862522008003BA /* LocationSaveRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228530862522008003BA /* LocationSaveRouteTests.swift */; };
 		5E75228A30862522008003BA /* LocationV2MappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228630862522008003BA /* LocationV2MappingTests.swift */; };
 		5E75228B30862522008003BA /* ItemLocationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228430862522008003BA /* ItemLocationServiceTests.swift */; };
+		5E75228E3088E9F3008003BA /* FileSizeAndDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228C3088E9F3008003BA /* FileSizeAndDateTests.swift */; };
+		5E75228F3088E9F3008003BA /* ItemMenuLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228D3088E9F3008003BA /* ItemMenuLayoutTests.swift */; };
 		5E75AFE12DBFC0250074159F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75AFE02DBFC0160074159F /* ChecklistItem.swift */; };
 		5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E781EA72787006B0007E397 /* ProfileItemOperation.swift */; };
 		5E7A1C0A2E5F00010000A002 /* SectionRootResolverV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7A1C0A2E5F00010000A001 /* SectionRootResolverV2.swift */; };
@@ -1624,6 +1626,8 @@
 		5E75228530862522008003BA /* LocationSaveRouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSaveRouteTests.swift; sourceTree = "<group>"; };
 		5E75228630862522008003BA /* LocationV2MappingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationV2MappingTests.swift; sourceTree = "<group>"; };
 		5E75228730862522008003BA /* PinAddressLookupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinAddressLookupTests.swift; sourceTree = "<group>"; };
+		5E75228C3088E9F3008003BA /* FileSizeAndDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSizeAndDateTests.swift; sourceTree = "<group>"; };
+		5E75228D3088E9F3008003BA /* ItemMenuLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemMenuLayoutTests.swift; sourceTree = "<group>"; };
 		5E75AFE02DBFC0160074159F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 		5E781EA72787006B0007E397 /* ProfileItemOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileItemOperation.swift; sourceTree = "<group>"; };
 		5E7A1C0A2E5F00010000A001 /* SectionRootResolverV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionRootResolverV2.swift; sourceTree = "<group>"; };
@@ -3776,6 +3780,8 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5E75228C3088E9F3008003BA /* FileSizeAndDateTests.swift */,
+				5E75228D3088E9F3008003BA /* ItemMenuLayoutTests.swift */,
 				5E75228430862522008003BA /* ItemLocationServiceTests.swift */,
 				5E75228530862522008003BA /* LocationSaveRouteTests.swift */,
 				5E75228630862522008003BA /* LocationV2MappingTests.swift */,
@@ -6410,6 +6416,8 @@
 				F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */,
 				F559F87D28F9AB070015A522 /* FolderContentViewModelTests.swift in Sources */,
 				5E173EB32F6373D300C6D151 /* SharePreviewViewTests.swift in Sources */,
+				5E75228E3088E9F3008003BA /* FileSizeAndDateTests.swift in Sources */,
+				5E75228F3088E9F3008003BA /* ItemMenuLayoutTests.swift in Sources */,
 				F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */,
 				5E2C065730824E2900C579A8 /* DisplayTimeV2Tests.swift in Sources */,
 				5E2C065830824E2900C579A8 /* DisplayTimeTests.swift in Sources */,

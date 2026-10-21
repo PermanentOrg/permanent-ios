@@ -1616,11 +1616,18 @@ extension MainViewController {
         case .copy: return { [weak self] in self?.relocateAction(files: [file], action: .copy) }
         case .download: return { [weak self] in self?.downloadAction(file: file) }
         case .fileInformation: return { [weak self] in self?.showFileInformation(for: file) }
+        case .adjustDateTime: return { [weak self] in self?.showDateAndTime(for: file) }
         }
     }
 
     private func showFileInformation(for file: FileModel) {
         present(FileDetailsViewController.navigation(for: file, delegate: self), animated: true)
+    }
+
+    private func showDateAndTime(for file: FileModel) {
+        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
+            if saved { self?.refreshCurrentFolder() }
+        }, animated: true)
     }
 
     /// The row's file when its … button would open the sheet right now; otherwise the long press does nothing.
@@ -1690,7 +1697,7 @@ extension MainViewController {
         case .download: downloadAction(file: file)
         case .fileInformation: showFileInformation(for: file)
         case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
-        case .unshare, .editMetadata: break
+        case .unshare, .editMetadata, .adjustDateTime: break
         }
     }
 
