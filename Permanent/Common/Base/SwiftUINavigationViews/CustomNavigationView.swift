@@ -18,31 +18,13 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
         self.leftButtons = leftButton()
         self.rightButtons = rightButton()
         
-        UINavigationBar.appearance().backgroundColor = .darkBlue
-        UINavigationBar.appearance().titleTextAttributes = [
-            .foregroundColor: UIColor.white,
-            NSAttributedString.Key.font: TextFontStyle.style51.font
-        ]
-        UINavigationBar.appearance().isTranslucent = false
-        
-        if #available(iOS 15, *) {
-            let navigationBarAppearance = UINavigationBarAppearance()
-            navigationBarAppearance.configureWithOpaqueBackground()
-            navigationBarAppearance.titleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-                NSAttributedString.Key.font: TextFontStyle.style51.font
-            ]
-            navigationBarAppearance.backgroundColor = UIColor.darkBlue
-            UINavigationBar.appearance().standardAppearance = navigationBarAppearance
-            UINavigationBar.appearance().compactAppearance = navigationBarAppearance
-            UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
-            
-            let tabBarApperance = UITabBarAppearance()
-            tabBarApperance.configureWithOpaqueBackground()
-            tabBarApperance.backgroundColor = UIColor.darkBlue
-            UITabBar.appearance().scrollEdgeAppearance = tabBarApperance
-            UITabBar.appearance().standardAppearance = tabBarApperance
-        }
+        UINavigationBar.applyDarkBlueLook()
+
+        let tabBarApperance = UITabBarAppearance()
+        tabBarApperance.configureWithOpaqueBackground()
+        tabBarApperance.backgroundColor = UIColor.darkBlue
+        UITabBar.appearance().scrollEdgeAppearance = tabBarApperance
+        UITabBar.appearance().standardAppearance = tabBarApperance
     }
     
     var body: some View {
@@ -100,17 +82,7 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
             #endif
         }
         .onDisappear {
-            if #available(iOS 26.0, *) {
-                // On iOS 26 the global navigation-bar appearance proxy bleeds into SwiftUI NavigationStacks,
-                // since `toolbarBackground` no longer overrides it per instance — so clear it on disappear.
-                let transparent = UINavigationBarAppearance()
-                transparent.configureWithTransparentBackground()
-                UINavigationBar.appearance().standardAppearance = transparent
-                UINavigationBar.appearance().compactAppearance = transparent
-                UINavigationBar.appearance().scrollEdgeAppearance = transparent
-                UINavigationBar.appearance().backgroundColor = nil
-                UINavigationBar.appearance().isTranslucent = true
-            }
+            UINavigationBar.clearDarkBlueLook()
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .all
             ScrollViewAppearanceManager.shared.popScrollViewBounce(identifier: "CustomNavigationView")

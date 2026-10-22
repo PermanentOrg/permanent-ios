@@ -20,11 +20,7 @@ struct EditDateAndTimeView: View {
                 }
                 .padding(.top, 20)
                 .padding(.horizontal, 24)
-                .navigationBarTitle("Add date and time", displayMode: .inline)
-                .navigationBarItems(leading: Image("editFilenames")
-                    .renderingMode(.template)
-                    .foregroundColor(.white)
-                    .frame(width: 24, height: 24))
+                .darkBarSheet(title: "AddDateAndTime".localized()) { close(saved: false) }
             }
             VStack {
                 if #available(iOS 16.0, *) {
@@ -66,6 +62,10 @@ struct EditDateAndTimeView: View {
                 }
                 .frame(width: 294)
             }
+        }
+        .onDisappear {
+            // Under the multi-select screen that screen clears the bar look itself.
+            if onClose != nil { UINavigationBar.clearDarkBlueLook() }
         }
     }
     
@@ -114,6 +114,8 @@ extension EditDateAndTimeView {
         let view = EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false)), onClose: { saved in
             host?.dismiss(animated: true) { onClose(saved) }
         })
+        // The sheet's own bar reads the global look, as it does under the multi-select screen.
+        UINavigationBar.applyDarkBlueLook()
         let controller = UIHostingController(rootView: view)
         host = controller
         return controller
