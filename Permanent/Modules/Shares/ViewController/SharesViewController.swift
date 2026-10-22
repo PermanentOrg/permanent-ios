@@ -955,11 +955,18 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         case .unshare: return { [weak self] in self?.unshareAction(file: file, atIndexPath: indexPath) }
         case .delete: return { [weak self] in self?.deleteAction(file: file, atIndexPath: indexPath) }
         case .fileInformation: return { [weak self] in self?.showFileInformation(for: file) }
+        case .adjustDateTime: return { [weak self] in self?.showDateAndTime(for: file) }
         }
     }
 
     private func showFileInformation(for file: FileModel) {
         present(FileDetailsViewController.navigation(for: file, delegate: self), animated: true)
+    }
+
+    private func showDateAndTime(for file: FileModel) {
+        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
+            if saved { self?.refreshCurrentFolder() }
+        }, animated: true)
     }
 
     private var menuPlace: FileMenuItems.Place {
@@ -1841,7 +1848,7 @@ extension SharesViewController {
         case .fileInformation: showFileInformation(for: file)
         case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
         case .unshare: confirmMenuAction(.leaveShare, on: file) { [weak self] in self?.unshareFile(file, atIndexPath: indexPath) }
-        case .publish, .editMetadata: break
+        case .publish, .editMetadata, .adjustDateTime: break
         }
     }
 

@@ -108,7 +108,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         heightConstraint.priority = .defaultHigh
         heightConstraint.isActive = true
         fileDateLabel.font = TextFontStyle.style12.font
-        fileDateLabel.textColor = .lightGray
+        fileDateLabel.textColor = UIColor(.blue400)
         fileImageView.clipsToBounds = true
         // Pictures share the skeleton square's corners, so nothing changes shape as a picture lands.
         fileImageView.layer.cornerRadius = SkeletonSquareView.cornerRadius
@@ -216,7 +216,8 @@ class FileCollectionViewCell: UICollectionViewCell {
         rightButtonImageView.isHidden = false
         
         fileNameLabel.text = model.name
-        fileDateLabel.text = model.date
+        fileDateLabel.text = model.sizeAndDate
+        fileDateLabel.accessibilityLabel = model.sizeAndDateForVoiceOver
         
         sharesImageView.isHidden = model.minArchiveVOS.isEmpty || sharedFile
         

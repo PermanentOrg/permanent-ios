@@ -25,6 +25,7 @@ class FileMenuViewModel: ObservableObject {
             case shareToAnotherApp = "shareToAnotherApp"
             case editMetadata = "editMetadata"
             case fileInformation = "fileInformation"
+            case adjustDateTime
 
             var title: String {
                 switch self {
@@ -38,7 +39,8 @@ class FileMenuViewModel: ObservableObject {
                 case .shareToPermanent: return "Share and manage access"
                 case .shareToAnotherApp: return "Save or send a copy"
                 case .editMetadata: return "Edit Metadata"
-                case .fileInformation: return "File information"
+                case .fileInformation: return "ViewInformation".localized()
+                case .adjustDateTime: return "AdjustDateAndTime".localized()
                 }
             }
 
@@ -162,9 +164,8 @@ class FileMenuViewModel: ObservableObject {
     
     // MARK: - File Formatting Logic
     static func formatFileSize(_ size: Int64) -> String? {
-        guard size > 0 else { return nil }
-        // Canonical period-style size (Figma + Storage), locale-stable — see Int64.readableFileSize.
-        return size.readableFileSize
+        // The list rows write the size the same way.
+        FileModel.displaySize(size)
     }
 
     static func formatDate(_ dateString: String) -> String {
@@ -526,7 +527,7 @@ class FileMenuViewModel: ObservableObject {
         
         if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
             handleMenuItemAction(menuItem)
-        } else if menuItem.type == .editMetadata || menuItem.type == .fileInformation {
+        } else if [.editMetadata, .fileInformation, .adjustDateTime].contains(menuItem.type) {
             // Dismiss menu first, then open the screen the action presents
             dismissWithAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -910,6 +911,9 @@ class FileMenuViewModel: ObservableObject {
 
         case .editMetadata, .fileInformation:
             return Image(.fileInfoV1)
+
+        case .adjustDateTime:
+            return Image(.calendarV1)
         }
     }
     

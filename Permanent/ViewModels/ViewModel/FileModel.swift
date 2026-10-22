@@ -429,3 +429,20 @@ struct FileModel: Equatable, Codable {
             .first { !$0.isEmpty }
     }
 }
+
+extension FileModel {
+    /// The line under a row's name, "4 MB • Aug. 15, 2023". A folder, or a file with no size, shows the date alone.
+    var sizeAndDate: String { sizeAndDateParts.joined(separator: " • ") }
+
+    /// The same line for VoiceOver, with a comma where the dot is.
+    var sizeAndDateForVoiceOver: String { sizeAndDateParts.joined(separator: ", ") }
+
+    static func displaySize(_ size: Int64) -> String? {
+        size > 0 ? size.readableFileSize : nil
+    }
+
+    private var sizeAndDateParts: [String] {
+        let size = type.isFolder ? nil : Self.displaySize(size)
+        return [size, DateUtils.displayDate(from: date)].compactMap { $0 }.filter { !$0.isEmpty }
+    }
+}
