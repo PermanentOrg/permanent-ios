@@ -137,6 +137,17 @@ class NetworkLogger {
         print("\(label): \(loggableBody(body))")
     }
     
+    /// One error line for a success status whose body is not JSON, so an outage page is readable in
+    /// the console. Only the first 100 bytes of the body are rendered, so a large page costs nothing.
+    static func log(nonJSONResponse response: HTTPURLResponse, body: Data) {
+        guard configuration.isEnabled, configuration.logLevel.rawValue >= LogLevel.error.rawValue else { return }
+
+        let path = response.url?.path ?? "<no path>"
+        let contentType = response.value(forHTTPHeaderField: "Content-Type") ?? "<no Content-Type>"
+        let preview = String(bytes: body.prefix(100), encoding: .utf8) ?? "<not UTF-8>"
+        logger.error("❌ NON-JSON RESPONSE: status \(response.statusCode, privacy: .public) path \(path, privacy: .public) Content-Type \(contentType, privacy: .public) body \(preview, privacy: .private)")
+    }
+
     /// Log a network response
     static func log(response: HTTPURLResponse?, data: Data?, error: Error?) {
         // Always log errors regardless of log level

@@ -223,10 +223,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let httpResponse, _):
-                if let response = httpResponse,
-                   let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
-                   let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                if (httpResponse as? [String: Any])?["isSuccessful"] as? Bool == true {
                     completion(nil)
                 } else {
                     completion(APIError.serverError)
