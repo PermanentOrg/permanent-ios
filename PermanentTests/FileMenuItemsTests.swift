@@ -30,7 +30,7 @@ final class FileMenuItemsTests: XCTestCase {
 
     func testPrivateFiles_OwnerFile_GetsNineActionsInTheSheetOrder() {
         XCTAssertEqual(types("access.role.owner", in: .privateFiles),
-                       [.shareToPermanent, .shareToAnotherApp, .publish, .fileInformation, .rename, .move, .copy, .download, .delete])
+                       [.shareToPermanent, .publish, .shareToAnotherApp, .rename, .adjustDateTime, .fileInformation, .move, .copy, .delete])
     }
 
     func testPrivateFiles_OwnerFolder_HasNoSaveAndNoSendACopy() {
@@ -39,21 +39,21 @@ final class FileMenuItemsTests: XCTestCase {
     }
 
     func testPrivateFiles_ManagerAndCurator_LoseOnlyShareAndManageAccess() {
-        let expected: [ItemType] = [.shareToAnotherApp, .publish, .fileInformation, .rename, .move, .copy, .download, .delete]
+        let expected: [ItemType] = [.publish, .shareToAnotherApp, .rename, .adjustDateTime, .fileInformation, .move, .copy, .delete]
         XCTAssertEqual(types("access.role.manager", in: .privateFiles), expected)
         XCTAssertEqual(types("access.role.curator", in: .privateFiles), expected)
     }
 
     func testPrivateFiles_Editor_RenamesCopiesAndSaves() {
-        XCTAssertEqual(types("access.role.editor", in: .privateFiles), [.fileInformation, .rename, .copy, .download])
+        XCTAssertEqual(types("access.role.editor", in: .privateFiles), [.rename, .adjustDateTime, .fileInformation, .copy])
     }
 
     func testPrivateFiles_Contributor_CopiesAndSaves() {
-        XCTAssertEqual(types("access.role.contributor", in: .privateFiles), [.fileInformation, .copy, .download])
+        XCTAssertEqual(types("access.role.contributor", in: .privateFiles), [.fileInformation, .copy])
     }
 
     func testPrivateFiles_Viewer_ReadsTheInformationAndSaves() {
-        XCTAssertEqual(types("access.role.viewer", in: .privateFiles), [.fileInformation, .download])
+        XCTAssertEqual(types("access.role.viewer", in: .privateFiles), [.fileInformation])
     }
 
     func testPrivateFiles_ViewerFolder_HasNoActions() {
@@ -64,29 +64,29 @@ final class FileMenuItemsTests: XCTestCase {
 
     func testPublicFiles_Owner_HasEverythingButPublish() {
         XCTAssertEqual(types("access.role.owner", in: .publicFiles),
-                       [.shareToPermanent, .shareToAnotherApp, .fileInformation, .rename, .move, .copy, .download, .delete])
+                       [.shareToPermanent, .shareToAnotherApp, .rename, .adjustDateTime, .fileInformation, .move, .copy, .delete])
     }
 
     // MARK: - Shared
 
     func testSharedWithMe_TopLevel_LeavesTheShareAndNeverMovesOrCopies() {
-        XCTAssertEqual(types("access.role.curator", in: .sharedWithMe(isRoot: true)), [.shareToAnotherApp, .rename, .download, .unshare])
-        XCTAssertEqual(types("access.role.viewer", in: .sharedWithMe(isRoot: true)), [.download, .unshare])
+        XCTAssertEqual(types("access.role.curator", in: .sharedWithMe(isRoot: true)), [.shareToAnotherApp, .rename, .adjustDateTime, .unshare])
+        XCTAssertEqual(types("access.role.viewer", in: .sharedWithMe(isRoot: true)), [.unshare])
     }
 
     func testSharedWithMe_InsideAFolder_MovesCopiesAndDeletes() {
         XCTAssertEqual(types("access.role.curator", in: .sharedWithMe(isRoot: false)),
-                       [.shareToAnotherApp, .rename, .move, .copy, .download, .delete])
+                       [.shareToAnotherApp, .rename, .adjustDateTime, .move, .copy, .delete])
     }
 
     func testSharedByMe_TopLevel_SharesAndDeletesButNeverMovesOrCopies() {
         XCTAssertEqual(types("access.role.owner", in: .sharedByMe(isRoot: true)),
-                       [.shareToPermanent, .shareToAnotherApp, .fileInformation, .rename, .download, .delete])
+                       [.shareToPermanent, .shareToAnotherApp, .rename, .adjustDateTime, .fileInformation, .delete])
     }
 
     func testSharedByMe_InsideAFolder_TakesThePrivateFilesOrderWithoutPublish() {
         XCTAssertEqual(types("access.role.owner", in: .sharedByMe(isRoot: false)),
-                       [.shareToPermanent, .shareToAnotherApp, .fileInformation, .rename, .move, .copy, .download, .delete])
+                       [.shareToPermanent, .shareToAnotherApp, .rename, .adjustDateTime, .fileInformation, .move, .copy, .delete])
     }
 
     func testShareAndManageAccess_NeedsTheSharePermissionTooInSharedLists() {
@@ -137,23 +137,23 @@ final class FileMenuItemsTests: XCTestCase {
     func testEveryRoleAndPlace_OffersTheSameActionsAsBefore() {
         let roles = ["owner", "manager", "curator", "editor", "contributor", "viewer"].map { ArchiveVOData.permissions(forAccessRole: "access.role.\($0)") }
         let odd: [[Permission]] = [[.ownership, .read], [.delete], [.create], [.move], [.share], []]
+        // Save left the menu, View information and Adjust date and time are new, and the rows moved, so only sets are compared.
+        let changed: Set<ItemType> = [.download, .fileInformation, .adjustDateTime]
         for permissions in roles + odd {
             for isFolder in [false, true] {
                 let item = FileModel(name: "x", recordId: 1, folderLinkId: 1, archiveNbr: "0001",
                                      type: isFolder ? "type.folder.private" : "type.record.image", permissions: permissions)
                 let label = "\(permissions), folder: \(isFolder)"
                 for isPublic in [false, true] {
-                    let before = oldPrivateOrPublicRules(item, isPublic: isPublic)
-                    // File information is new, so it stays out of the comparison.
-                    let now = FileMenuItems.types(for: item, in: isPublic ? .publicFiles : .privateFiles).filter { $0 != .fileInformation }
-                    // the sheet shows the destructive item last, so that is the order people saw
-                    XCTAssertEqual(now, before.filter { !$0.isDestructive } + before.filter(\.isDestructive), label)
+                    let before = oldPrivateOrPublicRules(item, isPublic: isPublic).filter { !changed.contains($0) }
+                    let now = FileMenuItems.types(for: item, in: isPublic ? .publicFiles : .privateFiles).filter { !changed.contains($0) }
+                    XCTAssertEqual(Set(now), Set(before), label)
                 }
                 for isRoot in [false, true] {
-                    XCTAssertEqual(Set(FileMenuItems.types(for: item, in: .sharedByMe(isRoot: isRoot)).filter { $0 != .fileInformation }),
-                                   Set(oldSharedRules(item, isRoot: isRoot, isSharedWithMe: false)), label)
-                    XCTAssertEqual(Set(FileMenuItems.types(for: item, in: .sharedWithMe(isRoot: isRoot))),
-                                   Set(oldSharedRules(item, isRoot: isRoot, isSharedWithMe: true)), label)
+                    XCTAssertEqual(Set(FileMenuItems.types(for: item, in: .sharedByMe(isRoot: isRoot)).filter { !changed.contains($0) }),
+                                   Set(oldSharedRules(item, isRoot: isRoot, isSharedWithMe: false).filter { !changed.contains($0) }), label)
+                    XCTAssertEqual(Set(FileMenuItems.types(for: item, in: .sharedWithMe(isRoot: isRoot)).filter { !changed.contains($0) }),
+                                   Set(oldSharedRules(item, isRoot: isRoot, isSharedWithMe: true).filter { !changed.contains($0) }), label)
                 }
             }
         }

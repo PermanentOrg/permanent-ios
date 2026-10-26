@@ -28,25 +28,24 @@ enum FileMenuItems {
         if permissions.contains(.ownership) && (!place.isShared || permissions.contains(.share)) {
             types.append(.shareToPermanent)
         }
+        if place == .privateFiles && permissions.contains(.delete) {
+            types.append(.publish)
+        }
+        // Save or send a copy also saves the file, so there is no separate Save row.
         if permissions.contains(.share) && !isFolder {
             types.append(.shareToAnotherApp)
         }
-        if place == .privateFiles && permissions.contains(.delete) {
-            types.append(.publish)
+        if permissions.contains(.edit) {
+            types.append(.rename)
+            if !isFolder { types.append(.adjustDateTime) }
         }
         // The details screen reads a record from the user's own archive, so a file shared with them is left out.
         if permissions.contains(.read) && !isFolder && !place.isSharedWithMe {
             types.append(.fileInformation)
         }
-        if permissions.contains(.edit) {
-            types.append(.rename)
-        }
         if !place.isSharedRoot {
             if permissions.contains(.move) { types.append(.move) }
             if permissions.contains(.create) { types.append(.copy) }
-        }
-        if permissions.contains(.read) && !isFolder {
-            types.append(.download)
         }
         if place == .sharedWithMe(isRoot: true) {
             types.append(.unshare)

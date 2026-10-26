@@ -221,3 +221,10 @@
 "LoadingItems" = "Loading items";
 "LoadingMoreItems" = "Loading more items";
 "TabPosition" = "%1$d of %2$d";
+"ViewInformation" = "View information";
+"AdjustDateAndTime" = "Adjust date and time";
+"AddDateAndTime" = "Add date and time";
+"AddLocation" = "Add location";
+"ChangeDateAndTime" = "Change date and time";
+"ChangeDateAndTimeOne" = "Are you sure you want to change the date and time of this file?";
+"ChangeDateAndTimeOther" = "Are you sure you want to change the date and time of these %d files?";
