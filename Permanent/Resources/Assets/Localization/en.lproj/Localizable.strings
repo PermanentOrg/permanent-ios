@@ -228,3 +228,11 @@
 "ChangeDateAndTime" = "Change date and time";
 "ChangeDateAndTimeOne" = "Are you sure you want to change the date and time of this file?";
 "ChangeDateAndTimeOther" = "Are you sure you want to change the date and time of these %d files?";
+"Info" = "Info";
+"Details" = "Details";
+"Description" = "Description";
+"Location" = "Location";
+"InfoAddDescription" = "Add description...";
+"InfoAddDateAndTime" = "Add date and time...";
+"InfoAddLocation" = "Add location...";
+"InfoEditHint" = "Double tap to edit";

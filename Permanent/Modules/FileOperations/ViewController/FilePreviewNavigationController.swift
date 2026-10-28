@@ -23,6 +23,11 @@ class FilePreviewNavigationController: UINavigationController {
     }
     
     weak var filePreviewNavDelegate: FilePreviewNavigationControllerDelegate?
+
+    /// The opening animation from the preview; nil keeps the system one.
+    var openTransition: UIViewControllerAnimatedTransitioning?
+    /// The way back to the preview when the Info screen dismisses itself; nil keeps the system one.
+    var closeTransition: UIViewControllerAnimatedTransitioning?
     
     var hasChanges: Bool = false {
         didSet {
@@ -74,5 +79,16 @@ class FilePreviewNavigationController: UINavigationController {
         if isBeingDismissed {
             filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
         }
+    }
+}
+
+// MARK: - UIViewControllerTransitioningDelegate
+extension FilePreviewNavigationController: UIViewControllerTransitioningDelegate {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        openTransition
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        closeTransition
     }
 }

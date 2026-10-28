@@ -117,6 +117,40 @@ open class DateUtils {
         ["displayTime": displayTime(from: date)]
     }
 
+    /// The Info tab's Date row: "October 23, 1985 • 5PM", "October 1985" or "1985", then the zone when given.
+    /// `displayTime` as written comes first, else the old field as a moment; nil when neither reads.
+    static func infoRowDate(displayTime: String?, legacy: String?, zoneAbbreviation: String? = nil, timeZone: TimeZone = .current) -> String? {
+        let text: String
+        if let parts = level0Start(displayTime)?.parts, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) {
+            let dayPattern = parts.day != nil ? "MMMM d, yyyy" : parts.month != nil ? "MMMM yyyy" : "yyyy"
+            text = formatted(date, pattern: dayPattern, timeZone: timeZone) + (parts.hour != nil ? clockText(date, timeZone: timeZone) : "")
+        } else if let date = date(fromISO: legacy) {
+            text = formatted(date, pattern: "MMMM d, yyyy", timeZone: timeZone) + clockText(date, timeZone: timeZone)
+        } else {
+            return nil
+        }
+        guard let zone = zoneAbbreviation, !zone.isEmpty else { return text }
+        return text + " " + zone
+    }
+
+    /// " • 5PM" on the hour, " • 4:16 PM" otherwise.
+    private static func clockText(_ date: Date, timeZone: TimeZone) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        let pattern = calendar.component(.minute, from: date) == 0 ? "ha" : "h:mm a"
+        return " • " + formatted(date, pattern: pattern, timeZone: timeZone)
+    }
+
+    /// English month and AM/PM names in the given zone, with a plain space before AM or PM on every iOS.
+    private static func formatted(_ date: Date, pattern: String, timeZone: TimeZone) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = timeZone
+        formatter.dateFormat = pattern
+        return formatter.string(from: date)
+    }
+
     /// True when none of these `displayTime` values reads, so the old field is the date the app shows
     /// and a V1 `displayDT` write would be seen.
     static func showsLegacyDate(displayTimes: [String?]) -> Bool {

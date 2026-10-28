@@ -28,8 +28,8 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="Bhu-Rx-2Jv" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="82R-F7-a9O"/>
-                <constraint firstItem="Bhu-Rx-2Jv" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="22" id="gq0-jP-VRS"/>
-                <constraint firstAttribute="trailing" secondItem="Bhu-Rx-2Jv" secondAttribute="trailing" constant="22" id="vcf-lr-loc"/>
+                <constraint firstItem="Bhu-Rx-2Jv" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="gq0-jP-VRS"/>
+                <constraint firstAttribute="trailing" secondItem="Bhu-Rx-2Jv" secondAttribute="trailing" constant="24" id="vcf-lr-loc"/>
             </constraints>
             <size key="customSize" width="386" height="240"/>
             <connections>

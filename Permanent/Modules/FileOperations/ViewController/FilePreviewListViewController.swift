@@ -196,16 +196,21 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     }
     
     @objc private func infoButtonAction(_ sender: Any) {
-        let viewModel = (pageVC.viewControllers?.first as! FilePreviewViewController).viewModel
-        
+        guard let preview = pageVC.viewControllers?.first as? FilePreviewViewController else { return }
+        let viewModel = preview.viewModel
+
         let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap, from: .main) as! FileDetailsViewController
         fileDetailsVC.file = currentFile
         fileDetailsVC.viewModel = viewModel
         fileDetailsVC.delegate = self
-        
+        fileDetailsVC.openingImage = preview.shownPhotoView?.image
+
         let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
         navControl.modalPresentationStyle = .fullScreen
-        present(navControl, animated: false, completion: nil)
+        navControl.openTransition = FileInfoOpenTransition(from: preview.shownPhotoView)
+        navControl.closeTransition = FileInfoCloseTransition(to: preview.shownPhotoView)
+        navControl.transitioningDelegate = navControl
+        present(navControl, animated: true, completion: nil)
     }
     
     @objc func onDidUpdateData(_ notification: Notification) {

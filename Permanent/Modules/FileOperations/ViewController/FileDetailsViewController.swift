@@ -20,6 +20,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         case description
         case date
         case location
+        /// The map under a set location, with its own row.
+        case locationMap
         case tags
         case uploaded
         case lastModified
@@ -40,8 +42,16 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     let topSectionCells: [CellType] = [.thumbnail, .segmentedControl]
-    var bottomSectionCells: [CellType] = [.name, .description, .date, .location, .tags]
-    
+    var bottomSectionCells: [CellType] = []
+    static let detailsCells: [CellType] = [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
+    private static let infoRowCellIdentifier = "FileInfoRowCell"
+
+    private var showsDetailsTab = false
+    /// The Info tab's rows as last built from the record.
+    private(set) var infoRows: [FileInfoRowModel] = []
+    /// The picture the preview showed when it opened this screen; the picture slot starts with it.
+    var openingImage: UIImage?
+
     let documentInteractionController = UIDocumentInteractionController()
     
     @IBOutlet var collectionView: UICollectionView!
@@ -63,18 +73,26 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         collectionView.register(FileDetailsDateCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsDateCollectionViewCell.identifier)
         collectionView.register(FileDetailsMapViewCellCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier)
         collectionView.register(TagsNamesCollectionViewCell.nib(), forCellWithReuseIdentifier: TagsNamesCollectionViewCell.identifier)
-        
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Self.infoRowCellIdentifier)
+
+        let tapAway = UITapGestureRecognizer(target: self, action: #selector(closeKeyboardOnTapAway))
+        tapAway.cancelsTouchesInView = false
+        tapAway.delegate = self
+        view.addGestureRecognizer(tapAway)
+
         if viewModel == nil {
             viewModel = FilePreviewViewModel(file: file)
             viewModel?.getRecord(file: file, then: { record in
                 self.title = record?.recordVO?.displayName
+                self.rebuildBottomSection()
                 self.collectionView.reloadData()
             })
-            
+
             title = file.name
         } else {
             title = viewModel!.recordVO?.recordVO?.displayName
         }
+        rebuildBottomSection()
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -217,6 +235,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         // Hand off to the pager, which dismisses the whole chain in one transition. Dismissing this modal
         // first would briefly reveal the fullscreen preview underneath.
         let hasChanges = (self.navigationController as? FilePreviewNavigationController)?.hasChanges ?? false
+        // The X leaves the whole chain; the glide back to the preview belongs to the picture tap only.
+        (self.navigationController as? FilePreviewNavigationController)?.closeTransition = nil
         if let delegate = delegate {
             delegate.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
         } else {
@@ -267,8 +287,29 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             collectionView.scrollIndicatorInsets = scrollIndicatorInsets
             UIView.commitAnimations()
         }
+        scrollEditedRowAboveKeyboard(keyboardTop: keyBoardFrame.origin.y)
     }
-    
+
+    /// Keeps the whole box of the row being typed in, and one row gap under it, above the keyboard.
+    private func scrollEditedRowAboveKeyboard(keyboardTop: CGFloat) {
+        guard let cell = collectionView.visibleCells.first(where: { Self.holdsFirstResponder($0) }) else { return }
+        let gap = FileInfoRowModel.rowSpacing(for: .boxed)
+        let roomAboveKeyboard = keyboardTop - collectionView.frame.minY
+        let wantedOffset = cell.frame.maxY + gap - roomAboveKeyboard
+        guard wantedOffset > collectionView.contentOffset.y else { return }
+        let largestOffset = collectionView.contentSize.height + collectionView.adjustedContentInset.bottom - collectionView.bounds.height
+        collectionView.setContentOffset(CGPoint(x: 0, y: min(wantedOffset, max(largestOffset, 0))), animated: true)
+    }
+
+    private static func holdsFirstResponder(_ view: UIView) -> Bool {
+        view.isFirstResponder || view.subviews.contains(where: holdsFirstResponder)
+    }
+
+    /// A tap outside a text field closes the keyboard; the row saves as it does whenever its field loses focus.
+    @objc private func closeKeyboardOnTapAway() {
+        view.endEditing(true)
+    }
+
     @objc func keyboardWillHide(_ notification: Notification) {
         let keyBoardInfo = notification.userInfo!
         var tableInsets = collectionView.contentInset
@@ -299,21 +340,125 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     private func segmentedControlChangedAction() -> ((FileDetailsMenuCollectionViewCell) -> Void) {
         return { [weak self] cell in
             guard let strongSelf = self else { return }
-            
-            if cell.segmentedControl.selectedSegmentIndex == 0 {
-                strongSelf.bottomSectionCells = [.name, .description, .date, .location, .tags]
-            } else {
-                strongSelf.bottomSectionCells = [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
-            }
-            
-            strongSelf.collectionView.reloadSections([1])
+            strongSelf.showsDetailsTab = cell.segmentedControl.selectedSegmentIndex != 0
+            strongSelf.reloadBottomSection()
         }
     }
-    
+
+    // MARK: - Info tab
+
+    /// The Info tab's cells: the rows, the map after a set location when the record has coordinates, and the tags row.
+    static func infoCells(rows: [FileInfoRowModel], hasMap: Bool, hasTags: Bool) -> [CellType] {
+        var cells = rows.map { cellType(for: $0.kind) }
+        if hasMap, let location = cells.firstIndex(of: .location) {
+            cells.insert(.locationMap, at: location + 1)
+        }
+        if hasTags {
+            cells.append(.tags)
+        }
+        return cells
+    }
+
+    private static func cellType(for kind: FileInfoRowModel.Kind) -> CellType {
+        switch kind {
+        case .name: return .name
+        case .description: return .description
+        case .date: return .date
+        case .location: return .location
+        }
+    }
+
+    /// Builds the bottom section's row list from the record for the tab shown.
+    private func rebuildBottomSection() {
+        if showsDetailsTab {
+            bottomSectionCells = Self.detailsCells
+            return
+        }
+        infoRows = viewModel?.infoRows() ?? []
+        bottomSectionCells = Self.infoCells(rows: infoRows, hasMap: viewModel?.infoTabHasMap ?? false, hasTags: viewModel?.infoTabHasTags ?? false)
+    }
+
+    func reloadBottomSection() {
+        rebuildBottomSection()
+        collectionView.reloadSections([1])
+    }
+
+    /// The picture slot at the top of the list, laid out; the opening transition moves the photo into it.
+    func pictureImageView() -> UIImageView? {
+        view.layoutIfNeeded()
+        collectionView.layoutIfNeeded()
+        return (collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? FileDetailsTopCollectionViewCell)?.imageView
+    }
+
+    /// Tells the list behind this screen to refresh when the screen closes, whichever way it was opened.
+    private func markChanged() {
+        (navigationController as? FilePreviewNavigationController)?.hasChanges = true
+    }
+
+    private func infoRowCell(for row: FileInfoRowModel, at indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Self.infoRowCellIdentifier, for: indexPath)
+        cell.backgroundColor = .black
+        cell.contentConfiguration = UIHostingConfiguration {
+            FileInfoRow(model: row, onCommit: { [weak self] typed, done in
+                self?.commit(typed, for: row.kind, done: done)
+            }, onTap: { [weak self] in
+                self?.open(row.kind)
+            })
+        }
+        .margins(.vertical, 0)
+        .margins(.horizontal, FileInfoRowModel.sideInset)
+        .background(Color.black)
+        return cell
+    }
+
+    private func commit(_ typed: String, for kind: FileInfoRowModel.Kind, done: @escaping (Bool) -> Void) {
+        switch kind {
+        case .name: viewModel?.saveName(typed, completion: done)
+        case .description: viewModel?.saveDescription(typed, completion: done)
+        case .date, .location: done(false)
+        }
+    }
+
+    private func open(_ kind: FileInfoRowModel.Kind) {
+        guard viewModel?.isEditable ?? false else { return }
+        switch kind {
+        case .date: openDateScreen()
+        case .location: openLocationScreen()
+        case .name, .description: break
+        }
+    }
+
+    private func openDateScreen() {
+        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
+            self?.dateScreenDidClose(saved: saved)
+        }, animated: true)
+    }
+
+    /// After the date screen saved, reads the record again so the Date row shows the new date.
+    func dateScreenDidClose(saved: Bool) {
+        guard saved else { return }
+        viewModel?.getRecord(file: file) { [weak self] _ in
+            self?.reloadBottomSection()
+            self?.markChanged()
+        }
+    }
+
+    private func openLocationScreen() {
+        guard let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as? LocationSetViewController else { return }
+        locationSetVC.delegate = self
+        locationSetVC.file = file
+        locationSetVC.viewModel = viewModel
+
+        let navigationVC = NavigationController(rootViewController: locationSetVC)
+        navigationVC.modalPresentationStyle = .fullScreen
+        present(navigationVC, animated: true)
+    }
+
     @objc func onDidUpdateData(_ notification: Notification) {
         if let notifVM = notification.object as? FilePreviewViewModel, notifVM.file == viewModel?.file {
             self.title = viewModel?.name
-            collectionView.reloadSections([1])
+            reloadBottomSection()
+            markChanged()
             view.showNotificationBanner(title: "Change was saved".localized())
         }
     }
@@ -482,7 +627,8 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         switch currentCellType {
         case .thumbnail:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsTopCollectionViewCell.identifier, for: indexPath) as! FileDetailsTopCollectionViewCell
-            
+            cell.openingImage = openingImage
+
             returnedCell = cell
             
         case .segmentedControl:
@@ -491,22 +637,28 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             
             returnedCell = cell
             
-        case .name, .description, .size, .fileType, .originalFileName, .originalFileType:
+        case .name, .description, .date, .location:
+            guard let row = infoRows.first(where: { Self.cellType(for: $0.kind) == currentCellType }) else {
+                return collectionView.dequeueReusableCell(withReuseIdentifier: Self.infoRowCellIdentifier, for: indexPath)
+            }
+            return infoRowCell(for: row, at: indexPath)
+
+        case .size, .fileType, .originalFileName, .originalFileType:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
 
             returnedCell = cell
 
-        case .location:
+        case .locationMap:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
-            
+
             returnedCell = cell
-            
+
         case .tags:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
-            
+
             returnedCell = cell
-            
-        case .date, .uploaded, .lastModified, .created, .fileCreated:
+
+        case .uploaded, .lastModified, .created, .fileCreated:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsDateCollectionViewCell.identifier, for: indexPath) as! FileDetailsDateCollectionViewCell
             
             returnedCell = cell
@@ -527,20 +679,20 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         let currentCellType = sectionCellTypes[indexPath.item]
         
         if currentCellType == .thumbnail {
-            dismiss(animated: false, completion: nil)
+            // Back to the preview with the photo gliding into place; the … menu path has no preview to go to.
+            let glidesBack = (navigationController as? FilePreviewNavigationController)?.closeTransition != nil
+            dismiss(animated: glidesBack, completion: nil)
         }
         
-        if currentCellType == .location && viewModel?.isEditable ?? false {
-            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
-            locationSetVC.delegate = self
-            locationSetVC.file = file
-            locationSetVC.viewModel = viewModel
-            
-            let navigationVC = NavigationController(rootViewController: locationSetVC)
-            navigationVC.modalPresentationStyle = .fullScreen
-            present(navigationVC, animated: true)
+        // A tap on a row's label, outside its box, does what the box does.
+        if currentCellType == .date {
+            open(.date)
         }
-        
+
+        if currentCellType == .location || currentCellType == .locationMap {
+            open(.location)
+        }
+
         if currentCellType == .tags && viewModel?.isEditable ?? false {
             let tagSetVC = UIViewController.create(withIdentifier: .tagDetails, from: .main) as! TagDetailsViewController
             tagSetVC.delegate = self
@@ -562,15 +714,13 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
-            
-        case .location:
-            if let _ = viewModel?.recordVO?.recordVO?.locnVO?.latitude,
-               let _ = viewModel?.recordVO?.recordVO?.locnVO?.longitude {
-                return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.65)
-            } else {
-                return CGSize(width: UIScreen.main.bounds.width, height: 65)
-            }
-            
+
+        case .name, .description, .date, .location:
+            return CGSize(width: UIScreen.main.bounds.width, height: FileInfoRowModel.height(for: infoRowStyle, compatibleWith: collectionView.traitCollection))
+
+        case .locationMap:
+            return CGSize(width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.width * 0.5).rounded())
+
         case .tags:
             /*
              | - ( tag1 ) - (tag 2) - (tag abc) - |
@@ -622,7 +772,13 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 10
+        guard section == 1, !showsDetailsTab else { return 10 }
+        return FileInfoRowModel.rowSpacing(for: infoRowStyle)
+    }
+
+    /// Boxed rows for a member with the edit right, plain rows for the others.
+    private var infoRowStyle: FileInfoRowModel.Style {
+        viewModel?.isEditable ?? false ? .boxed : .plain
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -633,13 +789,31 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - LocationSetViewControllerDelegate
 extension FileDetailsViewController: LocationSetViewControllerDelegate {
     func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
-        collectionView.reloadSections([1])
+        reloadBottomSection()
     }
 }
 
 // MARK: - TagDetailsViewControllerDelegate
 extension FileDetailsViewController: TagDetailsViewControllerDelegate {
     func tagDetailsViewControllerDidUpdate(_ tagVC: TagDetailsViewController) {
-        collectionView.reloadSections([1])
+        reloadBottomSection()
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension FileDetailsViewController: UIGestureRecognizerDelegate {
+    /// A tap inside a text field is the field's own, caret moves included; every other tap closes the keyboard.
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        var view = touch.view
+        while let current = view {
+            if current is UITextField { return false }
+            view = current.superview
+        }
+        return true
+    }
+
+    /// The tap-away never blocks a row's button or the list's own selection.
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
     }
 }
