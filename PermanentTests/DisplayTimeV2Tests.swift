@@ -11,7 +11,7 @@ import Testing
 @testable import Permanent
 
 /// `displayTime` through Stela V2: decoded from records, children and folders into what the screens
-/// read, and saved by the details and batch date screens, with the V1 call as the failsafe.
+/// read, and saved or cleared by the details and batch date screens, with the V1 call as the failsafe.
 struct DisplayTimeV2Tests {
     private let ownArchiveId = 5
     private let picked = Date(timeIntervalSince1970: 981_185_400) // 3 Feb 2001, 07:30 UTC
@@ -59,6 +59,20 @@ struct DisplayTimeV2Tests {
         #expect(qualified.date == "2023-08-15")
         #expect(untouched.date == "2023-08-15")
         #expect(untouched.displayTime == nil)
+    }
+
+    @Test("With the server's edtf-date switch on, the list and the Info row show displayTime only")
+    func onlyEDTFLeavesTheOldDateOut() {
+        let legacy = "2023-08-15T00:00:00.000Z"
+
+        #expect(DateUtils.listDate(displayTime: nil, legacy: legacy, onlyEDTF: true) == "-")
+        #expect(DateUtils.listDate(displayTime: nil, legacy: legacy, onlyEDTF: false) == "2023-08-15")
+        #expect(DateUtils.listDate(displayTime: "1985-10", legacy: legacy, onlyEDTF: true) == "1985-10")
+        #expect(DateUtils.infoRowDate(displayTime: nil, legacy: legacy, onlyEDTF: true) == nil)
+        #expect(DateUtils.infoRowDate(displayTime: nil, legacy: legacy, timeZone: TimeZone(secondsFromGMT: 0) ?? .current, onlyEDTF: false) == "August 15, 2023 • 12AM")
+        #expect(DateUtils.infoRowDate(displayTime: "1985", legacy: legacy, onlyEDTF: true) == "1985")
+        #expect(DateUtils.shownLegacy(legacy, onlyEDTF: true) == nil)
+        #expect(DateUtils.shownLegacy(legacy, onlyEDTF: false) == legacy)
     }
 
     @Test("A folder's own details show displayTime first, else displayTimestamp")
@@ -162,7 +176,69 @@ struct DisplayTimeV2Tests {
 
         #expect(viewModel.changesWereSaved)
         #expect(server.patches.map(\.recordId) == [301, 302])
-        #expect(server.patches.allSatisfy { $0.fields as? [String: String] == ["displayTime": DateUtils.displayTime(from: picked)] })
+        #expect(server.patches.allSatisfy { $0.fields as? [String: String] == ["displayTime": "2001-02-03T09:30:00"] }, "the clock as typed, no offset")
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A year alone saves as the year")
+    func batchSaveYearAlone() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+        viewModel.entry = DateTimeEntry(displayTime: "1999", legacy: nil)
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.changesWereSaved)
+        #expect(server.patches.first?.fields as? [String: String] == ["displayTime": "1999"])
+    }
+
+    @MainActor
+    @Test("A clear sends displayTime null and makes no V1 call")
+    func batchClearSendsNull() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#), child(#""recordId": "302", "archiveId": "5", "displayTime": "1985""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+        viewModel.entry.clear()
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.changesWereSaved)
+        #expect(server.patches.map(\.recordId) == [301, 302])
+        #expect(server.patches.allSatisfy { $0.fields["displayTime"] is NSNull })
+        #expect(server.v1Batches.isEmpty)
+        let body = try #require(RecordV2Endpoint.patchRecord(recordId: "301", fields: ["displayTime": NSNull()]).bodyData)
+        #expect(String(data: body, encoding: .utf8) == #"{"displayTime":null}"#)
+    }
+
+    @MainActor
+    @Test("A failed clear shows the alert and skips V1")
+    func batchClearFailureSkipsV1() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: false)
+        let viewModel = batchViewModel(files: files, server: server)
+        viewModel.entry.clear()
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.showAlert)
+        #expect(!viewModel.changesWereSaved)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A clear of a shared record, which only V1 saves, shows the alert and sends nothing")
+    func batchClearOfSharedRecordSendsNothing() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "9""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+        viewModel.entry.clear()
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.showAlert)
+        #expect(server.patches.isEmpty)
         #expect(server.v1Batches.isEmpty)
     }
 
@@ -177,7 +253,7 @@ struct DisplayTimeV2Tests {
 
         #expect(viewModel.changesWereSaved)
         #expect(server.v1Batches.map { $0.map(\.recordId) } == [[301, 302]])
-        #expect(server.v1Batches.first?.allSatisfy { $0.date == "2001-02-03T07:30:00" } == true, "V1 keeps its UTC displayDT")
+        #expect(server.v1Batches.first?.allSatisfy { $0.date == utcStamp(of: viewModel.entry.pickerDate()) } == true, "V1 keeps its UTC displayDT")
     }
 
     @MainActor
@@ -260,7 +336,7 @@ struct DisplayTimeV2Tests {
     private func batchViewModel(files: [FileModel], server: FakeServer) -> EditDateAndTimeViewModel {
         let viewModel = EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false))
         let archiveId = ownArchiveId
-        viewModel.selectedDate = picked
+        viewModel.entry = DateTimeEntry(displayTime: "2001-02-03T09:30:00", legacy: nil)
         viewModel.sessionArchiveId = { archiveId }
         viewModel.patchRecordRequest = { file, fields, completion in
             server.patches.append((file.recordId, fields))
@@ -279,6 +355,15 @@ struct DisplayTimeV2Tests {
         viewModel.update(file: file, name: nil, description: nil, date: date, location: nil) { outcome = $0 }
         await wait { outcome != nil }
         return outcome
+    }
+
+    /// The old field's stamp for a moment: the clock in UTC, as the V1 save writes it.
+    private func utcStamp(of date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter.string(from: date)
     }
 
     @MainActor

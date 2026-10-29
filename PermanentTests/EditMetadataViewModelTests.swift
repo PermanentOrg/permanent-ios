@@ -236,7 +236,7 @@ final class EditMetadataViewModelTests: XCTestCase {
         let file2 = mockFile()
         let vm = EditDateAndTimeViewModel(selectedFiles: [file1, file2], hasUpdates: binding)
 
-        XCTAssertNotNil(vm.selectedDate)
+        XCTAssertEqual(vm.entry, DateTimeEntry(), "two undated files open the sheet empty")
     }
 
     func testEditDateTime_StartingDateIs1900() {

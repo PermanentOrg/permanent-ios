@@ -13,7 +13,7 @@ class EditDateAndTimeViewModel: ObservableObject {
     
     @Published var isLoading: Bool = false
     @Published var changesConfirmed: Bool = false
-    @Published var selectedDate = Date()
+    @Published var entry: DateTimeEntry
     @Published var showConfirmation: Bool = false
     @Published var changesWereSaved: Bool = false
     @Published var showAlert: Bool = false
@@ -31,32 +31,16 @@ class EditDateAndTimeViewModel: ObservableObject {
         self.selectedFiles = selectedFiles
         self.hasUpdates = hasUpdates
         
-        selectedDate = getCommonDate()
+        entry = Self.commonEntry(for: selectedFiles)
     }
-    
-    func getCommonDate() -> Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
-        var dates = [Date]()
-        for file in selectedFiles {
-            if let date = DateUtils.date(fromDisplayTime: file.displayTime) ?? dateFormatter.date(from: file.createdDT ?? "") {
-                dates.append(date)
-            }
-        }
-        
-        // Check if all dates are the same
-        let uniqueDates = Set(dates)
-        if uniqueDates.count == 1 {
-            // If all dates are the same, return the common date
-            return uniqueDates.first ?? Date()
-        } else {
-            // If dates are different, return the current date
-            return Date()
-        }
+
+    /// The date the files share, as the fields; a file with no date is left out. Empty when the dated files differ.
+    static func commonEntry(for files: [FileModel]) -> DateTimeEntry {
+        let entries = Set(files.map { DateTimeEntry(displayTime: $0.displayTime, legacy: $0.createdDT) }.filter { !$0.isEmpty })
+        guard entries.count == 1, let common = entries.first else { return DateTimeEntry() }
+        return common
     }
-    
+
     func applyChanges() {
         isLoading = true
         // One PATCH per record to Stela V2 `displayTime`, with the V1 batch as the failsafe. Any folder,
@@ -66,15 +50,16 @@ class EditDateAndTimeViewModel: ObservableObject {
             applyChangesV1()
             return
         }
-        let fields = DateUtils.displayTimeFields(for: selectedDate)
+        // A clear sends null. V1 cannot empty the old field, so a clear never retries there.
+        let fields: [String: Any] = ["displayTime": entry.edtfString.map { $0 as Any } ?? NSNull()]
         // V1 writes only the old field, so its retry is seen only while no record shows a `displayTime`.
-        let showsLegacyDate = DateUtils.showsLegacyDate(displayTimes: selectedFiles.map(\.displayTime))
+        let retriesV1 = !entry.isEmpty && DateUtils.showsLegacyDate(displayTimes: selectedFiles.map(\.displayTime))
         patchEachRecord(fields: fields) { [weak self] succeeded in
             if succeeded {
                 self?.isLoading = false
                 self?.hasUpdates.wrappedValue = true
                 self?.changesWereSaved = true
-            } else if showsLegacyDate {
+            } else if retriesV1 {
                 self?.applyChangesV1() // failsafe
             } else {
                 self?.isLoading = false
@@ -91,12 +76,18 @@ class EditDateAndTimeViewModel: ObservableObject {
         [FileModel].patchSequentially(files: selectedFiles, fieldsFor: { _ in fields }, patchOne: injected, completion: completion)
     }
 
+    /// V1 takes the fields as a moment, as the old calendar sent it. It cannot clear, so an empty entry only reports.
     private func applyChangesV1() {
+        guard !entry.isEmpty else {
+            isLoading = false
+            showAlert = true
+            return
+        }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         
-        let date = dateFormatter.string(from: selectedDate)
+        let date = dateFormatter.string(from: entry.pickerDate())
         
         let updatedFiles = selectedFiles.map { file in
             var newFile = file

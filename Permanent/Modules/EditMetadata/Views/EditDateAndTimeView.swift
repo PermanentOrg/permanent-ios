@@ -7,55 +7,41 @@
 
 import SwiftUI
 
+/// The "Adjust date and time" sheet: a header with the preview line, the typed date and time boxes with their
+/// native pickers, the Clear row, and Cancel and Save pinned under them.
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// Set when UIKit presents the screen; it is told whether the date was saved.
     var onClose: ((Bool) -> Void)?
-    
+
+    @State private var focus: DateTimeEntry.Field?
+    @State private var showsDateSheet = false
+    @State private var showsWheels = false
+    @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0
+
+    static let sheetCornerRadius: CGFloat = 38
+
     var body: some View {
         ZStack {
-            NavigationView {
-                VStack {
+            VStack(spacing: 0) {
+                header
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        dateBox
+                        timeBox
+                            .padding(.top, 8)
+                            .zIndex(1)
+                        ClearDateAndTimeRow { clear() }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
                 }
-                .padding(.top, 20)
-                .padding(.horizontal, 24)
-                .darkBarSheet(title: "AddDateAndTime".localized()) { close(saved: false) }
+                .onTapGesture { leaveFields() }
             }
-            VStack {
-                if #available(iOS 16.0, *) {
-                    DatePicker("Select a date", selection: $viewModel.selectedDate, in: viewModel.startingDate...viewModel.endingDate)
-                    .datePickerStyle(GraphicalDatePickerStyle())
-                    .labelsHidden()
-                    .padding()
-                    .tint(.darkBlue)
-                } else {
-                    DatePicker("Select a date", selection: $viewModel.selectedDate, in: viewModel.startingDate...viewModel.endingDate)
-                        .datePickerStyle(GraphicalDatePickerStyle())
-                        .labelsHidden()
-                        .padding()
-                        .accentColor(.darkBlue)
-                }
-                Spacer()
-                bottomButtons
-            }
-            .padding(.top, 50)
-            .onChange(of: viewModel.changesWereSaved, perform: { newValue in
-                if newValue {
-                    viewModel.changesWereSaved = false
-                    close(saved: true)
-                }
-            })
-            .onChange(of: viewModel.changesConfirmed) { newValue in
-                if newValue {
-                    viewModel.applyChanges()
-                }
-            }
-            .alert(isPresented: $viewModel.showAlert) {
-                Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
-                    viewModel.showAlert = false
-                })
-            }
+            .safeAreaInset(edge: .bottom) { bottomButtons }
+            .background(Color.white.ignoresSafeArea())
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "ChangeDateAndTime".localized(), message: confirmationMessage, buttonTitle: "Modify") {
                     viewModel.applyChanges()
@@ -63,39 +49,172 @@ struct EditDateAndTimeView: View {
                 .frame(width: 294)
             }
         }
-        .onDisappear {
-            // Under the multi-select screen that screen clears the bar look itself.
-            if onClose != nil { UINavigationBar.clearDarkBlueLook() }
+        .sheet(isPresented: $showsDateSheet) {
+            PickADateSheet(selection: calendarStart, range: viewModel.startingDate...viewModel.endingDate) { picked in
+                viewModel.entry.set(date: picked)
+            }
+        }
+        .onChange(of: focus) { field in
+            if field != nil { closeWheels() }
+        }
+        .onChange(of: viewModel.isLoading) { loading in
+            if loading { UIAccessibility.post(notification: .announcement, argument: "Saving".localized()) }
+        }
+        .onChange(of: viewModel.changesWereSaved) { saved in
+            if saved {
+                viewModel.changesWereSaved = false
+                close(saved: true)
+            }
+        }
+        .onChange(of: viewModel.changesConfirmed) { confirmed in
+            if confirmed { viewModel.applyChanges() }
+        }
+        .alert(isPresented: $viewModel.showAlert) {
+            Alert(title: Text("Error".localized()), message: Text("ErrorMessage".localized()), dismissButton: .default(Text(String.ok)) {
+                viewModel.showAlert = false
+            })
         }
     }
-    
-    var bottomButtons: some View {
-        HStack {
+
+    // MARK: - Parts
+
+    private var header: some View {
+        HStack(spacing: 0) {
+            Color.clear
+                .frame(width: 48, height: 1)
+            VStack(spacing: 4) {
+                Text("AdjustDateAndTime".localized())
+                    .font(.custom("Usual-Medium", size: 16, relativeTo: .body))
+                    .foregroundColor(.darkBlue)
+                    .accessibilityAddTraits(.isHeader)
+                if let preview = viewModel.entry.preview {
+                    Text(preview)
+                        .font(.custom("Usual-Regular", size: 12, relativeTo: .caption))
+                        .foregroundColor(.blue400)
+                }
+            }
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            SheetCircleButton(symbol: "xmark", label: "Close".localized(), look: .light) { close(saved: false) }
+        }
+        .padding(14)
+    }
+
+    private var dateBox: some View {
+        DateTimeFieldsBox(fields: [.year, .month, .day], separator: "/", entry: $viewModel.entry, focus: $focus) {
+            TimeFormatPill(format: viewModel.entry.format) {}
+                .hidden()
+                .accessibilityHidden(true)
+            accessoryButton("calendar", label: "PickADate".localized()) {
+                leaveFields()
+                showsDateSheet = true
+            }
+        }
+    }
+
+    private var timeBox: some View {
+        DateTimeFieldsBox(fields: [.hour, .minute, .second], separator: ":", entry: $viewModel.entry, focus: $focus) {
+            TimeFormatPill(format: viewModel.entry.format) {
+                viewModel.entry.format = viewModel.entry.format.next
+            }
+            accessoryButton("clock", label: "PickATime".localized()) { toggleWheels() }
+        }
+        .overlay(alignment: .topTrailing) {
+            if showsWheels {
+                TimeWheelCard(entry: $viewModel.entry)
+                    .padding(.trailing, DateTimeDigitsField.boxPadding)
+                    .offset(y: -16)
+                    .transition(reduceMotion ? .identity : .opacity.combined(with: .scale(scale: 0.96, anchor: .topTrailing)))
+            }
+        }
+    }
+
+    private func accessoryButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.title3)
+                .foregroundColor(.darkBlue)
+                .frame(width: iconSize, height: iconSize)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
+    }
+
+    private var bottomButtons: some View {
+        HStack(spacing: 24) {
             Button {
                 close(saved: false)
             } label: {
-                Text("Cancel")
+                Text("Cancel".localized())
             }
-            .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
-            Spacer(minLength: 15)
+            .buttonStyle(CustomButtonStyle(backgroundColor: .blue25, foregroundColor: .darkBlue, height: 56, cornerRadius: 12))
             Button {
-                viewModel.showConfirmation = true
+                save()
             } label: {
                 if viewModel.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .accessibilityLabel("Saving".localized())
                 } else {
-                    Text("Apply changes")
+                    Text("Save".localized())
                 }
             }
-            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
+            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white, height: 56, cornerRadius: 12))
+            .disabled(viewModel.isLoading)
         }
-        .padding()
+        .font(.custom("Usual-Medium", size: 14, relativeTo: .subheadline))
+        .dynamicTypeSize(...DynamicTypeSize.large)
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
+        .padding(.bottom, 32)
+        .background(Color.white)
     }
+
+    // MARK: - Actions
 
     private var confirmationMessage: String {
         let count = viewModel.selectedFiles.count
         return count > 1 ? String(format: "ChangeDateAndTimeOther".localized(), count) : "ChangeDateAndTimeOne".localized()
+    }
+
+    /// The calendar opens on the typed date, kept inside its range.
+    private var calendarStart: Date {
+        min(max(viewModel.entry.pickerDate(), viewModel.startingDate), viewModel.endingDate)
+    }
+
+    /// One file saves at once; two or more ask first.
+    private func save() {
+        leaveFields()
+        if viewModel.selectedFiles.count > 1 {
+            viewModel.showConfirmation = true
+        } else {
+            viewModel.applyChanges()
+        }
+    }
+
+    private func clear() {
+        leaveFields()
+        viewModel.entry.clear()
+    }
+
+    private func toggleWheels() {
+        focus = nil
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+            showsWheels.toggle()
+        }
+    }
+
+    private func closeWheels() {
+        guard showsWheels else { return }
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+            showsWheels = false
+        }
+    }
+
+    /// Puts the keyboard and the wheel card away.
+    private func leaveFields() {
+        focus = nil
+        closeWheels()
     }
 
     private func close(saved: Bool) {
@@ -114,9 +233,9 @@ extension EditDateAndTimeView {
         let view = EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false)), onClose: { saved in
             host?.dismiss(animated: true) { onClose(saved) }
         })
-        // The sheet's own bar reads the global look, as it does under the multi-select screen.
-        UINavigationBar.applyDarkBlueLook()
         let controller = UIHostingController(rootView: view)
+        controller.modalPresentationStyle = .pageSheet
+        controller.sheetPresentationController?.preferredCornerRadius = sheetCornerRadius
         host = controller
         return controller
     }
