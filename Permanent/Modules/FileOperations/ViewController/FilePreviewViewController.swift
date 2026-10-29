@@ -132,7 +132,18 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     var imagePreviewVC: ImagePreviewViewController?
-    
+
+    /// The image view that shows the photo right now: the zoomable one once it has an image, else the thumbnail.
+    var shownPhotoView: UIImageView? {
+        if let zoomed = imagePreviewVC?.imageView, zoomed.image != nil {
+            return zoomed
+        }
+        if let thumbnail = thumbnailImageView, !thumbnail.isHidden, thumbnail.image != nil {
+            return thumbnail
+        }
+        return nil
+    }
+
     func loadVM() {
         guard recordLoaded == false else { return }
         imageStateOverlay.isImageContent = file.type == .image

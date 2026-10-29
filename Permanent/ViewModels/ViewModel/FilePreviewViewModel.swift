@@ -409,23 +409,72 @@ class FilePreviewViewModel: ViewModelInterface {
             updateV1(file: file, name: name, description: description, date: nil, location: location, completion: completion)
             return
         }
-        let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: fields))
-        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+        sendPatchRecord(recordId: file.recordId, fields: fields) { [weak self] succeeded in
             DispatchQueue.main.async {
                 guard let self = self else { completion(false); return }
-                switch result {
-                case .json:
+                if succeeded {
                     self.getRecord(file: file) { _ in
                         NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
                         completion(true)
                     }
-
-                default:
+                } else {
                     // Failsafe — re-apply the edit via V1 (idempotent).
                     self.updateV1(file: file, name: name, description: description, date: nil, location: location, completion: completion)
                 }
             }
         }
+    }
+
+    // MARK: - Info tab
+
+    /// Saves a typed name. An empty or unchanged name is not sent and answers false, so the row shows the saved name again.
+    func saveName(_ typed: String, completion: @escaping (Bool) -> Void) {
+        guard !typed.isEmpty, typed != name else { completion(false); return }
+        let previous = name
+        name = typed
+        update(file: file, name: typed, description: nil, date: nil, location: nil) { [weak self] saved in
+            if !saved { self?.name = previous }
+            completion(saved)
+        }
+    }
+
+    /// Saves a typed description. An empty or unchanged one is not sent and answers false, so the row shows the saved one again.
+    func saveDescription(_ typed: String, completion: @escaping (Bool) -> Void) {
+        guard !typed.isEmpty, typed != recordVO?.recordVO?.recordVODescription else { completion(false); return }
+        update(file: file, name: nil, description: typed, date: nil, location: nil, completion: completion)
+    }
+
+    /// The Info tab's rows, in order. A member with the edit right gets all four, boxed; another member only the
+    /// rows that hold a value, plain.
+    func infoRows() -> [FileInfoRowModel] {
+        let record = recordVO?.recordVO
+        let style: FileInfoRowModel.Style = isEditable ? .boxed : .plain
+        let values: [(FileInfoRowModel.Kind, String?)] = [
+            (.name, record?.displayName ?? name),
+            (.description, record?.recordVODescription),
+            (.date, infoRowDate()),
+            (.location, record?.locnVO.map { getAddressString([$0.addressText], false) })
+        ]
+        return values.compactMap { kind, value in
+            let row = FileInfoRowModel(kind: kind, value: value, style: style)
+            return isEditable || row.isSet ? row : nil
+        }
+    }
+
+    /// The Date row's text: the written date, its clock when it has one, and the zone when the record carries one.
+    func infoRowDate() -> String? {
+        let record = recordVO?.recordVO
+        return DateUtils.infoRowDate(displayTime: record?.displayTime, legacy: record?.displayDT, zoneAbbreviation: record?.timezoneVO?.stdAbbrev)
+    }
+
+    /// True when the Info tab shows the map: the record has coordinates.
+    var infoTabHasMap: Bool {
+        recordVO?.recordVO?.locnVO?.latitude != nil && recordVO?.recordVO?.locnVO?.longitude != nil
+    }
+
+    /// True when the Info tab shows the tags row: the member can add tags, or the record has some to show.
+    var infoTabHasTags: Bool {
+        isEditable || !(recordVO?.recordVO?.tagVOS ?? []).isEmpty
     }
 
     /// A date goes to `displayTime`, the field both apps read first. After a V2 failure the V1 retry runs

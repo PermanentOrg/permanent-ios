@@ -35,7 +35,7 @@ class TagsNamesCollectionViewCell: FileDetailsBaseCollectionViewCell {
         
         cellTitleLabel.text = "Tags".localized()
         cellTitleLabel.textColor = .white
-        cellTitleLabel.font = TextFontStyle.style9.font
+        cellTitleLabel.font = FileInfoRowModel.labelUIFont
         
         cellNoItemLabel.text = "Tap to add tags".localized()
         cellNoItemLabel.textColor = .white

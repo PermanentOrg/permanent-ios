@@ -40,6 +40,28 @@ final class SlidingTabControl: UIControl {
     var selectedTitleFont: UIFont = TextFontStyle.style11.font {
         didSet { styleTitles() }
     }
+    /// The track's height, which is the control's intrinsic height.
+    var trackHeight: CGFloat = 32 {
+        didSet {
+            invalidateIntrinsicContentSize()
+            setNeedsLayout()
+        }
+    }
+    /// Nil rounds the track, or the pill, to a half circle at each end.
+    var trackCornerRadius: CGFloat? {
+        didSet { setNeedsLayout() }
+    }
+    var pillCornerRadius: CGFloat? {
+        didSet { setNeedsLayout() }
+    }
+    /// Shows each title in capitals. VoiceOver and UI tests still read the title as given.
+    var uppercasesTitles = false {
+        didSet { styleTitles() }
+    }
+    /// The space added between a title's letters, in points.
+    var titleKerning: CGFloat = 0 {
+        didSet { styleTitles() }
+    }
 
     private var tabs: [UIButton] = []
     private let pill = UIView()
@@ -49,7 +71,6 @@ final class SlidingTabControl: UIControl {
     private let selectedTitlesMask = UIView()
     private var selectedLabels: [UILabel] = []
 
-    private static let height: CGFloat = 32
     private static let pillInset: CGFloat = 2
     private static let duration: TimeInterval = 0.3
 
@@ -81,12 +102,12 @@ final class SlidingTabControl: UIControl {
     }
 
     override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: Self.height)
+        CGSize(width: UIView.noIntrinsicMetric, height: trackHeight)
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        layer.cornerRadius = bounds.height / 2
+        layer.cornerRadius = trackCornerRadius ?? bounds.height / 2
         selectedTitles.frame = bounds
         let frames = tabFrames
         for (index, frame) in frames.enumerated() {
@@ -98,7 +119,7 @@ final class SlidingTabControl: UIControl {
         let pillFrame = frames[selectedSegmentIndex].insetBy(dx: Self.pillInset, dy: Self.pillInset)
         for shape in [pill, selectedTitlesMask] {
             shape.frame = pillFrame
-            shape.layer.cornerRadius = pillFrame.height / 2
+            shape.layer.cornerRadius = pillCornerRadius ?? pillFrame.height / 2
         }
     }
 
@@ -138,16 +159,26 @@ final class SlidingTabControl: UIControl {
         setNeedsLayout()
     }
 
+    /// The plain colour and font stay set beside the attributed title, so a reader of either sees the same look.
     private func styleTitles() {
-        for tab in tabs {
+        for (tab, title) in zip(tabs, titles) {
             tab.setTitleColor(titleColor, for: .normal)
             tab.setTitleColor(titleColor.withAlphaComponent(0.6), for: .highlighted)
             tab.titleLabel?.font = titleFont
+            tab.setAttributedTitle(styled(title, font: titleFont, color: titleColor), for: .normal)
+            tab.setAttributedTitle(styled(title, font: titleFont, color: titleColor.withAlphaComponent(0.6)), for: .highlighted)
+            tab.accessibilityLabel = title
         }
-        for label in selectedLabels {
+        for (label, title) in zip(selectedLabels, titles) {
             label.textColor = selectedTitleColor
             label.font = selectedTitleFont
+            label.attributedText = styled(title, font: selectedTitleFont, color: selectedTitleColor)
         }
+    }
+
+    private func styled(_ title: String, font: UIFont, color: UIColor) -> NSAttributedString {
+        let shown = uppercasesTitles ? title.uppercased() : title
+        return NSAttributedString(string: shown, attributes: [.font: font, .foregroundColor: color, .kern: titleKerning])
     }
 
     private func updateSelectedTraits() {

@@ -40,7 +40,12 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
     override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
         super.configure(withViewModel: viewModel, type: type)
 
-        titleLabelField.text = title
+        // Under the Info tab's Location row only the map shows; the two labels fold away.
+        let mapOnly = type == .locationMap
+        titleLabelField.isHidden = mapOnly
+        detailsLabelField.isHidden = mapOnly
+        detailsLabelField.constraints.first { $0.firstAttribute == .height }?.constant = mapOnly ? 0 : 30
+        titleLabelField.text = mapOnly ? nil : title
         titleLabelField.textColor = .white
         titleLabelField.font = TextFontStyle.style9.font
 
