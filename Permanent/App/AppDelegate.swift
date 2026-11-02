@@ -36,6 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         configureLogging()
         configureImageCache()
         ReachabilityManager.shared.startMonitoring()
+        FeatureFlags.shared.refresh()
         #if DEBUG
         if CommandLine.arguments.contains("--forceOffline") {
             ReachabilityManager.shared.forceOffline = true

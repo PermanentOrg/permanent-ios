@@ -296,6 +296,21 @@
 		5E4E1E56309247AC007E980B /* FileInfoOpenTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E55309247AC007E980B /* FileInfoOpenTransition.swift */; };
 		5E4E1E583092484C007E980B /* FileInfoOpenTransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E573092484C007E980B /* FileInfoOpenTransitionTests.swift */; };
 		5E4E1E5A30925004007E980B /* FileInfoCloseTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5930925004007E980B /* FileInfoCloseTransition.swift */; };
+		5E4E1E5D309337D8007E980B /* DateTimeEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */; };
+		5E4E1E66309337FF007E980B /* TimeWheelCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E64309337FF007E980B /* TimeWheelCard.swift */; };
+		5E4E1E67309337FF007E980B /* DateTimeFieldsBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E60309337FF007E980B /* DateTimeFieldsBox.swift */; };
+		5E4E1E68309337FF007E980B /* PickADateSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E61309337FF007E980B /* PickADateSheet.swift */; };
+		5E4E1E69309337FF007E980B /* ClearDateAndTimeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5E309337FF007E980B /* ClearDateAndTimeRow.swift */; };
+		5E4E1E6A309337FF007E980B /* DateTimeDigitsField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5F309337FF007E980B /* DateTimeDigitsField.swift */; };
+		5E4E1E6B309337FF007E980B /* TimeFormatPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E63309337FF007E980B /* TimeFormatPill.swift */; };
+		5E4E1E6C309337FF007E980B /* SheetCircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E62309337FF007E980B /* SheetCircleButton.swift */; };
+		5E4E1E6F30933819007E980B /* DateTimeEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E6E30933819007E980B /* DateTimeEntryTests.swift */; };
+		5E4E1E7030933819007E980B /* AdjustDateAndTimeViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E6D30933819007E980B /* AdjustDateAndTimeViewTests.swift */; };
+		5E4E1E7230937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */; };
+		5E4E1E7330937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */; };
+		5E4E1E7530937184007E980B /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7430937184007E980B /* FeatureFlags.swift */; };
+		5E4E1E7630937184007E980B /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7430937184007E980B /* FeatureFlags.swift */; };
+		5E4E1E7830937196007E980B /* FeatureFlagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */; };
 		5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */; };
 		5E4E4CD029826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */; };
 		5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E548E832B29F9D600DD2C59 /* AddStorageView.swift */; };
@@ -1547,6 +1562,19 @@
 		5E4E1E55309247AC007E980B /* FileInfoOpenTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoOpenTransition.swift; sourceTree = "<group>"; };
 		5E4E1E573092484C007E980B /* FileInfoOpenTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoOpenTransitionTests.swift; sourceTree = "<group>"; };
 		5E4E1E5930925004007E980B /* FileInfoCloseTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoCloseTransition.swift; sourceTree = "<group>"; };
+		5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeEntry.swift; sourceTree = "<group>"; };
+		5E4E1E5E309337FF007E980B /* ClearDateAndTimeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearDateAndTimeRow.swift; sourceTree = "<group>"; };
+		5E4E1E5F309337FF007E980B /* DateTimeDigitsField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeDigitsField.swift; sourceTree = "<group>"; };
+		5E4E1E60309337FF007E980B /* DateTimeFieldsBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeFieldsBox.swift; sourceTree = "<group>"; };
+		5E4E1E61309337FF007E980B /* PickADateSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickADateSheet.swift; sourceTree = "<group>"; };
+		5E4E1E62309337FF007E980B /* SheetCircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCircleButton.swift; sourceTree = "<group>"; };
+		5E4E1E63309337FF007E980B /* TimeFormatPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatPill.swift; sourceTree = "<group>"; };
+		5E4E1E64309337FF007E980B /* TimeWheelCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeWheelCard.swift; sourceTree = "<group>"; };
+		5E4E1E6D30933819007E980B /* AdjustDateAndTimeViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDateAndTimeViewTests.swift; sourceTree = "<group>"; };
+		5E4E1E6E30933819007E980B /* DateTimeEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeEntryTests.swift; sourceTree = "<group>"; };
+		5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsV2Endpoint.swift; sourceTree = "<group>"; };
+		5E4E1E7430937184007E980B /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
+		5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsTests.swift; sourceTree = "<group>"; };
 		5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagsHeaderCollectionView.swift; sourceTree = "<group>"; };
 		5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagsHeaderCollectionView.xib; sourceTree = "<group>"; };
 		5E548E832B29F9D600DD2C59 /* AddStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStorageView.swift; sourceTree = "<group>"; };
@@ -3695,6 +3723,28 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		5E4E1E5C309337D8007E980B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5E4E1E65309337FF007E980B /* DateAndTime */ = {
+			isa = PBXGroup;
+			children = (
+				5E4E1E5E309337FF007E980B /* ClearDateAndTimeRow.swift */,
+				5E4E1E5F309337FF007E980B /* DateTimeDigitsField.swift */,
+				5E4E1E60309337FF007E980B /* DateTimeFieldsBox.swift */,
+				5E4E1E61309337FF007E980B /* PickADateSheet.swift */,
+				5E4E1E62309337FF007E980B /* SheetCircleButton.swift */,
+				5E4E1E63309337FF007E980B /* TimeFormatPill.swift */,
+				5E4E1E64309337FF007E980B /* TimeWheelCard.swift */,
+			);
+			path = DateAndTime;
+			sourceTree = "<group>";
+		};
 		5E548E8B2B2AF43200DD2C59 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -3796,6 +3846,9 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */,
+				5E4E1E6D30933819007E980B /* AdjustDateAndTimeViewTests.swift */,
+				5E4E1E6E30933819007E980B /* DateTimeEntryTests.swift */,
 				5E4E1E573092484C007E980B /* FileInfoOpenTransitionTests.swift */,
 				5E34465230922ABE008ABE46 /* FileInfoRowTests.swift */,
 				5E34465330922ABE008ABE46 /* FileInfoTabTests.swift */,
@@ -4057,6 +4110,7 @@
 		5E991EDC2A48E018006229C0 /* EditMetadata */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E5C309337D8007E980B /* Models */,
 				5E991EDD2A48E032006229C0 /* Views */,
 				5E991EEA2A4C8FF3006229C0 /* ViewModels */,
 			);
@@ -4066,6 +4120,7 @@
 		5E991EDD2A48E032006229C0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E65309337FF007E980B /* DateAndTime */,
 				92B9886C2A9783D30040941E /* SetLocation */,
 				5E991EDE2A48E05C006229C0 /* MetadataEditView.swift */,
 				5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */,
@@ -4620,6 +4675,7 @@
 		BC1BDF18251355ED00F2D239 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */,
 				5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */,
 				5E0913392F3E1BD400425568 /* RecordV2Endpoint.swift */,
 				5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */,
@@ -4783,6 +4839,7 @@
 		BC4526E6251CACD500E24A51 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E7430937184007E980B /* FeatureFlags.swift */,
 				5E752280308624E4008003BA /* ItemLocationService.swift */,
 				5E752281308624E4008003BA /* PinAddressLookup.swift */,
 				5E2C063E3080148D00C579A8 /* EDTFBundleSource.swift */,
@@ -5613,6 +5670,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DEF21AD0B830ED3966AAAAEF /* FileActionConfirmationView.swift in Sources */,
+				5E4E1E5D309337D8007E980B /* DateTimeEntry.swift in Sources */,
 				6F65263B985012E21A61EF95 /* ContextMenuDeferral.swift in Sources */,
 				7CC9CF8E0F47B2D81D59409D /* DropMoveProgress.swift in Sources */,
 				2EA142DA375E24F94FD138D3 /* DropProgressIsland.swift in Sources */,
@@ -5655,6 +5713,7 @@
 				5E60451E25120826002E47CB /* AuthenticationViewController.swift in Sources */,
 				BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
+				5E4E1E7630937184007E980B /* FeatureFlags.swift in Sources */,
 				5EE5A8E22C470ECB0060301A /* OnboardingInvitedWelcomeView.swift in Sources */,
 				9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
@@ -5929,6 +5988,13 @@
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
+				5E4E1E66309337FF007E980B /* TimeWheelCard.swift in Sources */,
+				5E4E1E67309337FF007E980B /* DateTimeFieldsBox.swift in Sources */,
+				5E4E1E68309337FF007E980B /* PickADateSheet.swift in Sources */,
+				5E4E1E69309337FF007E980B /* ClearDateAndTimeRow.swift in Sources */,
+				5E4E1E6A309337FF007E980B /* DateTimeDigitsField.swift in Sources */,
+				5E4E1E6B309337FF007E980B /* TimeFormatPill.swift in Sources */,
+				5E4E1E6C309337FF007E980B /* SheetCircleButton.swift in Sources */,
 				5EB66F022C872875000D4C82 /* LoginView.swift in Sources */,
 				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
 				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
@@ -6041,6 +6107,7 @@
 				5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */,
 				BC59BAB625C2B7D6005A45D3 /* FileVM.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
+				5E4E1E7230937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */,
 				5ED581C025EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift in Sources */,
 				5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */,
 				F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */,
@@ -6384,6 +6451,7 @@
 				A8ECEF86E64C557150570451 /* RootNavigationControllerTitleTests.swift in Sources */,
 				5E7B9BAF2FB1300200C1D3D0 /* GiftStorageViewModelTests.swift in Sources */,
 				5E7B9B7B2FB0D11B00C1D3D0 /* GiftStorageViewTests.swift in Sources */,
+				5E4E1E7830937196007E980B /* FeatureFlagsTests.swift in Sources */,
 				5E7B9B7C2FB0D11B00C1D3D0 /* ChecklistAndDialogViewTests.swift in Sources */,
 				5E7B9B7D2FB0D11B00C1D3D0 /* AddLocationViewTests.swift in Sources */,
 				5E219E11303CA0400062F4C6 /* LegacyEndpointSurfaceTests.swift in Sources */,
@@ -6434,6 +6502,8 @@
 				5E7B9BE92FB1C4A400C1D3D0 /* FilenameViewModelTests.swift in Sources */,
 				5E7B9BEA2FB1C4A400C1D3D0 /* SecurityMoreViewRenderingTests.swift in Sources */,
 				5E7B9BEB2FB1C4A400C1D3D0 /* ComponentViewRenderingTests.swift in Sources */,
+				5E4E1E6F30933819007E980B /* DateTimeEntryTests.swift in Sources */,
+				5E4E1E7030933819007E980B /* AdjustDateAndTimeViewTests.swift in Sources */,
 				5E7B9BEC2FB1C4A400C1D3D0 /* TagAndMetadataViewRenderingTests.swift in Sources */,
 				5E7B9BED2FB1C4A400C1D3D0 /* CommonUIRenderingTests.swift in Sources */,
 				5E7B9B972FB1224B00C1D3D0 /* ChecklistOptionsViewModelTests.swift in Sources */,
@@ -6640,6 +6710,7 @@
 				F559F8B128FF03340015A522 /* UploadFileMetaResponse.swift in Sources */,
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
 				5E4642312F55A1E4002DB512 /* ShareAccessEndpoint.swift in Sources */,
+				5E4E1E7330937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */,
 				5E5AA3B42FAA26C1002D84E8 /* RelationVO.swift in Sources */,
 				5E317C692E7C273800DE5A77 /* CreatorAccountForShare.swift in Sources */,
 				F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */,
@@ -6723,6 +6794,7 @@
 				5E1CCC26287F055100913EEA /* CustomTextField.swift in Sources */,
 				5E1CCC25287F054000913EEA /* DropdownView.swift in Sources */,
 				F559F89028FEE9690015A522 /* FolderNavigationViewModel.swift in Sources */,
+				5E4E1E7530937184007E980B /* FeatureFlags.swift in Sources */,
 				5E1E92F92FC993C700F44FA8 /* ItemVOMatching.swift in Sources */,
 				5E4739F52A41879800A20D85 /* BlurbProfileItem.swift in Sources */,
 				5E3E12462A41F3B700682DE5 /* FileCollectionViewCell.swift in Sources */,

@@ -76,10 +76,15 @@ open class DateUtils {
     // MARK: - displayTime (EDTF Level 0)
 
     /// The date a file list shows: `displayTime`'s date as written ("1985", "1985-10", "1985-10-23"),
-    /// else the old field's date, else "-".
-    static func listDate(displayTime: String?, legacy: String?) -> String {
+    /// else the old field's date while the screens still show it, else "-".
+    static func listDate(displayTime: String?, legacy: String?, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) -> String {
         if let start = level0Start(displayTime) { return start.text.dateOnly }
-        return legacy?.dateOnly ?? "-"
+        return shownLegacy(legacy, onlyEDTF: onlyEDTF)?.dateOnly ?? "-"
+    }
+
+    /// The old field as a screen may show it: nil while the server's `edtf-date` switch is on, as on web.
+    static func shownLegacy(_ legacy: String?, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) -> String? {
+        onlyEDTF ? nil : legacy
     }
 
     /// `displayTime` as a `Date`: the clock time as written on the phone's clock, with any offset left out.
@@ -118,13 +123,16 @@ open class DateUtils {
     }
 
     /// The Info tab's Date row: "October 23, 1985 • 5PM", "October 1985" or "1985", then the zone when given.
-    /// `displayTime` as written comes first, else the old field as a moment; nil when neither reads.
-    static func infoRowDate(displayTime: String?, legacy: String?, zoneAbbreviation: String? = nil, timeZone: TimeZone = .current) -> String? {
+    /// `displayTime` as written comes first, else the old field as a moment while shown; nil when neither reads.
+    static func infoRowDate(
+        displayTime: String?, legacy: String?, zoneAbbreviation: String? = nil, timeZone: TimeZone = .current,
+        onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
+    ) -> String? {
         let text: String
         if let parts = level0Start(displayTime)?.parts, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) {
             let dayPattern = parts.day != nil ? "MMMM d, yyyy" : parts.month != nil ? "MMMM yyyy" : "yyyy"
             text = formatted(date, pattern: dayPattern, timeZone: timeZone) + (parts.hour != nil ? clockText(date, timeZone: timeZone) : "")
-        } else if let date = date(fromISO: legacy) {
+        } else if let date = date(fromISO: shownLegacy(legacy, onlyEDTF: onlyEDTF)) {
             text = formatted(date, pattern: "MMMM d, yyyy", timeZone: timeZone) + clockText(date, timeZone: timeZone)
         } else {
             return nil
@@ -149,6 +157,12 @@ open class DateUtils {
         formatter.timeZone = timeZone
         formatter.dateFormat = pattern
         return formatter.string(from: date)
+    }
+
+    /// The fields of a Level 0 `displayTime` as written: the year, then the month, day and clock when given.
+    /// Nil when not Level 0; an interval reads as its start.
+    static func displayTimeParts(_ raw: String?) -> DateComponents? {
+        level0Start(raw)?.parts
     }
 
     /// True when none of these `displayTime` values reads, so the old field is the date the app shows
