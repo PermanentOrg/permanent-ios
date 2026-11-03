@@ -2102,16 +2102,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                 viewModel.v2NavigationTarget = file
                 enter(file, from: collectionView)
             } else {
-                let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-                listPreviewVC.modalPresentationStyle = .fullScreen
-                listPreviewVC.viewModel = viewModel
-                listPreviewVC.currentFile = file
-                
-                let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-                fileDetailsNavigationController.filePreviewNavDelegate = self
-                fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-                
-                present(fileDetailsNavigationController, animated: true)
+                present(FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self), animated: true)
             }
         }
     }
@@ -2320,6 +2311,13 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
         }
         if hasChanges {
             refreshCurrentFolder()
+        }
+    }
+    
+    func filePreviewNavigationControllerRequestsPreview(_ filePreviewNavigationVC: UIViewController, file: FileModel, hasChanges: Bool) {
+        replacePresented(with: FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self))
+        if hasChanges {
+            refreshCurrentFolder(shouldDisplaySpinner: false)
         }
     }
     

@@ -311,6 +311,15 @@
 		5E4E1E7530937184007E980B /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7430937184007E980B /* FeatureFlags.swift */; };
 		5E4E1E7630937184007E980B /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7430937184007E980B /* FeatureFlags.swift */; };
 		5E4E1E7830937196007E980B /* FeatureFlagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */; };
+		5E4E1E7C30938F37007E980B /* TimeZoneCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */; };
+		5E4E1E7D30938F37007E980B /* TimeZoneCountryCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */; };
+		5E4E1E7E30938F37007E980B /* TimeZoneOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */; };
+		5E4E1E8330938F46007E980B /* TimeZonePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8030938F46007E980B /* TimeZonePickerSheet.swift */; };
+		5E4E1E8430938F46007E980B /* TimeZoneSearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8230938F46007E980B /* TimeZoneSearchField.swift */; };
+		5E4E1E8530938F46007E980B /* TimeZoneRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8130938F46007E980B /* TimeZoneRow.swift */; };
+		5E4E1E8630938F46007E980B /* TimeZoneOptionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7F30938F46007E980B /* TimeZoneOptionRow.swift */; };
+		5E4E1E8930938F62007E980B /* TimeZoneCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8730938F62007E980B /* TimeZoneCatalogTests.swift */; };
+		5E4E1E8A30938F62007E980B /* TimeZonePickerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8830938F62007E980B /* TimeZonePickerViewTests.swift */; };
 		5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */; };
 		5E4E4CD029826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */; };
 		5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E548E832B29F9D600DD2C59 /* AddStorageView.swift */; };
@@ -1575,6 +1584,15 @@
 		5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsV2Endpoint.swift; sourceTree = "<group>"; };
 		5E4E1E7430937184007E980B /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
 		5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsTests.swift; sourceTree = "<group>"; };
+		5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneCatalog.swift; sourceTree = "<group>"; };
+		5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneCountryCodes.swift; sourceTree = "<group>"; };
+		5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneOption.swift; sourceTree = "<group>"; };
+		5E4E1E7F30938F46007E980B /* TimeZoneOptionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneOptionRow.swift; sourceTree = "<group>"; };
+		5E4E1E8030938F46007E980B /* TimeZonePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZonePickerSheet.swift; sourceTree = "<group>"; };
+		5E4E1E8130938F46007E980B /* TimeZoneRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneRow.swift; sourceTree = "<group>"; };
+		5E4E1E8230938F46007E980B /* TimeZoneSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneSearchField.swift; sourceTree = "<group>"; };
+		5E4E1E8730938F62007E980B /* TimeZoneCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneCatalogTests.swift; sourceTree = "<group>"; };
+		5E4E1E8830938F62007E980B /* TimeZonePickerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZonePickerViewTests.swift; sourceTree = "<group>"; };
 		5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagsHeaderCollectionView.swift; sourceTree = "<group>"; };
 		5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagsHeaderCollectionView.xib; sourceTree = "<group>"; };
 		5E548E832B29F9D600DD2C59 /* AddStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStorageView.swift; sourceTree = "<group>"; };
@@ -3726,6 +3744,9 @@
 		5E4E1E5C309337D8007E980B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */,
+				5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */,
+				5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */,
 				5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */,
 			);
 			path = Models;
@@ -3734,6 +3755,10 @@
 		5E4E1E65309337FF007E980B /* DateAndTime */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E7F30938F46007E980B /* TimeZoneOptionRow.swift */,
+				5E4E1E8030938F46007E980B /* TimeZonePickerSheet.swift */,
+				5E4E1E8130938F46007E980B /* TimeZoneRow.swift */,
+				5E4E1E8230938F46007E980B /* TimeZoneSearchField.swift */,
 				5E4E1E5E309337FF007E980B /* ClearDateAndTimeRow.swift */,
 				5E4E1E5F309337FF007E980B /* DateTimeDigitsField.swift */,
 				5E4E1E60309337FF007E980B /* DateTimeFieldsBox.swift */,
@@ -3846,6 +3871,8 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E8730938F62007E980B /* TimeZoneCatalogTests.swift */,
+				5E4E1E8830938F62007E980B /* TimeZonePickerViewTests.swift */,
 				5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */,
 				5E4E1E6D30933819007E980B /* AdjustDateAndTimeViewTests.swift */,
 				5E4E1E6E30933819007E980B /* DateTimeEntryTests.swift */,
@@ -5834,6 +5861,10 @@
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				5ED428832A12432E001F88FB /* LegacyPlanningEndpoint.swift in Sources */,
 				5E974B5D2F75C7AD004F9D74 /* PhotoLibraryPickerView.swift in Sources */,
+				5E4E1E8330938F46007E980B /* TimeZonePickerSheet.swift in Sources */,
+				5E4E1E8430938F46007E980B /* TimeZoneSearchField.swift in Sources */,
+				5E4E1E8530938F46007E980B /* TimeZoneRow.swift in Sources */,
+				5E4E1E8630938F46007E980B /* TimeZoneOptionRow.swift in Sources */,
 				F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
 				927DFCC32CDA6696007A0489 /* EventsPayloadBuilder.swift in Sources */,
@@ -5968,6 +5999,9 @@
 				5EF300362D4AC010001FFEE7 /* TwoStepChooseEmailView.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */,
+				5E4E1E7C30938F37007E980B /* TimeZoneCatalog.swift in Sources */,
+				5E4E1E7D30938F37007E980B /* TimeZoneCountryCodes.swift in Sources */,
+				5E4E1E7E30938F37007E980B /* TimeZoneOption.swift in Sources */,
 				5E548E862B29F9F000DD2C59 /* RedeemCodeView.swift in Sources */,
 				5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */,
 				924F16372A45CC6200B75D4E /* TextViewModifiers.swift in Sources */,
@@ -6493,6 +6527,8 @@
 				5E7B9BE32FB1C4A400C1D3D0 /* AuthSecurityViewRenderingTests.swift in Sources */,
 				5E7B9BE42FB1C4A400C1D3D0 /* TwoStepVerificationViewRenderingTests.swift in Sources */,
 				5E7B9BE52FB1C4A400C1D3D0 /* RenameAndStorageViewRenderingTests.swift in Sources */,
+				5E4E1E8930938F62007E980B /* TimeZoneCatalogTests.swift in Sources */,
+				5E4E1E8A30938F62007E980B /* TimeZonePickerViewTests.swift in Sources */,
 				5E7B9BE62FB1C4A400C1D3D0 /* AlertAndDialogViewRenderingTests.swift in Sources */,
 				5E7B9C212FB3169200C1D3D0 /* AccountOnboardingViewModelTests.swift in Sources */,
 				5E7B9C222FB3169200C1D3D0 /* PublicArchiveViewModelTests.swift in Sources */,

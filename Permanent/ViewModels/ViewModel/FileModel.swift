@@ -39,7 +39,7 @@ struct FileModel: Equatable, Codable {
     let size: Int64
     let uploadFileName: String
     
-    let createdDT: String?
+    var createdDT: String?
     let modifiedDT: String?
     let uploadedDT: String?
     /// The EDTF date from Stela V2, read before `createdDT` wherever a date shows; nil from V1.
@@ -444,5 +444,16 @@ extension FileModel {
     private var sizeAndDateParts: [String] {
         let size = type.isFolder ? nil : Self.displaySize(size)
         return [size, DateUtils.displayDate(from: date)].compactMap { $0 }.filter { !$0.isEmpty }
+    }
+}
+
+extension FileModel {
+    /// The row with the date fields as the record reads them now; a list row keeps the date it was listed with.
+    func withDates(of record: RecordVOData) -> FileModel {
+        var current = self
+        current.displayTime = record.displayTime
+        current.createdDT = record.displayDT
+        current.date = DateUtils.listDate(displayTime: record.displayTime, legacy: record.displayDT)
+        return current
     }
 }

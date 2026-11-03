@@ -429,9 +429,21 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
 
     private func openDateScreen() {
-        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
+        // The record the screen read seeds the sheet; the list row it opened with is stale after a save.
+        present(EditDateAndTimeView.host(for: file, record: recordVO) { [weak self] saved in
             self?.dateScreenDidClose(saved: saved)
         }, animated: true)
+    }
+
+    /// Back to the preview with the photo gliding into place. A list opened this screen with no preview under it,
+    /// so there the list puts the file's preview in its place.
+    func pictureTapped() {
+        let navigation = navigationController as? FilePreviewNavigationController
+        guard navigation?.closeTransition == nil, let delegate else {
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        delegate.filePreviewNavigationControllerRequestsPreview(self, file: file, hasChanges: navigation?.hasChanges ?? false)
     }
 
     /// After the date screen saved, reads the record again so the Date row shows the new date.
@@ -679,9 +691,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         let currentCellType = sectionCellTypes[indexPath.item]
         
         if currentCellType == .thumbnail {
-            // Back to the preview with the photo gliding into place; the … menu path has no preview to go to.
-            let glidesBack = (navigationController as? FilePreviewNavigationController)?.closeTransition != nil
-            dismiss(animated: glidesBack, completion: nil)
+            pictureTapped()
         }
         
         // A tap on a row's label, outside its box, does what the box does.

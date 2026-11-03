@@ -113,6 +113,7 @@ extension RecordV2Data {
         if let value = type { record["type"] = value }
         if let value = displayDate { record["displayDT"] = value }
         if let value = displayTime { record["displayTime"] = value }
+        if let value = location?.timezone { record["timezone"] = value }
         if let value = createdAt { record["createdDT"] = value }
         if let value = updatedAt { record["updatedDT"] = value }
         if let value = fileCreatedAt { record["derivedCreatedDT"] = value } // note: V2 has no derivedDT ("Created" row blank)

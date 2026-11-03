@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// What the date and time sheet holds: six typed fields and the time format. The digits stay as typed; the
-/// EDTF string and the preview line are built from them when asked.
+/// What the date and time sheet holds: six typed fields, the time format and the chosen zone. The digits stay as
+/// typed; the EDTF string and the preview line are built from them when asked.
 struct DateTimeEntry: Hashable {
     /// The pill's state. A switch changes nothing the member typed; only the built hour reads differently.
     enum TimeFormat: CaseIterable, Equatable {
@@ -80,12 +80,21 @@ struct DateTimeEntry: Hashable {
     var minute = ""
     var second = ""
     var format: TimeFormat = .am
+    /// The chosen zone's IANA id; nil until the member picks one or the record carries one.
+    var timeZoneIdentifier: String?
+    /// The offset the record's string carried ("+01:00"), kept for the preview and the repeated-hour rule.
+    var storedOffset: String?
 
     init() {}
 
     /// The fields from a record: `displayTime` as written, else the old field as a moment on the phone's clock
-    /// while the screens still show it.
-    init(displayTime: String?, legacy: String?, timeZone: TimeZone = .current, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
+    /// while the screens still show it. The record's zone, when known, comes in as its id.
+    init(
+        displayTime: String?, legacy: String?, timeZoneIdentifier: String? = nil, timeZone: TimeZone = .current,
+        onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
+    ) {
+        self.timeZoneIdentifier = timeZoneIdentifier
+        storedOffset = DateUtils.displayTimeOffset(displayTime)
         if let parts = DateUtils.displayTimeParts(displayTime) {
             if parts.timeZone != nil, let moment = DateUtils.date(fromDisplayTime: displayTime, timeZone: timeZone) {
                 // A `Z` time is a moment in UTC, shown on the phone's clock as the Info row shows it.
@@ -129,8 +138,13 @@ struct DateTimeEntry: Hashable {
         ![hour, minute, second].allSatisfy(\.isEmpty)
     }
 
-    /// The EDTF Level 0 string Stela gets: "1985", "1985-10", "1985-10-23" or "1985-10-23T17:00:00", with no
-    /// offset while no zone is chosen. Fields pad to their width; an empty one stays empty. Nil when all are empty.
+    /// The chosen zone, built from its id; nil while none is chosen or this iOS does not know it.
+    var zone: TimeZoneOption? {
+        timeZoneIdentifier.flatMap(TimeZoneCatalog.option(for:))
+    }
+
+    /// The EDTF Level 0 string Stela gets: "1985", "1985-10", "1985-10-23" or "1985-10-23T17:00:00", then the
+    /// zone's offset at that clock time when a zone is chosen. Fields pad to their width; an empty one stays empty.
     var edtfString: String? {
         guard !isEmpty else { return nil }
         var dateFields = [(year, 4), (month, 2), (day, 2)]
@@ -140,6 +154,9 @@ struct DateTimeEntry: Hashable {
         var text = dateFields.map { field, width in field.isEmpty ? "" : padded(field, width) }.joined(separator: "-")
         if hasTime {
             text += "T" + [String(format: "%02d", hour24), padded(minute, 2), padded(second, 2)].joined(separator: ":")
+            if let zone, let wallClock {
+                text += TimeZoneOption.offsetSuffix(minutes: zone.offsetMinutes(at: wallClock, storedOffset: storedOffset))
+            }
         }
         return text
     }
@@ -156,20 +173,43 @@ struct DateTimeEntry: Hashable {
 
     /// The line under the title: what the Info row will show after the save; nil until the fields make a date.
     var preview: String? {
-        DateUtils.infoRowDate(displayTime: edtfString, legacy: nil)
+        DateUtils.infoRowDate(displayTime: edtfString, legacy: nil, zoneAbbreviation: timeSuffix)
     }
 
-    /// The fields as a moment for the calendar: a missing month or day reads as 1, a missing clock as midnight.
-    /// `now` when the fields make no date.
-    func pickerDate(timeZone: TimeZone = .current, now: Date = Date()) -> Date {
-        guard let year = Int(year) else { return now }
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
-        let components = DateComponents(
+    /// After the time: the zone's short name at the clock time, else the stored offset as the tz database writes
+    /// it ("+03"); nil without a time.
+    var timeSuffix: String? {
+        guard hasTime, let wallClock else { return nil }
+        if let zone { return zone.shortName(at: wallClock, storedOffset: storedOffset) }
+        return storedOffset.flatMap(TimeZoneOption.minutes(inOffset:)).map(TimeZoneOption.tzdataOffset(minutes:))
+    }
+
+    /// The fields as a clock time in no zone: a missing month or day reads as 1, a missing clock as midnight.
+    /// Nil without a year.
+    var wallClock: DateComponents? {
+        guard let year = Int(year) else { return nil }
+        return DateComponents(
             year: year, month: Int(month) ?? 1, day: Int(day) ?? 1,
             hour: hour24, minute: Int(minute) ?? 0, second: Int(second) ?? 0
         )
-        return calendar.date(from: components) ?? now
+    }
+
+    /// The clock time the zone list takes its offsets at: the fields, else now, so an empty sheet lists today's offsets.
+    func offsetClock(now: Date = Date()) -> DateComponents {
+        wallClock ?? Calendar(identifier: .gregorian).dateComponents([.year, .month, .day, .hour, .minute, .second], from: now)
+    }
+
+    /// The Info row's suffix for a record: its zone's short name at the written clock, else the string's offset.
+    static func timeSuffix(displayTime: String?, timeZoneIdentifier: String?) -> String? {
+        Self(displayTime: displayTime, legacy: nil, timeZoneIdentifier: timeZoneIdentifier).timeSuffix
+    }
+
+    /// The fields as a moment for the calendar in the given zone; `now` when the fields make no date.
+    func pickerDate(timeZone: TimeZone = .current, now: Date = Date()) -> Date {
+        guard let wallClock else { return now }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar.date(from: wallClock) ?? now
     }
 
     /// Writes the picked day into the date fields; the clock fields stay.

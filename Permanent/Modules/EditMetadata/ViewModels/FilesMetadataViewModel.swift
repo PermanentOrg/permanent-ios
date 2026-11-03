@@ -18,7 +18,8 @@ class FilesMetadataViewModel: ObservableObject {
             if !descriptionWasSaved {
                 haveDiffDescription = !selectedFiles.allSatisfy({$0.description == selectedFiles.first?.description})
             }
-            haveDiffDate = !selectedFiles.allSatisfy({ $0.createdDT == selectedFiles.first?.createdDT && $0.displayTime == selectedFiles.first?.displayTime })
+            // The section shows `displayTime`, else the old field, as `getCommonDate()` reads it.
+            haveDiffDate = Set(selectedFiles.map { $0.displayTime ?? $0.createdDT }).count > 1
             if haveDiffDescription {
                 inputText = .enterTextHere
             } else {

@@ -21,6 +21,8 @@ struct RecordVOData: Model {
     let uploadAccountID, size: Int?
     let recordVODescription: String?
     let displayDT, displayTime: String?
+    /// The IANA zone of `displayTime`, from the V2 record's `location`; nil through V1.
+    let timezone: String?
     let displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT: String?
     let locnID: Int?
     let timeZoneID: Int?
@@ -67,7 +69,7 @@ struct RecordVOData: Model {
         case uploadAccountID = "uploadAccountId"
         case size
         case recordVODescription = "description"
-        case displayDT, displayTime, displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT
+        case displayDT, displayTime, timezone, displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT
         case locnID = "locnId"
         case timeZoneID = "timeZoneId"
         case view, viewProperty, imageRatio, encryption, metaToken, refArchiveNbr, type, thumbStatus, thumbnail256, thumbURL200, thumbURL500, thumbURL1000, thumbURL2000, thumbDT, fileStatus, status, processedDT

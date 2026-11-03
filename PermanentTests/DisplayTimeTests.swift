@@ -113,6 +113,20 @@ struct DisplayTimeTests {
         #expect(DateUtils.displayTime(from: picked, timeZone: zone, now: octoberToday) == "1999-01-01T08:00:00" + offset)
     }
 
+    @Test("A string's offset reads back as written; a Z time, a bare clock and a date keep none", arguments: [
+        ("2026-07-15T23:45:00+03:00", "+03:00"),
+        ("2026-07-15T01:15:00-05:30", "-05:30"),
+        ("2026-07-15T12:45:00.5+03:00", "+03:00"),
+        ("2026-07-15T12:45:00Z", nil),
+        ("2026-07-15T12:45:00", nil),
+        ("2026-07-15", nil),
+        ("2004-02-01/2005-02-08", nil),
+        ("1985~", nil)
+    ])
+    func offsetReadsBack(displayTime: String, offset: String?) {
+        #expect(DateUtils.displayTimeOffset(displayTime) == offset)
+    }
+
     @Test("What a save writes reads back as the same clock time")
     func writeThenReadKeepsClock() throws {
         let picked = try date(DateComponents(year: 2001, month: 2, day: 3, hour: 9, minute: 30), in: bucharest)

@@ -461,10 +461,12 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
-    /// The Date row's text: the written date, its clock when it has one, and the zone when the record carries one.
+    /// The Date row's text: the written date, its clock when it has one, then the zone's short name or the string's
+    /// offset, as web shows them.
     func infoRowDate() -> String? {
         let record = recordVO?.recordVO
-        return DateUtils.infoRowDate(displayTime: record?.displayTime, legacy: record?.displayDT, zoneAbbreviation: record?.timezoneVO?.stdAbbrev)
+        let suffix = DateTimeEntry.timeSuffix(displayTime: record?.displayTime, timeZoneIdentifier: record?.timezone)
+        return DateUtils.infoRowDate(displayTime: record?.displayTime, legacy: record?.displayDT, zoneAbbreviation: suffix)
     }
 
     /// True when the Info tab shows the map: the record has coordinates.

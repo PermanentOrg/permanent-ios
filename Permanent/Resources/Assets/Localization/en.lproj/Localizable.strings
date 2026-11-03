@@ -257,3 +257,12 @@
 "TimePlaceholderHour" = "hh";
 "TimePlaceholderMinute" = "mm";
 "TimePlaceholderSecond" = "ss";
+"TimeZone" = "Time zone";
+"SelectTimeZone" = "Select time zone";
+"TimeZoneNotSet" = "Not set";
+"TimeZoneHint" = "Double tap to choose";
+"SearchTimeZones" = "Search city, country or offset";
+"ClearSearch" = "Clear search";
+"NoTimeZone" = "No time zone";
+"NoMatchingTimeZones" = "No matching time zones";
+"Back" = "Back";
