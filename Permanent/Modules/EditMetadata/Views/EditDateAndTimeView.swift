@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// The "Adjust date and time" sheet: a header with the preview line, the typed date and time boxes with their
-/// native pickers, the Clear row, and Cancel and Save pinned under them.
+/// native pickers, the zone row, the Clear row, and Cancel and Save pinned under them.
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -19,6 +19,7 @@ struct EditDateAndTimeView: View {
     @State private var focus: DateTimeEntry.Field?
     @State private var showsDateSheet = false
     @State private var showsWheels = false
+    @State private var showsZonePicker = false
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0
 
     static let sheetCornerRadius: CGFloat = 38
@@ -33,6 +34,7 @@ struct EditDateAndTimeView: View {
                         timeBox
                             .padding(.top, 8)
                             .zIndex(1)
+                        TimeZoneRow(zone: viewModel.entry.zone, wallClock: viewModel.entry.offsetClock()) { openZonePicker() }
                         ClearDateAndTimeRow { clear() }
                     }
                     .padding(.horizontal, 24)
@@ -42,6 +44,12 @@ struct EditDateAndTimeView: View {
             }
             .safeAreaInset(edge: .bottom) { bottomButtons }
             .background(Color.white.ignoresSafeArea())
+            .accessibilityHidden(showsZonePicker)
+            if showsZonePicker {
+                TimeZonePickerSheet(entry: $viewModel.entry) { closeZonePicker() }
+                    .transition(reduceMotion ? .identity : .move(edge: .trailing))
+                    .zIndex(1)
+            }
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "ChangeDateAndTime".localized(), message: confirmationMessage, buttonTitle: "Modify") {
                     viewModel.applyChanges()
@@ -54,6 +62,7 @@ struct EditDateAndTimeView: View {
                 viewModel.entry.set(date: picked)
             }
         }
+        .onAppear { viewModel.readZoneIfNeeded() }
         .onChange(of: focus) { field in
             if field != nil { closeWheels() }
         }
@@ -211,6 +220,20 @@ struct EditDateAndTimeView: View {
         }
     }
 
+    /// The Time zone screen slides in from the right over the sheet's content; Reduce Motion swaps the two.
+    private func openZonePicker() {
+        leaveFields()
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            showsZonePicker = true
+        }
+    }
+
+    private func closeZonePicker() {
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            showsZonePicker = false
+        }
+    }
+
     /// Puts the keyboard and the wheel card away.
     private func leaveFields() {
         focus = nil
@@ -228,9 +251,11 @@ struct EditDateAndTimeView: View {
 
 extension EditDateAndTimeView {
     /// The screen for one file, for UIKit to present. It closes itself, then tells `onClose` whether the date was saved.
-    static func host(for file: FileModel, onClose: @escaping (Bool) -> Void) -> UIViewController {
+    /// A door that has read the record passes it; a list door passes none and the sheet reads it.
+    static func host(for file: FileModel, record: RecordVOData? = nil, onClose: @escaping (Bool) -> Void) -> UIViewController {
         weak var host: UIViewController?
-        let view = EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false)), onClose: { saved in
+        let viewModel = EditDateAndTimeViewModel(file: file, record: record, hasUpdates: .constant(false))
+        let view = EditDateAndTimeView(viewModel: viewModel, onClose: { saved in
             host?.dismiss(animated: true) { onClose(saved) }
         })
         let controller = UIHostingController(rootView: view)

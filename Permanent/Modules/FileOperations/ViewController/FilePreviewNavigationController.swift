@@ -11,6 +11,8 @@ protocol FilePreviewNavigationControllerDelegate: AnyObject {
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
     func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel)
+    /// The picture on an Info screen a list opened straight: the list puts the file's preview in the screen's place.
+    func filePreviewNavigationControllerRequestsPreview(_ filePreviewNavigationVC: UIViewController, file: FileModel, hasChanges: Bool)
 }
 
 class FilePreviewNavigationController: UINavigationController {
@@ -90,5 +92,12 @@ extension FilePreviewNavigationController: UIViewControllerTransitioningDelegate
 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         closeTransition
+    }
+}
+
+extension FilePreviewNavigationControllerDelegate {
+    /// A door with no list behind it closes the screen, as the picture did before.
+    func filePreviewNavigationControllerRequestsPreview(_ filePreviewNavigationVC: UIViewController, file: FileModel, hasChanges: Bool) {
+        filePreviewNavigationVC.dismiss(animated: true)
     }
 }

@@ -10,7 +10,7 @@ import Testing
 @testable import Permanent
 
 /// The date and time sheet's entry: the fields a record fills, the EDTF string each shape builds, the hour
-/// each format sends, the pickers' writes, the preview line and the bounds a typed field is pulled into.
+/// each format sends, the zone's offset, the pickers' writes, the preview line and the bounds a typed field is pulled into.
 struct DateTimeEntryTests {
     private let plusThree = TimeZone(secondsFromGMT: 3 * 3600) ?? .current
     private let utc = TimeZone(secondsFromGMT: 0) ?? .current
@@ -168,7 +168,7 @@ struct DateTimeEntryTests {
     // MARK: - Preview
 
     @Test("The preview line reads as the Info row will", arguments: [
-        ("1985-10-23T17:00:00+03:00", "October 23, 1985 • 5PM"),
+        ("1985-10-23T17:00:00+03:00", "October 23, 1985 • 5PM +03"),
         ("1985-10-23T16:16:00", "October 23, 1985 • 4:16 PM"),
         ("1985-10", "October 1985"),
         ("1985", "1985")
@@ -177,6 +177,64 @@ struct DateTimeEntryTests {
         let entry = DateTimeEntry(displayTime: displayTime, legacy: nil, timeZone: plusThree)
 
         #expect(entry.preview == expected)
+    }
+
+    // MARK: - Zone
+
+    @Test("With a time and a zone the string carries the zone's offset at that date; without a time, none")
+    func zoneWritesTheOffset() {
+        var entry = DateTimeEntry(displayTime: "1985-10-23T17:00:00", legacy: nil, timeZone: plusThree)
+        entry.timeZoneIdentifier = "Europe/Paris"
+        #expect(entry.edtfString == "1985-10-23T17:00:00+01:00")
+
+        entry.month = "07"
+        #expect(entry.edtfString == "1985-07-23T17:00:00+02:00")
+
+        entry.set(hour: 0, minute: 0, second: 0)
+        entry.hour = ""
+        entry.minute = ""
+        entry.second = ""
+        #expect(entry.edtfString == "1985-07-23")
+        #expect(entry.timeSuffix == nil)
+    }
+
+    @Test("The preview ends in the zone's short name: the offset for Paris, letters for New York, nothing without a zone")
+    func previewEndsInTheZone() {
+        var entry = DateTimeEntry(displayTime: "1985-10-23T17:00:00", legacy: nil, timeZone: plusThree)
+        entry.timeZoneIdentifier = "Europe/Paris"
+        #expect(entry.preview == "October 23, 1985 • 5PM +01")
+
+        entry.timeZoneIdentifier = "America/New_York"
+        entry.month = "07"
+        #expect(entry.preview == "July 23, 1985 • 5PM EDT")
+
+        entry.timeZoneIdentifier = nil
+        #expect(entry.preview == "July 23, 1985 • 5PM")
+    }
+
+    @Test("A record string's offset is kept as the stored offset and shows after the time while no zone is chosen")
+    func storedOffsetIsKept() {
+        let entry = DateTimeEntry(displayTime: "1985-10-23T17:00:00+03:00", legacy: nil, timeZone: plusThree)
+
+        #expect(entry.storedOffset == "+03:00")
+        #expect(entry.timeZoneIdentifier == nil)
+        #expect(entry.edtfString == "1985-10-23T17:00:00", "no zone, so no offset is written")
+        #expect(entry.preview == "October 23, 1985 • 5PM +03")
+        #expect(DateTimeEntry(displayTime: "1985-10-23T17:00:00Z", legacy: nil, timeZone: plusThree).storedOffset == nil)
+        #expect(DateTimeEntry(displayTime: "1985-10-23", legacy: nil, timeZone: plusThree).storedOffset == nil)
+    }
+
+    @Test("A record's zone comes in with its string, and a repeated hour keeps the stored offset when it fits")
+    func zoneFromRecord() {
+        let paris = DateTimeEntry(displayTime: "1985-10-23T17:00:00+01:00", legacy: nil, timeZoneIdentifier: "Europe/Paris", timeZone: plusThree)
+        let repeated = DateTimeEntry(displayTime: "1985-09-29T02:30:00+01:00", legacy: nil, timeZoneIdentifier: "Europe/Paris", timeZone: plusThree)
+        let unknown = DateTimeEntry(displayTime: "1985-10-23T17:00:00+01:00", legacy: nil, timeZoneIdentifier: "Mars/Olympus", timeZone: plusThree)
+
+        #expect(paris.zone?.identifier == "Europe/Paris")
+        #expect(paris.edtfString == "1985-10-23T17:00:00+01:00")
+        #expect(repeated.edtfString == "1985-09-29T02:30:00+01:00")
+        #expect(unknown.zone == nil)
+        #expect(unknown.edtfString == "1985-10-23T17:00:00")
     }
 
     // MARK: - Pickers
@@ -214,15 +272,17 @@ struct DateTimeEntryTests {
         #expect(DateTimeEntry().pickerDate(timeZone: plusThree, now: now) == now)
     }
 
-    @Test("Clear empties every field and resets the pill")
+    @Test("Clear empties every field, resets the pill and drops the zone")
     func clearEmpties() {
-        var entry = DateTimeEntry(displayTime: "1985-10-23T17:00:00", legacy: nil, timeZone: plusThree)
+        var entry = DateTimeEntry(displayTime: "1985-10-23T17:00:00+01:00", legacy: nil, timeZoneIdentifier: "Europe/Paris", timeZone: plusThree)
 
         entry.clear()
 
         #expect(entry.isEmpty)
         #expect(entry.format == .am)
         #expect(entry.edtfString == nil)
+        #expect(entry.timeZoneIdentifier == nil)
+        #expect(entry.storedOffset == nil)
     }
 
     // MARK: - Bounds

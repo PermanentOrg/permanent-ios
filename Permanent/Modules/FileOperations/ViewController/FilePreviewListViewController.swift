@@ -43,6 +43,18 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         }
     }
 
+    /// The pager on one file of a list, full screen, in the navigation that reports back to the list.
+    static func navigation(for file: FileModel, in viewModel: FilesViewModel?, delegate: FilePreviewNavigationControllerDelegate?) -> FilePreviewNavigationController {
+        let pager = FilePreviewListViewController(nibName: nil, bundle: nil)
+        pager.modalPresentationStyle = .fullScreen
+        pager.viewModel = viewModel
+        pager.currentFile = file
+        let navigation = FilePreviewNavigationController(rootViewController: pager)
+        navigation.filePreviewNavDelegate = delegate
+        navigation.modalPresentationStyle = .fullScreen
+        return navigation
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

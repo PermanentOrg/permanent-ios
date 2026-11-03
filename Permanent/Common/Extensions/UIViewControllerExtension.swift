@@ -12,6 +12,22 @@ private var spinnerViewKey: UInt8 = 0
 private var touchBlockerKey: UInt8 = 0
 
 extension UIViewController {
+    /// Puts `replacement` where the presented screen is. What is on screen stays as a cover that fades out over the
+    /// new screen, so the screen behind both never shows between them.
+    func replacePresented(with replacement: UIViewController) {
+        let cover = view.window?.snapshotView(afterScreenUpdates: false)
+        if let cover { view.window?.addSubview(cover) }
+        dismiss(animated: false) { [weak self] in
+            guard let self else {
+                cover?.removeFromSuperview()
+                return
+            }
+            self.present(replacement, animated: false) {
+                UIView.animate(withDuration: 0.25, animations: { cover?.alpha = 0 }, completion: { _ in cover?.removeFromSuperview() })
+            }
+        }
+    }
+
     /// One overlay per screen. A single shared slot let one screen's hide remove another screen's
     /// overlay, or turn its show into a no-op, leaving a spinner nothing could dismiss.
     private var spinnerView: UIView? {

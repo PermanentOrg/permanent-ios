@@ -165,6 +165,14 @@ open class DateUtils {
         level0Start(raw)?.parts
     }
 
+    /// The offset a Level 0 date-time carries, as written ("+01:00"); nil without one. A `Z` time is shown on
+    /// the phone's clock, so it keeps none.
+    static func displayTimeOffset(_ raw: String?) -> String? {
+        guard let text = level0Start(raw)?.text, let clock = text.components(separatedBy: "T").dropFirst().first,
+              let sign = clock.firstIndex(where: { $0 == "+" || $0 == "-" }) else { return nil }
+        return String(clock[sign...])
+    }
+
     /// True when none of these `displayTime` values reads, so the old field is the date the app shows
     /// and a V1 `displayDT` write would be seen.
     static func showsLegacyDate(displayTimes: [String?]) -> Bool {
@@ -217,7 +225,7 @@ open class DateUtils {
     }
 
     /// `hh:mm:ss` with or without a fraction of a second, then nothing, `Z` or `±hh:mm`. A `Z` time keeps
-    /// UTC as its zone; an offset is checked but not kept.
+    /// UTC as its zone; an offset is checked here and read back by `displayTimeOffset`.
     private static func level0Clock(_ text: String) -> DateComponents? {
         var clock = text
         var zone: TimeZone?

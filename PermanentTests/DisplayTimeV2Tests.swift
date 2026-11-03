@@ -284,14 +284,238 @@ struct DisplayTimeV2Tests {
         #expect(server.v1Batches.count == 1)
     }
 
+    @Test("The Edit screen's date section reads one saved date although the upload dates differ")
+    func editScreenReadsTheSavedDateOfABatch() throws {
+        let saved = try [
+            child(#""recordId": "301", "displayDate": "2011-03-12T22:17:25.000Z", "displayTime": "1985-10-23T09:30:00+01:00""#),
+            child(#""recordId": "302", "displayDate": "2012-08-09T02:52:11.000Z", "displayTime": "1985-10-23T09:30:00+01:00""#)
+        ]
+        var mixed = saved
+        mixed[1].displayTime = nil
+
+        #expect(!FilesMetadataViewModel(files: saved).haveDiffDate)
+        #expect(FilesMetadataViewModel(files: mixed).haveDiffDate, "a file with no saved date shows its upload date")
+    }
+
+    // MARK: - Zone
+
+    @MainActor
+    @Test("A save with a time and a zone sends the zone's offset at that date in the string, and location.timezone")
+    func zonedSaveSendsOffsetAndZone() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#), child(#""recordId": "302", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+        viewModel.entry.timeZoneIdentifier = "America/New_York"
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.changesWereSaved)
+        #expect(server.patches.map(\.recordId) == [301, 302])
+        #expect(server.patches.allSatisfy { $0.fields["displayTime"] as? String == "2001-02-03T09:30:00-05:00" }, "the same zone on every record")
+        #expect(server.patches.allSatisfy { $0.fields["location"] as? [String: String] == ["timezone": "America/New_York"] })
+        let body = try #require(RecordV2Endpoint.patchRecord(recordId: "301", fields: viewModel.patchFields).bodyData)
+        let sent = try #require(try JSONSerialization.jsonObject(with: body) as? [String: Any])
+        #expect(sent["displayTime"] as? String == "2001-02-03T09:30:00-05:00")
+        #expect(sent["location"] as? [String: String] == ["timezone": "America/New_York"])
+    }
+
+    @MainActor
+    @Test("A save that never touched the zone sends no location key, so no empty location row is made")
+    func untouchedSaveSendsNoLocation() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+
+        await applyChanges(in: viewModel)
+
+        #expect(server.patches.first?.fields as? [String: String] == ["displayTime": "2001-02-03T09:30:00"])
+        #expect(server.patches.first?.fields["location"] == nil)
+    }
+
+    @MainActor
+    @Test("Unsetting the zone the sheet opened with sends location.timezone null")
+    func unsetZoneSendsNull() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server, recordZone: .known("Europe/Paris"))
+        #expect(viewModel.openingZone == "Europe/Paris")
+        #expect(viewModel.entry.timeZoneIdentifier == "Europe/Paris")
+        viewModel.entry.timeZoneIdentifier = nil
+
+        await applyChanges(in: viewModel)
+
+        let fields = try #require(server.patches.first?.fields)
+        #expect(fields["displayTime"] as? String == "2001-02-03T09:30:00")
+        #expect((fields["location"] as? [String: Any])?["timezone"] is NSNull)
+    }
+
+    @MainActor
+    @Test("A clear sends displayTime null and location.timezone null")
+    func clearSendsBothNulls() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+        viewModel.entry.clear()
+
+        await applyChanges(in: viewModel)
+
+        let fields = try #require(server.patches.first?.fields)
+        #expect(fields["displayTime"] is NSNull)
+        #expect((fields["location"] as? [String: Any])?["timezone"] is NSNull)
+    }
+
+    @MainActor
+    @Test("The V1 retry ignores the zone and keeps its UTC displayDT")
+    func v1RetryIgnoresTheZone() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: false)
+        let viewModel = batchViewModel(files: files, server: server)
+        viewModel.entry.timeZoneIdentifier = "Europe/Paris"
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.changesWereSaved)
+        #expect(server.patches.first?.fields["location"] as? [String: String] == ["timezone": "Europe/Paris"])
+        #expect(server.v1Batches.first?.allSatisfy { $0.date == utcStamp(of: viewModel.entry.pickerDate()) } == true)
+    }
+
+    @MainActor
+    @Test("A list door shows no zone until its record is read; a record with an offset and no zone then takes web's guess")
+    func offsetOnlyRecordOpensOnTheGuess() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00+01:00""#)
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = listDoorViewModel(file: file, server: server)
+
+        #expect(viewModel.entry.timeZoneIdentifier == nil)
+        #expect(viewModel.openingZone == nil)
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.entry.timeZoneIdentifier != nil }
+
+        #expect(server.zoneReads == [301])
+        #expect(viewModel.entry.timeZoneIdentifier == "Africa/Algiers")
+        #expect(viewModel.openingZone == "Africa/Algiers")
+        #expect(viewModel.patchFields["displayTime"] as? String == "1985-10-23T17:00:00+01:00")
+        #expect(viewModel.patchFields["location"] as? [String: String] == ["timezone": "Africa/Algiers"])
+        #expect(EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false), recordZone: .known("Europe/Paris")).entry.timeZoneIdentifier == "Europe/Paris")
+    }
+
+    @MainActor
+    @Test("The Info door seeds the sheet from the record it read; the row the screen opened with is stale after a save")
+    func infoDoorSeedsTheSheetFromTheRecord() throws {
+        let listRow = try child(#""recordId": "301", "archiveId": "5", "displayName": "B", "displayTime": "2025-07-24T21:36:00""#)
+        let json = """
+        { "data": {
+            "recordId": "301", "archiveId": "5", "displayName": "B", "type": "type.record.image",
+            "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "1985-10-23T17:00:00+01:00",
+            "location": { "id": "7", "timezone": "Europe/Paris" }
+        } }
+        """
+        let data = try #require(try RecordV2Response.decoder.decode(RecordV2Response.self, from: Data(json.utf8)).data)
+        let record = try #require((JSONHelper.decoding(from: data.toRecordVOPayload(), with: RecordVO.decoder) as RecordVO?)?.recordVO)
+
+        let infoDoor = EditDateAndTimeViewModel(file: listRow, record: record, hasUpdates: .constant(false))
+        let listDoor = EditDateAndTimeViewModel(file: listRow, record: nil, hasUpdates: .constant(false))
+
+        #expect(infoDoor.entry.edtfString == "1985-10-23T17:00:00+01:00")
+        #expect(infoDoor.entry.timeZoneIdentifier == "Europe/Paris")
+        #expect(infoDoor.openingZone == "Europe/Paris")
+        #expect(infoDoor.selectedFiles.first?.name == listRow.name, "only the date fields come from the record")
+        #expect(infoDoor.selectedFiles.first?.createdDT == "2023-08-15T00:00:00.000Z")
+        #expect(infoDoor.selectedFiles.first?.date == "1985-10-23")
+        #expect(listDoor.entry.edtfString == "2025-07-24T21:36:00")
+        #expect(listDoor.entry.timeZoneIdentifier == nil, "a list door reads the record itself")
+    }
+
+    @MainActor
+    @Test("A batch and a shared record's list door open on web's guess at once, with no record read")
+    func guessWithoutAReadOpensAtOnce() throws {
+        let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00+01:00""#)
+        let other = try child(#""recordId": "302", "archiveId": "5", "displayTime": "1985-10-23T17:00:00+01:00""#)
+        let shared = try child(#""recordId": "303", "archiveId": "9", "displayTime": "1985-10-23T17:00:00+01:00""#)
+        let server = FakeServer(patchSucceeds: true)
+        let batch = EditDateAndTimeViewModel(selectedFiles: [file, other], hasUpdates: .constant(false))
+        let sharedDoor = listDoorViewModel(file: shared, server: server)
+
+        #expect(batch.entry.timeZoneIdentifier == "Africa/Algiers")
+        #expect(sharedDoor.entry.timeZoneIdentifier == nil)
+        sharedDoor.readZoneIfNeeded()
+
+        #expect(server.zoneReads.isEmpty)
+        #expect(sharedDoor.entry.timeZoneIdentifier == "Africa/Algiers")
+        #expect(sharedDoor.openingZone == "Africa/Algiers")
+    }
+
+    @MainActor
+    @Test("A list door reads one record's zone once; the Info door and a batch do not read")
+    func oneFileReadsTheZoneOnce() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00""#)
+        let other = try child(#""recordId": "302", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.zone = "Europe/Paris"
+        let listDoor = batchViewModel(files: [file], server: server)
+        let infoDoor = batchViewModel(files: [file], server: server, recordZone: .known(nil))
+        let batch = batchViewModel(files: [file, other], server: server)
+
+        #expect(listDoor.entry.timeZoneIdentifier == nil)
+        listDoor.readZoneIfNeeded()
+        listDoor.readZoneIfNeeded()
+        infoDoor.readZoneIfNeeded()
+        batch.readZoneIfNeeded()
+        await wait { listDoor.entry.timeZoneIdentifier != nil }
+
+        #expect(server.zoneReads == [301])
+        #expect(listDoor.entry.timeZoneIdentifier == "Europe/Paris")
+        #expect(listDoor.openingZone == "Europe/Paris")
+        #expect(listDoor.patchFields["location"] as? [String: String] == ["timezone": "Europe/Paris"])
+        #expect(infoDoor.entry.timeZoneIdentifier == nil)
+        #expect(batch.entry.timeZoneIdentifier == nil)
+    }
+
+    @MainActor
+    @Test("A zone chosen before the read lands is kept, and the record's zone still counts as the opening one")
+    func chosenZoneSurvivesTheRead() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.zone = "Europe/Paris"
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+        viewModel.entry.timeZoneIdentifier = "Asia/Tokyo"
+        server.answerHeldZoneReads()
+        await wait { viewModel.openingZone == "Europe/Paris" }
+
+        #expect(viewModel.entry.timeZoneIdentifier == "Asia/Tokyo")
+        #expect(viewModel.openingZone == "Europe/Paris")
+    }
+
     // MARK: - Helpers
 
-    /// Records each call the screens make and answers it at once.
+    /// Records each call the screens make and answers it at once, or holds a zone read until told.
     private final class FakeServer {
         let patchSucceeds: Bool
         var patches: [(recordId: Int, fields: [String: Any])] = []
         var v1Dates: [Date] = []
         var v1Batches: [[FileModel]] = []
+        var zone: String?
+        var zoneReads: [Int] = []
+        var holdsZoneReads = false
+        private var heldZoneReads: [(String?) -> Void] = []
+
+        func readZone(of file: FileModel, completion: @escaping (String?) -> Void) {
+            zoneReads.append(file.recordId)
+            if holdsZoneReads {
+                heldZoneReads.append(completion)
+            } else {
+                completion(zone)
+            }
+        }
+
+        func answerHeldZoneReads() {
+            let held = heldZoneReads
+            heldZoneReads = []
+            held.forEach { $0(zone) }
+        }
 
         init(patchSucceeds: Bool) {
             self.patchSucceeds = patchSucceeds
@@ -332,12 +556,29 @@ struct DisplayTimeV2Tests {
         return viewModel
     }
 
+    /// One file opened from a list, its entry as the file carries it, with the session and the zone read faked.
     @MainActor
-    private func batchViewModel(files: [FileModel], server: FakeServer) -> EditDateAndTimeViewModel {
-        let viewModel = EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false))
+    private func listDoorViewModel(file: FileModel, server: FakeServer) -> EditDateAndTimeViewModel {
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false))
         let archiveId = ownArchiveId
-        viewModel.entry = DateTimeEntry(displayTime: "2001-02-03T09:30:00", legacy: nil)
         viewModel.sessionArchiveId = { archiveId }
+        viewModel.fetchRecordZone = { file, completion in
+            server.readZone(of: file, completion: completion)
+        }
+        return viewModel
+    }
+
+    @MainActor
+    private func batchViewModel(
+        files: [FileModel], server: FakeServer, recordZone: EditDateAndTimeViewModel.RecordZone = .unknown
+    ) -> EditDateAndTimeViewModel {
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false), recordZone: recordZone)
+        let archiveId = ownArchiveId
+        viewModel.entry = DateTimeEntry(displayTime: "2001-02-03T09:30:00", legacy: nil, timeZoneIdentifier: viewModel.entry.timeZoneIdentifier)
+        viewModel.sessionArchiveId = { archiveId }
+        viewModel.fetchRecordZone = { file, completion in
+            server.readZone(of: file, completion: completion)
+        }
         viewModel.patchRecordRequest = { file, fields, completion in
             server.patches.append((file.recordId, fields))
             completion(server.patchSucceeds)

@@ -1483,16 +1483,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     }
     
     func handlePreviewSelection(file: FileModel) {
-        let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-        listPreviewVC.modalPresentationStyle = .fullScreen
-        listPreviewVC.viewModel = viewModel
-        listPreviewVC.currentFile = file
-        
-        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-        fileDetailsNavigationController.filePreviewNavDelegate = self
-        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-        
-        present(fileDetailsNavigationController, animated: true)
+        present(FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self), animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -2651,6 +2642,13 @@ extension MainViewController: FilePreviewNavigationControllerDelegate {
         }
         if hasChanges {
             refreshCurrentFolder()
+        }
+    }
+    
+    func filePreviewNavigationControllerRequestsPreview(_ filePreviewNavigationVC: UIViewController, file: FileModel, hasChanges: Bool) {
+        replacePresented(with: FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self))
+        if hasChanges {
+            refreshCurrentFolder(shouldDisplaySpinner: false)
         }
     }
     
