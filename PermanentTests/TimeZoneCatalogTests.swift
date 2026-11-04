@@ -156,6 +156,22 @@ struct TimeZoneCatalogTests {
         #expect(TimeZoneCatalog.search("  ", at: october1985).count == 10, "blank text is no filter")
     }
 
+    @Test("An offset typed short finds what the padded label finds", arguments: [("+5", "+05"), ("GMT-3", "-03"), ("+5:30", "+05:30"), ("utc+0530", "+05:30")])
+    func shortOffsetSearch(short: String, padded: String) {
+        let found = TimeZoneCatalog.search(short, at: october2026).flatMap(\.options).map(\.identifier)
+
+        #expect(!found.isEmpty)
+        #expect(found == TimeZoneCatalog.search(padded, at: october2026).flatMap(\.options).map(\.identifier))
+    }
+
+    @Test("The offset read out of typed text", arguments: [
+        ("+5", "+05"), ("-3", "-03"), ("GMT-3", "-03"), ("gmt +5", "+05"), ("utc+5:30", "+05:30"), ("+0530", "+05:30"), ("-330", "-03:30"), ("+05:00", "+05:00"),
+        ("paris", nil), ("+", nil), ("gmt", nil), ("+25", nil), ("5", nil), ("+5:3", nil)
+    ])
+    func offsetNeedle(text: String, needle: String?) {
+        #expect(TimeZoneOption.offsetNeedle(in: text) == needle)
+    }
+
     @Test("The guess for an offset walks regions then ids alphabetically, as web does")
     func guess() {
         #expect(TimeZoneCatalog.firstIdentifier(matchingOffset: 60, at: october1985) == "Africa/Algiers")

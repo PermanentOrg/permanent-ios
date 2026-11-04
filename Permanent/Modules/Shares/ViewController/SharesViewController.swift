@@ -2314,8 +2314,8 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
         }
     }
     
-    func filePreviewNavigationControllerRequestsPreview(_ filePreviewNavigationVC: UIViewController, file: FileModel, hasChanges: Bool) {
-        replacePresented(with: FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self))
+    func filePreviewNavigationControllerRequestsPreview(_ details: UIViewController, file: FileModel, hasChanges: Bool) {
+        (details as? FileDetailsViewController)?.showPreview(FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self))
         if hasChanges {
             refreshCurrentFolder(shouldDisplaySpinner: false)
         }

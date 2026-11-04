@@ -16,6 +16,8 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
     /// The picture the screen opened with. Shown at once, so the photo that moved in lands on the same image.
     var openingImage: UIImage?
+    /// True once the slot shows the file's full size rather than its thumbnail.
+    var showsFullSize = false
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -26,6 +28,7 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
         activityIndicator.startAnimating()
 
+        showsFullSize = false
         imageView.image = openingImage
 
         // Stage 1: Load the 256px thumbnail quickly
@@ -54,7 +57,8 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
         }
 
         imageView.sd_setImage(with: thumbnailURL) { [weak self] _, _, _, _ in
-            self?.upgradeToFullRes(fullResURL, thumbnailURL: thumbnailURL)
+            // A cached thumbnail answers inside this call, and a load started here is cancelled by the call's own bookkeeping.
+            DispatchQueue.main.async { self?.upgradeToFullRes(fullResURL, thumbnailURL: thumbnailURL) }
         }
     }
 
@@ -76,6 +80,7 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
             // thumbnail rather than swallowing the failure with the spinner running.
             self.activityIndicator.stopAnimating()
             guard let image = image else { return }
+            self.showsFullSize = true
 
             if cacheType == .memory {
                 self.imageView.image = image

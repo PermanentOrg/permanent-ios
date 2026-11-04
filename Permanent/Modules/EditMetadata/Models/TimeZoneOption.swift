@@ -88,9 +88,26 @@ struct TimeZoneOption: Hashable, Identifiable {
         return [idWords, genericName, countryName, offsetLabel(at: wallClock)].compactMap { $0 }.joined(separator: " ")
     }
 
-    /// True when the text is somewhere in the search text, case and accents aside.
+    /// True when the text is somewhere in the search text, case and accents aside. An offset typed short, "+5" or
+    /// "GMT-3", is read as the label writes it, "+05" or "-03".
     func matches(_ text: String, at wallClock: DateComponents) -> Bool {
-        searchText(at: wallClock).range(of: text, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+        let needle = Self.offsetNeedle(in: text) ?? text
+        return searchText(at: wallClock).range(of: needle, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+    }
+
+    /// "+5", "GMT-3", "utc +5:30" or "+0530" as the label writes it: "+05", "-03", "+05:30"; nil for any other text.
+    static func offsetNeedle(in text: String) -> String? {
+        var rest = text.trimmingCharacters(in: .whitespaces).lowercased()
+        for prefix in ["gmt", "utc"] where rest.hasPrefix(prefix) {
+            rest = String(rest.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+        }
+        guard let sign = rest.first, sign == "+" || sign == "-" else { return nil }
+        let digits = rest.dropFirst().replacingOccurrences(of: ":", with: "")
+        guard !digits.isEmpty, digits.count <= 4, digits.allSatisfy(\.isNumber) else { return nil }
+        let hours = digits.count <= 2 ? digits : String(digits.dropLast(2))
+        let minutes = digits.count <= 2 ? nil : String(digits.suffix(2))
+        guard let hourValue = Int(hours), hourValue < 24 else { return nil }
+        return String(format: "%@%02d", String(sign), hourValue) + (minutes.map { ":" + $0 } ?? "")
     }
 
     /// The row as VoiceOver reads it: "GMT plus 2, Romania, Bucharest".

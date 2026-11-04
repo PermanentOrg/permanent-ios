@@ -261,6 +261,7 @@
 "SelectTimeZone" = "Select time zone";
 "TimeZoneNotSet" = "Not set";
 "TimeZoneHint" = "Double tap to choose";
+"TimeZoneNeedsTime" = "Add a time to choose a zone";
 "SearchTimeZones" = "Search city, country or offset";
 "ClearSearch" = "Clear search";
 "NoTimeZone" = "No time zone";

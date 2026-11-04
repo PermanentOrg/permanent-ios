@@ -171,9 +171,10 @@ struct DateTimeEntry: Hashable {
         }
     }
 
-    /// The line under the title: what the Info row will show after the save; nil until the fields make a date.
+    /// The line under the title: what the Info row will show after the save; nil until the fields make a date. The
+    /// suffix follows the string that will be saved, which carries an offset only with a zone.
     var preview: String? {
-        DateUtils.infoRowDate(displayTime: edtfString, legacy: nil, zoneAbbreviation: timeSuffix)
+        DateUtils.infoRowDate(displayTime: edtfString, legacy: nil, zoneAbbreviation: zone == nil ? nil : timeSuffix)
     }
 
     /// After the time: the zone's short name at the clock time, else the stored offset as the tz database writes

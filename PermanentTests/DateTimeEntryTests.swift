@@ -168,7 +168,7 @@ struct DateTimeEntryTests {
     // MARK: - Preview
 
     @Test("The preview line reads as the Info row will", arguments: [
-        ("1985-10-23T17:00:00+03:00", "October 23, 1985 • 5PM +03"),
+        ("1985-10-23T17:00:00+03:00", "October 23, 1985 • 5PM"),
         ("1985-10-23T16:16:00", "October 23, 1985 • 4:16 PM"),
         ("1985-10", "October 1985"),
         ("1985", "1985")
@@ -210,6 +210,11 @@ struct DateTimeEntryTests {
 
         entry.timeZoneIdentifier = nil
         #expect(entry.preview == "July 23, 1985 • 5PM")
+
+        var unset = DateTimeEntry(displayTime: "1985-10-23T17:00:00+01:00", legacy: nil, timeZoneIdentifier: "Europe/Paris", timeZone: plusThree)
+        unset.timeZoneIdentifier = nil
+        #expect(unset.edtfString == "1985-10-23T17:00:00")
+        #expect(unset.preview == "October 23, 1985 • 5PM", "after No time zone the preview reads as the save will")
     }
 
     @Test("A record string's offset is kept as the stored offset and shows after the time while no zone is chosen")
@@ -219,7 +224,8 @@ struct DateTimeEntryTests {
         #expect(entry.storedOffset == "+03:00")
         #expect(entry.timeZoneIdentifier == nil)
         #expect(entry.edtfString == "1985-10-23T17:00:00", "no zone, so no offset is written")
-        #expect(entry.preview == "October 23, 1985 • 5PM +03")
+        #expect(entry.preview == "October 23, 1985 • 5PM", "the preview follows the string, not the stored offset")
+        #expect(entry.timeSuffix == "+03", "the Info row of the unsaved record still reads the stored offset")
         #expect(DateTimeEntry(displayTime: "1985-10-23T17:00:00Z", legacy: nil, timeZone: plusThree).storedOffset == nil)
         #expect(DateTimeEntry(displayTime: "1985-10-23", legacy: nil, timeZone: plusThree).storedOffset == nil)
     }

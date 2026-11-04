@@ -34,7 +34,7 @@ struct EditDateAndTimeView: View {
                         timeBox
                             .padding(.top, 8)
                             .zIndex(1)
-                        TimeZoneRow(zone: viewModel.entry.zone, wallClock: viewModel.entry.offsetClock()) { openZonePicker() }
+                        TimeZoneRow(zone: viewModel.entry.zone, wallClock: viewModel.entry.offsetClock(), isEnabled: viewModel.entry.hasTime) { openZonePicker() }
                         ClearDateAndTimeRow { clear() }
                     }
                     .padding(.horizontal, 24)
