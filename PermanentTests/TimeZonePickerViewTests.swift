@@ -41,11 +41,12 @@ struct TimeZonePickerViewTests {
 
         let unset = render(TimeZoneRow(zone: nil, wallClock: clock) {})
         let set = render(TimeZoneRow(zone: paris, wallClock: clock) {})
+        let waiting = render(TimeZoneRow(zone: paris, wallClock: clock, isEnabled: false) {})
         let chosen = render(TimeZoneOptionRow(option: paris, wallClock: clock, isChosen: true) {})
         let plain = render(TimeZoneOptionRow(option: paris, wallClock: clock, isChosen: false) {})
         let field = render(TimeZoneSearchField(text: .constant("paris")))
 
-        #expect(unset.view != nil && set.view != nil && chosen.view != nil && plain.view != nil && field.view != nil)
+        #expect(unset.view != nil && set.view != nil && waiting.view != nil && chosen.view != nil && plain.view != nil && field.view != nil)
     }
 
     @Test("The date sheet opens with the record's zone on its row and in its preview line")
@@ -137,6 +138,7 @@ struct TimeZonePickerViewTests {
         #expect("SelectTimeZone".localized() == "Select time zone")
         #expect("TimeZoneNotSet".localized() == "Not set")
         #expect("TimeZoneHint".localized() == "Double tap to choose")
+        #expect("TimeZoneNeedsTime".localized() == "Add a time to choose a zone")
         #expect("SearchTimeZones".localized() == "Search city, country or offset")
         #expect("ClearSearch".localized() == "Clear search")
         #expect("NoTimeZone".localized() == "No time zone")

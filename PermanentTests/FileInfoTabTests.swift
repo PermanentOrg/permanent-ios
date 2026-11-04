@@ -215,31 +215,95 @@ struct FileInfoTabTests {
         #expect(list.previewRequests.count == 1, "under a preview the picture only glides back")
     }
 
-    @Test("The list puts the file's preview where the Info screen was")
-    func previewTakesTheInfoScreensPlace() async throws {
+    @Test("The preview glides in over a list-opened Info screen, and its X returns to the list")
+    func previewGlidesInOverTheInfoScreen() async throws {
+        let scene = try await infoScreenInWindow()
+        defer { scene.window.isHidden = true }
+        let (preview, pager, page) = try pagerWithLoadedPage(for: scene.viewModel.file, delegate: scene.spy)
+
+        scene.details.showPreview(preview)
+        await wait { scene.navigation.view.window == nil && !preview.isBeingPresented }
+
+        #expect(scene.details.presentedViewController === preview)
+        #expect(preview.openTransition is FileInfoCloseTransition)
+        #expect(pager.currentPage === page)
+        #expect(page.thumbnailImageView.image === scene.picture, "a thumbnail-sized picture seeds the slot the glide lands on")
+        #expect(preview.chainRoot === scene.list)
+        #expect(scene.navigation.view.window == nil, "the Info screen is out of the window once the preview is up")
+
+        pager.closeButtonAction(pager)
+        await wait { scene.list.presentedViewController == nil }
+
+        #expect(scene.list.presentedViewController == nil, "the X closes the preview and the Info screen under it")
+    }
+
+    @Test("The Info screen's full-size picture becomes the preview's loaded photo: no blur, no download")
+    func fullSizePictureIsTheLoadedPhoto() async throws {
+        let scene = try await infoScreenInWindow()
+        defer { scene.window.isHidden = true }
+        let (preview, _, page) = try pagerWithLoadedPage(for: scene.viewModel.file, delegate: scene.spy)
+        let pageModel = try makeScreen(fields: #""displayName": "B""#, permissions: [.read, .edit])
+        page.viewModel = pageModel
+        pageModel.thumbnailDidLoad()
+        scene.details.view.layoutIfNeeded()
+        scene.details.collectionView.layoutIfNeeded()
+        let cell = try #require(scene.details.collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? FileDetailsTopCollectionViewCell)
+        cell.showsFullSize = true
+
+        scene.details.showPreview(preview)
+        await wait { scene.navigation.view.window == nil && !preview.isBeingPresented }
+
+        #expect(page.imagePreviewVC?.imageView.image === scene.picture)
+        #expect(page.shownPhotoView === page.imagePreviewVC?.imageView, "the glide lands on the zoomable view")
+        #expect(page.thumbnailImageView.isHidden)
+        #expect(pageModel.imagePreviewState == .loaded, "the blur state is left before it shows")
+        page.loadImage(withURL: URL(fileURLWithPath: "/never-downloaded"))
+        #expect(page.imagePreviewVC?.imageView.image === scene.picture, "the full-size download is skipped")
+    }
+
+    // MARK: - Helpers
+
+    private struct InfoScene {
+        let window: UIWindow
+        let list: UIViewController
+        let navigation: FilePreviewNavigationController
+        let details: FileDetailsViewController
+        let viewModel: FilePreviewViewModel
+        let picture: UIImage
+        let spy: ListSpy
+    }
+
+    /// A list root in a window with the Info screen presented full screen over it, its slot showing a 2×2 picture.
+    private func infoScreenInWindow() async throws -> InfoScene {
         let list = UIViewController()
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
         window.rootViewController = list
         window.makeKeyAndVisible()
-        defer { window.isHidden = true }
-        let info = UIViewController()
-        list.present(info, animated: false)
-        await wait { list.presentedViewController === info }
-        let file = try file(from: try record(#""displayName": "B""#), permissions: [.read, .edit])
         let spy = ListSpy()
-        let preview = FilePreviewListViewController.navigation(for: file, in: nil, delegate: spy)
-
-        list.replacePresented(with: preview)
-        await wait { list.presentedViewController === preview }
-
-        #expect(list.presentedViewController === preview)
-        #expect(info.presentingViewController == nil)
-        #expect(preview.modalPresentationStyle == .fullScreen)
-        #expect(preview.filePreviewNavDelegate === spy)
-        #expect((preview.viewControllers.first as? FilePreviewListViewController)?.currentFile == file)
+        let viewModel = try makeScreen(fields: #""displayName": "B""#, permissions: [.read, .edit])
+        let navigation = try #require(FileDetailsViewController.navigation(for: viewModel.file, delegate: spy) as? FilePreviewNavigationController)
+        let details = try #require(navigation.viewControllers.first as? FileDetailsViewController)
+        details.viewModel = viewModel
+        let picture = UIGraphicsImageRenderer(size: CGSize(width: 2, height: 2)).image { $0.fill(CGRect(x: 0, y: 0, width: 2, height: 2)) }
+        details.openingImage = picture
+        var infoIsUp = false
+        list.present(navigation, animated: false) { infoIsUp = true }
+        await wait { infoIsUp }
+        return InfoScene(window: window, list: list, navigation: navigation, details: details, viewModel: viewModel, picture: picture, spy: spy)
     }
 
-    // MARK: - Helpers
+    /// The pager for `file` with its page already loaded, so it asks no server.
+    private func pagerWithLoadedPage(for file: FileModel, delegate: ListSpy) throws -> (preview: FilePreviewNavigationController, pager: FilePreviewListViewController, page: FilePreviewViewController) {
+        let files = FilesViewModel()
+        files.viewModels = [file]
+        let preview = FilePreviewListViewController.navigation(for: file, in: files, delegate: delegate)
+        let pager = try #require(preview.viewControllers.first as? FilePreviewListViewController)
+        let page = try #require(UIViewController.create(withIdentifier: .filePreview, from: .main) as? FilePreviewViewController)
+        page.file = file
+        page.recordLoaded = true
+        pager.controllersCache.setObject(page, forKey: 0)
+        return (preview, pager, page)
+    }
 
     private let locationJSON = #""location": { "id": "7", "name": "Yamanakako", "city": "Yamanashi", "country": "Japan", "latitude": 35.41, "longitude": 138.87 }"#
 
@@ -321,7 +385,7 @@ struct FileInfoTabTests {
         func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {}
         func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {}
 
-        func filePreviewNavigationControllerRequestsPreview(_ filePreviewNavigationVC: UIViewController, file: FileModel, hasChanges: Bool) {
+        func filePreviewNavigationControllerRequestsPreview(_ details: UIViewController, file: FileModel, hasChanges: Bool) {
             previewRequests.append((file, hasChanges))
         }
     }

@@ -8,10 +8,11 @@
 import SwiftUI
 
 /// The zone row under the time box: a globe, the chosen zone as "GMT+02:00  Romania, Bucharest" or "Select time
-/// zone" while unset, and a chevron; a thin rule closes it. The whole row is a button.
+/// zone" while unset, and a chevron; a thin rule closes it. The whole row is a button, greyed until a time is typed.
 struct TimeZoneRow: View {
     let zone: TimeZoneOption?
     let wallClock: DateComponents
+    var isEnabled = true
     let action: () -> Void
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0
 
@@ -46,9 +47,11 @@ struct TimeZoneRow: View {
                 HStack(spacing: 12) {
                     Image(systemName: "globe")
                         .font(.title3)
-                        .foregroundColor(.darkBlue)
+                        .foregroundColor(isEnabled ? .darkBlue : .blue200)
                         .frame(width: iconSize, height: iconSize)
-                    if let zone {
+                    if !isEnabled {
+                        Text("TimeZoneNeedsTime".localized()).foregroundColor(.blue200)
+                    } else if let zone {
                         OffsetAndPlace(offset: Text(zone.offsetLabel(at: wallClock)).foregroundColor(.darkBlue), place: Text(zone.placeName).foregroundColor(.blue400))
                     } else {
                         Text("SelectTimeZone".localized()).foregroundColor(.blue400)
@@ -68,8 +71,9 @@ struct TimeZoneRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .disabled(!isEnabled)
         .accessibilityLabel("TimeZone".localized())
-        .accessibilityValue(zone?.spokenName(at: wallClock) ?? "TimeZoneNotSet".localized())
-        .accessibilityHint("TimeZoneHint".localized())
+        .accessibilityValue(isEnabled ? zone?.spokenName(at: wallClock) ?? "TimeZoneNotSet".localized() : "TimeZoneNeedsTime".localized())
+        .accessibilityHint(isEnabled ? "TimeZoneHint".localized() : "")
     }
 }

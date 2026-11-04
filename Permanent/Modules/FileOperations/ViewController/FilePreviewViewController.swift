@@ -144,6 +144,45 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         return nil
     }
 
+    /// Puts `image` in the thumbnail slot while nothing has loaded, so a photo gliding in from the Info screen has a
+    /// place to land; the page's own thumbnail and full-size loads replace it.
+    func showPlaceholder(_ image: UIImage) {
+        loadViewIfNeeded()
+        guard thumbnailImageView.image == nil, imagePreviewVC?.imageView.image == nil else { return }
+        thumbnailImageView.image = image
+    }
+
+    /// The Info screen's full-size picture is up, so the thumbnail load and the full-size download have nothing to add.
+    private var photoHandedIn = false
+
+    /// Shows `image`, the Info screen's full-size picture, as the loaded photo: no blur, no second download. Called
+    /// before `loadVM`, so the page's loads never start; the first real layout sizes the photo to the screen.
+    func showLoadedPhoto(_ image: UIImage) {
+        loadViewIfNeeded()
+        let previewVC = imagePreviewVC ?? addImagePreview()
+        photoHandedIn = true
+        previewVC.image = image
+        previewVC.initialZoomScale = nil
+        thumbnailImageView.isHidden = true
+        activityIndicator.stopAnimating()
+        imageStateOverlay.setSourceImage(image)
+        viewModel?.fullResDidLoad()
+    }
+
+    /// The zoomable image view under everything else on the page.
+    private func addImagePreview() -> ImagePreviewViewController {
+        let previewVC = ImagePreviewViewController()
+        previewVC.delegate = self
+        imagePreviewVC = previewVC
+
+        addChild(previewVC)
+        previewVC.view.frame = view.bounds
+        previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(previewVC.view, at: 0)
+        previewVC.didMove(toParent: self)
+        return previewVC
+    }
+
     func loadVM() {
         guard recordLoaded == false else { return }
         imageStateOverlay.isImageContent = file.type == .image
@@ -154,9 +193,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 // Audio goes straight from black and a spinner to the blurred QuickTime artwork: no neutral
                 // glow, and no thumbnail, which would be a file-type icon rather than content.
                 thumbnailImageView.isHidden = true
-            } else {
+            } else if !photoHandedIn {
                 if let url = URL(string: file.preferredThumbnailURL) {
-                    thumbnailImageView.sd_setImage(with: url, placeholderImage: nil, options: [.retryFailed]) { [weak self] image, _, _, _ in
+                    thumbnailImageView.sd_setImage(with: url, placeholderImage: thumbnailImageView.image, options: [.retryFailed]) { [weak self] image, _, _, _ in
                         guard let self = self, self.file.type != .image else { return }
                         self.previewBlurAvailable = image != nil
                         self.imageStateOverlay.setSourceImage(image)
@@ -180,7 +219,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                                             allowsForeignDetail: allowsForeignStelaDetail)
             bindImagePreviewState()
 
-            if file.type == .image {
+            if file.type == .image, photoHandedIn {
+                // The Info screen's full-size picture is up: nothing to load for the screen, only the record.
+                activityIndicator.stopAnimating()
+                viewModel?.fullResDidLoad()
+            } else if file.type == .image {
                 var thumbnailURL = file.preferredThumbnailURL
                 #if DEBUG
                 if debugForceNoThumbnail { thumbnailURL = nil }
@@ -444,15 +487,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     private func loadThumbnailPreview(urlString: String, cacheOnly: Bool = false) {
         guard let url = URL(string: urlString) else { return }
 
-        let previewVC = ImagePreviewViewController()
-        previewVC.delegate = self
-        self.imagePreviewVC = previewVC
-
-        addChild(previewVC)
-        previewVC.view.frame = view.bounds
-        previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.insertSubview(previewVC.view, at: 0)
-        previewVC.didMove(toParent: self)
+        let previewVC = addImagePreview()
 
         // .retryFailed: without it, one transient failure puts the URL on SDWebImage's
         // session-wide failed-URL blacklist and every later attempt fails instantly.
@@ -544,6 +579,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     #endif
 
     func loadImage(withURL url: URL) {
+        if photoHandedIn {
+            viewModel?.fullResDidLoad()
+            return
+        }
         if imagePreviewVC != nil {
             // Image preview already showing thumbnail — upgrade to full-res
             #if DEBUG
@@ -563,16 +602,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             upgradeToFullResolution(urlString: url.absoluteString)
         } else {
             // No preview yet (e.g. record already loaded) — load directly
-            let previewVC = ImagePreviewViewController()
-            previewVC.delegate = self
-            self.imagePreviewVC = previewVC
-            
-            addChild(previewVC)
-            previewVC.view.frame = view.bounds
-            previewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            view.insertSubview(previewVC.view, at: 0)
-            previewVC.didMove(toParent: self)
-            
+            let previewVC = addImagePreview()
+
             let startDirectLoad = { [weak self, weak previewVC] in
                 guard let previewVC = previewVC else { return }
                 previewVC.imageView.sd_setImage(with: url, placeholderImage: nil, options: [.retryFailed]) { _, error, _, _ in

@@ -385,9 +385,13 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
 
     /// The picture slot at the top of the list, laid out; the opening transition moves the photo into it.
     func pictureImageView() -> UIImageView? {
+        pictureCell()?.imageView
+    }
+
+    private func pictureCell() -> FileDetailsTopCollectionViewCell? {
         view.layoutIfNeeded()
         collectionView.layoutIfNeeded()
-        return (collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? FileDetailsTopCollectionViewCell)?.imageView
+        return collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? FileDetailsTopCollectionViewCell
     }
 
     /// Tells the list behind this screen to refresh when the screen closes, whichever way it was opened.
@@ -436,7 +440,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
 
     /// Back to the preview with the photo gliding into place. A list opened this screen with no preview under it,
-    /// so there the list puts the file's preview in its place.
+    /// so there the list opens the file's preview over it through `showPreview`.
     func pictureTapped() {
         let navigation = navigationController as? FilePreviewNavigationController
         guard navigation?.closeTransition == nil, let delegate else {
@@ -444,6 +448,18 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             return
         }
         delegate.filePreviewNavigationControllerRequestsPreview(self, file: file, hasChanges: navigation?.hasChanges ?? false)
+    }
+
+    /// Opens the file's preview over this screen: the photo glides from the picture slot into the preview, which shows
+    /// the same picture, the full size as its loaded photo. The preview's X then closes both screens.
+    func showPreview(_ preview: FilePreviewNavigationController) {
+        let pager = preview.viewControllers.first as? FilePreviewListViewController
+        if let cell = pictureCell(), let image = cell.imageView.image {
+            pager?.seedPhoto(image, isFullSize: cell.showsFullSize, size: view.bounds.size)
+        }
+        preview.openTransition = FileInfoCloseTransition(to: pager?.currentPage?.shownPhotoView)
+        preview.transitioningDelegate = preview
+        present(preview, animated: true)
     }
 
     /// After the date screen saved, reads the record again so the Date row shows the new date.

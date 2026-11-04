@@ -197,10 +197,44 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         navigationItem.leftBarButtonItem = closeButton
     }
     
+    /// The page on screen.
+    var currentPage: FilePreviewViewController? {
+        pageVC?.viewControllers?.first as? FilePreviewViewController
+    }
+
+    /// The Info screen's picture, waiting for the first page.
+    private var seededPhoto: (image: UIImage, isFullSize: Bool)?
+
+    /// Loads the pager at `size` with `image` on its page: the full size as the loaded photo, else as the picture a
+    /// glide lands on until the page's own loads answer.
+    func seedPhoto(_ image: UIImage, isFullSize: Bool, size: CGSize) {
+        seededPhoto = (image, isFullSize)
+        loadViewIfNeeded()
+        // The page sizes its photo from its own bounds, so the pager takes the screen's size before the glide measures the landing.
+        view.frame = CGRect(origin: .zero, size: size)
+        view.layoutIfNeeded()
+    }
+
+    /// The picture reaches the page before its loads start, so a full size is never blurred by a thumbnail landing first.
+    private func handSeededPhoto(to page: FilePreviewViewController) {
+        guard let photo = seededPhoto, page.file == currentFile else { return }
+        seededPhoto = nil
+        if photo.isFullSize {
+            page.showLoadedPhoto(photo.image)
+        } else {
+            page.showPlaceholder(photo.image)
+        }
+    }
+
+    /// The screen the whole preview chain closes from: under a list-opened Info screen, the list.
+    private var chainRoot: UIViewController {
+        (navigationController as? FilePreviewNavigationController)?.chainRoot ?? presentingViewController ?? self
+    }
+
     @objc func closeButtonAction(_ sender: Any) {
         (navigationController as! FilePreviewNavigationController).filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
         
-        dismiss(animated: true, completion: nil)
+        chainRoot.dismiss(animated: true, completion: nil)
     }
     
     @objc private func shareButtonAction(_ sender: Any) {
@@ -283,6 +317,7 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
         if index >= 0, index < filteredFiles.count,
            let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)),
            fileDetailsVC.file == filteredFiles[index] {
+            handSeededPhoto(to: fileDetailsVC)
             // Preload left and right controllers after the current one is loaded
             if preloadLeftRightLevel <= 2 {
                 if fileDetailsVC.recordLoaded {
@@ -318,6 +353,7 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             // failsafe. Must precede `loadVM()`, which builds it.
             fileDetailsVC.allowsForeignStelaDetail = viewModel is PublicArchiveViewModel
             fileDetailsVC.view.isHidden = false // preload the view
+            handSeededPhoto(to: fileDetailsVC)
             fileDetailsVC.loadVM()
             
             // If opened from notification, pass close action to the child controller
@@ -350,12 +386,11 @@ extension FilePreviewListViewController: FilePreviewNavigationControllerDelegate
             self.hasChanges = true
         }
 
-        // The details modal sits on top of this pager, so dismiss from our presenter to tear both down
-        // in one animation — otherwise the preview flashes in between.
+        // The details modal sits on top of this pager, so dismiss from the chain root to tear everything down
+        // in one animation — otherwise the preview, or an Info screen under it, flashes in between.
         let fileListDelegate = (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate
         let changes = self.hasChanges
-        let presenter = presentingViewController ?? self
-        presenter.dismiss(animated: true) {
+        chainRoot.dismiss(animated: true) {
             fileListDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: changes)
         }
     }

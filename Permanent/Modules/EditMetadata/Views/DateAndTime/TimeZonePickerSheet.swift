@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-/// The Time zone screen: a header with a back circle, the search field, then every zone by region with the chosen
-/// one marked. It slides in over the date sheet; a row tap chooses and slides back.
+/// The Time zone screen: a header with a back circle, the search field, the "No time zone" row, then every zone by
+/// region with the chosen one marked. It slides in over the date sheet; a row tap chooses and slides back.
 struct TimeZonePickerSheet: View {
     @Binding var entry: DateTimeEntry
     let onClose: () -> Void
@@ -27,12 +27,22 @@ struct TimeZonePickerSheet: View {
     }
 
     var body: some View {
+        let listing = Self.listing(for: entry, search: searchText)
         VStack(spacing: 0) {
             header
             TimeZoneSearchField(text: $searchText)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-            list
+            if listing.showsNoZoneRow {
+                // Above the list, so a chosen zone deep in it is one tap from unset.
+                noZoneRow
+                    .padding(.horizontal, 16)
+                Rectangle()
+                    .fill(Color.blue50)
+                    .frame(height: 1)
+                    .padding(.horizontal, 16)
+            }
+            list(listing, at: entry.offsetClock())
         }
         .background(Color.white.ignoresSafeArea())
     }
@@ -68,15 +78,10 @@ struct TimeZonePickerSheet: View {
         .padding(14)
     }
 
-    private var list: some View {
-        let clock = entry.offsetClock()
-        let listing = Self.listing(for: entry, search: searchText)
-        return ScrollViewReader { proxy in
+    private func list(_ listing: Listing, at clock: DateComponents) -> some View {
+        ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
-                    if listing.showsNoZoneRow {
-                        noZoneRow
-                    }
                     if let unlisted = listing.unlistedChosen {
                         row(unlisted, at: clock)
                     }
