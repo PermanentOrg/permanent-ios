@@ -54,7 +54,7 @@ final class FileInfoCloseTransition: NSObject, UIViewControllerAnimatedTransitio
             fade(fading, in: context)
             return
         }
-        move(image, from: slot, to: target, sinking: details?.collectionView ?? fromView, fading: fading, in: context)
+        move((image: image, slot: slot, target: target), sinking: details?.collectionView ?? fromView, fading: fading, in: context)
     }
 
     private func fade(_ fading: (view: UIView, to: CGFloat), in context: UIViewControllerContextTransitioning) {
@@ -64,17 +64,18 @@ final class FileInfoCloseTransition: NSObject, UIViewControllerAnimatedTransitio
         }
     }
 
-    private func move(_ image: UIImage, from slot: UIImageView, to target: UIImageView, sinking: UIView, fading: (view: UIView, to: CGFloat), in context: UIViewControllerContextTransitioning) {
+    /// `glide` is the photo and the two image views it travels between: the Info slot and the preview's.
+    private func move(_ glide: (image: UIImage, slot: UIImageView, target: UIImageView), sinking: UIView, fading: (view: UIView, to: CGFloat), in context: UIViewControllerContextTransitioning) {
         let container = context.containerView
-        let start = FileInfoOpenTransition.fittedRect(for: image.size, in: slot.convert(slot.bounds, to: container))
-        let end = FileInfoOpenTransition.fittedRect(for: image.size, in: target.convert(target.bounds, to: container))
+        let start = FileInfoOpenTransition.fittedRect(for: glide.image.size, in: glide.slot.convert(glide.slot.bounds, to: container))
+        let end = FileInfoOpenTransition.fittedRect(for: glide.image.size, in: glide.target.convert(glide.target.bounds, to: container))
 
-        let photo = UIImageView(image: image)
+        let photo = UIImageView(image: glide.image)
         photo.contentMode = .scaleAspectFit
         photo.frame = start
         container.addSubview(photo)
-        slot.alpha = 0
-        target.alpha = 0
+        glide.slot.alpha = 0
+        glide.target.alpha = 0
 
         let animator = UIViewPropertyAnimator(duration: FileInfoOpenTransition.moveDuration, curve: .easeInOut) {
             photo.frame = end
@@ -82,8 +83,8 @@ final class FileInfoCloseTransition: NSObject, UIViewControllerAnimatedTransitio
             sinking.transform = CGAffineTransform(translationX: 0, y: FileInfoOpenTransition.rise)
         }
         animator.addCompletion { _ in
-            target.alpha = 1
-            slot.alpha = 1
+            glide.target.alpha = 1
+            glide.slot.alpha = 1
             fading.view.alpha = 1
             sinking.transform = .identity
             photo.removeFromSuperview()
