@@ -55,12 +55,37 @@ struct DateTimeEntryTests {
     @Test("Without a readable displayTime the old field fills the fields on the phone's clock")
     func prefillFromLegacy() {
         let noDisplayTime = DateTimeEntry(displayTime: nil, legacy: "2023-08-15T09:30:00.000Z", timeZone: plusThree)
-        let unreadable = DateTimeEntry(displayTime: "1985~", legacy: "2023-08-15T00:00:00.000Z", timeZone: utc)
+        let unreadable = DateTimeEntry(displayTime: "198X", legacy: "2023-08-15T00:00:00.000Z", timeZone: utc)
 
         #expect(fields(of: noDisplayTime) == ["2023", "08", "15", "12", "30", "00"])
         #expect(noDisplayTime.format == .pm)
         #expect(fields(of: unreadable) == ["2023", "08", "15", "12", "00", "00"])
         #expect(unreadable.format == .am)
+    }
+
+    @Test("A qualified date or a range fills the fields from its first written side, not from the old field")
+    func prefillFromQualifiedAndRange() {
+        let qualified = DateTimeEntry(displayTime: "1985~", legacy: "2023-08-15T00:00:00.000Z", timeZone: utc)
+        let openStart = DateTimeEntry(displayTime: "../1985-11-23", legacy: "2023-08-15T00:00:00.000Z", timeZone: utc)
+
+        #expect(fields(of: qualified) == ["1985", "", "", "", "", ""])
+        #expect(qualified.qualifiers.isEmpty, "the Stage 1 sheet reads the date only")
+        #expect(fields(of: openStart) == ["1985", "11", "23", "", "", ""])
+    }
+
+    @Test("A side with a symbol writes its date and the symbol, and never a clock")
+    func sideStringCarriesTheSymbol() {
+        var entry = DateTimeEntry(displayTime: "1985-10-23T17:00:00", legacy: nil, timeZone: plusThree)
+        #expect(entry.sideString == "1985-10-23T17:00:00")
+        #expect(entry.gateSideString == "1985-10-23T17:00:00Z")
+
+        entry.qualifiers = .approximate
+        #expect(entry.sideString == "1985-10-23~")
+        #expect(entry.gateSideString == "1985-10-23~")
+        #expect(entry.edtfString == "1985-10-23T17:00:00", "the Level 0 string is unchanged")
+
+        entry.qualifiers = [.approximate, .uncertain]
+        #expect(entry.sideString == "1985-10-23%")
     }
 
     @Test("With the server's edtf-date switch on, the old field fills nothing")

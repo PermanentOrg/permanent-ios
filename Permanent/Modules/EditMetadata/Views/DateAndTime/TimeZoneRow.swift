@@ -13,6 +13,8 @@ struct TimeZoneRow: View {
     let zone: TimeZoneOption?
     let wallClock: DateComponents
     var isEnabled = true
+    /// False when a toggle greyed the row: it then reads empty, since typing a time would not bring it back.
+    var showsNeedsTimeHint = true
     let action: () -> Void
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0
 
@@ -41,6 +43,10 @@ struct TimeZoneRow: View {
         }
     }
 
+    private var disabledText: String {
+        showsNeedsTimeHint ? "TimeZoneNeedsTime".localized() : ""
+    }
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 0) {
@@ -50,7 +56,7 @@ struct TimeZoneRow: View {
                         .foregroundColor(isEnabled ? .darkBlue : .blue200)
                         .frame(width: iconSize, height: iconSize)
                     if !isEnabled {
-                        Text("TimeZoneNeedsTime".localized()).foregroundColor(.blue200)
+                        Text(disabledText).foregroundColor(.blue200)
                     } else if let zone {
                         OffsetAndPlace(offset: Text(zone.offsetLabel(at: wallClock)).foregroundColor(.darkBlue), place: Text(zone.placeName).foregroundColor(.blue400))
                     } else {
@@ -73,7 +79,7 @@ struct TimeZoneRow: View {
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .accessibilityLabel("TimeZone".localized())
-        .accessibilityValue(isEnabled ? zone?.spokenName(at: wallClock) ?? "TimeZoneNotSet".localized() : "TimeZoneNeedsTime".localized())
+        .accessibilityValue(isEnabled ? zone?.spokenName(at: wallClock) ?? "TimeZoneNotSet".localized() : disabledText)
         .accessibilityHint(isEnabled ? "TimeZoneHint".localized() : "")
     }
 }

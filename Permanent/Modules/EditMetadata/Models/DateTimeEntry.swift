@@ -84,8 +84,24 @@ struct DateTimeEntry: Hashable {
     var timeZoneIdentifier: String?
     /// The offset the record's string carried ("+01:00"), kept for the preview and the repeated-hour rule.
     var storedOffset: String?
+    /// Approximate, uncertain or unknown. EDTF has no symbol for a clock, so a side with a symbol writes its date only.
+    var qualifiers: DateQualifiers = []
 
     init() {}
+
+    /// One side of a stored value: its fields and qualifiers when written, Unknown switched on when unknown.
+    init(side: DisplayTimeValue.Side, timeZoneIdentifier: String? = nil, timeZone: TimeZone = .current) {
+        switch side {
+        case .written(let text, _, let qualifiers):
+            self.init(displayTime: text, legacy: nil, timeZoneIdentifier: timeZoneIdentifier, timeZone: timeZone)
+            self.qualifiers = qualifiers
+
+        case .empty, .unknown:
+            self.init()
+            self.timeZoneIdentifier = timeZoneIdentifier
+            qualifiers = side == .unknown ? .unknown : []
+        }
+    }
 
     /// The fields from a record: `displayTime` as written, else the old field as a moment on the phone's clock
     /// while the screens still show it. The record's zone, when known, comes in as its id.
@@ -146,17 +162,41 @@ struct DateTimeEntry: Hashable {
     /// The EDTF Level 0 string Stela gets: "1985", "1985-10", "1985-10-23" or "1985-10-23T17:00:00", then the
     /// zone's offset at that clock time when a zone is chosen. Fields pad to their width; an empty one stays empty.
     var edtfString: String? {
-        guard !isEmpty else { return nil }
+        level0String(offset: offsetSuffix)
+    }
+
+    /// This side of a saved value: the Level 0 string, or the date alone with its symbol after it.
+    var sideString: String? {
+        guard let symbol = qualifiers.symbol else { return edtfString }
+        return dateString.map { $0 + symbol }
+    }
+
+    /// The side as edtf.js checks it before a save: the clock's offset, or its absence, reads as `Z`, as on web.
+    var gateSideString: String? {
+        qualifiers.symbol == nil ? level0String(offset: "Z") : sideString
+    }
+
+    /// "1985", "1985-10" or "1985-10-23"; nil with no date field typed.
+    private var dateString: String? {
         var dateFields = [(year, 4), (month, 2), (day, 2)]
         while let last = dateFields.last, last.0.isEmpty {
             dateFields.removeLast()
         }
-        var text = dateFields.map { field, width in field.isEmpty ? "" : padded(field, width) }.joined(separator: "-")
+        guard !dateFields.isEmpty else { return nil }
+        return dateFields.map { field, width in field.isEmpty ? "" : padded(field, width) }.joined(separator: "-")
+    }
+
+    /// The zone's offset at the typed clock time ("+01:00"); empty while no zone is chosen.
+    private var offsetSuffix: String {
+        guard let zone, let wallClock else { return "" }
+        return TimeZoneOption.offsetSuffix(minutes: zone.offsetMinutes(at: wallClock, storedOffset: storedOffset))
+    }
+
+    private func level0String(offset: String) -> String? {
+        guard !isEmpty else { return nil }
+        var text = dateString ?? ""
         if hasTime {
-            text += "T" + [String(format: "%02d", hour24), padded(minute, 2), padded(second, 2)].joined(separator: ":")
-            if let zone, let wallClock {
-                text += TimeZoneOption.offsetSuffix(minutes: zone.offsetMinutes(at: wallClock, storedOffset: storedOffset))
-            }
+            text += "T" + [String(format: "%02d", hour24), padded(minute, 2), padded(second, 2)].joined(separator: ":") + offset
         }
         return text
     }
@@ -174,7 +214,14 @@ struct DateTimeEntry: Hashable {
     /// The line under the title: what the Info row will show after the save; nil until the fields make a date. The
     /// suffix follows the string that will be saved, which carries an offset only with a zone.
     var preview: String? {
-        DateUtils.infoRowDate(displayTime: edtfString, legacy: nil, zoneAbbreviation: zone == nil ? nil : timeSuffix)
+        previewText(shortMonth: false)
+    }
+
+    /// The preview with the month in full, or as "Oct." for one side of a range.
+    func previewText(shortMonth: Bool) -> String? {
+        DateUtils.infoRowDate(
+            displayTime: edtfString, legacy: nil, zoneAbbreviation: zone == nil ? nil : timeSuffix, shortMonth: shortMonth
+        )
     }
 
     /// After the time: the zone's short name at the clock time, else the stored offset as the tz database writes

@@ -449,24 +449,20 @@ class FilePreviewViewModel: ViewModelInterface {
     func infoRows() -> [FileInfoRowModel] {
         let record = recordVO?.recordVO
         let style: FileInfoRowModel.Style = isEditable ? .boxed : .plain
-        let values: [(FileInfoRowModel.Kind, String?)] = [
-            (.name, record?.displayName ?? name),
-            (.description, record?.recordVODescription),
-            (.date, infoRowDate()),
-            (.location, record?.locnVO.map { getAddressString([$0.addressText], false) })
+        let rows = [
+            FileInfoRowModel(kind: .name, value: record?.displayName ?? name, style: style),
+            FileInfoRowModel(kind: .description, value: record?.recordVODescription, style: style),
+            FileInfoRowModel(date: infoRowDate(), style: style),
+            FileInfoRowModel(kind: .location, value: record?.locnVO.map { getAddressString([$0.addressText], false) }, style: style)
         ]
-        return values.compactMap { kind, value in
-            let row = FileInfoRowModel(kind: kind, value: value, style: style)
-            return isEditable || row.isSet ? row : nil
-        }
+        return rows.filter { isEditable || $0.isSet }
     }
 
-    /// The Date row's text: the written date, its clock when it has one, then the zone's short name or the string's
-    /// offset, as web shows them.
-    func infoRowDate() -> String? {
+    /// The Date row's text for every shape `displayTime` holds: one date or a range's two lines, each clock
+    /// followed by the zone's short name or the string's offset, and the qualifier words for the label.
+    func infoRowDate() -> DisplayTimeText? {
         let record = recordVO?.recordVO
-        let suffix = DateTimeEntry.timeSuffix(displayTime: record?.displayTime, timeZoneIdentifier: record?.timezone)
-        return DateUtils.infoRowDate(displayTime: record?.displayTime, legacy: record?.displayDT, zoneAbbreviation: suffix)
+        return DisplayTimeText(displayTime: record?.displayTime, legacy: record?.displayDT, timeZoneIdentifier: record?.timezone)
     }
 
     /// True when the Info tab shows the map: the record has coordinates.

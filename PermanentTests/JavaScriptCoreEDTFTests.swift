@@ -97,6 +97,22 @@ struct JavaScriptCoreEDTFTests {
         #expect(error != .unavailable)
     }
 
+    @Test("A timed start is checked alone, so it may meet a dated, an open or an unknown end", arguments: [
+        "1984-06-02T14:30:00Z/1984-06-08", "1984-06-02T14:30:00+01:00/1984-06-08",
+        "1984-06-02T14:30:00Z/..", "1984-06-02T14:30:00Z/", "../1984-06-02T14:30:00Z"
+    ])
+    func acceptsTimedSideOfAnInterval(text: String) {
+        #expect(throws: Never.self) { try edtf.validated(text) }
+    }
+
+    @Test("A zone-less time is refused on either side of an interval", arguments: [
+        "1984-06-02T14:30:00/1984-06-08", "1984-06-02T14:30:00/1984-06-08T10:00:00Z", "1984-06-02T14:30:00Z/1984-06-08T10:00:00"
+    ])
+    func refusesZonelessSideOfAnInterval(text: String) {
+        let error = #expect(throws: EDTFError.self) { try edtf.validated(text) }
+        #expect(error == .rejected("a datetime must carry Z or an explicit offset"))
+    }
+
     @Test("A datetime in UTC keeps its wall-clock time")
     func keepsUTCDatetime() throws {
         #expect(try edtf.validated("1984-06-02T14:30:00Z") == "1984-06-02T14:30:00.000Z")

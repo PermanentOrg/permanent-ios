@@ -41,6 +41,122 @@ struct AdjustDateAndTimeViewTests {
         #expect(viewModel.entry.preview == "October 23, 1985 • 5PM")
     }
 
+    // MARK: - More options
+
+    @Test("The simple view offers More options, and the row opens the full view")
+    func moreOptionsRowOpensTheFullView() throws {
+        let viewModel = try fullViewModel(displayTime: "1985-10-23")
+
+        #expect(viewModel.offersMoreOptions)
+        #expect(!viewModel.showsOptions)
+        #expect(MoreOptionsRow.title(isOpen: false) == "More options")
+        #expect(MoreOptionsRow.title(isOpen: true) == "Fewer options")
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+
+        viewModel.showsOptions = true
+
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+        #expect(render(MoreOptionsRow(isOpen: true) {}).view != nil)
+    }
+
+    @Test("The sheet opens in the full view for a qualifier, an unknown date or a range, and simple otherwise", arguments: [
+        ("1985-10-23~", true), ("XXXX-XX-XX", true), ("1985-10-23/1985-11-23", true), ("1985-10-23/..", true),
+        ("1985-10-23", false), ("1985-10-23T17:00:00+01:00", false)
+    ])
+    func opensFullForAStage2Record(displayTime: String, opensFull: Bool) throws {
+        let viewModel = try fullViewModel(displayTime: displayTime)
+
+        #expect(viewModel.showsOptions == opensFull)
+        #expect(viewModel.range.edtfString == displayTime)
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+    }
+
+    @Test("A shared record keeps the simple sheet: no More options row and no full view")
+    func sharedRecordKeepsTheSimpleSheet() throws {
+        let viewModel = try fullViewModel(displayTime: "1985-10-23~/1985-11-23", archiveId: 9)
+
+        #expect(!viewModel.offersMoreOptions)
+        #expect(!viewModel.showsOptions)
+        #expect(!viewModel.range.isRange)
+        #expect(viewModel.entry.preview == "October 23, 1985")
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+    }
+
+    @Test("Use a date range adds the To boxes with the caps label, and the line under the title joins both sides")
+    func rangeAddsTheToBoxes() throws {
+        let viewModel = try fullViewModel(displayTime: "1985-10-23")
+        viewModel.showsOptions = true
+
+        viewModel.setRange(on: true)
+        #expect(viewModel.range.isRange)
+        #expect(viewModel.endEntry.isEmpty)
+        #expect(viewModel.range.preview == "Oct. 23, 1985 —")
+
+        viewModel.endEntry.year = "1985"
+        viewModel.endEntry.month = "11"
+        viewModel.endEntry.day = "23"
+        viewModel.toggle(.approximate, on: true, side: .start)
+
+        #expect(viewModel.range.preview == "~ Oct. 23, 1985 — Nov. 23, 1985")
+        #expect("RangeFrom".localized() == "From")
+        #expect("RangeTo".localized() == "To")
+        #expect(render(RangeSideLabel(title: "RangeTo".localized())).view != nil)
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+
+        viewModel.setRange(on: false)
+        #expect(!viewModel.range.isRange)
+        #expect(viewModel.endEntry.isEmpty, "with the range off the To side reads empty and takes no digits")
+    }
+
+    @Test("Each switch has a name, an on or off value and the button trait, and renders on, off and greyed")
+    func switchesAreNamed() {
+        let names = ["UseADateRange", "DateApproximate", "DateUncertain", "DateUnknown"].map { $0.localized() }
+
+        #expect(names == ["Use a date range", "Approximate", "Uncertain", "Unknown"])
+        #expect(OptionToggleRow.spokenValue(isOn: true) == "On")
+        #expect(OptionToggleRow.spokenValue(isOn: false) == "Off")
+        #expect(OptionToggleRow.traits.contains(.isButton))
+        #expect(OptionToggleRow.switchSize == CGSize(width: 36, height: 20))
+        #expect(render(OptionToggleRow(title: names[1], isOn: true) { _ in }).view != nil)
+        #expect(render(OptionToggleRow(title: names[2], isOn: false, isEnabled: false) { _ in }).view != nil)
+    }
+
+    @Test("A symbol greys the clock and Unknown greys the whole side; both render and come back")
+    func greyedStates() throws {
+        let viewModel = try fullViewModel(displayTime: "1985-10-23T17:00:00")
+        viewModel.showsOptions = true
+
+        viewModel.toggle(.approximate, on: true)
+        #expect(!viewModel.entry.hasTime)
+        #expect(viewModel.entry.qualifiers.symbol == "~")
+        #expect(viewModel.range.preview == "~ October 23, 1985")
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+
+        viewModel.toggle(.unknown, on: true)
+        #expect(viewModel.entry.isEmpty)
+        #expect(viewModel.range.preview == "Unknown")
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+        #expect(render(TimeZoneRow(zone: nil, wallClock: viewModel.entry.offsetClock(), isEnabled: false, showsNeedsTimeHint: false) {}).view != nil)
+
+        viewModel.toggle(.unknown, on: false)
+        viewModel.toggle(.approximate, on: false)
+        #expect(viewModel.range.edtfString == "1985-10-23T17:00:00")
+    }
+
+    @Test("An end at the start shows its reason under the title, and Clear empties the sheet and the reason")
+    func errorLineAndClear() throws {
+        let viewModel = try fullViewModel(displayTime: "1985-10-23/1985-10-23")
+
+        #expect(viewModel.validation == "The end must come after the start")
+        #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
+
+        viewModel.clear()
+
+        #expect(viewModel.validation == nil)
+        #expect(viewModel.range == DateTimeRangeEntry())
+        #expect(viewModel.range.preview == nil)
+    }
+
     @Test("The date sheet and the wheel card render on their own")
     func rendersPickers() throws {
         let entry = DateTimeEntry(displayTime: "1985-10-23T17:00:00", legacy: nil)
@@ -202,6 +318,12 @@ struct AdjustDateAndTimeViewTests {
         let response = try FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: Data(json.utf8))
         let item = try #require(response.items?.first)
         return FileModel(model: item, permissions: [.read, .edit], accessRole: .editor)
+    }
+
+    /// One record opened on its `displayTime`, with the session's archive known from the start, as in the app.
+    private func fullViewModel(displayTime: String, archiveId: Int = 5) throws -> EditDateAndTimeViewModel {
+        let file = try child(#""recordId": "301", "archiveId": "\#(archiveId)", "displayTime": "\#(displayTime)""#)
+        return EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false), recordZone: .known(nil), sessionArchiveId: { 5 })
     }
 
     private func viewModel(for files: [FileModel]) -> EditDateAndTimeViewModel {

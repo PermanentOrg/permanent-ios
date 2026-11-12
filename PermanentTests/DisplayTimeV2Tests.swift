@@ -53,12 +53,23 @@ struct DisplayTimeV2Tests {
 
     @Test("A child with no readable displayTime keeps the old date")
     func childWithoutReadableDisplayTimeKeepsOldDate() throws {
-        let qualified = try child(#""recordId": "301", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "1985~""#)
+        let unreadable = try child(#""recordId": "301", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "198X""#)
         let untouched = try child(#""recordId": "302", "displayDate": "2023-08-15T00:00:00.000Z""#)
 
-        #expect(qualified.date == "2023-08-15")
+        #expect(unreadable.date == "2023-08-15")
         #expect(untouched.date == "2023-08-15")
         #expect(untouched.displayTime == nil)
+    }
+
+    @Test("A child with a qualified date, a range or an unknown date shows it, not the upload date")
+    func childWithStage2DisplayTimeShowsIt() throws {
+        let qualified = try child(#""recordId": "301", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "1985~""#)
+        let range = try child(#""recordId": "302", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "../1985-11-23""#)
+        let unknown = try child(#""recordId": "303", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "XXXX-XX-XX""#)
+
+        #expect(qualified.date == "1985")
+        #expect(range.date == "1985-11-23")
+        #expect(unknown.date == "-")
     }
 
     @Test("With the server's edtf-date switch on, the list and the Info row show displayTime only")
@@ -489,7 +500,155 @@ struct DisplayTimeV2Tests {
         #expect(viewModel.openingZone == "Europe/Paris")
     }
 
+    // MARK: - More options
+
+    @MainActor
+    @Test("A qualified date saves the date and its symbol, and no location key")
+    func qualifiedSaveSendsTheSymbol() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = try fullViewModel(displayTime: "1985-10-23", server: server)
+        viewModel.toggle(.approximate, on: true)
+        viewModel.toggle(.uncertain, on: true)
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.changesWereSaved)
+        #expect(server.patches.first?.fields as? [String: String] == ["displayTime": "1985-10-23%"])
+        let body = try #require(RecordV2Endpoint.patchRecord(recordId: "301", fields: viewModel.patchFields).bodyData)
+        #expect(String(data: body, encoding: .utf8) == #"{"displayTime":"1985-10-23%"}"#)
+    }
+
+    @MainActor
+    @Test("A range saves both sides around a slash, and an end left empty saves as open")
+    func rangeSaveSendsBothSides() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = try fullViewModel(displayTime: "1985-10-23", server: server)
+        viewModel.setRange(on: true)
+        #expect(viewModel.patchFields["displayTime"] as? String == "1985-10-23/..")
+
+        viewModel.endEntry = DateTimeEntry(displayTime: "1985-11-23", legacy: nil)
+        viewModel.toggle(.approximate, on: true, side: .start)
+
+        await applyChanges(in: viewModel)
+
+        #expect(server.patches.first?.fields as? [String: String] == ["displayTime": "1985-10-23~/1985-11-23"])
+    }
+
+    @MainActor
+    @Test("An unknown date saves all X and location.timezone null; an unknown side beside a time keeps the zone")
+    func unknownSaveSendsAllX() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = try fullViewModel(displayTime: "1985-10-23T17:00:00+01:00", server: server, recordZone: .known("Europe/Paris"))
+        viewModel.toggle(.unknown, on: true)
+
+        await applyChanges(in: viewModel)
+
+        let fields = try #require(server.patches.first?.fields)
+        #expect(fields["displayTime"] as? String == "XXXX-XX-XX")
+        #expect((fields["location"] as? [String: Any])?["timezone"] is NSNull)
+
+        viewModel.toggle(.unknown, on: false)
+        viewModel.setRange(on: true)
+        viewModel.toggle(.unknown, on: true, side: .end)
+
+        #expect(viewModel.patchFields["displayTime"] as? String == "1985-10-23T17:00:00+01:00/")
+        #expect(viewModel.patchFields["location"] as? [String: String] == ["timezone": "Europe/Paris"])
+    }
+
+    @MainActor
+    @Test("A failed save of a qualified date or a range skips V1, which can hold neither")
+    func stage2FailureSkipsV1() async throws {
+        let server = FakeServer(patchSucceeds: false)
+        let viewModel = try fullViewModel(displayTime: nil, server: server)
+        viewModel.entry = DateTimeEntry(displayTime: "1985-10-23", legacy: nil)
+        viewModel.toggle(.approximate, on: true)
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.showAlert)
+        #expect(!viewModel.changesWereSaved)
+        #expect(server.patches.count == 1)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A shared record offers no More options and opens on its first written side as one plain date")
+    func sharedRecordKeepsTheSimpleSheet() throws {
+        let server = FakeServer(patchSucceeds: true)
+        let shared = try fullViewModel(displayTime: "../1985-11-23~", archiveId: 9, server: server)
+        let own = try fullViewModel(displayTime: "../1985-11-23~", server: server)
+
+        #expect(!shared.offersMoreOptions)
+        #expect(!shared.range.isRange && !shared.range.opensFull)
+        #expect([shared.entry.year, shared.entry.month, shared.entry.day] == ["1985", "11", "23"])
+        #expect(shared.entry.qualifiers.isEmpty)
+        #expect(own.offersMoreOptions)
+        #expect(own.range.opensFull)
+        #expect(own.range.edtfString == "../1985-11-23~")
+    }
+
+    @MainActor
+    @Test("An end at or before the start, and a date edtf.js refuses, each name their reason and send nothing")
+    func gateNamesItsReason() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let endFirst = try fullViewModel(displayTime: "1985-10-23/1985-10-23", server: server)
+        let broken = try fullViewModel(displayTime: nil, server: server)
+        broken.entry.year = "1985"
+        broken.entry.day = "23"
+
+        #expect(endFirst.validation == "The end must come after the start")
+        #expect(broken.validation == "This date cannot be saved")
+
+        endFirst.applyChanges()
+        broken.applyChanges()
+        #expect(!endFirst.isLoading && !broken.isLoading)
+        #expect(server.patches.isEmpty)
+
+        endFirst.endEntry.day = "24"
+        #expect(endFirst.validation == nil)
+    }
+
+    @MainActor
+    @Test("A time with no zone, a clear and a shared record's date all pass the gate")
+    func gatePassesWhatStage1Saves() throws {
+        let server = FakeServer(patchSucceeds: true)
+        let zoneless = try fullViewModel(displayTime: "1985-10-23T17:00:00", server: server)
+        let cleared = try fullViewModel(displayTime: "1985-10-23", server: server)
+        cleared.clear()
+        let shared = try fullViewModel(displayTime: nil, archiveId: 9, server: server)
+        shared.entry.year = "1985"
+        shared.entry.day = "23"
+
+        #expect(zoneless.validation == nil)
+        #expect(zoneless.patchFields["displayTime"] as? String == "1985-10-23T17:00:00")
+        #expect(cleared.validation == nil)
+        #expect(cleared.patchFields["displayTime"] is NSNull)
+        #expect(shared.validation == nil, "V1 takes a moment, so edtf.js has no say")
+    }
+
     // MARK: - Helpers
+
+    /// One record opened on its `displayTime`, with the session's archive known from the start, as in the app.
+    @MainActor
+    private func fullViewModel(
+        displayTime: String?, archiveId: Int = 5, server: FakeServer, recordZone: EditDateAndTimeViewModel.RecordZone = .known(nil)
+    ) throws -> EditDateAndTimeViewModel {
+        let stored = displayTime.map { #", "displayTime": "\#($0)""# } ?? ""
+        let file = try child(#""recordId": "301", "archiveId": "\#(archiveId)"\#(stored)"#)
+        let own = ownArchiveId
+        let viewModel = EditDateAndTimeViewModel(
+            selectedFiles: [file], hasUpdates: .constant(false), recordZone: recordZone, sessionArchiveId: { own }
+        )
+        viewModel.patchRecordRequest = { file, fields, completion in
+            server.patches.append((file.recordId, fields))
+            completion(server.patchSucceeds)
+        }
+        viewModel.updateV1Request = { files, completion in
+            server.v1Batches.append(files)
+            completion(true)
+        }
+        return viewModel
+    }
 
     /// Records each call the screens make and answers it at once, or holds a zone read until told.
     private final class FakeServer {

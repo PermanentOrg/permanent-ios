@@ -741,8 +741,13 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
 
-        case .name, .description, .date, .location:
+        case .name, .description, .location:
             return CGSize(width: UIScreen.main.bounds.width, height: FileInfoRowModel.height(for: infoRowStyle, compatibleWith: collectionView.traitCollection))
+
+        case .date:
+            // A date range stacks a From and a To line, so the row is one line taller.
+            let lines = infoRows.first { $0.kind == .date }?.lineCount ?? 1
+            return CGSize(width: UIScreen.main.bounds.width, height: FileInfoRowModel.height(for: infoRowStyle, lines: lines, compatibleWith: collectionView.traitCollection))
 
         case .locationMap:
             return CGSize(width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.width * 0.5).rounded())

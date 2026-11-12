@@ -3223,11 +3223,15 @@ exports.parse = parse;
     return JSON.stringify({ ok: true, edtf: text });
   }
 
-  /* A datetime with no zone is rewritten to UTC using the device timezone, so it is refused here. */
+  /* A datetime with no zone is rewritten to UTC using the device timezone, so it is refused here.
+     Each side of an interval is checked alone: a timed start may meet a dated or open end. */
   function validate(text) {
     if (typeof text !== "string" || text === "") return JSON.stringify(fail("empty string"));
-    if (/T\d{2}:\d{2}/.test(text) && !/(Z|[+-]\d{2}:?\d{2})$/.test(text)) {
-      return JSON.stringify(fail("a datetime must carry Z or an explicit offset"));
+    var sides = text.split("/");
+    for (var i = 0; i < sides.length; i++) {
+      if (/T\d{2}:\d{2}/.test(sides[i]) && !/(Z|[+-]\d{2}:?\d{2})$/.test(sides[i])) {
+        return JSON.stringify(fail("a datetime must carry Z or an explicit offset"));
+      }
     }
     var node;
     try { node = parseEDTF(text); } catch (e) { return JSON.stringify(fail(String(e && e.message || e))); }
