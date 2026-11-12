@@ -34,26 +34,34 @@ struct EditDateAndTimeView: View {
                 header
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        sideFields(.start)
-                        if viewModel.range.isRange {
-                            RangeSideLabel(title: "RangeTo".localized())
-                            sideFields(.end)
-                        }
                         if showsOptions {
-                            optionsSection
+                            OptionToggleRow(title: "UseADateRange".localized(), isOn: viewModel.range.isRange) { setRange($0) }
+                                .padding(.vertical, -8)
                                 .transition(reduceMotion ? .identity : .opacity)
                         }
-                        ClearDateAndTimeRow { clear() }
+                        side(.start)
+                        if viewModel.range.isRange {
+                            rule
+                            side(.end)
+                        }
+                        if !showsOptions {
+                            rule
+                                .transition(reduceMotion ? .identity : .opacity)
+                        }
+                        if !viewModel.range.isRange {
+                            ClearDateAndTimeRow { clear() }
+                        }
                         if viewModel.offersMoreOptions {
                             MoreOptionsRow(isOpen: viewModel.showsOptions) { toggleOptions() }
                         }
                     }
                     .padding(.horizontal, 24)
-                    .padding(.top, 16)
+                    .padding(.top, 8)
                 }
                 .onTapGesture { leaveFields() }
             }
-            .safeAreaInset(edge: .bottom) { bottomButtons }
+            .safeAreaInset(edge: .bottom, spacing: 0) { bottomButtons }
+            .ignoresSafeArea(.container, edges: .bottom)
             .background(Color.white.ignoresSafeArea())
             .accessibilityHidden(zoneSide != nil)
             if let zoneSide {
@@ -127,12 +135,14 @@ struct EditDateAndTimeView: View {
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
             SheetCircleButton(symbol: "xmark", label: "Close".localized(), look: .light) { close(saved: false) }
+                .frame(width: 48, height: 48)
         }
+        .frame(minHeight: 48)
         .padding(14)
     }
 
     /// One side's date box, time box and zone row. Unknown greys all three; a symbol greys the clock and the
-    /// zone, which then read empty.
+    /// zone, which then asks for a time.
     @ViewBuilder
     private func sideFields(_ side: Side) -> some View {
         let value = entry(side).wrappedValue
@@ -144,10 +154,9 @@ struct EditDateAndTimeView: View {
             .greyedOut(hidesClock)
             .padding(.top, 8)
             .zIndex(1)
-        TimeZoneRow(
-            zone: value.zone, wallClock: value.offsetClock(), isEnabled: value.hasTime && !hidesClock,
-            showsNeedsTimeHint: !hidesClock
-        ) { openZonePicker(side) }
+        TimeZoneRow(zone: value.zone, wallClock: value.offsetClock(), isEnabled: value.hasTime && !hidesClock) {
+            openZonePicker(side)
+        }
     }
 
     private func dateBox(_ side: Side) -> some View {
@@ -179,20 +188,23 @@ struct EditDateAndTimeView: View {
         }
     }
 
-    /// The full view, in the design's order: the range switch, a rule, each side's three switches, a rule. In a
-    /// range each side's switches sit under its own caps label.
-    @ViewBuilder private var optionsSection: some View {
-        OptionToggleRow(title: "UseADateRange".localized(), isOn: viewModel.range.isRange) { setRange($0) }
-            .padding(.vertical, -8)
-        rule
-        ForEach(viewModel.range.isRange ? Side.allCases : [.start]) { side in
-            if viewModel.range.isRange {
-                RangeSideLabel(title: (side == .start ? "RangeFrom" : "RangeTo").localized())
-            }
-            qualifierRows(side)
-                .padding(.vertical, -8)
+    /// One side as the design draws it: in a range its caps label with its own Clear, then its fields, zone row
+    /// and, in the full view, its three switches.
+    @ViewBuilder
+    private func side(_ side: Side) -> some View {
+        if viewModel.range.isRange {
+            RangeSideLabel(title: (side == .start ? "RangeFrom" : "RangeTo").localized()) { clear(side) }
         }
-        rule
+        sideFields(side)
+        if showsOptions {
+            sideQualifiers(side)
+        }
+    }
+
+    private func sideQualifiers(_ side: Side) -> some View {
+        qualifierRows(side)
+            .padding(.vertical, -8)
+            .transition(reduceMotion ? .identity : .opacity)
     }
 
     private func qualifierRows(_ side: Side) -> some View {
@@ -253,9 +265,7 @@ struct EditDateAndTimeView: View {
         }
         .font(.custom("Usual-Medium", size: 14, relativeTo: .subheadline))
         .dynamicTypeSize(...DynamicTypeSize.large)
-        .padding(.horizontal, 24)
-        .padding(.top, 16)
-        .padding(.bottom, 32)
+        .padding(24)
         .background(Color.white)
     }
 
@@ -308,6 +318,13 @@ struct EditDateAndTimeView: View {
             viewModel.showsOptions.toggle()
         }
         UIAccessibility.post(notification: .layoutChanged, argument: nil)
+    }
+
+    private func clear(_ side: Side) {
+        leaveFields()
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            viewModel.clear(side)
+        }
     }
 
     private func setRange(_ isOn: Bool) {

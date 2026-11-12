@@ -101,6 +101,8 @@ struct AdjustDateAndTimeViewTests {
         #expect("RangeFrom".localized() == "From")
         #expect("RangeTo".localized() == "To")
         #expect(render(RangeSideLabel(title: "RangeTo".localized())).view != nil)
+        #expect(render(RangeSideLabel(title: "RangeFrom".localized()) {}).view != nil)
+        #expect(String(format: "ClearRangeSide".localized(), "From") == "Clear From")
         #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
 
         viewModel.setRange(on: false)
@@ -117,6 +119,7 @@ struct AdjustDateAndTimeViewTests {
         #expect(OptionToggleRow.spokenValue(isOn: false) == "Off")
         #expect(OptionToggleRow.traits.contains(.isButton))
         #expect(OptionToggleRow.switchSize == CGSize(width: 36, height: 20))
+        #expect(OptionToggleRow.lineHeight == 24)
         #expect(render(OptionToggleRow(title: names[1], isOn: true) { _ in }).view != nil)
         #expect(render(OptionToggleRow(title: names[2], isOn: false, isEnabled: false) { _ in }).view != nil)
     }
@@ -136,7 +139,7 @@ struct AdjustDateAndTimeViewTests {
         #expect(viewModel.entry.isEmpty)
         #expect(viewModel.range.preview == "Unknown")
         #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
-        #expect(render(TimeZoneRow(zone: nil, wallClock: viewModel.entry.offsetClock(), isEnabled: false, showsNeedsTimeHint: false) {}).view != nil)
+        #expect(render(TimeZoneRow(zone: nil, wallClock: viewModel.entry.offsetClock(), isEnabled: false) {}).view != nil)
 
         viewModel.toggle(.unknown, on: false)
         viewModel.toggle(.approximate, on: false)

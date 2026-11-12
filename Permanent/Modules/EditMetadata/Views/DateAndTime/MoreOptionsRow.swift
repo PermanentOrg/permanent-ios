@@ -21,7 +21,7 @@ struct MoreOptionsRow: View {
     var body: some View {
         HStack(spacing: 0) {
             Button(action: action) {
-                HStack(spacing: 12) {
+                HStack(spacing: 8) {
                     Image(systemName: "slider.horizontal.3")
                         .font(.title3)
                         .frame(width: iconSize, height: iconSize)
@@ -35,5 +35,6 @@ struct MoreOptionsRow: View {
             .buttonStyle(.plain)
             Spacer(minLength: 0)
         }
+        .padding(.vertical, -4)
     }
 }

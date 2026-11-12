@@ -138,6 +138,10 @@ class EditDateAndTimeViewModel: ObservableObject {
         range.clear()
     }
 
+    func clear(_ side: DateTimeRangeEntry.Side) {
+        range.clear(side)
+    }
+
     // MARK: - Zone
 
     /// A list door opens one record with its zone unknown; the row stays empty until the record is read.

@@ -277,6 +277,8 @@
 "UnknownDateAndTime" = "Unknown date and time";
 "RangeFrom" = "From";
 "RangeTo" = "To";
+"RangeClearSide" = "Clear";
+"ClearRangeSide" = "Clear %@";
 "DateBeforeSide" = "Before %@";
 "DateAfterSide" = "After %@";
 "DateRangeEndBeforeStart" = "The end must come after the start";

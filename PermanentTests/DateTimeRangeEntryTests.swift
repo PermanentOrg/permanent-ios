@@ -347,6 +347,19 @@ struct DateTimeRangeEntryTests {
         #expect(none.isEmpty)
     }
 
+    @Test("Clearing one side empties it and its toggles, keeps the zone, and the side saves as open")
+    func clearOneSide() {
+        var range = DateTimeRangeEntry(displayTime: "1985-10-23~/1985-11-23?", legacy: nil, timeZoneIdentifier: "Europe/Paris")
+        range.clear(.start)
+        #expect(range.start.isEmpty)
+        #expect(range.start.qualifiers.isEmpty)
+        #expect(range.start.timeZoneIdentifier == "Europe/Paris")
+        #expect(range.edtfString == "../1985-11-23?")
+        range.clear(.end)
+        #expect(range.isRange)
+        #expect(range.edtfString == nil, "both sides empty is a clear")
+    }
+
     @Test("A range open on both ends holds nothing, so a save clears it")
     func openOnBothEndsIsEmpty() {
         let range = DateTimeRangeEntry(displayTime: "../..", legacy: nil)

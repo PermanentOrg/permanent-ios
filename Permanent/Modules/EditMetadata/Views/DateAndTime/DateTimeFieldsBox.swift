@@ -25,8 +25,7 @@ struct DateTimeFieldsBox<Accessory: View>: View {
             HStack(spacing: 8) {
                 ForEach(fields, id: \.self) { field in
                     DateTimeDigitsField(field: field, entry: $entry, focus: $focus)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 2)
+                        .frame(maxWidth: .infinity, minHeight: 24)
                         .background(RoundedRectangle(cornerRadius: 4).fill(focus == field ? Color.blue25 : Color.clear))
                     if field != fields.last {
                         Text(separator)
@@ -45,7 +44,7 @@ struct DateTimeFieldsBox<Accessory: View>: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: DateTimeDigitsField.boxCornerRadius)
-                .stroke(isFocused ? Color.blue100 : Color.blue50, lineWidth: 1)
+                .strokeBorder(isFocused ? Color.blue100 : Color.blue50, lineWidth: 1)
         )
     }
 }

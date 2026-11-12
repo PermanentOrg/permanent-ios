@@ -7,14 +7,12 @@
 
 import SwiftUI
 
-/// The zone row under the time box: a globe, the chosen zone as "GMT+02:00  Romania, Bucharest" or "Select time
-/// zone" while unset, and a chevron; a thin rule closes it. The whole row is a button, greyed until a time is typed.
+/// The zone row under the time box: a globe, the zone as "GMT+02:00  Romania, Bucharest" or "Select time zone",
+/// and a chevron. One button, greyed until a time is typed, 40pt of layout with 48pt of touch.
 struct TimeZoneRow: View {
     let zone: TimeZoneOption?
     let wallClock: DateComponents
     var isEnabled = true
-    /// False when a toggle greyed the row: it then reads empty, since typing a time would not bring it back.
-    var showsNeedsTimeHint = true
     let action: () -> Void
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0
 
@@ -44,39 +42,35 @@ struct TimeZoneRow: View {
     }
 
     private var disabledText: String {
-        showsNeedsTimeHint ? "TimeZoneNeedsTime".localized() : ""
+        "TimeZoneNeedsTime".localized()
     }
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 0) {
-                HStack(spacing: 12) {
-                    Image(systemName: "globe")
-                        .font(.title3)
-                        .foregroundColor(isEnabled ? .darkBlue : .blue200)
-                        .frame(width: iconSize, height: iconSize)
-                    if !isEnabled {
-                        Text(disabledText).foregroundColor(.blue200)
-                    } else if let zone {
-                        OffsetAndPlace(offset: Text(zone.offsetLabel(at: wallClock)).foregroundColor(.darkBlue), place: Text(zone.placeName).foregroundColor(.blue400))
-                    } else {
-                        Text("SelectTimeZone".localized()).foregroundColor(.blue400)
-                    }
-                    Spacer(minLength: 0)
-                    Image(systemName: "chevron.right")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(.blue200)
+            HStack(spacing: 8) {
+                Image(systemName: "globe")
+                    .font(.title3)
+                    .foregroundColor(isEnabled ? .darkBlue : .blue200)
+                    .frame(width: iconSize, height: iconSize)
+                if !isEnabled {
+                    Text(disabledText).foregroundColor(.blue200)
+                } else if let zone {
+                    OffsetAndPlace(offset: Text(zone.offsetLabel(at: wallClock)).foregroundColor(.darkBlue), place: Text(zone.placeName).foregroundColor(.blue400))
+                } else {
+                    Text("SelectTimeZone".localized()).foregroundColor(.blue400)
                 }
-                .font(DateTimeDigitsField.font)
-                .multilineTextAlignment(.leading)
-                .padding(.vertical, 12)
-                Rectangle()
-                    .fill(Color.blue50)
-                    .frame(height: 1)
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.blue200)
             }
+            .font(DateTimeDigitsField.font)
+            .multilineTextAlignment(.leading)
+            .padding(.vertical, 12)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .padding(.vertical, -4)
         .disabled(!isEnabled)
         .accessibilityLabel("TimeZone".localized())
         .accessibilityValue(isEnabled ? zone?.spokenName(at: wallClock) ?? "TimeZoneNotSet".localized() : disabledText)

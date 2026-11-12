@@ -169,6 +169,19 @@ struct DateTimeRangeEntry: Hashable {
         self = Self()
     }
 
+    /// Empties one side of a range and switches its toggles off; an empty side saves as open. The shared zone stays.
+    mutating func clear(_ side: Side) {
+        guard self[side] != nil else { return }
+        var entry = DateTimeEntry()
+        entry.timeZoneIdentifier = start.timeZoneIdentifier
+        keptSides[side] = nil
+        keptClocks[side] = nil
+        switch side {
+        case .start: start = entry
+        case .end: end = entry
+        }
+    }
+
     private func composed(_ text: KeyPath<DateTimeEntry, String?>) -> String? {
         guard !isEmpty else { return nil }
         guard let end else {
