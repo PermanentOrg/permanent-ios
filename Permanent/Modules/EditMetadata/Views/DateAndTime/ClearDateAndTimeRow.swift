@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-/// The red "Clear date and time" row under the time box: a broom and the text at the leading edge, and only they
-/// take the tap, so a touch on the empty right of the row does nothing.
+/// The red "Clear date and time" row; only the icon and text take the tap. Off the sheet for now: while screens
+/// fall back to the old date field, a cleared record shows its old date again.
 struct ClearDateAndTimeRow: View {
     let action: () -> Void
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0

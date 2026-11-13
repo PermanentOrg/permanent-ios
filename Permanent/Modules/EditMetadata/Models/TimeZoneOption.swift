@@ -75,11 +75,18 @@ struct TimeZoneOption: Hashable, Identifiable {
         if let asUTC = Self.utcCalendar.date(from: wallClock) {
             let moment = asUTC.addingTimeInterval(-Double(minutes * 60))
             let style: TimeZone.NameStyle = timeZone.isDaylightSavingTime(for: moment) ? .shortDaylightSaving : .shortStandard
-            if let name = timeZone.localizedName(for: style, locale: Self.english), name.allSatisfy(\.isLetter) {
+            if let name = timeZone.localizedName(for: style, locale: Self.english).flatMap(Self.lettersName) {
                 return name
             }
         }
         return Self.tzdataOffset(minutes: minutes)
+    }
+
+    /// A Foundation short name when it is letters. A zero offset comes as "GMT" or as "GMT+0", depending on the
+    /// system, and reads as "GMT" either way; any other offset form gives nil.
+    static func lettersName(_ name: String) -> String? {
+        if name == "GMT+0" { return "GMT" }
+        return name.allSatisfy(\.isLetter) ? name : nil
     }
 
     /// What a search matches: the id's words, the generic name, the country and the offset label.
