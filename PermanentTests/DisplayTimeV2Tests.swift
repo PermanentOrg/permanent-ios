@@ -242,6 +242,85 @@ struct DisplayTimeV2Tests {
         #expect(server.v1Batches.isEmpty)
     }
 
+    // MARK: - Save needs a date
+
+    @MainActor
+    @Test("An undated record opens with Save off")
+    func undatedRecordCannotSave() throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        #expect(viewModel.entry.isEmpty)
+        #expect(!viewModel.canSave)
+    }
+
+    @MainActor
+    @Test("A batch whose files have different dates opens empty with Save off")
+    func mixedDateBatchCannotSave() throws {
+        let files = try [
+            child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10""#),
+            child(#""recordId": "302", "archiveId": "5", "displayTime": "2001-02-03""#)
+        ]
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false))
+
+        #expect(viewModel.entry.isEmpty)
+        #expect(!viewModel.canSave)
+    }
+
+    @MainActor
+    @Test("A year alone turns Save on")
+    func yearAloneCanSave() throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        viewModel.entry.year = "1999"
+
+        #expect(viewModel.canSave)
+        #expect(viewModel.entry.edtfString == "1999")
+    }
+
+    @MainActor
+    @Test("A dated entry emptied time first, then date, turns Save off only with the last field")
+    func emptiedFieldByFieldCannotSave() throws {
+        let dated = try child(#""recordId": "301", "archiveId": "5", "displayTime": "2001-02-03T09:30:15""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [dated], hasUpdates: .constant(false))
+        #expect(viewModel.canSave)
+
+        let fields: [DateTimeEntry.Field] = [.hour, .minute, .second, .year, .month, .day]
+        for field in fields.dropLast() {
+            viewModel.entry[field] = ""
+            #expect(viewModel.canSave, "Save stays on after \(field.label) is emptied")
+        }
+        if let last = fields.last { viewModel.entry[last] = "" }
+
+        #expect(!viewModel.canSave)
+        #expect(viewModel.saveBlockedReason == "Enter a date first")
+    }
+
+    @MainActor
+    @Test(
+        "A time needs a year, a month and a day before Save turns on, as on web",
+        arguments: [
+            ("", "", "", "09", false),
+            ("1999", "", "", "09", false),
+            ("1999", "10", "", "09", false),
+            ("1999", "10", "23", "09", true),
+            ("1999", "10", "", "", true)
+        ]
+    )
+    func timeNeedsFullDate(year: String, month: String, day: String, hour: String, saves: Bool) throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        viewModel.entry.year = year
+        viewModel.entry.month = month
+        viewModel.entry.day = day
+        viewModel.entry.hour = hour
+
+        #expect(viewModel.canSave == saves)
+        #expect(viewModel.saveBlockedReason == (saves ? nil : "A complete date is required when time is provided."))
+    }
+
     @MainActor
     @Test("A failed batch with no displayTime retries the V1 batch")
     func batchFailureWithoutDisplayTimeRetriesV1() async throws {

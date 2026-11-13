@@ -121,6 +121,17 @@ class EditDateAndTimeViewModel: ObservableObject {
         return common
     }
 
+    /// Why Save is off, or nil when it can save. An empty Save would clear the date, which the sheet does not
+    /// offer for now, and a time needs a year, a month and a day.
+    var saveBlockedReason: String? {
+        if entry.isEmpty { return "SaveNeedsDate".localized() }
+        let hasFullDate = !entry.year.isEmpty && !entry.month.isEmpty && !entry.day.isEmpty
+        if entry.hasTime && !hasFullDate { return "TimeNeedsFullDate".localized() }
+        return nil
+    }
+
+    var canSave: Bool { saveBlockedReason == nil }
+
     func applyChanges() {
         isLoading = true
         // One PATCH per record to Stela V2 `displayTime`, with the V1 batch as the failsafe. Any folder,

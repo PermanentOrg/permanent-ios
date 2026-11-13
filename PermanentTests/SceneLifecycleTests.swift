@@ -108,6 +108,10 @@ struct SceneLifecycleTests {
     func defaultActivityHandlerReachesAppDelegate() async throws {
         let (scene, _) = try await connectedSceneDelegate()
         let root = try #require(AppDelegate.shared.connectedRootViewController)
+        // Another test can leave the signed-in screen as root; the token is parked only from the sign-in screen.
+        if root.isDrawerRootActive {
+            root.setRoot(named: .signUp, from: .authentication)
+        }
         try #require(root.isDrawerRootActive == false, "A signed-in host would navigate instead of parking the token")
         let activity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
         activity.webpageURL = URL(string: "https://app.staging.permanent.org/share/abc123")

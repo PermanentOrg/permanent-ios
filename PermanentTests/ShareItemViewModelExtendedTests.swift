@@ -637,7 +637,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.performRevokeLink()
 
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        await waitUntil(timeout: 5, !vm.showLinkSettings && vm.navigationDirection == .backward)
 
         XCTAssertFalse(vm.showLinkSettings)
         XCTAssertEqual(vm.navigationDirection, .backward)

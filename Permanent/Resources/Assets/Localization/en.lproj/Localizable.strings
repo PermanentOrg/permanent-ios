@@ -239,6 +239,8 @@
 "PickADate" = "Pick a date";
 "PickATime" = "Pick a time";
 "ClearDateAndTime" = "Clear date and time";
+"SaveNeedsDate" = "Enter a date first";
+"TimeNeedsFullDate" = "A complete date is required when time is provided.";
 "TimeFormatAM" = "AM";
 "TimeFormatPM" = "PM";
 "TimeFormat24H" = "24H";
