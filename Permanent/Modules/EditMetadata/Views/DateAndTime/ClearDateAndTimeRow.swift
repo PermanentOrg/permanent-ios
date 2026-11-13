@@ -16,9 +16,9 @@ struct ClearDateAndTimeRow: View {
     var body: some View {
         HStack(spacing: 0) {
             Button(role: .destructive, action: action) {
-                HStack(spacing: 12) {
-                    Image(systemName: "eraser.line.dashed")
-                        .font(.title3)
+                HStack(spacing: 8) {
+                    Image("broomWide")
+                        .resizable()
                         .frame(width: iconSize, height: iconSize)
                     Text("ClearDateAndTime".localized())
                         .font(DateTimeDigitsField.font)
@@ -30,5 +30,6 @@ struct ClearDateAndTimeRow: View {
             .buttonStyle(.plain)
             Spacer(minLength: 0)
         }
+        .padding(.vertical, -4)
     }
 }

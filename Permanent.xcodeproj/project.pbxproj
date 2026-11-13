@@ -847,6 +847,17 @@
 		5EFCE3E52CFE022100D7E802 /* TwoFactorMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */; };
 		5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */; };
 		5EFECC312D120A25000842BF /* SimpleCustomNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */; };
+		5EFF4BCE30A4FBF100FADD86 /* DisplayTimeTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BCD30A4FBF100FADD86 /* DisplayTimeTextTests.swift */; };
+		5EFF4BCF30A4FBF100FADD86 /* DateTimeRangeEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BCC30A4FBF100FADD86 /* DateTimeRangeEntryTests.swift */; };
+		5EFF4BD230A4FC1500FADD86 /* DateQualifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BD030A4FC1500FADD86 /* DateQualifiers.swift */; };
+		5EFF4BD330A4FC1500FADD86 /* DateTimeRangeEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BD130A4FC1500FADD86 /* DateTimeRangeEntry.swift */; };
+		5EFF4BD430A4FC2900FADD86 /* DateQualifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BD030A4FC1500FADD86 /* DateQualifiers.swift */; };
+		5EFF4BD730A4FC4300FADD86 /* DisplayTimeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BD630A4FC4300FADD86 /* DisplayTimeValue.swift */; };
+		5EFF4BD830A4FC4300FADD86 /* DisplayTimeText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BD530A4FC4300FADD86 /* DisplayTimeText.swift */; };
+		5EFF4BD930A4FC4D00FADD86 /* DisplayTimeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BD630A4FC4300FADD86 /* DisplayTimeValue.swift */; };
+		5EFF4BDD30A4FC6500FADD86 /* OptionToggleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BDB30A4FC6500FADD86 /* OptionToggleRow.swift */; };
+		5EFF4BDE30A4FC6500FADD86 /* MoreOptionsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BDA30A4FC6500FADD86 /* MoreOptionsRow.swift */; };
+		5EFF4BDF30A4FC6500FADD86 /* RangeSideLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF4BDC30A4FC6500FADD86 /* RangeSideLabel.swift */; };
 		615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */; };
 		65B6E12EBD9D4A49A9854A2C /* ThumbnailSkeletonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316F13ACBEE64AC59D5730BE /* ThumbnailSkeletonTests.swift */; };
 		6F37FCAAF68B75EB5F681E06 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = A9406AB4FE7549E92D7C95B3 /* SDWebImage */; };
@@ -2051,6 +2062,15 @@
 		5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorMethod.swift; sourceTree = "<group>"; };
 		5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordView.swift; sourceTree = "<group>"; };
 		5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCustomNavigationView.swift; sourceTree = "<group>"; };
+		5EFF4BCC30A4FBF100FADD86 /* DateTimeRangeEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeRangeEntryTests.swift; sourceTree = "<group>"; };
+		5EFF4BCD30A4FBF100FADD86 /* DisplayTimeTextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTimeTextTests.swift; sourceTree = "<group>"; };
+		5EFF4BD030A4FC1500FADD86 /* DateQualifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateQualifiers.swift; sourceTree = "<group>"; };
+		5EFF4BD130A4FC1500FADD86 /* DateTimeRangeEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeRangeEntry.swift; sourceTree = "<group>"; };
+		5EFF4BD530A4FC4300FADD86 /* DisplayTimeText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTimeText.swift; sourceTree = "<group>"; };
+		5EFF4BD630A4FC4300FADD86 /* DisplayTimeValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTimeValue.swift; sourceTree = "<group>"; };
+		5EFF4BDA30A4FC6500FADD86 /* MoreOptionsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptionsRow.swift; sourceTree = "<group>"; };
+		5EFF4BDB30A4FC6500FADD86 /* OptionToggleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionToggleRow.swift; sourceTree = "<group>"; };
+		5EFF4BDC30A4FC6500FADD86 /* RangeSideLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeSideLabel.swift; sourceTree = "<group>"; };
 		619A8CB28927DE2F72AEE205 /* DropMoveProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropMoveProgress.swift; sourceTree = "<group>"; };
 		6D4126FA6582B42D034934D7 /* FloatingActionIslandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionIslandTests.swift; sourceTree = "<group>"; };
 		7086DD1E6242F48025317F07 /* FileListPagingSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileListPagingSection.swift; sourceTree = "<group>"; };
@@ -3744,6 +3764,8 @@
 		5E4E1E5C309337D8007E980B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				5EFF4BD030A4FC1500FADD86 /* DateQualifiers.swift */,
+				5EFF4BD130A4FC1500FADD86 /* DateTimeRangeEntry.swift */,
 				5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */,
 				5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */,
 				5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */,
@@ -3755,6 +3777,9 @@
 		5E4E1E65309337FF007E980B /* DateAndTime */ = {
 			isa = PBXGroup;
 			children = (
+				5EFF4BDA30A4FC6500FADD86 /* MoreOptionsRow.swift */,
+				5EFF4BDB30A4FC6500FADD86 /* OptionToggleRow.swift */,
+				5EFF4BDC30A4FC6500FADD86 /* RangeSideLabel.swift */,
 				5E4E1E7F30938F46007E980B /* TimeZoneOptionRow.swift */,
 				5E4E1E8030938F46007E980B /* TimeZonePickerSheet.swift */,
 				5E4E1E8130938F46007E980B /* TimeZoneRow.swift */,
@@ -3871,6 +3896,8 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5EFF4BCC30A4FBF100FADD86 /* DateTimeRangeEntryTests.swift */,
+				5EFF4BCD30A4FBF100FADD86 /* DisplayTimeTextTests.swift */,
 				5E4E1E8730938F62007E980B /* TimeZoneCatalogTests.swift */,
 				5E4E1E8830938F62007E980B /* TimeZonePickerViewTests.swift */,
 				5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */,
@@ -4866,6 +4893,8 @@
 		BC4526E6251CACD500E24A51 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				5EFF4BD530A4FC4300FADD86 /* DisplayTimeText.swift */,
+				5EFF4BD630A4FC4300FADD86 /* DisplayTimeValue.swift */,
 				5E4E1E7430937184007E980B /* FeatureFlags.swift */,
 				5E752280308624E4008003BA /* ItemLocationService.swift */,
 				5E752281308624E4008003BA /* PinAddressLookup.swift */,
@@ -5716,6 +5745,8 @@
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
 				5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */,
+				5EFF4BD730A4FC4300FADD86 /* DisplayTimeValue.swift in Sources */,
+				5EFF4BD830A4FC4300FADD86 /* DisplayTimeText.swift in Sources */,
 				5EB569AD2B307F3400C35543 /* RoundButtonView.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
@@ -5748,6 +5779,8 @@
 				5E752282308624E4008003BA /* ItemLocationService.swift in Sources */,
 				5E752283308624E4008003BA /* PinAddressLookup.swift in Sources */,
 				5E24A2262CF67E6C003F22AE /* CustomToggleView.swift in Sources */,
+				5EFF4BD230A4FC1500FADD86 /* DateQualifiers.swift in Sources */,
+				5EFF4BD330A4FC1500FADD86 /* DateTimeRangeEntry.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				5EB053D32BD120C400AFE66D /* TextField+Extension.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
@@ -6015,6 +6048,9 @@
 				5EE9D8C627A1EE8100CE5F9C /* EstablishedInfoProfileItem.swift in Sources */,
 				BC59BAD125C2B8BD005A45D3 /* NotificationProtocol.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
+				5EFF4BDD30A4FC6500FADD86 /* OptionToggleRow.swift in Sources */,
+				5EFF4BDE30A4FC6500FADD86 /* MoreOptionsRow.swift in Sources */,
+				5EFF4BDF30A4FC6500FADD86 /* RangeSideLabel.swift in Sources */,
 				BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */,
 				BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */,
 				5E5979D22DCCE65100694BDA /* ChecklistErrorView.swift in Sources */,
@@ -6605,6 +6641,8 @@
 				5EA4EC082F19108F00D05FF2 /* SharePreviewSwiftUIViewModelTests.swift in Sources */,
 				5E991EE92A4AFB89006229C0 /* EnvVars.generated.swift in Sources */,
 				5E173EB12F62F12200C6D151 /* SharePreviewCreateArchiveCoordinatorTests.swift in Sources */,
+				5EFF4BCE30A4FBF100FADD86 /* DisplayTimeTextTests.swift in Sources */,
+				5EFF4BCF30A4FBF100FADD86 /* DateTimeRangeEntryTests.swift in Sources */,
 				5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */,
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,
 				F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */,
@@ -6671,10 +6709,12 @@
 				5ED4B9D02876E03B00CF044B /* FolderVO.swift in Sources */,
 				5E1017412DF1A6B80097A649 /* ScrollViewAppearanceManager.swift in Sources */,
 				F559F8A928FF02650015A522 /* APINetworkSession.swift in Sources */,
+				5EFF4BD430A4FC2900FADD86 /* DateQualifiers.swift in Sources */,
 				5E9097E62F99790800C2EAEC /* BackgroundUploadMetadata.swift in Sources */,
 				F5ADBF38290BBD110007A516 /* AccountEndpoint.swift in Sources */,
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
+				5EFF4BD930A4FC4D00FADD86 /* DisplayTimeValue.swift in Sources */,
 				5E390B4E2E1FEF7D00F623D3 /* FilesRemoteDataSource.swift in Sources */,
 				5E473A062A41886A00A20D85 /* ArrayExtension.swift in Sources */,
 				F561F846299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift in Sources */,

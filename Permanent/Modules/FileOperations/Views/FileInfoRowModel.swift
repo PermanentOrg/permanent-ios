@@ -22,6 +22,10 @@ struct FileInfoRowModel: Equatable {
     let kind: Kind
     let value: String?
     let style: Style
+    /// The words after the label, such as "Approximate • Uncertain". Only a date row has them.
+    var labelDetail: String?
+    /// A date range's From and To lines; empty for a row with one value.
+    var lines: [DisplayTimeText.Line] = []
 
     // MARK: - Look
 
@@ -30,6 +34,11 @@ struct FileInfoRowModel: Equatable {
     static let labelLineHeight: CGFloat = 16
     static let valueLineHeight: CGFloat = 24
     static let labelGap: CGFloat = 8
+    static let labelDetailGap: CGFloat = 12
+    static let lineGap: CGFloat = 8
+    static let captionFont = SwiftUI.Font.custom("Usual-Regular", size: 10, relativeTo: .caption2)
+    static let captionWidth: CGFloat = 36
+    static let captionGap: CGFloat = 10
     static let boxPadding: CGFloat = 12
     static let boxCornerRadius: CGFloat = 12
     static let iconSize: CGFloat = 24
@@ -48,15 +57,21 @@ struct FileInfoRowModel: Equatable {
         style == .boxed ? 16 : 24
     }
 
-    /// The row's height at the given text size: label, gap and value, plus the box around a boxed value.
-    static func height(for style: Style, compatibleWith traits: UITraitCollection) -> CGFloat {
+    /// The row's height at the given text size: label, gap and each value line, plus the box around a boxed value.
+    static func height(for style: Style, lines: Int = 1, compatibleWith traits: UITraitCollection) -> CGFloat {
         let label = UIFontMetrics(forTextStyle: .caption1).scaledValue(for: labelLineHeight, compatibleWith: traits)
         let value = UIFontMetrics(forTextStyle: .subheadline).scaledValue(for: valueLineHeight, compatibleWith: traits)
+        let count = CGFloat(max(lines, 1))
         let box = style == .boxed ? 2 * boxPadding : 0
-        return (label + labelGap + value + box).rounded(.up)
+        return (label + labelGap + value * count + lineGap * (count - 1) + box).rounded(.up)
     }
 
     // MARK: - Content
+
+    /// The lines the value takes on screen: two for a date range, else one.
+    var lineCount: Int {
+        max(lines.count, 1)
+    }
 
     var isSet: Bool {
         !(value ?? "").isEmpty
@@ -103,10 +118,20 @@ struct FileInfoRowModel: Equatable {
     }
 
     var accessibilityLabel: String {
-        "\(title), \(text)"
+        [title, labelDetail, text].compactMap { $0 }.joined(separator: ", ")
     }
 
     var accessibilityHint: String? {
         isButton ? "InfoEditHint".localized() : nil
+    }
+}
+
+extension FileInfoRowModel {
+    /// The Date row: one line, or a range's From and To lines, with the qualifier words after the label.
+    init(date: DisplayTimeText?, style: Style) {
+        self.init(
+            kind: .date, value: date?.text, style: style, labelDetail: date?.labelDetail,
+            lines: (date?.lines.count ?? 0) > 1 ? date?.lines ?? [] : []
+        )
     }
 }

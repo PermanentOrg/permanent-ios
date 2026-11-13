@@ -19,7 +19,12 @@ class EditDateAndTimeViewModel: ObservableObject {
     
     @Published var isLoading: Bool = false
     @Published var changesConfirmed: Bool = false
-    @Published var entry: DateTimeEntry
+    /// Both sides of the sheet. The gate's answer follows every change, so the line under the title is never stale.
+    @Published var range: DateTimeRangeEntry {
+        didSet { gateError = Self.gateError(for: range) }
+    }
+    /// True while the full view is open under the Clear row; a record with a qualifier or a range opens that way.
+    @Published var showsOptions: Bool
     @Published var showConfirmation: Bool = false
     @Published var changesWereSaved: Bool = false
     @Published var showAlert: Bool = false
@@ -31,7 +36,7 @@ class EditDateAndTimeViewModel: ObservableObject {
     /// for the server and the sign-in. Production leaves the requests nil.
     var patchRecordRequest: ((_ file: FileModel, _ fields: [String: Any], _ completion: @escaping (Bool) -> Void) -> Void)?
     var updateV1Request: ((_ files: [FileModel], _ completion: @escaping (Bool) -> Void) -> Void)?
-    var sessionArchiveId: () -> Int? = { AuthenticationManager.shared.session?.selectedArchive?.archiveID }
+    var sessionArchiveId: () -> Int?
     /// Test seam for the one-file read of the record's zone; production reads it from Stela V2.
     var fetchRecordZone: ((_ file: FileModel, _ completion: @escaping (String?) -> Void) -> Void)?
 
@@ -41,21 +46,54 @@ class EditDateAndTimeViewModel: ObservableObject {
     private let recordZone: RecordZone
     private let guessedZone: String?
     private var didReadZone = false
-    
-    init(selectedFiles: [FileModel], hasUpdates: Binding<Bool>, recordZone: RecordZone = .unknown) {
+    private var gateError: String?
+
+    /// The From side, which the boxes, the wheels, the calendar and the zone list bind to.
+    var entry: DateTimeEntry {
+        get { range.start }
+        set { range.start = newValue }
+    }
+
+    /// The To side, for the same views; an empty entry while the range is off.
+    var endEntry: DateTimeEntry {
+        get { range.end ?? DateTimeEntry() }
+        set {
+            guard range.isRange else { return }
+            range.end = newValue
+        }
+    }
+
+    /// True when every selected file saves to Stela V2, which alone can hold a qualifier or a range. A shared
+    /// record saves through V1 as one moment, so it keeps the simple sheet.
+    var offersMoreOptions: Bool {
+        Self.savesToV2(selectedFiles, sessionArchiveId: sessionArchiveId())
+    }
+
+    /// Why the date cannot be saved, for the line under the title; nil when edtf.js accepts it. Save waits on it.
+    var validation: String? {
+        offersMoreOptions ? gateError : nil
+    }
+
+    init(
+        selectedFiles: [FileModel], hasUpdates: Binding<Bool>, recordZone: RecordZone = .unknown,
+        sessionArchiveId: @escaping () -> Int? = { AuthenticationManager.shared.session?.selectedArchive?.archiveID }
+    ) {
         self.selectedFiles = selectedFiles
         self.hasUpdates = hasUpdates
         self.recordZone = recordZone
-        
-        var entry = Self.commonEntry(for: selectedFiles)
-        guessedZone = Self.guessedZone(for: entry)
+        self.sessionArchiveId = sessionArchiveId
+
+        var range = Self.commonEntry(for: selectedFiles, full: Self.savesToV2(selectedFiles, sessionArchiveId: sessionArchiveId()))
+        guessedZone = Self.guessedZone(for: range.start) ?? range.end.flatMap(Self.guessedZone(for:))
         if case .known(let zone) = recordZone, let zone {
-            entry.timeZoneIdentifier = zone
+            range.start.timeZoneIdentifier = zone
         } else if !Self.readsRecordZone(recordZone, fileCount: selectedFiles.count) {
-            entry.timeZoneIdentifier = guessedZone
+            range.start.timeZoneIdentifier = guessedZone
         }
-        self.entry = entry
-        openingZone = entry.timeZoneIdentifier
+        self.range = range
+        showsOptions = range.opensFull
+        openingZone = range.start.timeZoneIdentifier
+        gateError = Self.gateError(for: range)
     }
 
     /// One file's sheet. The Info door passes the record it read, so the fields and the zone start from it; a list
@@ -67,6 +105,44 @@ class EditDateAndTimeViewModel: ObservableObject {
             recordZone: record.map { .known($0.timezone) } ?? .unknown
         )
     }
+
+    private static func savesToV2(_ files: [FileModel], sessionArchiveId: Int?) -> Bool {
+        !files.isEmpty && files.allSatisfy { $0.savesDateToV2(sessionArchiveId: sessionArchiveId) }
+    }
+
+    /// edtf.js's verdict on the string a save would send: an end that is not after the start, or any other refusal.
+    private static func gateError(for range: DateTimeRangeEntry) -> String? {
+        guard let gate = range.gateString else { return nil }
+        do {
+            _ = try JavaScriptCoreEDTF.shared.validated(gate)
+            return nil
+        } catch EDTFError.rejected(let reason) {
+            return (reason.contains("upper bound") ? "DateRangeEndBeforeStart" : "DateCannotBeSaved").localized()
+        } catch {
+            // Without the library the server stays the judge, as in Stage 1.
+            return nil
+        }
+    }
+
+    // MARK: - More options
+
+    func toggle(_ qualifier: DateQualifiers, on: Bool, side: DateTimeRangeEntry.Side = .start) {
+        range.set(qualifier, on: on, side: side)
+    }
+
+    func setRange(on: Bool) {
+        range.setRange(on: on)
+    }
+
+    func clear() {
+        range.clear()
+    }
+
+    func clear(_ side: DateTimeRangeEntry.Side) {
+        range.clear(side)
+    }
+
+    // MARK: - Zone
 
     /// A list door opens one record with its zone unknown; the row stays empty until the record is read.
     private static func readsRecordZone(_ recordZone: RecordZone, fileCount: Int) -> Bool {
@@ -114,25 +190,33 @@ class EditDateAndTimeViewModel: ObservableObject {
         }
     }
 
-    /// The date the files share, as the fields; a file with no date is left out. Empty when the dated files differ.
-    static func commonEntry(for files: [FileModel]) -> DateTimeEntry {
-        let entries = Set(files.map { DateTimeEntry(displayTime: $0.displayTime, legacy: $0.createdDT) }.filter { !$0.isEmpty })
-        guard entries.count == 1, let common = entries.first else { return DateTimeEntry() }
+    /// The date the files share, as the sheet's sides; a file with no date is left out. Empty when the dated
+    /// files differ. Not `full`, each file reads as one date: its first written side, without qualifiers.
+    static func commonEntry(for files: [FileModel], full: Bool = true) -> DateTimeRangeEntry {
+        let entries = Set(files.map { file in
+            full
+                ? DateTimeRangeEntry(displayTime: file.displayTime, legacy: file.createdDT)
+                : DateTimeRangeEntry(start: DateTimeEntry(displayTime: file.displayTime, legacy: file.createdDT))
+        }.filter { !$0.isEmpty })
+        guard entries.count == 1, let common = entries.first else { return DateTimeRangeEntry() }
         return common
     }
 
+    // MARK: - Save
+
     func applyChanges() {
+        guard validation == nil else { return }
         isLoading = true
         // One PATCH per record to Stela V2 `displayTime`, with the V1 batch as the failsafe. Any folder,
         // unsaved or shared record sends the whole batch to V1, as the other batch edits do.
-        let archiveId = sessionArchiveId()
-        guard !selectedFiles.isEmpty, selectedFiles.allSatisfy({ $0.savesDateToV2(sessionArchiveId: archiveId) }) else {
+        guard offersMoreOptions else {
             applyChangesV1()
             return
         }
         let fields = patchFields
-        // V1 writes only the old field, so its retry is seen only while no record shows a `displayTime`.
-        let retriesV1 = !entry.isEmpty && DateUtils.showsLegacyDate(displayTimes: selectedFiles.map(\.displayTime))
+        // V1 writes one moment into the old field: it can stand in only for one plain date, and is seen only
+        // while no record shows a `displayTime`.
+        let retriesV1 = !range.isEmpty && !range.opensFull && DateUtils.showsLegacyDate(displayTimes: selectedFiles.map(\.displayTime))
         patchEachRecord(fields: fields) { [weak self] succeeded in
             if succeeded {
                 self?.isLoading = false
@@ -147,13 +231,13 @@ class EditDateAndTimeViewModel: ObservableObject {
         }
     }
 
-    /// The V2 body: `displayTime`, null on a clear, which V1 cannot do. `location.timezone` goes with a time and a
-    /// zone, is null when the zone is unset against the opening one or the date is cleared, and is left out otherwise.
+    /// The V2 body: `displayTime`, null on a clear, which V1 cannot do. `location.timezone` goes when a side has a time
+    /// and the zone is set, is null when the zone is unset or no side holds a date, and is left out otherwise.
     var patchFields: [String: Any] {
-        var fields: [String: Any] = ["displayTime": entry.edtfString.map { $0 as Any } ?? NSNull()]
-        if entry.hasTime, let zone = entry.zone {
+        var fields: [String: Any] = ["displayTime": range.edtfString.map { $0 as Any } ?? NSNull()]
+        if range.hasTime, let zone = entry.zone {
             fields["location"] = ["timezone": zone.identifier]
-        } else if entry.isEmpty || (entry.timeZoneIdentifier == nil && openingZone != nil) {
+        } else if range.holdsNoDate || (entry.timeZoneIdentifier == nil && openingZone != nil) {
             fields["location"] = ["timezone": NSNull()]
         }
         return fields

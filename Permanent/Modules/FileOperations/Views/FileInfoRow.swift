@@ -20,6 +20,7 @@ struct FileInfoRow: View {
     @ScaledMetric(relativeTo: .caption) private var labelLineHeight = FileInfoRowModel.labelLineHeight
     @ScaledMetric(relativeTo: .subheadline) private var valueLineHeight = FileInfoRowModel.valueLineHeight
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = FileInfoRowModel.iconSize
+    @ScaledMetric(relativeTo: .caption2) private var captionWidth = FileInfoRowModel.captionWidth
 
     init(model: FileInfoRowModel, onCommit: ((String, @escaping (Bool) -> Void) -> Void)? = nil, onTap: (() -> Void)? = nil) {
         self.model = model
@@ -30,10 +31,18 @@ struct FileInfoRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FileInfoRowModel.labelGap) {
-            Text(model.title)
-                .font(FileInfoRowModel.labelFont)
-                .foregroundColor(.white)
-                .frame(minHeight: labelLineHeight)
+            HStack(spacing: FileInfoRowModel.labelDetailGap) {
+                Text(model.title)
+                    .font(FileInfoRowModel.labelFont)
+                    .foregroundColor(.white)
+                if let detail = model.labelDetail {
+                    Text(detail)
+                        .font(.custom("Usual-Regular", size: 12, relativeTo: .caption))
+                        .foregroundColor(placeholderColor)
+                        .lineLimit(1)
+                }
+            }
+            .frame(minHeight: labelLineHeight)
             value
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -76,7 +85,7 @@ struct FileInfoRow: View {
             })
         } else {
             Button { onTap?() } label: {
-                boxed(HStack(spacing: FileInfoRowModel.boxPadding) {
+                boxed(HStack(alignment: .top, spacing: FileInfoRowModel.boxPadding) {
                     valueText
                     icon
                 })
@@ -96,12 +105,35 @@ struct FileInfoRow: View {
             )
     }
 
-    private var valueText: some View {
-        Text(model.text)
-            .font(FileInfoRowModel.valueFont)
-            .foregroundColor(model.isSet ? .white : placeholderColor)
-            .lineLimit(1)
-            .frame(maxWidth: .infinity, minHeight: valueLineHeight, alignment: .leading)
+    /// The value on one line, or a date range's lines stacked, each after its small caps caption.
+    @ViewBuilder private var valueText: some View {
+        if model.lines.count > 1 {
+            VStack(alignment: .leading, spacing: FileInfoRowModel.lineGap) {
+                ForEach(model.lines, id: \.text) { line in
+                    HStack(spacing: FileInfoRowModel.captionGap) {
+                        Text(line.caption ?? "")
+                            .font(FileInfoRowModel.captionFont)
+                            .tracking(1.6)
+                            .textCase(.uppercase)
+                            .foregroundColor(placeholderColor)
+                            .lineLimit(1)
+                            .frame(width: captionWidth, alignment: .leading)
+                        Text(line.text)
+                            .font(FileInfoRowModel.valueFont)
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: valueLineHeight, alignment: .leading)
+                }
+            }
+        } else {
+            Text(model.text)
+                .font(FileInfoRowModel.valueFont)
+                .foregroundColor(model.isSet ? .white : placeholderColor)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, minHeight: valueLineHeight, alignment: .leading)
+        }
     }
 
     private var icon: some View {

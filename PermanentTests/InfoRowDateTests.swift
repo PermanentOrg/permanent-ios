@@ -53,7 +53,16 @@ struct InfoRowDateTests {
     @Test("The old field gets the same shape when displayTime is missing or does not read")
     func legacyField() {
         #expect(DateUtils.infoRowDate(displayTime: nil, legacy: "2019-06-22T13:05:00.000Z", timeZone: utc) == "June 22, 2019 • 1:05 PM")
-        #expect(DateUtils.infoRowDate(displayTime: "1985~", legacy: "2019-06-22T13:00:00.000Z", timeZone: utc) == "June 22, 2019 • 1PM")
+        #expect(DateUtils.infoRowDate(displayTime: "198X", legacy: "2019-06-22T13:00:00.000Z", timeZone: utc) == "June 22, 2019 • 1PM")
+    }
+
+    @Test("A qualified date or a range reads as its first written side, without the symbol")
+    func qualifiedAndRange() {
+        #expect(DateUtils.infoRowDate(displayTime: "1985~", legacy: "2019-06-22T13:00:00.000Z", timeZone: utc) == "1985")
+        #expect(DateUtils.infoRowDate(displayTime: "1985-10-23%/1985-11-23", legacy: nil, timeZone: utc) == "October 23, 1985")
+        #expect(DateUtils.infoRowDate(displayTime: "../1985-11-23", legacy: nil, timeZone: utc) == "November 23, 1985")
+        #expect(DateUtils.infoRowDate(displayTime: "1985-10-23", legacy: nil, timeZone: utc, shortMonth: true) == "Oct. 23, 1985")
+        #expect(DateUtils.infoRowDate(displayTime: "XXXX-XX-XX", legacy: "2019-06-22T13:00:00.000Z", timeZone: utc) == nil, "an unknown date never shows the old field")
     }
 
     @Test("displayTime wins over the old field")
@@ -64,7 +73,7 @@ struct InfoRowDateTests {
     @Test("Nothing readable gives nil, so the row shows its placeholder")
     func nothingReadable() {
         #expect(DateUtils.infoRowDate(displayTime: nil, legacy: nil) == nil)
-        #expect(DateUtils.infoRowDate(displayTime: "1985~", legacy: "-") == nil)
+        #expect(DateUtils.infoRowDate(displayTime: "198X", legacy: "-") == nil)
         #expect(DateUtils.infoRowDate(displayTime: "", legacy: "") == nil)
     }
 }

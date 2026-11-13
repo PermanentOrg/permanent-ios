@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// The "Adjust date and time" sheet: a header with the preview line, the typed date and time boxes with their
-/// native pickers, the zone row, the Clear row, and Cancel and Save pinned under them.
+/// native pickers, the zone row, the Clear row and the full view's switches, and Cancel and Save pinned under them.
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -16,10 +16,14 @@ struct EditDateAndTimeView: View {
     /// Set when UIKit presents the screen; it is told whether the date was saved.
     var onClose: ((Bool) -> Void)?
 
+    typealias Side = DateTimeRangeEntry.Side
+
     @State private var focus: DateTimeEntry.Field?
-    @State private var showsDateSheet = false
-    @State private var showsWheels = false
-    @State private var showsZonePicker = false
+    /// The To side's focused field; each side keeps its own, since both have a year, a month and so on.
+    @State private var endFocus: DateTimeEntry.Field?
+    @State private var calendarSide: Side?
+    @State private var wheelsSide: Side?
+    @State private var zoneSide: Side?
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0
 
     static let sheetCornerRadius: CGFloat = 38
@@ -30,23 +34,38 @@ struct EditDateAndTimeView: View {
                 header
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        dateBox
-                        timeBox
-                            .padding(.top, 8)
-                            .zIndex(1)
-                        TimeZoneRow(zone: viewModel.entry.zone, wallClock: viewModel.entry.offsetClock(), isEnabled: viewModel.entry.hasTime) { openZonePicker() }
-                        ClearDateAndTimeRow { clear() }
+                        if showsOptions {
+                            OptionToggleRow(title: "UseADateRange".localized(), isOn: viewModel.range.isRange) { setRange($0) }
+                                .padding(.vertical, -8)
+                                .transition(reduceMotion ? .identity : .opacity)
+                        }
+                        side(.start)
+                        if viewModel.range.isRange {
+                            rule
+                            side(.end)
+                        }
+                        if !showsOptions {
+                            rule
+                                .transition(reduceMotion ? .identity : .opacity)
+                        }
+                        if !viewModel.range.isRange {
+                            ClearDateAndTimeRow { clear() }
+                        }
+                        if viewModel.offersMoreOptions {
+                            MoreOptionsRow(isOpen: viewModel.showsOptions) { toggleOptions() }
+                        }
                     }
                     .padding(.horizontal, 24)
-                    .padding(.top, 16)
+                    .padding(.top, 8)
                 }
                 .onTapGesture { leaveFields() }
             }
-            .safeAreaInset(edge: .bottom) { bottomButtons }
+            .safeAreaInset(edge: .bottom, spacing: 0) { bottomButtons }
+            .ignoresSafeArea(.container, edges: .bottom)
             .background(Color.white.ignoresSafeArea())
-            .accessibilityHidden(showsZonePicker)
-            if showsZonePicker {
-                TimeZonePickerSheet(entry: $viewModel.entry) { closeZonePicker() }
+            .accessibilityHidden(zoneSide != nil)
+            if let zoneSide {
+                TimeZonePickerSheet(entry: entry(zoneSide)) { closeZonePicker() }
                     .transition(reduceMotion ? .identity : .move(edge: .trailing))
                     .zIndex(1)
             }
@@ -57,14 +76,20 @@ struct EditDateAndTimeView: View {
                 .frame(width: 294)
             }
         }
-        .sheet(isPresented: $showsDateSheet) {
-            PickADateSheet(selection: calendarStart, range: viewModel.startingDate...viewModel.endingDate) { picked in
-                viewModel.entry.set(date: picked)
+        .sheet(item: $calendarSide) { side in
+            PickADateSheet(selection: calendarStart(side), range: viewModel.startingDate...viewModel.endingDate) { picked in
+                entry(side).wrappedValue.set(date: picked)
             }
         }
         .onAppear { viewModel.readZoneIfNeeded() }
         .onChange(of: focus) { field in
             if field != nil { closeWheels() }
+        }
+        .onChange(of: endFocus) { field in
+            if field != nil { closeWheels() }
+        }
+        .onChange(of: viewModel.validation) { reason in
+            if let reason { UIAccessibility.post(notification: .announcement, argument: reason) }
         }
         .onChange(of: viewModel.isLoading) { loading in
             if loading { UIAccessibility.post(notification: .announcement, argument: "Saving".localized()) }
@@ -96,46 +121,112 @@ struct EditDateAndTimeView: View {
                     .font(.custom("Usual-Medium", size: 16, relativeTo: .body))
                     .foregroundColor(.darkBlue)
                     .accessibilityAddTraits(.isHeader)
-                if let preview = viewModel.entry.preview {
+                if let preview = viewModel.range.preview {
                     Text(preview)
                         .font(.custom("Usual-Regular", size: 12, relativeTo: .caption))
                         .foregroundColor(.blue400)
+                }
+                if let reason = viewModel.validation {
+                    Text(reason)
+                        .font(.custom("Usual-Regular", size: 12, relativeTo: .caption))
+                        .foregroundColor(.error500)
                 }
             }
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
             SheetCircleButton(symbol: "xmark", label: "Close".localized(), look: .light) { close(saved: false) }
+                .frame(width: 48, height: 48)
         }
+        .frame(minHeight: 48)
         .padding(14)
     }
 
-    private var dateBox: some View {
-        DateTimeFieldsBox(fields: [.year, .month, .day], separator: "/", entry: $viewModel.entry, focus: $focus) {
-            TimeFormatPill(format: viewModel.entry.format) {}
+    /// One side's date box, time box and zone row. Unknown greys all three; a symbol greys the clock and the
+    /// zone, which then asks for a time.
+    @ViewBuilder
+    private func sideFields(_ side: Side) -> some View {
+        let value = entry(side).wrappedValue
+        let isUnknown = value.qualifiers.contains(.unknown)
+        let hidesClock = isUnknown || value.qualifiers.symbol != nil
+        dateBox(side)
+            .greyedOut(isUnknown)
+        timeBox(side)
+            .greyedOut(hidesClock)
+            .padding(.top, 8)
+            .zIndex(1)
+        TimeZoneRow(zone: value.zone, wallClock: value.offsetClock(), isEnabled: value.hasTime && !hidesClock) {
+            openZonePicker(side)
+        }
+    }
+
+    private func dateBox(_ side: Side) -> some View {
+        DateTimeFieldsBox(fields: [.year, .month, .day], separator: "/", entry: entry(side), focus: focus(side)) {
+            TimeFormatPill(format: entry(side).wrappedValue.format) {}
                 .hidden()
                 .accessibilityHidden(true)
             accessoryButton("calendar", label: "PickADate".localized()) {
                 leaveFields()
-                showsDateSheet = true
+                calendarSide = side
             }
         }
     }
 
-    private var timeBox: some View {
-        DateTimeFieldsBox(fields: [.hour, .minute, .second], separator: ":", entry: $viewModel.entry, focus: $focus) {
-            TimeFormatPill(format: viewModel.entry.format) {
-                viewModel.entry.format = viewModel.entry.format.next
+    private func timeBox(_ side: Side) -> some View {
+        DateTimeFieldsBox(fields: [.hour, .minute, .second], separator: ":", entry: entry(side), focus: focus(side)) {
+            TimeFormatPill(format: entry(side).wrappedValue.format) {
+                entry(side).wrappedValue.format = entry(side).wrappedValue.format.next
             }
-            accessoryButton("clock", label: "PickATime".localized()) { toggleWheels() }
+            accessoryButton("clock", label: "PickATime".localized()) { toggleWheels(side) }
         }
         .overlay(alignment: .topTrailing) {
-            if showsWheels {
-                TimeWheelCard(entry: $viewModel.entry)
+            if wheelsSide == side {
+                TimeWheelCard(entry: entry(side))
                     .padding(.trailing, DateTimeDigitsField.boxPadding)
                     .offset(y: -16)
                     .transition(reduceMotion ? .identity : .opacity.combined(with: .scale(scale: 0.96, anchor: .topTrailing)))
             }
         }
+    }
+
+    /// One side as the design draws it: in a range its caps label with its own Clear, then its fields, zone row
+    /// and, in the full view, its three switches.
+    @ViewBuilder
+    private func side(_ side: Side) -> some View {
+        if viewModel.range.isRange {
+            RangeSideLabel(title: (side == .start ? "RangeFrom" : "RangeTo").localized()) { clear(side) }
+        }
+        sideFields(side)
+        if showsOptions {
+            sideQualifiers(side)
+        }
+    }
+
+    private func sideQualifiers(_ side: Side) -> some View {
+        qualifierRows(side)
+            .padding(.vertical, -8)
+            .transition(reduceMotion ? .identity : .opacity)
+    }
+
+    private func qualifierRows(_ side: Side) -> some View {
+        let qualifiers = entry(side).wrappedValue.qualifiers
+        let rows: [(DateQualifiers, String)] = [(.approximate, "DateApproximate"), (.uncertain, "DateUncertain"), (.unknown, "DateUnknown")]
+        return VStack(spacing: 0) {
+            ForEach(rows, id: \.1) { qualifier, title in
+                OptionToggleRow(
+                    title: title.localized(), isOn: qualifiers.contains(qualifier),
+                    isEnabled: qualifier == .unknown || !qualifiers.contains(.unknown)
+                ) { isOn in
+                    leaveFields()
+                    viewModel.toggle(qualifier, on: isOn, side: side)
+                }
+            }
+        }
+    }
+
+    private var rule: some View {
+        Rectangle()
+            .fill(Color.blue50)
+            .frame(height: 1)
     }
 
     private func accessoryButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
@@ -169,13 +260,12 @@ struct EditDateAndTimeView: View {
                 }
             }
             .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white, height: 56, cornerRadius: 12))
-            .disabled(viewModel.isLoading)
+            .disabled(viewModel.isLoading || viewModel.validation != nil)
+            .opacity(viewModel.validation == nil ? 1 : 0.4)
         }
         .font(.custom("Usual-Medium", size: 14, relativeTo: .subheadline))
         .dynamicTypeSize(...DynamicTypeSize.large)
-        .padding(.horizontal, 24)
-        .padding(.top, 16)
-        .padding(.bottom, 32)
+        .padding(24)
         .background(Color.white)
     }
 
@@ -186,9 +276,22 @@ struct EditDateAndTimeView: View {
         return count > 1 ? String(format: "ChangeDateAndTimeOther".localized(), count) : "ChangeDateAndTimeOne".localized()
     }
 
-    /// The calendar opens on the typed date, kept inside its range.
-    private var calendarStart: Date {
-        min(max(viewModel.entry.pickerDate(), viewModel.startingDate), viewModel.endingDate)
+    /// The full view shows only for a record that can save it, and only while open.
+    private var showsOptions: Bool {
+        viewModel.offersMoreOptions && viewModel.showsOptions
+    }
+
+    private func entry(_ side: Side) -> Binding<DateTimeEntry> {
+        side == .start ? $viewModel.entry : $viewModel.endEntry
+    }
+
+    private func focus(_ side: Side) -> Binding<DateTimeEntry.Field?> {
+        side == .start ? $focus : $endFocus
+    }
+
+    /// The calendar opens on the side's typed date, kept inside its range.
+    private func calendarStart(_ side: Side) -> Date {
+        min(max(entry(side).wrappedValue.pickerDate(), viewModel.startingDate), viewModel.endingDate)
     }
 
     /// One file saves at once; two or more ask first.
@@ -203,40 +306,68 @@ struct EditDateAndTimeView: View {
 
     private func clear() {
         leaveFields()
-        viewModel.entry.clear()
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            viewModel.clear()
+        }
     }
 
-    private func toggleWheels() {
+    /// The full view opens and closes in place; Reduce Motion swaps it. VoiceOver is told the screen changed.
+    private func toggleOptions() {
+        leaveFields()
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            viewModel.showsOptions.toggle()
+        }
+        UIAccessibility.post(notification: .layoutChanged, argument: nil)
+    }
+
+    private func clear(_ side: Side) {
+        leaveFields()
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            viewModel.clear(side)
+        }
+    }
+
+    private func setRange(_ isOn: Bool) {
+        leaveFields()
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            viewModel.setRange(on: isOn)
+        }
+        UIAccessibility.post(notification: .layoutChanged, argument: nil)
+    }
+
+    private func toggleWheels(_ side: Side) {
         focus = nil
+        endFocus = nil
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-            showsWheels.toggle()
+            wheelsSide = wheelsSide == side ? nil : side
         }
     }
 
     private func closeWheels() {
-        guard showsWheels else { return }
+        guard wheelsSide != nil else { return }
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-            showsWheels = false
+            wheelsSide = nil
         }
     }
 
     /// The Time zone screen slides in from the right over the sheet's content; Reduce Motion swaps the two.
-    private func openZonePicker() {
+    private func openZonePicker(_ side: Side) {
         leaveFields()
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
-            showsZonePicker = true
+            zoneSide = side
         }
     }
 
     private func closeZonePicker() {
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
-            showsZonePicker = false
+            zoneSide = nil
         }
     }
 
     /// Puts the keyboard and the wheel card away.
     private func leaveFields() {
         focus = nil
+        endFocus = nil
         closeWheels()
     }
 
@@ -246,6 +377,15 @@ struct EditDateAndTimeView: View {
         } else {
             presentationMode.wrappedValue.dismiss()
         }
+    }
+}
+
+private extension View {
+    /// A box a toggle switched off: pale, out of reach of taps and of VoiceOver.
+    func greyedOut(_ isGreyed: Bool) -> some View {
+        opacity(isGreyed ? 0.4 : 1)
+            .allowsHitTesting(!isGreyed)
+            .accessibilityHidden(isGreyed)
     }
 }
 

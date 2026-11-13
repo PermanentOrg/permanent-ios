@@ -73,13 +73,15 @@ open class DateUtils {
         return nil
     }
 
-    // MARK: - displayTime (EDTF Level 0)
+    // MARK: - displayTime
 
-    /// The date a file list shows: `displayTime`'s date as written ("1985", "1985-10", "1985-10-23"),
-    /// else the old field's date while the screens still show it, else "-".
+    /// The date a file list shows: the first written side's date as written ("1985", "1985-10", "1985-10-23"),
+    /// "-" when no side is written. A string that does not read shows the old field's date while the screens do.
     static func listDate(displayTime: String?, legacy: String?, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) -> String {
-        if let start = level0Start(displayTime) { return start.text.dateOnly }
-        return shownLegacy(legacy, onlyEDTF: onlyEDTF)?.dateOnly ?? "-"
+        guard let value = DisplayTimeValue(displayTime) else {
+            return shownLegacy(legacy, onlyEDTF: onlyEDTF)?.dateOnly ?? "-"
+        }
+        return value.firstWritten?.text.dateOnly ?? "-"
     }
 
     /// The old field as a screen may show it: nil while the server's `edtf-date` switch is on, as on web.
@@ -88,9 +90,9 @@ open class DateUtils {
     }
 
     /// `displayTime` as a `Date`: the clock time as written on the phone's clock, with any offset left out.
-    /// A `Z` time is a moment in UTC, as the old web editor writes it. Nil when not EDTF Level 0.
+    /// A `Z` time is a moment in UTC, as the old web editor writes it. Nil when no side holds a date.
     static func date(fromDisplayTime raw: String?, timeZone: TimeZone = .current) -> Date? {
-        guard let parts = level0Start(raw)?.parts else { return nil }
+        guard let parts = firstWrittenSide(raw)?.parts else { return nil }
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = parts.timeZone ?? timeZone
         let start = DateComponents(
@@ -122,17 +124,18 @@ open class DateUtils {
         ["displayTime": displayTime(from: date)]
     }
 
-    /// The Info tab's Date row: "October 23, 1985 • 5PM", "October 1985" or "1985", then the zone when given.
-    /// `displayTime` as written comes first, else the old field as a moment while shown; nil when neither reads.
+    /// One date as the Info row words it: "October 23, 1985 • 5PM", "October 1985" or "1985", then the zone when
+    /// given; "Oct." with a short month. The first written side, else the old field while shown, else nil.
     static func infoRowDate(
         displayTime: String?, legacy: String?, zoneAbbreviation: String? = nil, timeZone: TimeZone = .current,
-        onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
+        onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate, shortMonth: Bool = false
     ) -> String? {
         let text: String
-        if let parts = level0Start(displayTime)?.parts, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) {
-            let dayPattern = parts.day != nil ? "MMMM d, yyyy" : parts.month != nil ? "MMMM yyyy" : "yyyy"
+        if let parts = firstWrittenSide(displayTime)?.parts, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) {
+            let month = shortMonth ? "MMM." : "MMMM"
+            let dayPattern = parts.day != nil ? "\(month) d, yyyy" : parts.month != nil ? "\(month) yyyy" : "yyyy"
             text = formatted(date, pattern: dayPattern, timeZone: timeZone) + (parts.hour != nil ? clockText(date, timeZone: timeZone) : "")
-        } else if let date = date(fromISO: shownLegacy(legacy, onlyEDTF: onlyEDTF)) {
+        } else if DisplayTimeValue(displayTime) == nil, let date = date(fromISO: shownLegacy(legacy, onlyEDTF: onlyEDTF)) {
             text = formatted(date, pattern: "MMMM d, yyyy", timeZone: timeZone) + clockText(date, timeZone: timeZone)
         } else {
             return nil
@@ -159,16 +162,16 @@ open class DateUtils {
         return formatter.string(from: date)
     }
 
-    /// The fields of a Level 0 `displayTime` as written: the year, then the month, day and clock when given.
-    /// Nil when not Level 0; an interval reads as its start.
+    /// The fields of a `displayTime`'s first written side: the year, then the month, day and clock when given.
+    /// Nil when no side holds a date.
     static func displayTimeParts(_ raw: String?) -> DateComponents? {
-        level0Start(raw)?.parts
+        firstWrittenSide(raw)?.parts
     }
 
-    /// The offset a Level 0 date-time carries, as written ("+01:00"); nil without one. A `Z` time is shown on
-    /// the phone's clock, so it keeps none.
+    /// The offset the first written side's clock carries, as written ("+01:00"); nil without one. A `Z` time
+    /// is shown on the phone's clock, so it keeps none.
     static func displayTimeOffset(_ raw: String?) -> String? {
-        guard let text = level0Start(raw)?.text, let clock = text.components(separatedBy: "T").dropFirst().first,
+        guard let text = firstWrittenSide(raw)?.text, let clock = text.components(separatedBy: "T").dropFirst().first,
               let sign = clock.firstIndex(where: { $0 == "+" || $0 == "-" }) else { return nil }
         return String(clock[sign...])
     }
@@ -176,28 +179,17 @@ open class DateUtils {
     /// True when none of these `displayTime` values reads, so the old field is the date the app shows
     /// and a V1 `displayDT` write would be seen.
     static func showsLegacyDate(displayTimes: [String?]) -> Bool {
-        displayTimes.allSatisfy { level0Start($0) == nil }
+        displayTimes.allSatisfy { DisplayTimeValue($0) == nil }
     }
 
-    /// The start of an EDTF Level 0 value and its fields. An interval of two dates reads as its start, as
-    /// on web; anything above Level 0 is nil, so callers fall back to the old field.
-    private static func level0Start(_ raw: String?) -> (text: String, parts: DateComponents)? {
-        guard let raw = raw else { return nil }
-        let ends = raw.components(separatedBy: "/")
-        switch ends.count {
-        case 1:
-            return level0DateTime(raw).map { (text: raw, parts: $0) }
-
-        case 2:
-            guard let parts = level0Date(ends[0]), level0Date(ends[1]) != nil else { return nil }
-            return (ends[0], parts)
-
-        default:
-            return nil
-        }
+    /// The side every date reader starts from: the start, else the end of a range with no start, without its
+    /// symbol. Nil when the string does not read or no side holds a date.
+    private static func firstWrittenSide(_ raw: String?) -> (text: String, parts: DateComponents)? {
+        DisplayTimeValue(raw)?.firstWritten
     }
 
-    private static func level0DateTime(_ text: String) -> DateComponents? {
+    /// A Level 0 date, or date and clock: the body of one side, without its symbol.
+    static func level0DateTime(_ text: String) -> DateComponents? {
         let halves = text.components(separatedBy: "T")
         guard halves.count <= 2, var parts = level0Date(halves[0]) else { return nil }
         guard halves.count == 2 else { return parts }
