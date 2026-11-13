@@ -122,11 +122,14 @@ class EditDateAndTimeViewModel: ObservableObject {
     }
 
     /// Why Save is off, or nil when it can save. An empty Save would clear the date, which the sheet does not
-    /// offer for now, and a time needs a year, a month and a day.
+    /// offer for now; a later field needs the ones before it, and a time needs a full date and an hour.
     var saveBlockedReason: String? {
         if entry.isEmpty { return "SaveNeedsDate".localized() }
+        if entry.year.isEmpty && !(entry.month.isEmpty && entry.day.isEmpty) { return "DateNeedsYear".localized() }
+        if entry.month.isEmpty && !entry.day.isEmpty { return "DateNeedsMonth".localized() }
         let hasFullDate = !entry.year.isEmpty && !entry.month.isEmpty && !entry.day.isEmpty
         if entry.hasTime && !hasFullDate { return "TimeNeedsFullDate".localized() }
+        if entry.hasTime && entry.hour.isEmpty { return "TimeNeedsHour".localized() }
         return nil
     }
 

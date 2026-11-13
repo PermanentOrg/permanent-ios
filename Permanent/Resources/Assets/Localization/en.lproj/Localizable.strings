@@ -241,6 +241,9 @@
 "ClearDateAndTime" = "Clear date and time";
 "SaveNeedsDate" = "Enter a date first";
 "TimeNeedsFullDate" = "A complete date is required when time is provided.";
+"DateNeedsYear" = "Add a year";
+"DateNeedsMonth" = "Add a month";
+"TimeNeedsHour" = "Add an hour";
 "TimeFormatAM" = "AM";
 "TimeFormatPM" = "PM";
 "TimeFormat24H" = "24H";

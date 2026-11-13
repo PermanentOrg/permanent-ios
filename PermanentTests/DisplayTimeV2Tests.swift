@@ -280,13 +280,13 @@ struct DisplayTimeV2Tests {
     }
 
     @MainActor
-    @Test("A dated entry emptied time first, then date, turns Save off only with the last field")
+    @Test("A dated entry emptied from the last field to the first turns Save off only with the last field")
     func emptiedFieldByFieldCannotSave() throws {
         let dated = try child(#""recordId": "301", "archiveId": "5", "displayTime": "2001-02-03T09:30:15""#)
         let viewModel = EditDateAndTimeViewModel(selectedFiles: [dated], hasUpdates: .constant(false))
         #expect(viewModel.canSave)
 
-        let fields: [DateTimeEntry.Field] = [.hour, .minute, .second, .year, .month, .day]
+        let fields: [DateTimeEntry.Field] = [.second, .minute, .hour, .day, .month, .year]
         for field in fields.dropLast() {
             viewModel.entry[field] = ""
             #expect(viewModel.canSave, "Save stays on after \(field.label) is emptied")
@@ -319,6 +319,31 @@ struct DisplayTimeV2Tests {
 
         #expect(viewModel.canSave == saves)
         #expect(viewModel.saveBlockedReason == (saves ? nil : "A complete date is required when time is provided."))
+    }
+
+    @MainActor
+    @Test(
+        "A later field needs the ones before it, and minutes need an hour",
+        arguments: [
+            ("", "10", "", "", "", "Add a year"),
+            ("", "", "23", "", "", "Add a year"),
+            ("1999", "", "23", "", "", "Add a month"),
+            ("1999", "10", "23", "", "30", "Add an hour"),
+            ("1999", "10", "23", "09", "30", nil)
+        ] as [(String, String, String, String, String, String?)]
+    )
+    func laterFieldNeedsEarlierOnes(year: String, month: String, day: String, hour: String, minute: String, reason: String?) throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        viewModel.entry.year = year
+        viewModel.entry.month = month
+        viewModel.entry.day = day
+        viewModel.entry.hour = hour
+        viewModel.entry.minute = minute
+
+        #expect(viewModel.saveBlockedReason == reason)
+        #expect(viewModel.canSave == (reason == nil))
     }
 
     @MainActor

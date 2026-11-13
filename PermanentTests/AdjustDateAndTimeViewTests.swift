@@ -95,6 +95,7 @@ struct AdjustDateAndTimeViewTests {
         #expect("ClearDateAndTime".localized() == "Clear date and time")
         #expect("SaveNeedsDate".localized() == "Enter a date first")
         #expect("TimeNeedsFullDate".localized() == "A complete date is required when time is provided.")
+        #expect(["DateNeedsYear", "DateNeedsMonth", "TimeNeedsHour"].map { $0.localized() } == ["Add a year", "Add a month", "Add an hour"])
         #expect("PickADate".localized() == "Pick a date")
         #expect("PickATime".localized() == "Pick a time")
     }
