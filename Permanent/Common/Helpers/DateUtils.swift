@@ -75,10 +75,18 @@ open class DateUtils {
 
     // MARK: - displayTime (EDTF Level 0)
 
-    /// The date a file list shows: `displayTime`'s date as written ("1985", "1985-10", "1985-10-23"),
-    /// else the old field's date while the screens still show it, else "-".
-    static func listDate(displayTime: String?, legacy: String?, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) -> String {
-        if let start = level0Start(displayTime) { return start.text.dateOnly }
+    /// The date a file list shows: `displayTime`'s date as written ("1985", "1985-10", "1985-10-23"), a `Z`
+    /// time as the day on the phone's clock like the Info tab, else the old field's date while shown, else "-".
+    static func listDate(
+        displayTime: String?, legacy: String?, timeZone: TimeZone = .current,
+        onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
+    ) -> String {
+        if let start = level0Start(displayTime) {
+            guard start.parts.timeZone != nil, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) else {
+                return start.text.dateOnly
+            }
+            return formatted(date, pattern: "yyyy-MM-dd", timeZone: timeZone)
+        }
         return shownLegacy(legacy, onlyEDTF: onlyEDTF)?.dateOnly ?? "-"
     }
 

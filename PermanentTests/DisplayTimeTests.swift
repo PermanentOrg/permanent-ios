@@ -23,11 +23,8 @@ struct DisplayTimeTests {
             ("1985-10", "1985-10"),
             ("1985-10-23", "1985-10-23"),
             ("2026-07-15T12:45:00", "2026-07-15"),
-            ("2026-07-15T12:45:00Z", "2026-07-15"),
             ("2026-07-15T23:45:00+03:00", "2026-07-15"),
             ("2026-07-15T01:15:00-05:30", "2026-07-15"),
-            ("1985-10-23T23:30:00.000Z", "1985-10-23"),
-            ("1990-10-05T16:15:38.000Z", "1990-10-05"),
             ("2026-07-15T12:45:00.5+03:00", "2026-07-15"),
             ("2026-07-15T12:45:00.123", "2026-07-15"),
             ("1964/2008", "1964"),
@@ -37,6 +34,21 @@ struct DisplayTimeTests {
     func level0ValueReads(displayTime: String, listDate: String) {
         #expect(DateUtils.listDate(displayTime: displayTime, legacy: "1999-01-01T00:00:00.000Z") == listDate)
         #expect(!DateUtils.showsLegacyDate(displayTimes: [displayTime]))
+    }
+
+    @Test(
+        "A Z time lists the day on the phone's clock, an offset keeps the day as written",
+        arguments: [
+            ("1985-10-23T23:30:00.000Z", "Europe/Bucharest", "1985-10-24"),
+            ("1985-10-23T23:30:00.000Z", "UTC", "1985-10-23"),
+            ("2026-07-15T01:00:00Z", "America/New_York", "2026-07-14"),
+            ("1990-10-05T16:15:38.000Z", "Europe/Bucharest", "1990-10-05"),
+            ("2026-07-15T23:45:00-05:30", "Europe/Bucharest", "2026-07-15")
+        ]
+    )
+    func zTimeListsLocalDay(displayTime: String, zoneIdentifier: String, listDate: String) throws {
+        let zone = try #require(TimeZone(identifier: zoneIdentifier))
+        #expect(DateUtils.listDate(displayTime: displayTime, legacy: nil, timeZone: zone) == listDate)
     }
 
     @Test(

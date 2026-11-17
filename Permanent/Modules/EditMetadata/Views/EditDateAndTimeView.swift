@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// The "Adjust date and time" sheet: a header with the preview line, the typed date and time boxes with their
-/// native pickers, the zone row, the Clear row, and Cancel and Save pinned under them.
+/// native pickers, the zone row, and Cancel and Save pinned under them.
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -35,7 +35,6 @@ struct EditDateAndTimeView: View {
                             .padding(.top, 8)
                             .zIndex(1)
                         TimeZoneRow(zone: viewModel.entry.zone, wallClock: viewModel.entry.offsetClock(), isEnabled: viewModel.entry.hasTime) { openZonePicker() }
-                        ClearDateAndTimeRow { clear() }
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
@@ -168,8 +167,9 @@ struct EditDateAndTimeView: View {
                     Text("Save".localized())
                 }
             }
-            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white, height: 56, cornerRadius: 12))
-            .disabled(viewModel.isLoading)
+            .buttonStyle(CustomButtonStyle(backgroundColor: viewModel.canSave ? .darkBlue : .blue200, foregroundColor: .white, height: 56, cornerRadius: 12))
+            .disabled(viewModel.isLoading || !viewModel.canSave)
+            .accessibilityHint(viewModel.saveBlockedReason ?? "")
         }
         .font(.custom("Usual-Medium", size: 14, relativeTo: .subheadline))
         .dynamicTypeSize(...DynamicTypeSize.large)
@@ -193,17 +193,13 @@ struct EditDateAndTimeView: View {
 
     /// One file saves at once; two or more ask first.
     private func save() {
+        guard viewModel.canSave else { return }
         leaveFields()
         if viewModel.selectedFiles.count > 1 {
             viewModel.showConfirmation = true
         } else {
             viewModel.applyChanges()
         }
-    }
-
-    private func clear() {
-        leaveFields()
-        viewModel.entry.clear()
     }
 
     private func toggleWheels() {
