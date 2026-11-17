@@ -163,7 +163,7 @@ struct MetadataEditView: View {
                 AddLocationView(viewModel: AddLocationViewModel(selectedFiles: viewModel.selectedFiles, commonLocation: viewModel.commonLocation))
             }
             .sheet(isPresented: $showEditDataTime) {
-                EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
+                EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates, recordZone: viewModel.commonZone))
             }
             .onAppear {
                 guard !didInitialLoad else { return }
