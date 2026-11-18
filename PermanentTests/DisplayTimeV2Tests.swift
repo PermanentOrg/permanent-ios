@@ -531,7 +531,7 @@ struct DisplayTimeV2Tests {
     }
 
     @MainActor
-    @Test("A batch and a shared record's list door open on web's guess at once, with no record read")
+    @Test("A batch opens with no zone, and a shared record's list door on web's guess at once, with no record read")
     func guessWithoutAReadOpensAtOnce() throws {
         let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00+01:00""#)
         let other = try child(#""recordId": "302", "archiveId": "5", "displayTime": "1985-10-23T17:00:00+01:00""#)
@@ -540,7 +540,7 @@ struct DisplayTimeV2Tests {
         let batch = EditDateAndTimeViewModel(selectedFiles: [file, other], hasUpdates: .constant(false))
         let sharedDoor = listDoorViewModel(file: shared, server: server)
 
-        #expect(batch.entry.timeZoneIdentifier == "Africa/Algiers")
+        #expect(batch.entry.timeZoneIdentifier == nil)
         #expect(sharedDoor.entry.timeZoneIdentifier == nil)
         sharedDoor.readZoneIfNeeded()
 
@@ -591,6 +591,78 @@ struct DisplayTimeV2Tests {
 
         #expect(viewModel.entry.timeZoneIdentifier == "Asia/Tokyo")
         #expect(viewModel.openingZone == "Europe/Paris")
+    }
+
+    // MARK: - Zones on several files
+
+    @MainActor
+    @Test("Several files that share a zone open on it, and a new day saves it back with its offset")
+    func sharedZoneOpensAndSaves() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = try newYorkBatch(server: server, recordZone: .known("America/New_York"))
+
+        #expect(viewModel.entry.timeZoneIdentifier == "America/New_York")
+        viewModel.entry.day = "13"
+        await applyChanges(in: viewModel)
+
+        #expect(server.patches.map(\.recordId) == [301, 302])
+        for patch in server.patches {
+            #expect(patch.fields["displayTime"] as? String == "1990-05-13T10:30:00-04:00")
+            #expect(patch.fields["location"] as? [String: String] == ["timezone": "America/New_York"])
+        }
+    }
+
+    @MainActor
+    @Test("Several files with no shared zone open with no zone, and a save sends no zone and no offset")
+    func unsharedZonesKeepEachFilesZone() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = try newYorkBatch(server: server, recordZone: .unknown)
+
+        #expect(viewModel.entry.timeZoneIdentifier == nil, "a zone guessed from the offset would overwrite each file's own")
+        viewModel.entry.day = "13"
+        await applyChanges(in: viewModel)
+
+        #expect(server.patches.count == 2)
+        for patch in server.patches {
+            #expect(patch.fields["displayTime"] as? String == "1990-05-13T10:30:00")
+            #expect(patch.fields["location"] == nil)
+        }
+    }
+
+    @MainActor
+    @Test("An untouched Save on several files closes without a request; any change, a zone included, saves")
+    func untouchedBatchSaveWritesNothing() throws {
+        let server = FakeServer(patchSucceeds: true)
+        let batch = try newYorkBatch(server: server, recordZone: .unknown)
+        let file = try #require(batch.selectedFiles.first)
+        let single = EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false), recordZone: .known(nil))
+
+        #expect(batch.closesWithoutSaving)
+        #expect(!single.closesWithoutSaving, "one file keeps its own save path")
+        batch.entry.timeZoneIdentifier = "Europe/London"
+        #expect(!batch.closesWithoutSaving)
+        batch.entry.timeZoneIdentifier = nil
+        batch.entry.format = batch.entry.format.next
+        #expect(!batch.closesWithoutSaving)
+    }
+
+    @Test("The batch screen hands the sheet a zone only when every record was read and all share it", arguments: [
+        (["America/New_York", "America/New_York"], EditDateAndTimeViewModel.RecordZone.known("America/New_York")),
+        (["America/New_York", "America/Toronto"], .unknown),
+        (["America/New_York", nil], .unknown),
+        ([nil, nil], .unknown),
+        ([], .unknown)
+    ] as [([String?], EditDateAndTimeViewModel.RecordZone)])
+    func sharedZoneOfRecords(zones: [String?], expected: EditDateAndTimeViewModel.RecordZone) throws {
+        let records = try zones.map { try record(zone: $0) }
+        #expect(FilesMetadataViewModel.sharedZone(of: records) == expected)
+    }
+
+    @Test("A record that could not be read leaves the zone unknown")
+    func unreadRecordLeavesTheZoneUnknown() throws {
+        let read = try record(zone: "America/New_York")
+        #expect(FilesMetadataViewModel.sharedZone(of: [read, nil]) == .unknown)
+        #expect(FilesMetadataViewModel.sharedZone(of: [nil, read]) == .unknown)
     }
 
     // MARK: - Helpers
@@ -692,6 +764,30 @@ struct DisplayTimeV2Tests {
             completion(true)
         }
         return viewModel
+    }
+
+    /// Two own records saved as 10:30 in New York, as the batch screen hands them to the sheet.
+    @MainActor
+    private func newYorkBatch(server: FakeServer, recordZone: EditDateAndTimeViewModel.RecordZone) throws -> EditDateAndTimeViewModel {
+        let files = try [301, 302].map { try child(#""recordId": "\#($0)", "archiveId": "5", "displayTime": "1990-05-12T10:30:00-04:00""#) }
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false), recordZone: recordZone)
+        let archiveId = ownArchiveId
+        viewModel.sessionArchiveId = { archiveId }
+        viewModel.patchRecordRequest = { file, fields, completion in
+            server.patches.append((file.recordId, fields))
+            completion(server.patchSucceeds)
+        }
+        return viewModel
+    }
+
+    private func record(zone: String?) throws -> RecordVOData {
+        let location = zone.map { #", "location": { "id": "7", "timezone": "\#($0)" }"# } ?? ""
+        let json = """
+        { "data": { "recordId": "301", "archiveId": "5", "type": "type.record.image", \
+        "displayTime": "1990-05-12T10:30:00-04:00"\(location) } }
+        """
+        let data = try #require(try RecordV2Response.decoder.decode(RecordV2Response.self, from: Data(json.utf8)).data)
+        return try #require((JSONHelper.decoding(from: data.toRecordVOPayload(), with: RecordVO.decoder) as RecordVO?)?.recordVO)
     }
 
     @MainActor

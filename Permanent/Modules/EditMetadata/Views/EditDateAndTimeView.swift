@@ -191,11 +191,13 @@ struct EditDateAndTimeView: View {
         min(max(viewModel.entry.pickerDate(), viewModel.startingDate), viewModel.endingDate)
     }
 
-    /// One file saves at once; two or more ask first.
+    /// One file saves at once; two or more ask first, and close at once when nothing changed.
     private func save() {
         guard viewModel.canSave else { return }
         leaveFields()
-        if viewModel.selectedFiles.count > 1 {
+        if viewModel.closesWithoutSaving {
+            close(saved: false)
+        } else if viewModel.selectedFiles.count > 1 {
             viewModel.showConfirmation = true
         } else {
             viewModel.applyChanges()

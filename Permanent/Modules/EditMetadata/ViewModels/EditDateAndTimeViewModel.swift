@@ -38,6 +38,7 @@ class EditDateAndTimeViewModel: ObservableObject {
     /// The zone the sheet opened with: given by the door, read once from the record, or guessed from the string's
     /// offset as web does. An unset against it sends null on save.
     private(set) var openingZone: String?
+    private let openingEntry: DateTimeEntry
     private let recordZone: RecordZone
     private let guessedZone: String?
     private var didReadZone = false
@@ -51,11 +52,20 @@ class EditDateAndTimeViewModel: ObservableObject {
         guessedZone = Self.guessedZone(for: entry)
         if case .known(let zone) = recordZone, let zone {
             entry.timeZoneIdentifier = zone
+        } else if selectedFiles.count > 1 {
+            // A guess written to several files would replace each file's own zone.
+            entry.timeZoneIdentifier = nil
         } else if !Self.readsRecordZone(recordZone, fileCount: selectedFiles.count) {
             entry.timeZoneIdentifier = guessedZone
         }
         self.entry = entry
+        openingEntry = entry
         openingZone = entry.timeZoneIdentifier
+    }
+
+    /// Several files with nothing changed close without a request, so an untouched Save cannot drop their offsets.
+    var closesWithoutSaving: Bool {
+        selectedFiles.count > 1 && entry == openingEntry
     }
 
     /// One file's sheet. The Info door passes the record it read, so the fields and the zone start from it; a list
