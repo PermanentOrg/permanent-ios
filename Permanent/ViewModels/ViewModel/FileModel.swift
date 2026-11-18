@@ -128,10 +128,10 @@ struct FileModel: Equatable, Codable {
         self.permissions = permissions
     }
     
-    init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole) {
+    init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = model.recordID == nil ? SortOption(serverValue: model.sort) : nil
-        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: nil, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
@@ -231,10 +231,10 @@ struct FileModel: Equatable, Codable {
         }
     }
     
-    init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
+    init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = SortOption(serverValue: model.sort)
-        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: nil, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
@@ -277,10 +277,10 @@ struct FileModel: Equatable, Codable {
         }
     }
     
-    init(model: FolderVOData) {
+    init(model: FolderVOData, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = SortOption(serverValue: model.sort)
-        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: nil, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
