@@ -64,7 +64,7 @@ class MetadataEditFileNamesViewModel: ObservableObject {
     }
 
     private func applyChangesV1(_ updatedFiles: [FileModel]) {
-        let apiOperation = APIOperation(FilesEndpoint.multipleFilesUpdate(files: updatedFiles))
+        let apiOperation = APIOperation(FilesEndpoint.multipleFilesUpdate(files: updatedFiles, sendsDate: false))
 
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             DispatchQueue.main.async {

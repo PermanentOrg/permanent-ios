@@ -11,7 +11,7 @@ struct MinFolderVO: Codable {
     let folderID: Int?
     let archiveNbr: String?
     let archiveID: Int?
-    let displayName, displayDT: String?
+    let displayName, displayDT, displayTime: String?
     let displayEndDT, derivedDT, derivedEndDT: String?
     let note: String?
     let voDescription: String?
@@ -63,7 +63,7 @@ struct MinFolderVO: Codable {
         case folderID = "folderId"
         case archiveNbr
         case archiveID = "archiveId"
-        case displayName, displayDT, displayEndDT, derivedDT, derivedEndDT, note
+        case displayName, displayDT, displayTime, displayEndDT, derivedDT, derivedEndDT, note
         case voDescription = "description"
         case special, sort
         case locnID = "locnId"

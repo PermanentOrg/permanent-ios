@@ -964,9 +964,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 
     private func showDateAndTime(for file: FileModel) {
-        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
-            if saved { self?.refreshCurrentFolder() }
-        }, animated: true)
+        present(EditDateAndTimeView.menuDoor(for: file) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
     }
 
     private var menuPlace: FileMenuItems.Place {

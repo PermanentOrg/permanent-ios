@@ -75,12 +75,20 @@ open class DateUtils {
 
     // MARK: - displayTime (EDTF Level 0)
 
-    /// The date a file list shows: `displayTime`'s date as written ("1985", "1985-10", "1985-10-23"), a `Z`
-    /// time as the day on the phone's clock like the Info tab, else the old field's date while shown, else "-".
+    /// True for a `displayTime` that is set but is not one exact Level 0 date: a range, an open end, or an
+    /// approximate, uncertain or unknown date. The app never overwrites it.
+    static func isComplexDate(_ raw: String?) -> Bool {
+        guard let raw = raw, !raw.isEmpty else { return false }
+        return level0DateTime(raw) == nil
+    }
+
+    /// A list's date: `displayTime` as written ("1985-10-23"), a `Z` time as the phone's day, else the old field
+    /// while shown, else "-". A complex date gives "", as the row shows it through `ComplexDateText`.
     static func listDate(
         displayTime: String?, legacy: String?, timeZone: TimeZone = .current,
         onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
     ) -> String {
+        guard !isComplexDate(displayTime) else { return "" }
         if let start = level0Start(displayTime) {
             guard start.parts.timeZone != nil, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) else {
                 return start.text.dateOnly
@@ -130,12 +138,13 @@ open class DateUtils {
         ["displayTime": displayTime(from: date)]
     }
 
-    /// The Info tab's Date row: "October 23, 1985 • 5PM", "October 1985" or "1985", then the zone when given.
-    /// `displayTime` as written comes first, else the old field as a moment while shown; nil when neither reads.
+    /// The Info Date row: "October 23, 1985 • 5PM", "October 1985" or "1985", then the zone. `displayTime` first,
+    /// else the old field while shown; nil when neither reads and for a complex date.
     static func infoRowDate(
         displayTime: String?, legacy: String?, zoneAbbreviation: String? = nil, timeZone: TimeZone = .current,
         onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
     ) -> String? {
+        guard !isComplexDate(displayTime) else { return nil }
         let text: String
         if let parts = level0Start(displayTime)?.parts, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) {
             let dayPattern = parts.day != nil ? "MMMM d, yyyy" : parts.month != nil ? "MMMM yyyy" : "yyyy"
@@ -168,7 +177,7 @@ open class DateUtils {
     }
 
     /// The fields of a Level 0 `displayTime` as written: the year, then the month, day and clock when given.
-    /// Nil when not Level 0; an interval reads as its start.
+    /// Nil when not one exact Level 0 date.
     static func displayTimeParts(_ raw: String?) -> DateComponents? {
         level0Start(raw)?.parts
     }
@@ -181,28 +190,16 @@ open class DateUtils {
         return String(clock[sign...])
     }
 
-    /// True when none of these `displayTime` values reads, so the old field is the date the app shows
-    /// and a V1 `displayDT` write would be seen.
+    /// True when every `displayTime` is empty, so the old field is the date the app shows and a V1
+    /// `displayDT` write would be seen. A complex date counts as set.
     static func showsLegacyDate(displayTimes: [String?]) -> Bool {
-        displayTimes.allSatisfy { level0Start($0) == nil }
+        displayTimes.allSatisfy { $0?.isEmpty ?? true }
     }
 
-    /// The start of an EDTF Level 0 value and its fields. An interval of two dates reads as its start, as
-    /// on web; anything above Level 0 is nil, so callers fall back to the old field.
+    /// One exact EDTF Level 0 date and its fields; nil for anything else, a range included.
     private static func level0Start(_ raw: String?) -> (text: String, parts: DateComponents)? {
         guard let raw = raw else { return nil }
-        let ends = raw.components(separatedBy: "/")
-        switch ends.count {
-        case 1:
-            return level0DateTime(raw).map { (text: raw, parts: $0) }
-
-        case 2:
-            guard let parts = level0Date(ends[0]), level0Date(ends[1]) != nil else { return nil }
-            return (ends[0], parts)
-
-        default:
-            return nil
-        }
+        return level0DateTime(raw).map { (text: raw, parts: $0) }
     }
 
     private static func level0DateTime(_ text: String) -> DateComponents? {

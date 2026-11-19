@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// The floating card behind the clock icon: three native wheels for the hour, minute and second. Every turn writes
-/// the three values into the time fields; the hour wheel follows the pill, 1 to 12 or 0 to 23.
+/// the three values into the time fields; the hour wheel runs 1 to 12.
 struct TimeWheelCard: View {
     @Binding var entry: DateTimeEntry
     @State private var hour: Int
@@ -21,18 +21,14 @@ struct TimeWheelCard: View {
     init(entry: Binding<DateTimeEntry>) {
         _entry = entry
         let value = entry.wrappedValue
-        _hour = State(initialValue: Int(value.hour) ?? (value.format == .h24 ? 0 : 12))
+        _hour = State(initialValue: Int(value.hour) ?? 12)
         _minute = State(initialValue: Int(value.minute) ?? 0)
         _second = State(initialValue: Int(value.second) ?? 0)
     }
 
-    private var hours: [Int] {
-        entry.format == .h24 ? Array(0...23) : Array(1...12)
-    }
-
     var body: some View {
         HStack(spacing: 0) {
-            wheel($hour, values: hours, label: DateTimeEntry.Field.hour.label, padded: entry.format == .h24)
+            wheel($hour, values: Array(1...12), label: DateTimeEntry.Field.hour.label, padded: false)
             wheel($minute, values: Array(0...59), label: DateTimeEntry.Field.minute.label, padded: true)
             wheel($second, values: Array(0...59), label: DateTimeEntry.Field.second.label, padded: true)
         }

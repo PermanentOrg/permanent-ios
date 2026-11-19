@@ -340,6 +340,22 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
+    /// True when a selected file has a complex date, which only web may view or change.
+    var hasWebOnlyDate: Bool {
+        selectedFiles.contains { DateUtils.isComplexDate($0.displayTime) }
+    }
+
+    /// The date section's title: one file's complex date as the list shows it, else the shared date.
+    var dateSectionTitle: String {
+        if selectedFiles.count == 1, let complexDate = selectedFiles.first?.complexDate { return complexDate.listText }
+        return haveDiffDate || hasWebOnlyDate ? "VariousDatesAndTimes".localized() : getCommonDate()
+    }
+
+    /// "2 of the 5 selected items have complex EDTF dates…", shown instead of the date sheet.
+    var webOnlyDateMessage: String {
+        WebOnlyDateMessage.message(for: selectedFiles)
+    }
+
     func getCommonDate() -> String {
         let dateFormatter = DateFormatter()
         // en_US_POSIX so parsing this Gregorian ISO string doesn't fail on a device set to a

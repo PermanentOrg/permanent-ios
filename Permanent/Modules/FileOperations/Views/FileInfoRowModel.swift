@@ -22,6 +22,8 @@ struct FileInfoRowModel: Equatable {
     let kind: Kind
     let value: String?
     let style: Style
+    /// A Date row for a complex date: its marks beside the label, its From and To lines in the value.
+    var complexDate: ComplexDateText?
 
     // MARK: - Look
 
@@ -30,6 +32,11 @@ struct FileInfoRowModel: Equatable {
     static let labelLineHeight: CGFloat = 16
     static let valueLineHeight: CGFloat = 24
     static let labelGap: CGFloat = 8
+    static let lineGap: CGFloat = 8
+    static let lineLabelWidth: CGFloat = 36
+    static let lineLabelFont = SwiftUI.Font.custom("Usual-Regular", size: 10, relativeTo: .caption2)
+    static let lineLabelTracking: CGFloat = 1.6
+    static let captionFont = SwiftUI.Font.custom("Usual-Regular", size: 12, relativeTo: .caption)
     static let boxPadding: CGFloat = 12
     static let boxCornerRadius: CGFloat = 12
     static let iconSize: CGFloat = 24
@@ -48,18 +55,30 @@ struct FileInfoRowModel: Equatable {
         style == .boxed ? 16 : 24
     }
 
-    /// The row's height at the given text size: label, gap and value, plus the box around a boxed value.
-    static func height(for style: Style, compatibleWith traits: UITraitCollection) -> CGFloat {
+    /// The row's height at the given text size: label, gap and value lines, plus the box around a boxed value.
+    static func height(for style: Style, lines: Int = 1, compatibleWith traits: UITraitCollection) -> CGFloat {
         let label = UIFontMetrics(forTextStyle: .caption1).scaledValue(for: labelLineHeight, compatibleWith: traits)
         let value = UIFontMetrics(forTextStyle: .subheadline).scaledValue(for: valueLineHeight, compatibleWith: traits)
         let box = style == .boxed ? 2 * boxPadding : 0
-        return (label + labelGap + value + box).rounded(.up)
+        let extraLines = CGFloat(max(lines, 1) - 1) * (value + lineGap)
+        return (label + labelGap + value + extraLines + box).rounded(.up)
     }
 
     // MARK: - Content
 
     var isSet: Bool {
         !(value ?? "").isEmpty
+    }
+
+    var isWebOnly: Bool { complexDate != nil }
+
+    /// The value lines: a range's From and To, else the value alone.
+    var valueLineCount: Int { complexDate?.infoLines.count ?? 1 }
+
+    /// "Approximate  •  Uncertain" beside the label; nil without marks.
+    var caption: String? {
+        guard let qualifiers = complexDate?.qualifiers, !qualifiers.isEmpty else { return nil }
+        return qualifiers.joined(separator: ComplexDateText.separator)
     }
 
     var title: String {
@@ -91,22 +110,25 @@ struct FileInfoRowModel: Equatable {
         kind == .name || kind == .description
     }
 
-    /// The symbol at the box's trailing edge: a pencil over a set value, a plus over an empty one. A plain row has none.
+    /// The symbol at the trailing edge: on a box a pencil over a set value, a plus over an empty one, as the design
+    /// shows for a web-only date too. A plain web-only date, which cannot be edited, gets (i); other plain rows none.
     var iconName: String? {
-        guard style == .boxed else { return nil }
+        guard style == .boxed else { return isWebOnly ? "info.circle" : nil }
         return isSet ? "square.and.pencil" : "plus"
     }
 
-    /// True when VoiceOver reads the row as a button: only a boxed row does something on a tap.
+    /// True when VoiceOver reads the row as a button: a boxed row or a complex date does something on a tap.
     var isButton: Bool {
-        style == .boxed
+        style == .boxed || isWebOnly
     }
 
     var accessibilityLabel: String {
-        "\(title), \(text)"
+        guard let complexDate else { return "\(title), \(text)" }
+        return ([title] + complexDate.qualifiers + [complexDate.infoText]).joined(separator: ", ")
     }
 
     var accessibilityHint: String? {
-        isButton ? "InfoEditHint".localized() : nil
+        if isWebOnly { return "WebOnlyDateHint".localized() }
+        return isButton ? "InfoEditHint".localized() : nil
     }
 }

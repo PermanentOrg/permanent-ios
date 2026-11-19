@@ -131,8 +131,9 @@ struct FileModel: Equatable, Codable {
     init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = model.recordID == nil ? SortOption(serverValue: model.sort) : nil
-        self.date = DateUtils.listDate(displayTime: nil, legacy: model.displayDT, onlyEDTF: onlyEDTF)
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
+        self.displayTime = model.displayTime
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
 
@@ -234,8 +235,9 @@ struct FileModel: Equatable, Codable {
     init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = SortOption(serverValue: model.sort)
-        self.date = DateUtils.listDate(displayTime: nil, legacy: model.displayDT, onlyEDTF: onlyEDTF)
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
+        self.displayTime = model.displayTime
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
             
@@ -432,18 +434,43 @@ struct FileModel: Equatable, Codable {
 
 extension FileModel {
     /// The line under a row's name, "4 MB • Aug. 15, 2023". A folder, or a file with no size, shows the date alone.
-    var sizeAndDate: String { sizeAndDateParts.joined(separator: " • ") }
+    var sizeAndDate: String { sizeAndDate(complexDate: complexDate) }
 
-    /// The same line for VoiceOver, with a comma where the dot is.
-    var sizeAndDateForVoiceOver: String { sizeAndDateParts.joined(separator: ", ") }
+    /// The same line for a caller that has already read `complexDate`.
+    func sizeAndDate(complexDate: ComplexDateText?) -> String {
+        sizeAndDateParts(complexDate: complexDate).joined(separator: " • ")
+    }
+
+    /// The same line for VoiceOver, with a comma where the dot is and a complex date's marks as words.
+    var sizeAndDateForVoiceOver: String { sizeAndDateForVoiceOver(complexDate: complexDate) }
+
+    /// The VoiceOver line for a caller that has already read `complexDate`, so a cell parses it once.
+    func sizeAndDateForVoiceOver(complexDate: ComplexDateText?) -> String {
+        let size = type.isFolder ? nil : Self.displaySize(size)
+        let date = complexDate?.voiceOverText ?? DateUtils.displayDate(from: self.date)
+        return [size, date].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ", ")
+    }
 
     static func displaySize(_ size: Int64) -> String? {
         size > 0 ? size.readableFileSize : nil
     }
 
-    private var sizeAndDateParts: [String] {
+    /// The date as every list surface shows it: a complex date as written on web, else the date of `date`.
+    var displayDateText: String { displayDateText(complexDate: complexDate) }
+
+    private func displayDateText(complexDate: ComplexDateText?) -> String {
+        complexDate?.listText ?? DateUtils.displayDate(from: date)
+    }
+
+    /// How a complex `displayTime` reads; nil for one exact date or none.
+    var complexDate: ComplexDateText? {
+        guard let displayTime, DateUtils.isComplexDate(displayTime) else { return nil }
+        return ComplexDateText(displayTime)
+    }
+
+    private func sizeAndDateParts(complexDate: ComplexDateText?) -> [String] {
         let size = type.isFolder ? nil : Self.displaySize(size)
-        return [size, DateUtils.displayDate(from: date)].compactMap { $0 }.filter { !$0.isEmpty }
+        return [size, displayDateText(complexDate: complexDate)].compactMap { $0 }.filter { !$0.isEmpty }
     }
 }
 

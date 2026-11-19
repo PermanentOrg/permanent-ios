@@ -15,6 +15,7 @@ struct MetadataEditView: View {
     @State var showEditFilenames: Bool = false
     @State var showSetLocation: Bool = false
     @State var showEditDataTime: Bool = false
+    @State private var showWebOnlyDate: Bool = false
     @State var removeTagName: String? = nil
     @State var reloadFiles: Bool = false
     /// onAppear fires on every re-appearance (e.g. returning from a pushed screen); gate the
@@ -115,11 +116,11 @@ struct MetadataEditView: View {
                         )
                         SectionView(
                             assetName: "metadataDateAndTime",
-                            title: viewModel.haveDiffDate ? "Various dates and times" : viewModel.getCommonDate(),
+                            title: viewModel.dateSectionTitle,
                             rightButtonView: RightButtonView(
                                 text: "Edit",
                                 action: {
-                                    showEditDataTime.toggle()
+                                    editDateTapped()
                                 }
                             ),
                             divider: Divider.init(),
@@ -207,6 +208,20 @@ struct MetadataEditView: View {
         }, rightButton: {
             EmptyView()
         })
+        .sheet(isPresented: $showWebOnlyDate) {
+            let message = viewModel.webOnlyDateMessage
+            WebOnlyDateMessage(message: message) { showWebOnlyDate = false }
+                .presentationDetents([.height(WebOnlyDateMessage.fittingHeight(message: message))])
+        }
+    }
+
+    /// A complex date in the selection stops the date edit with the counted message; the date sheet stays shut.
+    private func editDateTapped() {
+        if viewModel.hasWebOnlyDate {
+            showWebOnlyDate = true
+        } else {
+            showEditDataTime.toggle()
+        }
     }
     
     private func dismissKeyboard() {

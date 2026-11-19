@@ -381,6 +381,11 @@ class FilePreviewViewModel: ViewModelInterface {
     } 
     
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+        // A complex date is only changed on web.
+        if date != nil, DateUtils.isComplexDate(dateRowDisplayTime) {
+            completion(false)
+            return
+        }
         if let date = date, name == nil, description == nil, location == nil, file.savesDateToV2(sessionArchiveId: sessionArchiveId()) {
             updateDateV2(file: file, date: date, completion: completion)
             return
@@ -445,7 +450,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
 
     /// The Info tab's rows, in order. A member with the edit right gets all four, boxed; another member only the
-    /// rows that hold a value, plain.
+    /// rows that hold a value, plain. A complex date gives every member the web-only Date row.
     func infoRows() -> [FileInfoRowModel] {
         let record = recordVO?.recordVO
         let style: FileInfoRowModel.Style = isEditable ? .boxed : .plain
@@ -455,9 +460,27 @@ class FilePreviewViewModel: ViewModelInterface {
             (.date, infoRowDate()),
             (.location, record?.locnVO.map { getAddressString([$0.addressText], false) })
         ]
+        let complexDate = infoRowComplexDate()
         return values.compactMap { kind, value in
-            let row = FileInfoRowModel(kind: kind, value: value, style: style)
+            let rowComplexDate = kind == .date ? complexDate : nil
+            let shown = rowComplexDate?.infoText ?? value
+            let row = FileInfoRowModel(kind: kind, value: shown, style: style, complexDate: rowComplexDate)
             return isEditable || row.isSet ? row : nil
+        }
+    }
+
+    /// The `displayTime` the Date row and its tap read: the record once it is loaded, the list row before.
+    var dateRowDisplayTime: String? {
+        guard let record = recordVO?.recordVO else { return file.displayTime }
+        return record.displayTime
+    }
+
+    /// How the complex date reads on the Info tab; each clock time gets its zone as an exact date would.
+    func infoRowComplexDate() -> ComplexDateText? {
+        let record = recordVO?.recordVO
+        guard let displayTime = dateRowDisplayTime, DateUtils.isComplexDate(displayTime) else { return nil }
+        return ComplexDateText(displayTime) { end in
+            DateTimeEntry.timeSuffix(displayTime: end, timeZoneIdentifier: record?.timezone)
         }
     }
 

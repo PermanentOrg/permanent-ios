@@ -424,6 +424,10 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
 
     private func open(_ kind: FileInfoRowModel.Kind) {
+        if kind == .date, WebOnlyDateMessage.applies(to: viewModel.map(\.dateRowDisplayTime) ?? file.displayTime) {
+            present(WebOnlyDateMessage.host(for: file), animated: true)
+            return
+        }
         guard viewModel?.isEditable ?? false else { return }
         switch kind {
         case .date: openDateScreen()
@@ -742,7 +746,9 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
 
         case .name, .description, .date, .location:
-            return CGSize(width: UIScreen.main.bounds.width, height: FileInfoRowModel.height(for: infoRowStyle, compatibleWith: collectionView.traitCollection))
+            let lines = infoRows.first { Self.cellType(for: $0.kind) == currentCellType }?.valueLineCount ?? 1
+            let height = FileInfoRowModel.height(for: infoRowStyle, lines: lines, compatibleWith: collectionView.traitCollection)
+            return CGSize(width: UIScreen.main.bounds.width, height: height)
 
         case .locationMap:
             return CGSize(width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.width * 0.5).rounded())

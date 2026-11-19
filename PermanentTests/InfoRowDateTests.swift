@@ -53,7 +53,8 @@ struct InfoRowDateTests {
     @Test("The old field gets the same shape when displayTime is missing or does not read")
     func legacyField() {
         #expect(DateUtils.infoRowDate(displayTime: nil, legacy: "2019-06-22T13:05:00.000Z", timeZone: utc) == "June 22, 2019 • 1:05 PM")
-        #expect(DateUtils.infoRowDate(displayTime: "1985~", legacy: "2019-06-22T13:00:00.000Z", timeZone: utc) == "June 22, 2019 • 1PM")
+        #expect(DateUtils.infoRowDate(displayTime: "", legacy: "2019-06-22T13:00:00.000Z", timeZone: utc, onlyEDTF: false) == "June 22, 2019 • 1PM")
+        #expect(DateUtils.infoRowDate(displayTime: "1985~", legacy: "2019-06-22T13:00:00.000Z", timeZone: utc, onlyEDTF: false) == nil)
     }
 
     @Test("displayTime wins over the old field")
