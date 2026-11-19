@@ -205,6 +205,20 @@ class FileCollectionViewCell: UICollectionViewCell {
         (error as? SDWebImageError)?.code == .cancelled || (error as? URLError)?.code == .cancelled
     }
 
+    /// A complex date in two tones: the date darker, its marks such as "After", "AM" and "?" lighter.
+    private func complexDateLine(_ complexDate: ComplexDateText, size: String?) -> NSAttributedString {
+        let font = TextFontStyle.style12.font
+        let line = NSMutableAttributedString()
+        if let size {
+            line.append(NSAttributedString(string: size + " • ", attributes: [.font: font, .foregroundColor: UIColor(.blue400)]))
+        }
+        for segment in complexDate.listSegments {
+            let color = segment.isMuted ? UIColor(.blue400) : UIColor(.blue600)
+            line.append(NSAttributedString(string: segment.text, attributes: [.font: font, .foregroundColor: color]))
+        }
+        return line
+    }
+
     func updateCell(model: FileModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isSelecting: Bool = false, isFileSelected: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
@@ -216,9 +230,18 @@ class FileCollectionViewCell: UICollectionViewCell {
         rightButtonImageView.isHidden = false
         
         fileNameLabel.text = model.name
-        fileDateLabel.text = model.sizeAndDate
-        fileDateLabel.accessibilityLabel = model.sizeAndDateForVoiceOver
-        
+        let complexDate = model.complexDate
+        if let complexDate {
+            fileDateLabel.attributedText = complexDateLine(complexDate, size: model.type.isFolder ? nil : FileModel.displaySize(model.size))
+        } else {
+            fileDateLabel.attributedText = nil
+            fileDateLabel.textColor = UIColor(.blue400)
+            fileDateLabel.text = model.sizeAndDate(complexDate: nil)
+        }
+        fileDateLabel.accessibilityLabel = model.sizeAndDateForVoiceOver(complexDate: complexDate)
+        // An empty label still costs the stack its spacing, which pushes the shares icon off the left edge.
+        fileDateLabel.isHidden = (fileDateLabel.text ?? "").isEmpty
+
         sharesImageView.isHidden = model.minArchiveVOS.isEmpty || sharedFile
         
         setFileImage(forModel: model)

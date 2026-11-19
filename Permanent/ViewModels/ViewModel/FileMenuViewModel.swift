@@ -132,16 +132,16 @@ class FileMenuViewModel: ObservableObject {
             
             // If there are folders, use the date of the first folder, otherwise use the date of the first file
             if let firstFolder = folders.first {
-                self.cachedFormattedDate = Self.formatDate(firstFolder.date)
+                self.cachedFormattedDate = firstFolder.displayDateText
             } else if let firstFile = files.first {
-                self.cachedFormattedDate = Self.formatDate(firstFile.date)
+                self.cachedFormattedDate = firstFile.displayDateText
             } else {
                 self.cachedFormattedDate = ""
             }
         } else {
             // Single file selected
             self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)
-            self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
+            self.cachedFormattedDate = fileViewModel.displayDateText
         }
         
         if showArchiveInfo, let sharedByArchive = fileViewModel.sharedByArchive {

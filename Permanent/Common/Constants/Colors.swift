@@ -88,6 +88,7 @@ extension Color {
     static var success200 = Color(.success200)
     static var success500 = Color(.success500)
     static var warning100 = Color(.warning100)
+    static var warning500 = Color(.warning500)
     static var warning600 = Color(.warning600)
     static var warning800 = Color(.warning800)
 }

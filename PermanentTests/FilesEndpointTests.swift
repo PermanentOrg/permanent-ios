@@ -269,6 +269,40 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertEqual(FilesEndpoint.multipleFilesUpdate(files: [makeRecordFile()]).path, "/record/update")
     }
 
+    private func renamePayload(for file: FileModel, sendsDate: Bool = true) throws -> [String: Any] {
+        let endpoint = FilesEndpoint.multipleFilesUpdate(files: [file], sendsDate: sendsDate)
+        let request = try XCTUnwrap(endpoint.parameters as? [String: Any])["RequestVO"] as? [String: Any]
+        let data = try XCTUnwrap(request?["data"] as? [[String: Any]])
+        return try XCTUnwrap(data.first?["RecordVO"] as? [String: Any])
+    }
+
+    func testMultipleFilesUpdate_KeepsAnExactDate() throws {
+        var file = makeRecordFile()
+        file.date = "2001-02-03T09:30:00"
+        XCTAssertEqual(try renamePayload(for: file)["displayDT"] as? String, "2001-02-03T09:30:00")
+    }
+
+    func testMultipleFilesUpdate_ARenameSendsNoDate() throws {
+        var file = makeRecordFile()
+        file.date = "1985"
+        let payload = try renamePayload(for: file, sendsDate: false)
+        XCTAssertNil(payload["displayDT"])
+        XCTAssertEqual(payload["displayName"] as? String, file.name)
+    }
+
+    func testMultipleFilesUpdate_LeavesOutAMissingDate() throws {
+        var file = makeRecordFile()
+        file.date = ""
+        XCTAssertNil(try renamePayload(for: file)["displayDT"])
+    }
+
+    func testMultipleFilesUpdate_LeavesOutTheOldDateOfAComplexDate() throws {
+        var file = makeFolderFile()
+        file.displayTime = "1985/1990"
+        file.date = "1985-01-01T00:00:00"
+        XCTAssertNil(try renamePayload(for: file)["displayDT"])
+    }
+
     func testRenameFolder_Path() {
         let params: UpdateRecordParams = (name: "n", description: nil, date: nil, location: nil, recordId: 1, folderLinkId: 1, archiveNbr: "0001")
         XCTAssertEqual(FilesEndpoint.renameFolder(params: params).path, "/folder/update")

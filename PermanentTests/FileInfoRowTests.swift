@@ -53,6 +53,21 @@ struct FileInfoRowTests {
         }
     }
 
+    @Test("A complex Date row shows its marks and From and To lines, and reads as a button in both styles", arguments: Style.allCases)
+    func complexDateRow(style: Style) {
+        let complexDate = ComplexDateText("1985-10-23~/1985-11-23?", timeZone: TimeZone(secondsFromGMT: 0) ?? .current)
+        let row = FileInfoRowModel(kind: .date, value: complexDate.infoText, style: style, complexDate: complexDate)
+
+        #expect(row.caption == "Approximate  •  Uncertain")
+        #expect(row.valueLineCount == 2)
+        #expect(row.iconName == (style == .boxed ? "square.and.pencil" : "info.circle"))
+        #expect(row.isButton)
+        #expect(row.accessibilityLabel == "Date, Approximate, Uncertain, From October 23, 1985, To November 23, 1985")
+        #expect(row.accessibilityHint == "Opens a message")
+        #expect(FileInfoRowModel.height(for: style, lines: 2, compatibleWith: defaultSize)
+            == FileInfoRowModel.height(for: style, compatibleWith: defaultSize) + 32)
+    }
+
     @Test("A plain row has no icon, no hint and is not a button", arguments: Kind.allCases)
     func plainRow(kind: Kind) throws {
         let value = try #require(values[kind])

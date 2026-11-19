@@ -12,13 +12,12 @@ import Foundation
 struct DateTimeEntry: Hashable {
     /// The pill's state. A switch changes nothing the member typed; only the built hour reads differently.
     enum TimeFormat: CaseIterable, Equatable {
-        case am, pm, h24
+        case am, pm
 
         var next: Self {
             switch self {
             case .am: return .pm
-            case .pm: return .h24
-            case .h24: return .am
+            case .pm: return .am
             }
         }
 
@@ -26,7 +25,6 @@ struct DateTimeEntry: Hashable {
             switch self {
             case .am: return "TimeFormatAM".localized()
             case .pm: return "TimeFormatPM".localized()
-            case .h24: return "TimeFormat24H".localized()
             }
         }
     }
@@ -102,7 +100,8 @@ struct DateTimeEntry: Hashable {
             } else {
                 set(written: parts)
             }
-        } else if let moment = DateUtils.date(fromISO: DateUtils.shownLegacy(legacy, onlyEDTF: onlyEDTF)) {
+        } else if !DateUtils.isComplexDate(displayTime),
+                  let moment = DateUtils.date(fromISO: DateUtils.shownLegacy(legacy, onlyEDTF: onlyEDTF)) {
             set(moment: moment, timeZone: timeZone)
         }
     }
@@ -167,7 +166,6 @@ struct DateTimeEntry: Hashable {
         switch format {
         case .am: return typed == 12 ? 0 : typed
         case .pm: return typed < 12 ? typed + 12 : typed
-        case .h24: return typed
         }
     }
 
@@ -252,13 +250,13 @@ struct DateTimeEntry: Hashable {
     }
 
     /// What a field may hold: a year from 1 to this year, the day's end by the month and year typed so far, the
-    /// hour by the pill, the clock fields to 59.
+    /// hour from 1 to 12, the clock fields to 59.
     func bounds(of field: Field, now: Date = Date()) -> ClosedRange<Int> {
         switch field {
         case .year: return 1...Calendar(identifier: .gregorian).component(.year, from: now)
         case .month: return 1...12
         case .day: return 1...lastDay
-        case .hour: return format == .h24 ? 0...23 : 1...12
+        case .hour: return 1...12
         case .minute, .second: return 0...59
         }
     }

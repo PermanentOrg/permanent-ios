@@ -26,9 +26,7 @@ struct DisplayTimeTests {
             ("2026-07-15T23:45:00+03:00", "2026-07-15"),
             ("2026-07-15T01:15:00-05:30", "2026-07-15"),
             ("2026-07-15T12:45:00.5+03:00", "2026-07-15"),
-            ("2026-07-15T12:45:00.123", "2026-07-15"),
-            ("1964/2008", "1964"),
-            ("2004-02-01/2005-02-08", "2004-02-01")
+            ("2026-07-15T12:45:00.123", "2026-07-15")
         ]
     )
     func level0ValueReads(displayTime: String, listDate: String) {
@@ -52,18 +50,25 @@ struct DisplayTimeTests {
     }
 
     @Test(
-        "A value above Level 0, or a broken one, falls back to the old field",
+        "A value that is set but is not one exact Level 0 date lists no date and never the old field",
         arguments: [
-            "", "1985~", "1985?", "198X", "1985-13", "1985-02-30", "85-10-23", "1985-10-23T25:00:00",
+            "1985~", "1985?", "198X", "1985-13", "1985-02-30", "85-10-23", "1985-10-23T25:00:00",
             "1985-10-23T12:45", "1985-10-23T12:45:00+3", "1985-10T12:45:00",
             "1985-10-23T12:45:00.", "1985-10-23T12:45:00.5.5", "1985-10-23T12:45:00.x", "1985-10-23T12:45.5",
-            "../1985", "1985/..", "1985/1990/1995", "2004-02-01T10:00:00/2005", "-1985"
+            "../1985", "1985/..", "1985/1990/1995", "2004-02-01T10:00:00/2005", "-1985",
+            "1964/2008", "2004-02-01/2005-02-08"
         ]
     )
-    func otherValueFallsBack(displayTime: String) {
-        #expect(DateUtils.listDate(displayTime: displayTime, legacy: "2023-08-15T00:00:00.000Z") == "2023-08-15")
+    func otherValueShowsNoDate(displayTime: String) {
+        #expect(DateUtils.listDate(displayTime: displayTime, legacy: "2023-08-15T00:00:00.000Z").isEmpty)
         #expect(DateUtils.date(fromDisplayTime: displayTime) == nil)
-        #expect(DateUtils.showsLegacyDate(displayTimes: [displayTime]))
+        #expect(!DateUtils.showsLegacyDate(displayTimes: [displayTime]))
+    }
+
+    @Test("An empty displayTime falls back to the old field")
+    func emptyValueFallsBack() {
+        #expect(DateUtils.listDate(displayTime: "", legacy: "2023-08-15T00:00:00.000Z", onlyEDTF: false) == "2023-08-15")
+        #expect(DateUtils.showsLegacyDate(displayTimes: [""]))
     }
 
     @Test("With no displayTime the list keeps today's old-field text")
@@ -157,10 +162,10 @@ struct DisplayTimeTests {
 
     // MARK: - Failsafe check
 
-    @Test("The old field is shown only when no record being saved has a displayTime that reads")
+    @Test("The old field is shown only when no record being saved has a displayTime")
     func legacyShownOnlyWithoutReadableDisplayTime() {
         #expect(DateUtils.showsLegacyDate(displayTimes: [nil, nil]))
-        #expect(DateUtils.showsLegacyDate(displayTimes: [nil, "1985~"]))
+        #expect(!DateUtils.showsLegacyDate(displayTimes: [nil, "1985~"]))
         #expect(!DateUtils.showsLegacyDate(displayTimes: [nil, "1985"]))
     }
 

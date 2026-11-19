@@ -51,12 +51,12 @@ struct DisplayTimeV2Tests {
         #expect(DateUtils.displayDate(from: folder.date) == "May. 1, 1990")
     }
 
-    @Test("A child with no readable displayTime keeps the old date")
+    @Test("A child with a complex displayTime shows no date; one with none keeps the old date")
     func childWithoutReadableDisplayTimeKeepsOldDate() throws {
         let qualified = try child(#""recordId": "301", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "1985~""#)
         let untouched = try child(#""recordId": "302", "displayDate": "2023-08-15T00:00:00.000Z""#)
 
-        #expect(qualified.date == "2023-08-15")
+        #expect(qualified.date.isEmpty)
         #expect(untouched.date == "2023-08-15")
         #expect(untouched.displayTime == nil)
     }
@@ -177,6 +177,239 @@ struct DisplayTimeV2Tests {
         #expect(viewModel.changesWereSaved)
         #expect(server.patches.map(\.recordId) == [301, 302])
         #expect(server.patches.allSatisfy { $0.fields as? [String: String] == ["displayTime": "2001-02-03T09:30:00"] }, "the clock as typed, no offset")
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch with a complex date saves only the other files")
+    func batchSkipsComplexDate() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5", "displayTime": "1985?""#), child(#""recordId": "302", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.changesWereSaved)
+        #expect(server.patches.map(\.recordId) == [302])
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch of only complex dates sends nothing and shows the web-only message")
+    func batchOfComplexDatesSendsNothing() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5", "displayTime": "1985/1990""#), child(#""recordId": "302", "archiveId": "5", "displayTime": "198X""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.showsWebOnlyDate)
+        #expect(!viewModel.changesWereSaved)
+        #expect(server.patches.isEmpty)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A list row with no displayTime learns its complex date from the record read and never saves it")
+    func listDoorReadsComplexDate() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "../1990"
+        let viewModel = listDoorViewModel(file: file, server: server)
+        viewModel.patchRecordRequest = { file, fields, completion in
+            server.patches.append((file.recordId, fields))
+            completion(true)
+        }
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+        #expect(viewModel.showsWebOnlyDate)
+
+        viewModel.entry = DateTimeEntry(displayTime: "2001-02-03", legacy: nil)
+        await applyChanges(in: viewModel)
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A shared row with no displayTime reads it too, and a complex one sends nothing to V1")
+    func sharedListDoorReadsComplexDate() async throws {
+        let shared = try child(#""recordId": "303", "archiveId": "9""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "1985~"
+        let viewModel = batchViewModel(files: [shared], server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+
+        #expect(server.zoneReads == [303])
+        await applyChanges(in: viewModel)
+        #expect(server.v1Batches.isEmpty)
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("Save stays off while a list door reads its item, then turns on for an exact date")
+    func saveWaitsForTheRead() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+        #expect(!viewModel.canSave)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+
+        server.answerHeldZoneReads()
+        await wait { viewModel.canSave }
+        #expect(viewModel.canSave)
+        #expect(!viewModel.showsWebOnlyDate)
+    }
+
+    @MainActor
+    @Test("A failed read of a row with no displayTime keeps Save off and sends nothing")
+    func failedReadKeepsSaveOff() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.failsReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.recordReadFailed }
+
+        #expect(!viewModel.canSave)
+        #expect(viewModel.saveBlockedReason != nil)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A read that never answers counts as failed after the time limit, so the sheet stops reading")
+    func unansweredReadTimesOut() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+        viewModel.readTimeout = 0.2
+
+        viewModel.readZoneIfNeeded()
+        #expect(viewModel.isReadingRecord)
+        await wait { !viewModel.isReadingRecord }
+
+        #expect(viewModel.recordReadFailed)
+        #expect(viewModel.saveBlockedReason == "DateReadFailed".localized())
+        server.answerHeldZoneReads()
+        // The late answer lands on the main queue; one hop behind it is after it.
+        await withCheckedContinuation { continuation in DispatchQueue.main.async { continuation.resume() } }
+        #expect(viewModel.recordReadFailed, "a late answer changes nothing")
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch reads only the rows with no displayTime, and a complex one stops the save with the counted message")
+    func batchReadsRowsWithoutDisplayTime() async throws {
+        let files = try [
+            child(#""recordId": "301", "archiveId": "5", "displayTime": "2001-02-03""#),
+            child(#""recordId": "302", "archiveId": "5""#)
+        ]
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "1985~"
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+
+        #expect(server.zoneReads == [302])
+        #expect(viewModel.webOnlyMessage == WebOnlyDateMessage.batchMessage(complexCount: 1, of: 2))
+        await applyChanges(in: viewModel)
+        #expect(server.patches.map(\.recordId) == [301])
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch with a failed read keeps Save off")
+    func batchFailedReadKeepsSaveOff() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#), child(#""recordId": "302", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        server.failsReads = true
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.recordReadFailed }
+
+        #expect(!viewModel.canSave)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch keeps Save off when one read fails, so no file is skipped silently")
+    func batchOneFailedReadKeepsSaveOff() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#), child(#""recordId": "302", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        server.failsReadsOf = [302]
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { !viewModel.isReadingRecord }
+
+        #expect(viewModel.recordReadFailed)
+        #expect(!viewModel.canSave)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch runs at most four reads at once and starts the next as one returns")
+    func batchLimitsReadsAtOnce() async throws {
+        let files = try (301...306).map { try child(#""recordId": "\#($0)", "archiveId": "5""#) }
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        #expect(server.zoneReads.count == EditDateAndTimeViewModel.maxConcurrentReads)
+
+        server.answerHeldZoneReads()
+        await wait { server.zoneReads.count == 6 }
+        #expect(server.zoneReads.count == 6)
+        server.answerHeldZoneReads()
+        await wait { !viewModel.isReadingRecord }
+        #expect(viewModel.canSave)
+    }
+
+    @MainActor
+    @Test("While the sheet reads its item, Save says it is reading the date")
+    func readingGivesSaveAReason() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+
+        #expect(viewModel.saveBlockedReason == "Reading the date…")
+        server.answerHeldZoneReads()
+        await wait { !viewModel.isReadingRecord }
+        #expect(viewModel.saveBlockedReason == nil)
+    }
+
+    @MainActor
+    @Test("A list row with an old exact date whose read is complex shows the message and saves nothing")
+    func staleExactRowReadsComplexDate() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "2001-02-03""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "1985/1990"
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+
+        #expect(viewModel.showsWebOnlyDate)
+        await applyChanges(in: viewModel)
+        #expect(server.patches.isEmpty)
         #expect(server.v1Batches.isEmpty)
     }
 
@@ -550,7 +783,7 @@ struct DisplayTimeV2Tests {
     }
 
     @MainActor
-    @Test("A list door reads one record's zone once; the Info door and a batch do not read")
+    @Test("A list door reads one record's zone once; the Info door does not read, and a batch reads only its undated row")
     func oneFileReadsTheZoneOnce() async throws {
         let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00""#)
         let other = try child(#""recordId": "302", "archiveId": "5""#)
@@ -567,7 +800,7 @@ struct DisplayTimeV2Tests {
         batch.readZoneIfNeeded()
         await wait { listDoor.entry.timeZoneIdentifier != nil }
 
-        #expect(server.zoneReads == [301])
+        #expect(server.zoneReads == [301, 302])
         #expect(listDoor.entry.timeZoneIdentifier == "Europe/Paris")
         #expect(listDoor.openingZone == "Europe/Paris")
         #expect(listDoor.patchFields["location"] as? [String: String] == ["timezone": "Europe/Paris"])
@@ -601,9 +834,13 @@ struct DisplayTimeV2Tests {
         var patches: [(recordId: Int, fields: [String: Any])] = []
         var v1Dates: [Date] = []
         var v1Batches: [[FileModel]] = []
+        var v1Succeeds = true
         var zone: String?
+        var recordDisplayTime: String?
         var zoneReads: [Int] = []
         var holdsZoneReads = false
+        var failsReads = false
+        var failsReadsOf: Set<Int> = []
         private var heldZoneReads: [(String?) -> Void] = []
 
         func readZone(of file: FileModel, completion: @escaping (String?) -> Void) {
@@ -655,7 +892,7 @@ struct DisplayTimeV2Tests {
         }
         viewModel.updateV1Request = { params, completion in
             if let date = params.date { server.v1Dates.append(date) }
-            completion(true)
+            completion(server.v1Succeeds)
         }
         return viewModel
     }
@@ -667,7 +904,7 @@ struct DisplayTimeV2Tests {
         let archiveId = ownArchiveId
         viewModel.sessionArchiveId = { archiveId }
         viewModel.fetchRecordZone = { file, completion in
-            server.readZone(of: file, completion: completion)
+            server.readZone(of: file) { completion(server.failsReads || server.failsReadsOf.contains(file.recordId) ? nil : (zone: $0, displayTime: server.recordDisplayTime)) }
         }
         return viewModel
     }
@@ -681,7 +918,7 @@ struct DisplayTimeV2Tests {
         viewModel.entry = DateTimeEntry(displayTime: "2001-02-03T09:30:00", legacy: nil, timeZoneIdentifier: viewModel.entry.timeZoneIdentifier)
         viewModel.sessionArchiveId = { archiveId }
         viewModel.fetchRecordZone = { file, completion in
-            server.readZone(of: file, completion: completion)
+            server.readZone(of: file) { completion(server.failsReads || server.failsReadsOf.contains(file.recordId) ? nil : (zone: $0, displayTime: server.recordDisplayTime)) }
         }
         viewModel.patchRecordRequest = { file, fields, completion in
             server.patches.append((file.recordId, fields))

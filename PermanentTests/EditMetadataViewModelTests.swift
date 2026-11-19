@@ -260,6 +260,25 @@ final class EditMetadataViewModelTests: XCTestCase {
         XCTAssertEqual(vm.locationSectionText, "Locations")
     }
 
+    func testFilesMetadata_ComplexDate_TitleAndCountedMessage() {
+        let vm = FilesMetadataViewModel(files: [])
+        var complex = mockFile(name: "Range.jpg")
+        complex.displayTime = "1985/1990"
+        var exact = mockFile(name: "Exact.jpg")
+        exact.displayTime = "1985-10-23"
+        vm.selectedFiles = [complex, exact]
+
+        XCTAssertTrue(vm.hasWebOnlyDate)
+        XCTAssertEqual(vm.dateSectionTitle, "Various dates and times")
+        XCTAssertTrue(vm.webOnlyDateMessage.hasPrefix("1 of the 2 selected items has a complex EDTF date"))
+
+        vm.selectedFiles = [complex]
+        XCTAssertEqual(vm.dateSectionTitle, "1985 — 1990")
+
+        vm.selectedFiles = [exact]
+        XCTAssertFalse(vm.hasWebOnlyDate)
+    }
+
     func testFilesMetadata_GetAddressString() {
         let vm = FilesMetadataViewModel(files: [])
 

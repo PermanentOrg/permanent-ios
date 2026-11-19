@@ -59,6 +59,42 @@ struct FileInfoTabTests {
         #expect(described.infoRows().map(\.kind) == [.name, .description])
     }
 
+    @Test("A complex date gives the owner, an editor and a viewer its From and To lines", arguments: [
+        [Permission.read, .edit], [Permission.read]
+    ])
+    func complexDateRow(permissions: [Permission]) throws {
+        let screen = try makeScreen(fields: #""displayName": "C", "displayTime": "1985/1990""#, permissions: permissions)
+
+        let date = try #require(screen.infoRows().first { $0.kind == .date })
+        #expect(date.isWebOnly)
+        #expect(date.text == "From 1985, To 1990")
+        #expect(date.valueLineCount == 2)
+        #expect(date.isButton)
+        #expect(cells(of: screen).contains(.date))
+    }
+
+    @Test("Before the record loads, the Date row and its tap read the list row's date")
+    func complexDateRowBeforeRecordLoads() throws {
+        let screen = try makeScreen(fields: #""displayName": "C", "displayTime": "1985~""#, permissions: [.read, .edit])
+        screen.recordVO = nil
+
+        #expect(screen.dateRowDisplayTime == "1985~")
+        let date = try #require(screen.infoRows().first { $0.kind == .date })
+        #expect(date.isWebOnly)
+    }
+
+    @Test("A date save on a record with a complex date sends nothing and answers false")
+    func complexDateIsNeverSaved() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let screen = try makeScreen(fields: #""displayName": "C", "displayTime": "1985~""#, permissions: [.read, .edit], server: server)
+        var outcome: Bool?
+        screen.update(file: screen.file, name: nil, description: nil, date: Date(), location: nil) { outcome = $0 }
+        await wait { outcome != nil }
+
+        #expect(outcome == false)
+        #expect(server.patches.isEmpty)
+    }
+
     @Test("The tags row shows a viewer only the tags the record has")
     func viewerTags() throws {
         let tagged = try makeScreen(fields: #""displayName": "C", "tags": [{ "tagId": "1", "name": "hike" }]"#, permissions: [.read])

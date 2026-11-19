@@ -1616,9 +1616,7 @@ extension MainViewController {
     }
 
     private func showDateAndTime(for file: FileModel) {
-        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
-            if saved { self?.refreshCurrentFolder() }
-        }, animated: true)
+        present(EditDateAndTimeView.menuDoor(for: file) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
     }
 
     /// The row's file when its … button would open the sheet right now; otherwise the long press does nothing.

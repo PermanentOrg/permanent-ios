@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// The small pill in the time box that reads AM, PM or 24H; a tap cycles it. The date box holds a hidden one so
+/// The small pill in the time box that reads AM or PM; a tap switches it. The date box holds a hidden one so
 /// its fields line up with the time fields.
 struct TimeFormatPill: View {
     let format: DateTimeEntry.TimeFormat

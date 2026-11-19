@@ -44,6 +44,11 @@ struct EditDateAndTimeView: View {
             .safeAreaInset(edge: .bottom) { bottomButtons }
             .background(Color.white.ignoresSafeArea())
             .accessibilityHidden(showsZonePicker)
+            .sheet(isPresented: $viewModel.showsWebOnlyDate, onDismiss: { close(saved: false) }) {
+                let message = viewModel.webOnlyMessage
+                WebOnlyDateMessage(message: message) { viewModel.showsWebOnlyDate = false }
+                    .presentationDetents([.height(WebOnlyDateMessage.fittingHeight(message: message))])
+            }
             if showsZonePicker {
                 TimeZonePickerSheet(entry: $viewModel.entry) { closeZonePicker() }
                     .transition(reduceMotion ? .identity : .move(edge: .trailing))
@@ -259,6 +264,17 @@ extension EditDateAndTimeView {
         controller.sheetPresentationController?.preferredCornerRadius = sheetCornerRadius
         host = controller
         return controller
+    }
+
+    /// What the item menu's date row opens: the web-only message for a complex date, else the date sheet.
+    @MainActor
+    static func menuDoor(for file: FileModel, onSaved: @escaping () -> Void) -> UIViewController {
+        guard !WebOnlyDateMessage.applies(to: file.displayTime) else {
+            return WebOnlyDateMessage.host(for: file)
+        }
+        return host(for: file) { saved in
+            if saved { onSaved() }
+        }
     }
 }
 

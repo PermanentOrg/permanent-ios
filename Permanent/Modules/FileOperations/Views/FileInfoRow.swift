@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A row of the Info tab. A boxed name or description is typed in place and committed when the field loses focus;
-/// a boxed date or location reports a tap. A plain row is text only.
+/// a boxed date or location reports a tap. A plain row is text only, except a web-only date, which reports a tap.
 struct FileInfoRow: View {
     let model: FileInfoRowModel
     /// Gets the typed text and answers whether it was saved, so an unsaved text goes back to the value.
@@ -20,6 +20,7 @@ struct FileInfoRow: View {
     @ScaledMetric(relativeTo: .caption) private var labelLineHeight = FileInfoRowModel.labelLineHeight
     @ScaledMetric(relativeTo: .subheadline) private var valueLineHeight = FileInfoRowModel.valueLineHeight
     @ScaledMetric(relativeTo: .subheadline) private var iconSize = FileInfoRowModel.iconSize
+    @ScaledMetric(relativeTo: .caption2) private var lineLabelWidth = FileInfoRowModel.lineLabelWidth
 
     init(model: FileInfoRowModel, onCommit: ((String, @escaping (Bool) -> Void) -> Void)? = nil, onTap: (() -> Void)? = nil) {
         self.model = model
@@ -30,10 +31,18 @@ struct FileInfoRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FileInfoRowModel.labelGap) {
-            Text(model.title)
-                .font(FileInfoRowModel.labelFont)
-                .foregroundColor(.white)
-                .frame(minHeight: labelLineHeight)
+            HStack(spacing: FileInfoRowModel.boxPadding) {
+                Text(model.title)
+                    .font(FileInfoRowModel.labelFont)
+                    .foregroundColor(.white)
+                if let caption = model.caption {
+                    Text(caption)
+                        .font(FileInfoRowModel.captionFont)
+                        .foregroundColor(placeholderColor)
+                        .lineLimit(1)
+                }
+            }
+            .frame(minHeight: labelLineHeight)
             value
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -52,6 +61,17 @@ struct FileInfoRow: View {
 
     @ViewBuilder private var value: some View {
         switch model.style {
+        case .plain where model.isWebOnly:
+            Button { onTap?() } label: {
+                HStack(alignment: .top, spacing: FileInfoRowModel.boxPadding) {
+                    valueText
+                    icon
+                        .frame(height: valueLineHeight)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
         case .plain:
             valueText
 
@@ -76,9 +96,10 @@ struct FileInfoRow: View {
             })
         } else {
             Button { onTap?() } label: {
-                boxed(HStack(spacing: FileInfoRowModel.boxPadding) {
+                boxed(HStack(alignment: .top, spacing: FileInfoRowModel.boxPadding) {
                     valueText
                     icon
+                        .frame(height: valueLineHeight)
                 })
             }
             .buttonStyle(.plain)
@@ -96,7 +117,40 @@ struct FileInfoRow: View {
             )
     }
 
-    private var valueText: some View {
+    @ViewBuilder private var valueText: some View {
+        if let lines = model.complexDate?.infoLines {
+            VStack(alignment: .leading, spacing: FileInfoRowModel.lineGap) {
+                ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
+                    complexLine(line)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            plainValueText
+        }
+    }
+
+    /// A From or To line: its caps label in a fixed column, then the date.
+    private func complexLine(_ line: ComplexDateText.InfoLine) -> some View {
+        HStack(spacing: 10) {
+            if let label = line.label {
+                Text(label.uppercased())
+                    .font(FileInfoRowModel.lineLabelFont)
+                    .tracking(FileInfoRowModel.lineLabelTracking)
+                    .foregroundColor(placeholderColor)
+                    .lineLimit(1)
+                    .frame(width: lineLabelWidth, alignment: .leading)
+            }
+            Text(line.text)
+                .font(FileInfoRowModel.valueFont)
+                .foregroundColor(.white)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(minHeight: valueLineHeight)
+    }
+
+    private var plainValueText: some View {
         Text(model.text)
             .font(FileInfoRowModel.valueFont)
             .foregroundColor(model.isSet ? .white : placeholderColor)
