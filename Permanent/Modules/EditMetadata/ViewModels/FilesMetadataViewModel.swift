@@ -342,7 +342,7 @@ class FilesMetadataViewModel: ObservableObject {
     
     /// True when a selected file has a complex date, which only web may view or change.
     var hasWebOnlyDate: Bool {
-        selectedFiles.contains { DateUtils.isComplexDate($0.displayTime) }
+        selectedFiles.contains { DateUtils.isWebOnlyDate($0.displayTime) }
     }
 
     /// The date section's title: one file's complex date as the list shows it, else the shared date.

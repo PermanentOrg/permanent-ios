@@ -18,8 +18,8 @@ struct ComplexDateTextTests {
         ("1985~", "c. 1985"),
         ("1980-03?", "March 1980 ?"),
         ("1985%", "c. 1985 ?"),
-        ("1980-09-30T00:56:00/..", "After Sep. 30, 1980  •  12:56 AM"),
-        ("1980-09-30/", "After Sep. 30, 1980"),
+        ("1980-09-30T00:56:00/..", "After Sept. 30, 1980  •  12:56 AM"),
+        ("1980-09-30/", "After Sept. 30, 1980"),
         ("../2025-11-12", "Before Nov. 12, 2025"),
         ("/2025-11-12", "Before Nov. 12, 2025"),
         ("../..", "Unknown"),
@@ -31,10 +31,10 @@ struct ComplexDateTextTests {
         ("1985-06-XX", "June 1985"),
         ("1985/1990", "1985 — 1990"),
         ("1985-06/1990", "June 1985 — 1990"),
-        ("2001-09-24/2015-07-21", "Sep. 24, 2001 — Jul. 21, 2015"),
-        ("2001-09-24/2001-09-30", "Sep. 24 — 30, 2001"),
-        ("2012-09-24/2012-11-15", "Sep. 24 — Nov. 15, 2012"),
-        ("2001-09-24T09:45:00/2001-09-24T16:00:00", "Sep. 24, 2001  •  9:45 AM — 4:00 PM"),
+        ("2001-09-24/2015-07-21", "Sept. 24, 2001 — Jul. 21, 2015"),
+        ("2001-09-24/2001-09-30", "Sept. 24 — 30, 2001"),
+        ("2012-09-24/2012-11-15", "Sept. 24 — Nov. 15, 2012"),
+        ("2001-09-24T09:45:00/2001-09-24T16:00:00", "Sept. 24, 2001  •  9:45 AM — 4:00 PM"),
         ("1985~/1990?", "c. 1985 — 1990 ?"),
         ("1990-05-01/1990-05-09", "May 1 — 9, 1990"),
         ("1990-04-28/1990-05-09", "Apr. 28 — May 9, 1990"),
@@ -57,7 +57,7 @@ struct ComplexDateTextTests {
     func mutedSegments() {
         let after = ComplexDateText("1980-09-30T00:56:00/..", timeZone: utc).listSegments
         #expect(after.filter(\.isMuted).map(\.text) == ["After ", " AM"])
-        #expect(after.filter { !$0.isMuted }.map(\.text) == ["Sep. 30, 1980", "  •  12:56"])
+        #expect(after.filter { !$0.isMuted }.map(\.text) == ["Sept. 30, 1980", "  •  12:56"])
 
         let circa = ComplexDateText("1985%", timeZone: utc).listSegments
         #expect(circa.filter(\.isMuted).map(\.text) == ["c. ", " ?"])
@@ -66,7 +66,7 @@ struct ComplexDateTextTests {
 
     @Test("A Z time is shown on the phone's clock")
     func zuluTimeOnPhoneClock() {
-        #expect(ComplexDateText("2001-09-24T23:30:00Z/..", timeZone: bucharest).listText == "After Sep. 25, 2001  •  2:30 AM")
+        #expect(ComplexDateText("2001-09-24T23:30:00Z/..", timeZone: bucharest).listText == "After Sept. 25, 2001  •  2:30 AM")
     }
 
     @Test("Info gets the marks as a caption and a range as From and To lines")
@@ -116,7 +116,7 @@ struct ComplexDateTextTests {
         ("1985%", "Approximate, Uncertain, 1985"),
         ("1980-03?", "Uncertain, March 1980"),
         ("1985~/1990", "Approximate, 1985 — 1990"),
-        ("1980-09-30/..", "After Sep. 30, 1980"),
+        ("1980-09-30/..", "After Sept. 30, 1980"),
         ("1985-06-XX", "Unspecified, June 1985")
     ])
     func voiceOverText(displayTime: String, expected: String) {

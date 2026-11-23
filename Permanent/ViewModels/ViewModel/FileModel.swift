@@ -44,6 +44,8 @@ struct FileModel: Equatable, Codable {
     let uploadedDT: String?
     /// The EDTF date from Stela V2, read before `createdDT` wherever a date shows; nil from V1.
     var displayTime: String?
+    /// The record's zone id ("America/Chicago"), which names the zone after a list date's clock; nil from V1.
+    var timeZoneIdentifier: String?
     
     let archiveThumbnailURL: String?
     let archiveId: Int
@@ -188,6 +190,7 @@ struct FileModel: Equatable, Codable {
         self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayDT)
         self.createdDT = model.displayDT
         self.displayTime = model.displayTime
+        self.timeZoneIdentifier = model.timezone
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
 
@@ -323,6 +326,7 @@ struct FileModel: Equatable, Codable {
         self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: rawDate)
         self.createdDT = rawDate
         self.displayTime = model.displayTime
+        self.timeZoneIdentifier = model.location?.timezone
         self.uploadedDT = model.createdAt   // parity with V1: uploadedDT <- createdAt
         self.modifiedDT = model.updatedAt   // parity with V1: modifiedDT <- updatedAt
 
@@ -381,6 +385,7 @@ struct FileModel: Equatable, Codable {
         self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayTimestamp)
         self.createdDT = model.displayTimestamp
         self.displayTime = model.displayTime
+        self.timeZoneIdentifier = model.location?.timezone
         self.uploadedDT = model.createdAt
         self.modifiedDT = model.updatedAt
 
@@ -447,7 +452,7 @@ extension FileModel {
     /// The VoiceOver line for a caller that has already read `complexDate`, so a cell parses it once.
     func sizeAndDateForVoiceOver(complexDate: ComplexDateText?) -> String {
         let size = type.isFolder ? nil : Self.displaySize(size)
-        let date = complexDate?.voiceOverText ?? DateUtils.displayDate(from: self.date)
+        let date = complexDate?.voiceOverText ?? exactDateText.replacingOccurrences(of: " • ", with: ", ")
         return [size, date].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ", ")
     }
 
@@ -459,12 +464,19 @@ extension FileModel {
     var displayDateText: String { displayDateText(complexDate: complexDate) }
 
     private func displayDateText(complexDate: ComplexDateText?) -> String {
-        complexDate?.listText ?? DateUtils.displayDate(from: date)
+        complexDate?.listText ?? exactDateText
     }
 
-    /// How a complex `displayTime` reads; nil for one exact date or none.
+    /// "Jun. 24, 2026 • 12:56 AM CDT" for a date with a clock, with the zone rule the Info tab uses; else the day.
+    private var exactDateText: String {
+        DateUtils.listDateText(displayTime: displayTime, listDate: date) { [timeZoneIdentifier] end in
+            DateTimeEntry.timeSuffix(displayTime: end, timeZoneIdentifier: timeZoneIdentifier)
+        }
+    }
+
+    /// How a web-only `displayTime` reads; nil for one exact date, a year with an unknown month, or none.
     var complexDate: ComplexDateText? {
-        guard let displayTime, DateUtils.isComplexDate(displayTime) else { return nil }
+        guard let displayTime, DateUtils.isWebOnlyDate(displayTime) else { return nil }
         return ComplexDateText(displayTime)
     }
 
@@ -479,6 +491,7 @@ extension FileModel {
     func withDates(of record: RecordVOData) -> FileModel {
         var current = self
         current.displayTime = record.displayTime
+        current.timeZoneIdentifier = record.timezone
         current.createdDT = record.displayDT
         current.date = DateUtils.listDate(displayTime: record.displayTime, legacy: record.displayDT)
         return current

@@ -173,7 +173,7 @@ struct DisplayTimeTests {
 
     @Test(
         "File information shows only the parts a date has",
-        arguments: [("1985", "1985"), ("1985-10", "Oct. 1985"), ("1985-10-23", "Oct. 23, 1985")]
+        arguments: [("1985", "1985"), ("1985-10", "October 1985"), ("1985-10-23", "Oct. 23, 1985")]
     )
     func fileInformationText(listDate: String, text: String) {
         #expect(DateUtils.displayDate(from: listDate) == text)

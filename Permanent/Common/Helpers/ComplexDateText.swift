@@ -170,7 +170,7 @@ private extension ComplexDateText {
                 + (uncertain ? [Segment(text: " ?", isMuted: true)] : [])
         }
 
-        /// The list form: "1985", "1980s", "March 1980", "Sep. 30, 1980", then the clock when written.
+        /// The list form: "1985", "1980s", "March 1980", "Sept. 30, 1980", then the clock when written.
         func shortSegments() -> [Segment] {
             [Segment(text: dateText(dayPattern: "MMM. d, yyyy"), isMuted: false)] + clockSegments()
         }
@@ -205,14 +205,11 @@ private extension ComplexDateText {
         }
 
         static func formatted(year: Int, month: Int, day: Int, pattern: String) -> String {
+            if pattern == "MMM. d" { return "\(DateUtils.shortMonthName(month)) \(day)" }
+            if pattern == "MMM. d, yyyy" { return DateUtils.shortDateText(year: year, month: month, day: day) }
             guard let date = gmtCalendar.date(from: DateComponents(year: year, month: month, day: day)),
                   let formatter = formatters[pattern] else { return String(year) }
-            let text = formatter.string(from: date)
-            // The dot marks a cut name, so a month as short as "May" keeps none.
-            let symbols = formatter.shortMonthSymbols ?? []
-            guard pattern.hasPrefix("MMM."), symbols.indices.contains(month - 1),
-                  symbols[month - 1] == formatter.monthSymbols?[month - 1] else { return text }
-            return text.replacingOccurrences(of: symbols[month - 1] + ".", with: symbols[month - 1])
+            return formatter.string(from: date)
         }
 
         private static let gmtCalendar: Calendar = {
@@ -223,7 +220,7 @@ private extension ComplexDateText {
 
         /// One formatter per pattern, made once; a list cell reads several dates on every scroll.
         private static let formatters: [String: DateFormatter] = Dictionary(uniqueKeysWithValues: [
-            "MMM. d", "MMM. d, yyyy", "MMMM yyyy", "MMMM d, yyyy", "yyyy-MM-dd"
+            "MMMM yyyy", "MMMM d, yyyy", "yyyy-MM-dd"
         ].map { pattern in
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "en_US")

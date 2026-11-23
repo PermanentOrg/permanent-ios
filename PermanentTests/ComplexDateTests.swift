@@ -14,7 +14,7 @@ import Testing
 /// stands in, and sorting treats it as no date.
 struct ComplexDateTests {
     static let complexValues = [
-        "1985/1990", "1985-06/1990", "../1990", "1985/..", "1985~", "1985?", "1985%", "198X", "1985-XX"
+        "1985/1990", "1985-06/1990", "../1990", "1985/..", "1985~", "1985?", "1985%", "198X", "1985-10-XX", "1985-XX~", "1985-XX-03"
     ]
     private let legacy = "2023-08-15T00:00:00.000Z"
 

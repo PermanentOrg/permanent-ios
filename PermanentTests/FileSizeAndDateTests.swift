@@ -10,7 +10,6 @@ import Testing
 @testable import Permanent
 
 /// The line under a row's name in the file lists, "4 MB • Aug. 15, 2023", and its VoiceOver text.
-/// August, because iOS versions write September as "Sep." or "Sept.".
 struct FileSizeAndDateTests {
     private func child(_ fields: String) throws -> FileModel {
         let json = "{ \"items\": [ { \(fields) } ] }"

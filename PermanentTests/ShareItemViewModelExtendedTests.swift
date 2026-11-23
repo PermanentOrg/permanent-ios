@@ -1275,7 +1275,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
     func testFormatDate_ValidDate_ReturnsFormattedString() {
         let result = ShareItemViewModel.formatDate("2026-05-07T10:30:00")
-        XCTAssertEqual(result, "May. 7, 2026")
+        XCTAssertEqual(result, "May 7, 2026")
     }
 
     func testFormatDate_EmptyString_ReturnsEmpty() {
