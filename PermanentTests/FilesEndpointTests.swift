@@ -117,8 +117,8 @@ final class FilesEndpointTests: XCTestCase {
     }
 
     // MARK: - 401 force-logout exemption contract (ignoreErrors)
-    // Reads are exempt, since a bearer-only fetch of a foreign item legitimately 401s. Writes must
-    // keep the signal, or an expired session fails silently with no re-login prompt.
+    // Reads are exempt, since a bearer-only fetch of a foreign item legitimately 401s. Record writes keep
+    // the signal; the folder PATCH is exempt, as it also edits shared folders and shows its own error.
 
     func testV2AuthExemption_ReadsExempt_WritesKeepExpirySignal() {
         XCTAssertTrue(RecordV2Endpoint.getRecordById(recordId: "1", shareToken: nil).ignoreErrors)
@@ -126,7 +126,7 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertFalse(RecordV2Endpoint.copyRecord(recordId: "1", destinationFolderId: "2").ignoreErrors)
         XCTAssertTrue(FolderV2Endpoint.getFolderChildren(folderId: "1", shareToken: "", pageSize: 10).ignoreErrors)
         XCTAssertTrue(FolderV2Endpoint.getFolderById(folderId: "1", shareToken: "").ignoreErrors)
-        XCTAssertFalse(FolderV2Endpoint.patchFolder(folderId: "1", fields: ["sort": "date-ascending"]).ignoreErrors)
+        XCTAssertTrue(FolderV2Endpoint.patchFolder(folderId: "1", fields: ["sort": "date-ascending"]).ignoreErrors)
     }
 
     // MARK: - FolderV2Endpoint (Stela) — folder PATCH, the sort write

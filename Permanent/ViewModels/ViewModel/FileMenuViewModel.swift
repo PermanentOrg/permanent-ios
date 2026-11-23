@@ -124,20 +124,12 @@ class FileMenuViewModel: ObservableObject {
         if let selectedFiles = selectedFiles, selectedFiles.count > 1 {
             // Multiple files selected
             let files = selectedFiles.filter { !$0.type.isFolder }
-            let folders = selectedFiles.filter { $0.type.isFolder }
-            
+
             // Calculate total file size (only for files, not folders)
             let totalSize = files.reduce(Int64(0)) { $0 + $1.size }
             self.cachedFormattedFileSize = totalSize > 0 ? Self.formatFileSize(totalSize) : nil
-            
-            // If there are folders, use the date of the first folder, otherwise use the date of the first file
-            if let firstFolder = folders.first {
-                self.cachedFormattedDate = firstFolder.displayDateText
-            } else if let firstFile = files.first {
-                self.cachedFormattedDate = firstFile.displayDateText
-            } else {
-                self.cachedFormattedDate = ""
-            }
+            // One item's date would stand for all of them, so the header keeps only the total size.
+            self.cachedFormattedDate = ""
         } else {
             // Single file selected
             self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)

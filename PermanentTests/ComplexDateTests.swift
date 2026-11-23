@@ -106,4 +106,45 @@ struct ComplexDateTests {
         file.displayTime = displayTime
         #expect(EditDateAndTimeView.menuDoor(for: file) {} is UIHostingController<EditDateAndTimeView>)
     }
+
+    @Test("Web's Unknown date and an approximate year are web-only, and Unknown reads as such")
+    func webUnknownAndApproximateAreWebOnly() {
+        #expect(DateUtils.isWebOnlyDate("XXXX-XX-XX"))
+        #expect(DateUtils.isWebOnlyDate("2025~"))
+        var file = FileModel.mockFile()
+        file.displayTime = "XXXX-XX-XX"
+        #expect(file.displayDateText == "ComplexDateUnknown".localized())
+    }
+
+    // MARK: - The message panel
+
+    @Test("A drag up never moves the panel, so it keeps its size; a drag down follows the finger",
+          arguments: [(-300, 0), (-1, 0), (0, 0), (40, 40)] as [(CGFloat, CGFloat)])
+    func panelNeverGrows(drag: CGFloat, offset: CGFloat) {
+        #expect(WebOnlyDateMessage.offset(forDrag: drag) == offset)
+    }
+
+    @Test("Only a long or quick drag down closes the panel")
+    func panelClosesOnALongDragDown() {
+        #expect(!WebOnlyDateMessage.closes(afterDrag: -400, predicted: -800))
+        #expect(!WebOnlyDateMessage.closes(afterDrag: 60, predicted: 100))
+        #expect(WebOnlyDateMessage.closes(afterDrag: WebOnlyDateMessage.closingDrag + 1, predicted: 0))
+        #expect(WebOnlyDateMessage.closes(afterDrag: 60, predicted: WebOnlyDateMessage.closingDrag * 2 + 1))
+    }
+
+    @Test("The card waits below the bottom edge so it slides in and out; with Reduce Motion it only fades")
+    func panelSlidesFromTheBottomEdge() {
+        let slides = WebOnlyDateMessage.hiddenCard(reduceMotion: false, screenHeight: 852)
+        #expect(slides.offset == 852 && slides.opacity == 1)
+        let fades = WebOnlyDateMessage.hiddenCard(reduceMotion: true, screenHeight: 852)
+        #expect(fades.offset == 0 && fades.opacity == 0)
+    }
+
+    @Test("UIKit shows the message over the whole screen, not as a system sheet that stretches")
+    @MainActor
+    func panelIsNotASystemSheet() {
+        let controller = WebOnlyDateMessage.host(message: "message")
+        #expect(controller.modalPresentationStyle == .overFullScreen)
+        #expect(controller.sheetPresentationController == nil)
+    }
 }

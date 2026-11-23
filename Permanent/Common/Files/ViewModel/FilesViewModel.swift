@@ -124,6 +124,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var selectedFiles: [FileModel]? = []
     var currentFolder: FileModel? { navigationStack.last }
     var isSelecting: Bool = false
+
+    /// A new select mode starts with nothing picked. A Move or Copy that waits for its folder keeps its files.
+    func startSelecting() {
+        if fileAction == .none {
+            selectedFiles = []
+        }
+        isSelecting = true
+    }
     var isSelectingDestination: Bool = false
     var checkboxState: CheckboxState = .none
     

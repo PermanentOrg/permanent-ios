@@ -85,12 +85,7 @@ extension FolderV2Endpoint: RequestProtocol {
         return ["Content-Type": "application/json", "Request-Version": "2"]
     }
 
-    /// The reads have V1 failsafes, so a 401 there must not force-logout: it can be a foreign-archive
-    /// rejection. The PATCH runs on the session's own archive only, so its 401 really is an expired session.
-    var ignoreErrors: Bool {
-        switch self {
-        case .getFolderById, .getFolderChildren: return true
-        case .patchFolder: return false
-        }
-    }
+    /// No folder call forces a logout on 401: the reads fall back to V1, and the PATCH also edits folders shared
+    /// from other archives, where a 401 is a refusal that the caller shows as a save error.
+    var ignoreErrors: Bool { true }
 }

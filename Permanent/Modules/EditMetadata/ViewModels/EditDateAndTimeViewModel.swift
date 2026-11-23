@@ -40,6 +40,8 @@ class EditDateAndTimeViewModel: ObservableObject {
     /// Test seams for a save: one record's V2 PATCH, the V1 batch and the session's archive stand in
     /// for the server and the sign-in. Production leaves the requests nil.
     var patchRecordRequest: ((_ file: FileModel, _ fields: [String: Any], _ completion: @escaping (Bool) -> Void) -> Void)?
+    /// Test seam for one folder's V2 PATCH; production sends it to Stela.
+    var patchFolderRequest: ((_ file: FileModel, _ fields: [String: Any], _ completion: @escaping (Bool) -> Void) -> Void)?
     var updateV1Request: ((_ files: [FileModel], _ completion: @escaping (Bool) -> Void) -> Void)?
     var sessionArchiveId: () -> Int? = { AuthenticationManager.shared.session?.selectedArchive?.archiveID }
     /// What one item read gives back; nil when the read failed.
@@ -114,7 +116,7 @@ class EditDateAndTimeViewModel: ObservableObject {
         didReadZone = true
         let archiveId = sessionArchiveId()
         let opensAlone = Self.readsRecordZone(recordZone, fileCount: selectedFiles.count)
-        readsZone = opensAlone && selectedFiles.first?.savesDateToV2(sessionArchiveId: archiveId) == true
+        readsZone = opensAlone && selectedFiles.first?.savesDateToStela(sessionArchiveId: archiveId) == true
         if opensAlone && !readsZone {
             settle(recordZone: nil)
         }
@@ -224,7 +226,8 @@ class EditDateAndTimeViewModel: ObservableObject {
                 completion(nil)
                 return
             }
-            completion((zone: nil, displayTime: model.items?.first?.displayTime))
+            let folder = model.items?.first
+            completion((zone: folder?.location?.timezone, displayTime: folder?.displayTime))
         }
     }
 
@@ -261,16 +264,18 @@ class EditDateAndTimeViewModel: ObservableObject {
         }
         selectedFiles = savable.map { selectedFiles[$0] }
         isLoading = true
-        // One PATCH per record to Stela V2 `displayTime`, with the V1 batch as the failsafe. Any folder,
-        // unsaved or shared record sends the whole batch to V1, as the other batch edits do.
+        // One PATCH per item to Stela V2 `displayTime`, with the V1 batch as the failsafe. Any unsaved or
+        // shared record sends the whole batch to V1, as the other batch edits do.
         let archiveId = sessionArchiveId()
-        guard !selectedFiles.isEmpty, selectedFiles.allSatisfy({ $0.savesDateToV2(sessionArchiveId: archiveId) }) else {
+        guard !selectedFiles.isEmpty, selectedFiles.allSatisfy({ $0.savesDateToStela(sessionArchiveId: archiveId) }) else {
             applyChangesV1()
             return
         }
         let fields = patchFields
         // V1 writes only the old field, so its retry is seen only while no record shows a `displayTime`.
-        let retriesV1 = !entry.isEmpty && DateUtils.showsLegacyDate(displayTimes: selectedFiles.map(\.displayTime))
+        // V1 cannot save a folder, so a folder's failed PATCH shows the alert, as on web.
+        let retriesV1 = !entry.isEmpty && !selectedFiles.contains(where: \.type.isFolder)
+            && DateUtils.showsLegacyDate(displayTimes: selectedFiles.map(\.displayTime))
         patchEachRecord(fields: fields) { [weak self] succeeded in
             if succeeded {
                 self?.isLoading = false
@@ -297,12 +302,32 @@ class EditDateAndTimeViewModel: ObservableObject {
         return fields
     }
 
+    /// One PATCH per item, in order: a folder to the folder route, a record to the record route.
     private func patchEachRecord(fields: [String: Any], completion: @escaping (Bool) -> Void) {
-        guard let injected = patchRecordRequest else {
-            selectedFiles.patchEachRecordToV2(fieldsFor: { _ in fields }, completion: completion)
-            return
+        let patchRecord = patchRecordRequest ?? Self.patchRecordToV2
+        let patchFolder = patchFolderRequest ?? Self.patchFolderToV2
+        [FileModel].patchSequentially(files: selectedFiles, fieldsFor: { _ in fields }, patchOne: { file, fields, done in
+            if file.type.isFolder {
+                patchFolder(file, fields, done)
+            } else {
+                patchRecord(file, fields, done)
+            }
+        }, completion: completion)
+    }
+
+    private static func patchRecordToV2(file: FileModel, fields: [String: Any], completion: @escaping (Bool) -> Void) {
+        [file].patchEachRecordToV2(fieldsFor: { _ in fields }, completion: completion)
+    }
+
+    private static func patchFolderToV2(file: FileModel, fields: [String: Any], completion: @escaping (Bool) -> Void) {
+        let operation = APIOperation(FolderV2Endpoint.patchFolder(folderId: String(file.folderId), fields: fields))
+        operation.execute(in: APIRequestDispatcher()) { result in
+            if case .json = result {
+                completion(true)
+            } else {
+                completion(false)
+            }
         }
-        [FileModel].patchSequentially(files: selectedFiles, fieldsFor: { _ in fields }, patchOne: injected, completion: completion)
     }
 
     /// V1 takes the fields as a moment, as the old calendar sent it. It cannot clear, so an empty entry only reports.
