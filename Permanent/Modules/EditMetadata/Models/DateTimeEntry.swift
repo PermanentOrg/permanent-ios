@@ -100,7 +100,7 @@ struct DateTimeEntry: Hashable {
             } else {
                 set(written: parts)
             }
-        } else if !DateUtils.isComplexDate(displayTime),
+        } else if !DateUtils.isWebOnlyDate(displayTime),
                   let moment = DateUtils.date(fromISO: DateUtils.shownLegacy(legacy, onlyEDTF: onlyEDTF)) {
             set(moment: moment, timeZone: timeZone)
         }

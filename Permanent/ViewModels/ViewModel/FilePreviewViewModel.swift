@@ -382,7 +382,7 @@ class FilePreviewViewModel: ViewModelInterface {
     
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
         // A complex date is only changed on web.
-        if date != nil, DateUtils.isComplexDate(dateRowDisplayTime) {
+        if date != nil, DateUtils.isWebOnlyDate(dateRowDisplayTime) {
             completion(false)
             return
         }
@@ -478,7 +478,7 @@ class FilePreviewViewModel: ViewModelInterface {
     /// How the complex date reads on the Info tab; each clock time gets its zone as an exact date would.
     func infoRowComplexDate() -> ComplexDateText? {
         let record = recordVO?.recordVO
-        guard let displayTime = dateRowDisplayTime, DateUtils.isComplexDate(displayTime) else { return nil }
+        guard let displayTime = dateRowDisplayTime, DateUtils.isWebOnlyDate(displayTime) else { return nil }
         return ComplexDateText(displayTime) { end in
             DateTimeEntry.timeSuffix(displayTime: end, timeZoneIdentifier: record?.timezone)
         }

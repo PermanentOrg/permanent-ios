@@ -98,7 +98,7 @@ final class FileMenuViewModelTests: XCTestCase {
 
     func testFormatDate_ValidDate_ReturnsFormatted() {
         let result = FileMenuViewModel.formatDate("2026-05-07")
-        XCTAssertEqual(result, "May. 7, 2026")
+        XCTAssertEqual(result, "May 7, 2026")
     }
 
     func testFormatDate_EmptyString_ReturnsEmpty() {

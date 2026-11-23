@@ -28,27 +28,66 @@ open class DateUtils {
     }
 
     /// The one source of a record's user-facing date, e.g. "Sept. 16, 2023". Takes a full ISO stamp or
-    /// a bare date; parses with `en_US_POSIX` and displays with `en_US`, so device locale can't shift it.
+    /// a bare date; parses with `en_US_POSIX` and writes fixed English names, so neither locale nor iOS shifts it.
     static func displayDate(from raw: String?) -> String {
         guard let raw = raw, raw != "-" else { return "" }
         let dateOnly = raw.dateOnly
         guard !dateOnly.isEmpty else { return "" }
 
-        // A year or a month alone comes from `displayTime`, and shows only what is known: "1985", "Oct. 1985".
-        let formats = [("yyyy", "yyyy"), ("yyyy-MM", "MMM. yyyy"), ("yyyy-MM-dd", "MMM. d, yyyy")]
+        // A year or a month alone comes from `displayTime`, and shows only what is known: "1985", "October 1985".
+        let patterns = ["yyyy", "yyyy-MM", "yyyy-MM-dd"]
         let fieldCount = dateOnly.components(separatedBy: "-").count
-        guard fieldCount <= formats.count else { return "" }
-        let (pattern, shownPattern) = formats[fieldCount - 1]
+        guard fieldCount <= patterns.count else { return "" }
 
         let parser = DateFormatter()
         parser.locale = Locale(identifier: "en_US_POSIX")
-        parser.dateFormat = pattern
+        parser.calendar = Calendar(identifier: .gregorian)
+        parser.timeZone = .gmt
+        parser.dateFormat = patterns[fieldCount - 1]
         guard let date = parser.date(from: dateOnly) else { return "" }
 
-        let display = DateFormatter()
-        display.locale = Locale(identifier: "en_US")
-        display.dateFormat = shownPattern
-        return display.string(from: date)
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .gmt
+        let fields = calendar.dateComponents([.year, .month, .day], from: date)
+        guard let year = fields.year else { return "" }
+        return shortDateText(year: year, month: fieldCount > 1 ? fields.month : nil, day: fieldCount > 2 ? fields.day : nil)
+    }
+
+    /// "Sept. 16, 2023", "October 1985" or "1985": the list's form of a date, as Android and web write it.
+    static func shortDateText(year: Int, month: Int?, day: Int?) -> String {
+        let yearText = String(format: "%04d", year)
+        guard let month, (1...12).contains(month) else { return yearText }
+        guard let day else { return monthNames[month - 1] + " " + yearText }
+        return "\(shortMonthName(month)) \(day), \(yearText)"
+    }
+
+    /// "Jan.", "May", "Sept.": fixed text, because the iOS short names differ between versions.
+    static func shortMonthName(_ month: Int) -> String {
+        let names = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
+        return names.indices.contains(month - 1) ? names[month - 1] : ""
+    }
+
+    private static let monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+
+    /// The list's text: an exact date with a clock reads "Jun. 24, 2026 • 12:56 AM CT", anything else the day of
+    /// `listDate`. A `Z` time shows on the phone's clock.
+    /// - Parameters:
+    ///   - zoneSuffix: the zone label for `displayTime`, asked only when it has a clock.
+    static func listDateText(
+        displayTime: String?, listDate: String?, timeZone: TimeZone = .current, zoneSuffix: (String) -> String? = { _ in nil }
+    ) -> String {
+        guard let displayTime, let parts = level0Start(displayTime)?.parts, parts.hour != nil,
+              let date = date(fromDisplayTime: displayTime, timeZone: timeZone) else { return displayDate(from: listDate) }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        let shown = calendar.dateComponents([.year, .month, .day], from: date)
+        guard let year = shown.year else { return displayDate(from: listDate) }
+        let text = shortDateText(year: year, month: shown.month, day: shown.day) + " • " + formatted(date, pattern: "h:mm a", timeZone: timeZone)
+        guard let zone = zoneSuffix(displayTime), !zone.isEmpty else { return text }
+        return text + " " + zone
     }
 
     /// Parses the backend's ISO timestamps, with or without fractional seconds and a timezone; a
@@ -82,13 +121,32 @@ open class DateUtils {
         return level0DateTime(raw) == nil
     }
 
+    /// True for a complex date the app may only show: every one but a year with an unknown month or day.
+    static func isWebOnlyDate(_ raw: String?) -> Bool {
+        isComplexDate(raw) && yearOfUnknownMonth(raw) == nil
+    }
+
+    /// "1985" for `1985-XX` and `1985-XX-XX`, which say no more than the year; nil for anything else.
+    static func yearOfUnknownMonth(_ raw: String?) -> String? {
+        guard let raw else { return nil }
+        let fields = raw.components(separatedBy: "-")
+        guard (2...3).contains(fields.count), fields.dropFirst().allSatisfy({ $0 == "XX" }),
+              level0Date(fields[0]) != nil else { return nil }
+        return fields[0]
+    }
+
+    /// The value the screens read and the date sheet edits: a year with an unknown month or day as the year alone.
+    private static func editableDisplayTime(_ raw: String?) -> String? {
+        yearOfUnknownMonth(raw) ?? raw
+    }
+
     /// A list's date: `displayTime` as written ("1985-10-23"), a `Z` time as the phone's day, else the old field
-    /// while shown, else "-". A complex date gives "", as the row shows it through `ComplexDateText`.
+    /// while shown, else "-". A web-only date gives "", as the row shows it through `ComplexDateText`.
     static func listDate(
         displayTime: String?, legacy: String?, timeZone: TimeZone = .current,
         onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
     ) -> String {
-        guard !isComplexDate(displayTime) else { return "" }
+        guard !isWebOnlyDate(displayTime) else { return "" }
         if let start = level0Start(displayTime) {
             guard start.parts.timeZone != nil, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) else {
                 return start.text.dateOnly
@@ -144,7 +202,7 @@ open class DateUtils {
         displayTime: String?, legacy: String?, zoneAbbreviation: String? = nil, timeZone: TimeZone = .current,
         onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
     ) -> String? {
-        guard !isComplexDate(displayTime) else { return nil }
+        guard !isWebOnlyDate(displayTime) else { return nil }
         let text: String
         if let parts = level0Start(displayTime)?.parts, let date = date(fromDisplayTime: displayTime, timeZone: timeZone) {
             let dayPattern = parts.day != nil ? "MMMM d, yyyy" : parts.month != nil ? "MMMM yyyy" : "yyyy"
@@ -196,9 +254,10 @@ open class DateUtils {
         displayTimes.allSatisfy { $0?.isEmpty ?? true }
     }
 
-    /// One exact EDTF Level 0 date and its fields; nil for anything else, a range included.
+    /// One exact EDTF Level 0 date and its fields, a year with an unknown month or day as the year; nil for
+    /// anything else, a range included.
     private static func level0Start(_ raw: String?) -> (text: String, parts: DateComponents)? {
-        guard let raw = raw else { return nil }
+        guard let raw = editableDisplayTime(raw) else { return nil }
         return level0DateTime(raw).map { (text: raw, parts: $0) }
     }
 

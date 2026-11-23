@@ -79,7 +79,7 @@ extension WebOnlyDateMessage {
 
     /// True when this file's date may only be viewed or edited on web.
     static func applies(to displayTime: String?) -> Bool {
-        DateUtils.isComplexDate(displayTime)
+        DateUtils.isWebOnlyDate(displayTime)
     }
 
     /// "2 of the 5 selected items have complex EDTF dates…" for Edit Metadata on several files.

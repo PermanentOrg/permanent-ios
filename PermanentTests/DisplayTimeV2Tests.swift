@@ -48,7 +48,7 @@ struct DisplayTimeV2Tests {
         #expect(record.displayTime == "2026-07-15T12:45:00")
         #expect(record.createdDT == "2023-08-15T00:00:00.000Z")
         #expect(folder.date == "1990-05-01")
-        #expect(DateUtils.displayDate(from: folder.date) == "May. 1, 1990")
+        #expect(DateUtils.displayDate(from: folder.date) == "May 1, 1990")
     }
 
     @Test("A child with a complex displayTime shows no date; one with none keeps the old date")

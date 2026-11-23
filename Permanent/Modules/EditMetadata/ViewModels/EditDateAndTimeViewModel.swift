@@ -178,18 +178,18 @@ class EditDateAndTimeViewModel: ObservableObject {
             if (selectedFiles[index].displayTime ?? "").isEmpty { failedReads.insert(index) }
             return
         }
-        guard DateUtils.isComplexDate(answer.displayTime) else { return }
+        guard DateUtils.isWebOnlyDate(answer.displayTime) else { return }
         selectedFiles[index].displayTime = answer.displayTime
     }
 
     /// The rows a save may change: read, and not a complex date.
     private var savableIndices: [Int] {
-        selectedFiles.indices.filter { !failedReads.contains($0) && !DateUtils.isComplexDate(selectedFiles[$0].displayTime) }
+        selectedFiles.indices.filter { !failedReads.contains($0) && !DateUtils.isWebOnlyDate(selectedFiles[$0].displayTime) }
     }
 
     private func finishReads() {
         isReadingRecord = false
-        if selectedFiles.contains(where: { DateUtils.isComplexDate($0.displayTime) }) {
+        if selectedFiles.contains(where: { DateUtils.isWebOnlyDate($0.displayTime) }) {
             showWebOnlyMessage()
         }
     }
