@@ -132,12 +132,18 @@ struct ComplexDateTests {
         #expect(WebOnlyDateMessage.closes(afterDrag: 60, predicted: WebOnlyDateMessage.closingDrag * 2 + 1))
     }
 
-    @Test("The card waits below the bottom edge so it slides in and out; with Reduce Motion it only fades")
+    @Test("The card waits one card height below the bottom edge, so it moves in with the scrim; Reduce Motion only fades")
     func panelSlidesFromTheBottomEdge() {
-        let slides = WebOnlyDateMessage.hiddenCard(reduceMotion: false, screenHeight: 852)
-        #expect(slides.offset == 852 && slides.opacity == 1)
-        let fades = WebOnlyDateMessage.hiddenCard(reduceMotion: true, screenHeight: 852)
+        let slides = WebOnlyDateMessage.hiddenCard(reduceMotion: false, cardHeight: 420, bottomInset: 34)
+        #expect(slides.offset == 454 && slides.opacity == 1)
+        let fades = WebOnlyDateMessage.hiddenCard(reduceMotion: true, cardHeight: 420, bottomInset: 34)
         #expect(fades.offset == 0 && fades.opacity == 0)
+    }
+
+    @Test("Before its height is known the card stays clear, so it never shows in place before the slide")
+    func panelHidesUntilMeasured() {
+        let unmeasured = WebOnlyDateMessage.hiddenCard(reduceMotion: false, cardHeight: 0, bottomInset: 34)
+        #expect(unmeasured.offset == 0 && unmeasured.opacity == 0)
     }
 
     @Test("UIKit shows the message over the whole screen, not as a system sheet that stretches")

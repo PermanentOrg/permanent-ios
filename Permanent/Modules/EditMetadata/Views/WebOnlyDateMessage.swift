@@ -19,6 +19,7 @@ struct WebOnlyDateMessage: View {
     @State private var dragOffset: CGFloat = 0
     @State private var isShown = false
     @State private var isClosing = false
+    @State private var cardHeight: CGFloat = 0
 
     static let cornerRadius: CGFloat = 38
     private static let padding: CGFloat = 32
@@ -33,7 +34,7 @@ struct WebOnlyDateMessage: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let hidden = Self.hiddenCard(reduceMotion: reduceMotion, screenHeight: proxy.size.height + proxy.safeAreaInsets.bottom)
+            let hidden = Self.hiddenCard(reduceMotion: reduceMotion, cardHeight: cardHeight, bottomInset: proxy.safeAreaInsets.bottom)
             ZStack(alignment: .bottom) {
                 Gradient.darkLightBlueGradient
                     .opacity(isShown ? 0.48 : 0)
@@ -43,18 +44,33 @@ struct WebOnlyDateMessage: View {
                 card
                     .offset(y: isShown ? dragOffset : hidden.offset)
                     .opacity(isShown ? 1 : hidden.opacity)
+                    .background(GeometryReader { card in
+                        Color.clear
+                            .onAppear { measured(card.size.height) }
+                            .onChange(of: card.size.height) { measured($0) }
+                    })
                     .gesture(drag)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         }
-        .onAppear {
-            withAnimation(.easeOut(duration: Self.slideDuration)) { isShown = true }
-        }
     }
 
-    /// Where the card waits off screen: below the bottom edge, or in place and clear when it only fades.
-    static func hiddenCard(reduceMotion: Bool, screenHeight: CGFloat) -> (offset: CGFloat, opacity: Double) {
-        reduceMotion ? (0, 0) : (screenHeight, 1)
+    /// Where the card waits: just below the bottom edge, so it shows from the first frame as the scrim fades in.
+    /// It stays clear until its height is known, and with Reduce Motion it waits in place and only fades.
+    static func hiddenCard(reduceMotion: Bool, cardHeight: CGFloat, bottomInset: CGFloat) -> (offset: CGFloat, opacity: Double) {
+        guard cardHeight > 0, !reduceMotion else { return (0, 0) }
+        return (cardHeight + bottomInset, 1)
+    }
+
+    /// The entrance waits for the card's height, then starts one turn later from the hidden place just drawn.
+    private func measured(_ height: CGFloat) {
+        let isFirst = cardHeight == 0 && height > 0
+        cardHeight = height
+        guard isFirst else { return }
+        DispatchQueue.main.async {
+            guard !isClosing else { return }
+            withAnimation(.easeOut(duration: Self.slideDuration)) { isShown = true }
+        }
     }
 
     /// Every way out runs the same exit, then tells the door once the card is gone.
