@@ -735,19 +735,21 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertNotNil(sut.cachedFormattedDate)
     }
 
-    func testInit_MultipleFilesWithFolder_UseFolderDateFirst() {
+    func testInit_MultipleItemsWithFolder_HeaderShowsNoDate() {
         let file1 = makeFileModel(name: "A.pdf")
-        let folder = makeFolderModel()
+        var folder = makeFolderModel()
+        folder.displayTime = "2018-03-30T22:14:00+03:00"
+        XCTAssertFalse(folder.displayDateText.isEmpty)
 
         let sut = FileMenuViewModel(
-            fileViewModel: file1,
+            fileViewModel: folder,
             menuItems: [],
             selectedItemCount: 2,
-            selectedFiles: [file1, folder],
+            selectedFiles: [folder, file1],
             onDismiss: {}
         )
 
-        XCTAssertNotNil(sut.cachedFormattedDate)
+        XCTAssertEqual(sut.cachedFormattedDate, "", "one item's date must not stand for the whole selection")
     }
 
     // MARK: - Scrolling Tests

@@ -208,10 +208,10 @@ struct MetadataEditView: View {
         }, rightButton: {
             EmptyView()
         })
-        .sheet(isPresented: $showWebOnlyDate) {
-            let message = viewModel.webOnlyDateMessage
-            WebOnlyDateMessage(message: message) { showWebOnlyDate = false }
-                .presentationDetents([.height(WebOnlyDateMessage.fittingHeight(message: message))])
+        .overlay {
+            if showWebOnlyDate {
+                WebOnlyDateMessage(message: viewModel.webOnlyDateMessage) { showWebOnlyDate = false }
+            }
         }
     }
 

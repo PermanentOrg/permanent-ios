@@ -73,13 +73,34 @@ struct ItemMenuLayoutTests {
         #expect(FileMenuItems.types(for: item(role: "viewer"), in: .sharedWithMe(isRoot: true)) == [.unshare])
     }
 
-    @Test("Adjust date and time shows for every file a role can edit, in every place, and never for a folder", arguments: roles)
+    @Test("With the folder date flag on, Adjust date and time shows for every file and folder a role can edit",
+          arguments: roles)
     func dateRowNeedsTheEditRight(role: String) {
         for place in places {
-            let file = item(role: role)
-            #expect(FileMenuItems.types(for: file, in: place).contains(.adjustDateTime) == file.permissions.contains(.edit), "\(role), \(place)")
-            #expect(!FileMenuItems.types(for: item(role: role, isFolder: true), in: place).contains(.adjustDateTime), "\(role), \(place)")
+            for isFolder in [false, true] {
+                let item = item(role: role, isFolder: isFolder)
+                let shows = FileMenuItems.types(for: item, in: place, editsFolderDates: true).contains(.adjustDateTime)
+                #expect(shows == item.permissions.contains(.edit), "\(role), \(place), folder: \(isFolder)")
+            }
         }
+    }
+
+    @Test("With the folder date flag off, no folder gets the date row and files keep it", arguments: roles)
+    func folderDateFlagOff(role: String) {
+        for place in places {
+            let folder = item(role: role, isFolder: true)
+            #expect(!FileMenuItems.types(for: folder, in: place, editsFolderDates: false).contains(.adjustDateTime), "\(role), \(place)")
+            let file = item(role: role)
+            let fileShows = FileMenuItems.types(for: file, in: place, editsFolderDates: false).contains(.adjustDateTime)
+            #expect(fileShows == file.permissions.contains(.edit), "\(role), \(place)")
+        }
+    }
+
+    @Test("A folder's date row comes right after Rename")
+    func folderDateRowFollowsRename() throws {
+        let types = FileMenuItems.types(for: item(role: "editor", isFolder: true), in: .privateFiles, editsFolderDates: true)
+        let rename = try #require(types.firstIndex(of: .rename))
+        #expect(types[rename + 1] == .adjustDateTime)
     }
 
     @Test("The date row comes right after Rename, and View information right after the date row")

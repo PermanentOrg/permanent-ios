@@ -43,16 +43,18 @@ struct EditDateAndTimeView: View {
             }
             .safeAreaInset(edge: .bottom) { bottomButtons }
             .background(Color.white.ignoresSafeArea())
-            .accessibilityHidden(showsZonePicker)
-            .sheet(isPresented: $viewModel.showsWebOnlyDate, onDismiss: { close(saved: false) }) {
-                let message = viewModel.webOnlyMessage
-                WebOnlyDateMessage(message: message) { viewModel.showsWebOnlyDate = false }
-                    .presentationDetents([.height(WebOnlyDateMessage.fittingHeight(message: message))])
-            }
+            .accessibilityHidden(showsZonePicker || viewModel.showsWebOnlyDate)
             if showsZonePicker {
                 TimeZonePickerSheet(entry: $viewModel.entry) { closeZonePicker() }
                     .transition(reduceMotion ? .identity : .move(edge: .trailing))
                     .zIndex(1)
+            }
+            if viewModel.showsWebOnlyDate {
+                WebOnlyDateMessage(message: viewModel.webOnlyMessage) {
+                    viewModel.showsWebOnlyDate = false
+                    close(saved: false)
+                }
+                .zIndex(2)
             }
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "ChangeDateAndTime".localized(), message: confirmationMessage, buttonTitle: "Modify") {
@@ -256,8 +258,23 @@ extension EditDateAndTimeView {
     /// The screen for one file, for UIKit to present. It closes itself, then tells `onClose` whether the date was saved.
     /// A door that has read the record passes it; a list door passes none and the sheet reads it.
     static func host(for file: FileModel, record: RecordVOData? = nil, onClose: @escaping (Bool) -> Void) -> UIViewController {
+        host(EditDateAndTimeViewModel(file: file, record: record, hasUpdates: .constant(false)), onClose: onClose)
+    }
+
+    /// What the selection menu's date row opens for several items: the counted web-only message when any item has a
+    /// complex date, as Edit Metadata shows it, else the date sheet.
+    @MainActor
+    static func menuDoor(for files: [FileModel], onSaved: @escaping () -> Void) -> UIViewController {
+        guard !files.contains(where: { WebOnlyDateMessage.applies(to: $0.displayTime) }) else {
+            return WebOnlyDateMessage.host(message: WebOnlyDateMessage.message(for: files))
+        }
+        return host(EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false))) { saved in
+            if saved { onSaved() }
+        }
+    }
+
+    private static func host(_ viewModel: EditDateAndTimeViewModel, onClose: @escaping (Bool) -> Void) -> UIViewController {
         weak var host: UIViewController?
-        let viewModel = EditDateAndTimeViewModel(file: file, record: record, hasUpdates: .constant(false))
         let view = EditDateAndTimeView(viewModel: viewModel, onClose: { saved in
             host?.dismiss(animated: true) { onClose(saved) }
         })

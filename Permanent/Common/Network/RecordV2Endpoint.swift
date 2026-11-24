@@ -98,6 +98,12 @@ extension FileModel {
         guard let sessionArchiveId, recordId > 0, !type.isFolder else { return false }
         return archiveId > 0 && archiveId == sessionArchiveId
     }
+
+    /// Whether the date sheet saves this item to Stela V2. A folder has no V1 date save, so every folder with an
+    /// id goes to V2, shared ones too, as web does; a record follows `savesDateToV2`.
+    func savesDateToStela(sessionArchiveId: Int?) -> Bool {
+        type.isFolder ? folderId > 0 : savesDateToV2(sessionArchiveId: sessionArchiveId)
+    }
 }
 
 extension Array where Element == FileModel {

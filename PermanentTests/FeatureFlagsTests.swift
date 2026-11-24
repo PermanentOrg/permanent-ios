@@ -60,6 +60,18 @@ struct FeatureFlagsTests {
         #expect(FeatureFlags(defaults: defaults).showsOnlyEDTFDate)
     }
 
+    @Test("The folder date edit is off until the server lists folder-date-edit, whatever else is on")
+    func folderDateEditStartsOff() throws {
+        let flags = try fresh()
+        #expect(!flags.editsFolderDates)
+
+        flags.apply(names: ["edtf-date"])
+        #expect(!flags.editsFolderDates)
+
+        flags.apply(names: ["edtf-date", "folder-date-edit"])
+        #expect(flags.editsFolderDates)
+    }
+
     @Test("The completion runs on the main thread")
     func completionOnMain() async throws {
         let flags = try fresh()

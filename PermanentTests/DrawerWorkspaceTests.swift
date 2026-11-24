@@ -85,4 +85,37 @@ final class DrawerWorkspaceTests: XCTestCase {
         XCTAssertEqual(AuthenticationManager.shared.session?.selectedFiles?.count, 1)
         XCTAssertEqual(AuthenticationManager.shared.session?.fileAction, .move)
     }
+
+    func testTheSameWorkspaceAgain_NewSelectModeStartsEmpty() {
+        let drawer = drawer(showing: filesScreen(MyFilesViewModel()))
+        AuthenticationManager.shared.session?.selectedFiles = [photo, photo, photo, photo]
+        let reopened = MyFilesViewModel()
+        drawer.changeRoot(viewController: filesScreen(reopened))
+
+        reopened.startSelecting()
+
+        XCTAssertTrue(reopened.isSelecting)
+        XCTAssertEqual(reopened.selectedFiles?.count, 0, "files picked in an earlier select mode stay unpicked")
+    }
+
+    func testMoveWaitingForItsFolder_NewSelectModeKeepsItsFiles() {
+        let drawer = drawer(showing: filesScreen(MyFilesViewModel()))
+        pickPhotoForMove()
+        let reopened = MyFilesViewModel()
+        drawer.changeRoot(viewController: filesScreen(reopened))
+
+        reopened.startSelecting()
+
+        XCTAssertEqual(reopened.selectedFiles?.count, 1)
+        XCTAssertEqual(AuthenticationManager.shared.session?.fileAction, .move)
+    }
+
+    func testSharesScreen_NewSelectModeStartsEmpty() {
+        let shares = SharedFilesViewModel()
+        shares.selectedFiles = [photo]
+
+        shares.startSelecting()
+
+        XCTAssertEqual(shares.selectedFiles?.count, 0)
+    }
 }
