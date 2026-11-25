@@ -265,8 +265,14 @@ class FileMenuViewModel: ObservableObject {
             return
         }
 
-        // Folders read the caller's role from Stela. Records, and folders without a folderId, stay on V1.
-        if fileViewModel.type.isFolder, fileViewModel.folderId > 0 {
+        // A record keeps the role from the share list. The V1 record read answers with the role of the
+        // archive that owns the record, not the caller's, so it turned a viewer into an owner.
+        guard fileViewModel.type.isFolder else {
+            return
+        }
+
+        // Folders read the caller's role from Stela. Folders without a folderId stay on V1.
+        if fileViewModel.folderId > 0 {
             fetchFolderAccessRoleV2(folderId: String(fileViewModel.folderId))
         } else {
             fetchUpdatedAccessRoleV1()
@@ -300,6 +306,7 @@ class FileMenuViewModel: ObservableObject {
         }
     }
 
+    /// The V1 folder read. It serves folders only: a failed V2 read, or a folder without a folderId.
     private func fetchUpdatedAccessRoleV1() {
         #if DEBUG
         Self.lastAccessRoleSource = "v1"
@@ -307,39 +314,20 @@ class FileMenuViewModel: ObservableObject {
 
         let itemInfo = (folderLinkId: fileViewModel.folderLinkId, parentFolderLinkId: fileViewModel.parentFolderLinkId)
 
-        let endpoint: FilesEndpoint
-        if fileViewModel.type.isFolder {
-            endpoint = FilesEndpoint.getFolder(itemInfo: itemInfo)
-        } else {
-            endpoint = FilesEndpoint.getRecord(itemInfo: itemInfo)
-        }
-
-        let apiOperation = APIOperation(endpoint)
+        let apiOperation = APIOperation(FilesEndpoint.getFolder(itemInfo: itemInfo))
 
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             guard let self = self else { return }
 
             DispatchQueue.main.async {
-                guard case .json(let response, _) = result else { return }
-
-                let accessRoleString: String?
-                if self.fileViewModel.type.isFolder {
-                    guard let model: APIResults<FolderVO> = JSONHelper.decoding(from: response, with: APIResults<FolderVO>.decoder),
-                          model.isSuccessful,
-                          let folderData = model.results.first?.data?.first?.folderVO else {
-                        return
-                    }
-                    accessRoleString = Self.accessRoleString(accessVO: folderData.accessVO, accessRole: folderData.accessRole)
-                } else {
-                    guard let model: APIResults<RecordVO> = JSONHelper.decoding(from: response, with: APIResults<RecordVO>.decoder),
-                          model.isSuccessful,
-                          let recordData = model.results.first?.data?.first?.recordVO else {
-                        return
-                    }
-                    accessRoleString = Self.accessRoleString(accessVO: recordData.accessVO, accessRole: recordData.accessRole)
+                guard case .json(let response, _) = result,
+                      let model: APIResults<FolderVO> = JSONHelper.decoding(from: response, with: APIResults<FolderVO>.decoder),
+                      model.isSuccessful,
+                      let folderData = model.results.first?.data?.first?.folderVO else {
+                    return
                 }
 
-                if let accessRoleString {
+                if let accessRoleString = Self.accessRoleString(accessVO: folderData.accessVO, accessRole: folderData.accessRole) {
                     self.applyAccessRole(accessRoleString)
                 }
             }

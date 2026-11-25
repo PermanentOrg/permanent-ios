@@ -1019,10 +1019,13 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
     }
 
-    func testFetchUpdatedAccessRole_Record_UsesV1Directly() {
+    /// The V1 record read answers with the owning archive's role, so a shared record must not ask it.
+    func testFetchUpdatedAccessRole_SharedRecord_KeepsTheListRole() {
         FileMenuViewModel.lastAccessRoleSource = "none"
         var fm = makeFileModel()
         fm.sharedByArchive = MinArchiveVO(name: "Family Archive", thumbnail: nil, shareStatus: "", shareId: 0, archiveID: 42, folderLinkID: nil, accessRole: nil)
+        let roleBefore = fm.accessRole
+        let permissionsBefore = fm.permissions
         let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], showArchiveInfo: true, onDismiss: {})
         var v2Called = false
         sut.folderFetchV2Request = { _, _ in v2Called = true }
@@ -1030,7 +1033,9 @@ final class FileMenuViewModelTests: XCTestCase {
         sut.fetchUpdatedAccessRole()
 
         XCTAssertFalse(v2Called)
-        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "none")
+        XCTAssertEqual(sut.fileViewModel.accessRole, roleBefore)
+        XCTAssertEqual(sut.fileViewModel.permissions, permissionsBefore)
     }
 
     func testFetchUpdatedAccessRole_NotShared_DoesNothing() {
