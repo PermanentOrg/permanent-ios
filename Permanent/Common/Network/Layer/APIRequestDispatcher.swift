@@ -177,7 +177,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         switch result {
         case .success(let data):
             // Parse the JSON data (off the main thread — see the note above).
-            let parseResult = parse(data: data as? Data)
+            let parseResult = parse(data: data as? Data, urlResponse: urlResponse)
             switch parseResult {
             case .success(let json):
                 if let mfaError = json as? [String: Any],
@@ -245,9 +245,11 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     }
 
     /// Parses a `Data` object into a JSON object.
-    /// - Parameter data: `Data` instance to be parsed.
+    /// - Parameters:
+    ///   - data: `Data` instance to be parsed.
+    ///   - urlResponse: The response the body came with, named in the log line when the body is not JSON.
     /// - Returns: A `Result` instance.
-    private func parse(data: Data?) -> Result<Any?, Error> {
+    private func parse(data: Data?, urlResponse: HTTPURLResponse) -> Result<Any?, Error> {
         guard let data = data, !data.isEmpty else {
             return .success(nil)
         }
@@ -256,10 +258,9 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
             return .success(json)
         } catch {
-            let stringResponse = String(decoding: data, as: UTF8.self)
-            if stringResponse.isNotEmpty {
-                return .success(stringResponse)
-            }
+            // A web page from an outage or a proxy must become the normal server error: passed on as
+            // text, it reaches `JSONSerialization.data(withJSONObject:)`, which crashes on a String.
+            NetworkLogger.log(nonJSONResponse: urlResponse, body: data)
             return .failure(APIError.invalidResponse)
         }
     }

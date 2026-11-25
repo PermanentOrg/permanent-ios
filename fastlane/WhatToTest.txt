@@ -29,3 +29,5 @@ Please focus on:
 12. Video and audio. Open a video and an audio file you uploaded more than an hour ago. Each must play. Tap the screen while a video loads: the app must not close.
 
 13. Smoke pass. Upload a photo, move a file with a drag, sort a folder, and switch archives. All must work as before.
+
+14. Launch. Close the app from the app switcher and open it again a few times. It must not close on its own. If the service is down, the app must show a server error alert and stay open. This build has the crash fix from 1.17.1.
