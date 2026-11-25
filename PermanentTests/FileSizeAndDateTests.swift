@@ -20,7 +20,7 @@ struct FileSizeAndDateTests {
 
     @Test("A file shows its size, a dot and its written date")
     func fileShowsSizeAndDate() throws {
-        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 4000000, \"displayDate\": \"2023-08-15T00:00:00.000Z\"")
+        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 4194304, \"displayDate\": \"2023-08-15T00:00:00.000Z\"")
         #expect(file.sizeAndDate == "4 MB • Aug. 15, 2023")
         #expect(file.sizeAndDateForVoiceOver == "4 MB, Aug. 15, 2023")
     }
@@ -41,7 +41,7 @@ struct FileSizeAndDateTests {
 
     @Test("A file with no date shows only its size, and never a dash")
     func fileWithNoDateShowsTheSizeOnly() throws {
-        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 2800000")
+        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 2936013")
         #expect(file.date == "-")
         #expect(file.sizeAndDate == "2.8 MB")
     }
