@@ -65,7 +65,6 @@ struct FABMenuView: View {
                             .padding(.bottom, 6)
                     }
                     
-                    
                     // Menu content card
                     VStack(spacing: 0) {
                         Rectangle()
@@ -204,8 +203,6 @@ struct FABMenuView: View {
         }
     }
 }
-
-
 
 struct FABMenuView_Previews: PreviewProvider {
     static var previews: some View {

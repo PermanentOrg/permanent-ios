@@ -57,7 +57,6 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
     }
     
     @objc func closeButtonAction(_ sender: Any) {
-        
         passwordTextField.passwordTextField.text = nil
         newPasswordTextField.passwordTextField.text = nil
         confirmPasswordTextField.passwordTextField.text = nil
@@ -122,8 +121,10 @@ extension PasswordUpdateViewController: UITextFieldDelegate {
         switch textField {
         case passwordTextField.passwordTextField:
             newPasswordTextField.passwordTextField.becomeFirstResponder()
+
         case newPasswordTextField.passwordTextField:
             confirmPasswordTextField.passwordTextField.becomeFirstResponder()
+
         default:
             confirmPasswordTextField.passwordTextField.resignFirstResponder()
         }

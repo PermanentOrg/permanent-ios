@@ -41,7 +41,6 @@ extension PermanentLocalAuthentication: ILocalAuthentication {
                     onFailure?(authError)
                 }
             })
-
         } else {
             let error = authStatus.error ?? LocalAuthErrors.unknownError
             onFailure?(error)

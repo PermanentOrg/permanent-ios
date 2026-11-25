@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class FABAdditionalViewTests: XCTestCase {
-
     // MARK: - CreateNewFolderViewModel Initial State
 
     func testCreateNewFolderViewModel_InitialState() {

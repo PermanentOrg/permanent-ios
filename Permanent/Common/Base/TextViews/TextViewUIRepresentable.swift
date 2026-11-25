@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 30.06.2023.
+//
 
 import SwiftUI
 import UIKit
@@ -31,7 +32,7 @@ struct TextView: UIViewRepresentable {
         Coordinator(self)
     }
 
-    class Coordinator : NSObject, UITextViewDelegate {
+    class Coordinator: NSObject, UITextViewDelegate {
         var parent: TextView
 
         init(_ parent: TextView) {

@@ -24,6 +24,7 @@ class LegacyPlanningLoadingViewController: BaseViewController<LegacyPlanningView
                 } else {
                     self?.showIntro()
                 }
+
             case .failure(_):
                 self?.showAlert(title: .error, message: .errorMessage)
             }

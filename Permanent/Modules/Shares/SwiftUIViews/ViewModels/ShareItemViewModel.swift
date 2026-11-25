@@ -79,12 +79,16 @@ enum ShareExpirationOption: CaseIterable {
         switch self {
         case .oneDay:
             return calendar.date(byAdding: .day, value: 1, to: now)?.ISO8601Format()
+
         case .oneMonth:
             return calendar.date(byAdding: .month, value: 1, to: now)?.ISO8601Format()
+
         case .oneYear:
             return calendar.date(byAdding: .year, value: 1, to: now)?.ISO8601Format()
+
         case .never:
             return nil
+
         case .none:
             return nil
         }
@@ -187,6 +191,7 @@ class ShareItemViewModel: ObservableObject {
         switch navigationDirection {
         case .forward:
             return .move(edge: .trailing)
+
         case .backward:
             return .move(edge: .leading)
         }
@@ -250,7 +255,7 @@ class ShareItemViewModel: ObservableObject {
     }
 
     var fileDate: String {
-        DateUtils.displayDate(from: fileModel.createdDT)
+        fileModel.displayDateText
     }
 
     var thumbnailURL: String? {
@@ -273,7 +278,7 @@ class ShareItemViewModel: ObservableObject {
     }
 
     var shareDisplayData: String {
-        DateUtils.displayDate(from: fileModel.createdDT)
+        fileModel.displayDateText
     }
 
     // MARK: - Init

@@ -27,7 +27,7 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
                     completion(nil, APIError.clientError)
                     return
                 }
-                let tagVO: [TagVO]? =  model.results.first?.data
+                let tagVO: [TagVO]? = model.results.first?.data
                 completion(tagVO, nil)
                 
             case .error(let errror, _):
@@ -50,7 +50,7 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
                     completion(nil, APIError.clientError)
                     return
                 }
-                let tagLinkVOs: [TagLinkVO]? =  model.results.compactMap { result in
+                let tagLinkVOs: [TagLinkVO]? = model.results.compactMap { result in
                     return result.data?.first
                 }
                 completion(tagLinkVOs, nil)
@@ -75,7 +75,7 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
                     completion(nil, APIError.clientError)
                     return
                 }
-                let tagVOs: [TagVO]? =  model.results.compactMap { result in
+                let tagVOs: [TagVO]? = model.results.compactMap { result in
                     return result.data?.first
                 }
                 completion(tagVOs, nil)
@@ -88,7 +88,6 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
             }
         }
     }
-    
     
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void)) {
         let params: DeleteTagParams = (tagVO, recordId)
@@ -149,6 +148,7 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
                 
             case .error(let error, _):
                 completion(error)
+
             default:
                 completion(APIError.clientError)
             }

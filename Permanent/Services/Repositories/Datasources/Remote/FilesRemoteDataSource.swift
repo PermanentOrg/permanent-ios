@@ -228,8 +228,10 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
                 } else {
                     completion(APIError.serverError)
                 }
+
             case .error(let error, _):
                 completion(error)
+
             default:
                 completion(APIError.unknown)
             }
@@ -391,4 +393,3 @@ class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
         completion(nil)
     }
 }
-

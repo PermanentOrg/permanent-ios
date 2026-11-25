@@ -176,6 +176,7 @@ struct ShareItemView: View {
                             .frame(width: 20, height: 20)
                             .contentShape(Rectangle())
                     }
+                    .accessibilityLabel("Close".localized())
                 }
             }
         }
@@ -238,7 +239,7 @@ struct ShareItemView: View {
     private var linkCreationLoadingSection: some View {
         HStack(spacing: 16) {
             ZStack(alignment: .center) {
-                GradientSemiCirclesLoaderView(innerCicleWidth: 2, innerCicleSize: 7, outerCicleWidth: 2,frameWidth: 16, frameHeight:16)
+                GradientSemiCirclesLoaderView(innerCicleWidth: 2, innerCicleSize: 7, outerCicleWidth: 2, frameWidth: 16, frameHeight: 16)
                     .frame(width: 24, height: 24)
             }
             .frame(width: 44, height: 44)
@@ -317,7 +318,6 @@ struct ShareItemView: View {
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(Color.blue900)
-
                     }
                     .accessibilityIdentifier("shareLinkSettingsButton")
 
@@ -407,7 +407,7 @@ struct ShareItemView: View {
                         LinearGradient(
                         stops: [
                         Gradient.Stop(color: Color(red: 0.07, green: 0.11, blue: 0.29), location: 0.00),
-                        Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00),
+                        Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00)
                         ],
                         startPoint: UnitPoint(x: 0, y: 0),
                         endPoint: UnitPoint(x: 1, y: 1)
@@ -690,16 +690,22 @@ struct ShareItemView: View {
         switch accessRole.lowercased() {
         case "access.role.viewer", "viewer":
             return "viewer"
+
         case "access.role.contributor", "contributor":
             return "contributor"
+
         case "access.role.editor", "editor":
             return "editor"
+
         case "access.role.curator", "curator":
             return "curator"
+
         case "access.role.manager", "manager":
             return "manager"
+
         case "access.role.owner", "owner":
             return "owner"
+
         default:
             return "viewer"
         }

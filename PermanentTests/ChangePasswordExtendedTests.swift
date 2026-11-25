@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class ChangePasswordExtendedTests: XCTestCase {
-
     // MARK: - ChangePasswordViewModel Initial State
 
     func testViewModel_InitialState() {

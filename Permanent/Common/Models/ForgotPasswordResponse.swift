@@ -32,4 +32,3 @@ struct ForgotPasswordResult: Codable {
     let resultDT: String?
     let createdDT, updatedDT: JSONAny?
 }
-

@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 21.01.2025.
+//
 
 import SwiftUI
 
@@ -11,7 +12,7 @@ struct TwoStepConfirmationContainerView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        ZStack{
+        ZStack {
             SimpleCustomNavigationView(content: {
                 ZStack(alignment: .top) {
                     switch viewModel.contentType {
@@ -21,24 +22,28 @@ struct TwoStepConfirmationContainerView: View {
                                 insertion: viewModel.insertionViewTransition,
                                 removal: .opacity)
                             )
+
                     case .chooseVerification:
                         TwoStepChooseVerificationView(viewModel: TwoStepChooseVerificationViewModel(containerViewModel: viewModel, isEmailMethodSelected: nil))
                             .transition(AnyTransition.asymmetric(
                                 insertion: viewModel.insertionViewTransition,
                                 removal: .opacity)
                             )
+
                     case .chooseEmail:
                         TwoStepChooseEmailView(viewModel: TwoStepChooseEmailViewModel(containerViewModel: viewModel))
                             .transition(AnyTransition.asymmetric(
                                 insertion: viewModel.insertionViewTransition,
                                 removal: .opacity)
                             )
+
                     case .choosePhoneNumber:
                         TwoStepChoosePhoneView(viewModel: TwoStepChoosePhoneViewModel(containerViewModel: viewModel))
                             .transition(AnyTransition.asymmetric(
                                 insertion: viewModel.insertionViewTransition,
                                 removal: .opacity)
                             )
+
                     default:
                         EmptyView()
                     }
@@ -68,6 +73,7 @@ struct TwoStepConfirmationContainerView: View {
                                 .frame(width: 24, height: 24)
                         }
                     }
+
                 default:
                     EmptyView()
                 }

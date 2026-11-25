@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 09.09.2024.
+//
 
 import Foundation
 import SwiftUI
@@ -51,22 +52,27 @@ class AuthenticatorContainerViewModel: ObservableObject {
             switch contentType {
             case .login:
                 insertionViewTransition = .move(edge: .trailing)
+
             case .register:
                 if newContentType == .login {
                     insertionViewTransition = .move(edge: .leading)
                 } else {
                     insertionViewTransition = .move(edge: .trailing)
                 }
+
             case .verifyIdentity:
                 insertionViewTransition = .move(edge: .trailing)
+
             case .forgotPassword:
                 if newContentType == .forgotPasswordConfirmation {
                     insertionViewTransition = .move(edge: .trailing)
                 } else {
                     insertionViewTransition = .move(edge: .leading)
                 }
+
             case .forgotPasswordConfirmation:
                 insertionViewTransition = .move(edge: .trailing)
+
             default:
                 insertionViewTransition = .move(edge: .trailing)
             }

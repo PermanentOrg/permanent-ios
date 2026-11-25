@@ -9,7 +9,6 @@
 import UIKit
 
 class ButtonWithRightImage: UIButton {
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         if let imageView = self.imageView {

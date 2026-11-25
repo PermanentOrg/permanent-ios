@@ -11,7 +11,7 @@ import XCTest
 @MainActor
 final class FileContextMenuTests: XCTestCase {
     private typealias ItemType = FileMenuItems.ItemType
-    private let ownerFile: [ItemType] = [.shareToPermanent, .shareToAnotherApp, .publish, .fileInformation, .rename, .move, .copy, .download, .delete]
+    private let ownerFile: [ItemType] = [.shareToPermanent, .publish, .shareToAnotherApp, .rename, .adjustDateTime, .fileInformation, .move, .copy, .delete]
     private let ownerFolder: [ItemType] = [.shareToPermanent, .publish, .rename, .move, .copy, .delete]
 
     private func groups(_ types: [ItemType], perform: @escaping (ItemType) -> Void = { _ in }) -> [UIMenu] {
@@ -39,7 +39,7 @@ final class FileContextMenuTests: XCTestCase {
         let groups = groups(ownerFile)
         XCTAssertEqual(groups.map { actions(in: $0).map(\.title) }, [
             ["Copy", "Move", "Share"],
-            ["Share and manage access", "Publish on the web", "File information", "Rename"],
+            ["Share and manage access", "Publish on the web", "View information", "Rename"],
             ["Delete"]
         ])
         XCTAssertTrue(groups.allSatisfy { $0.options.contains(.displayInline) })
@@ -64,7 +64,7 @@ final class FileContextMenuTests: XCTestCase {
     }
 
     func testViewerMenu_IsOnlyFileInformation_WithNoEmptyGroups() {
-        XCTAssertEqual(groups([.fileInformation, .download]).map { actions(in: $0).map(\.title) }, [["File information"]])
+        XCTAssertEqual(groups([.fileInformation]).map { actions(in: $0).map(\.title) }, [["View information"]])
     }
 
     func testAMenuWithOnlySave_HasNothingToShow() {
@@ -74,7 +74,7 @@ final class FileContextMenuTests: XCTestCase {
     }
 
     func testDeleteAndLeaveShare_AreRed_AndNothingElseIs() {
-        for types in [ownerFile, [.download, .unshare]] {
+        for types in [ownerFile, [.unshare]] {
             let all = groups(types).flatMap { actions(in: $0) }
             XCTAssertEqual(all.filter { $0.attributes.contains(.destructive) }.map(\.title), [types.contains(.unshare) ? "Leave share" : "Delete"])
         }

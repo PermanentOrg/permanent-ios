@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 03.10.2024.
+//
 
 import Foundation
 import SwiftUI
@@ -18,7 +19,6 @@ class ForgotPasswordViewModel: ObservableObject {
         self.containerViewModel = containerViewModel
         self.authRepo = AuthRepository()
     }
-    
     
     func areFieldsValid(emailField: String?) -> Bool {
         return (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false)

@@ -10,6 +10,16 @@ import XCTest
 class BaseUITestCase: XCTestCase {
     let app = XCUIApplication()
 
+    /// The staging account this run names in its environment, so simulators testing at once never share one.
+    var account: UITestCredentials {
+        let environment = ProcessInfo.processInfo.environment
+        guard let username = environment["UI_TEST_USERNAME"], !username.isEmpty,
+              let password = environment["UI_TEST_PASSWORD"], !password.isEmpty else {
+            return uiTestCredentials
+        }
+        return UITestCredentials(username: username, password: password)
+    }
+
     override func setUpWithError() throws {
         app.launchArguments.append("--SkipOnboarding")
         app.launchArguments.append("--DiscardSession")

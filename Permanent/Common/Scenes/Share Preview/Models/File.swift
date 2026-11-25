@@ -8,7 +8,6 @@
 import Foundation
 
 protocol File {
-    
     var name: String { get }
     
     var date: String { get }

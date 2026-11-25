@@ -3,91 +3,297 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 29.08.2023.
+//
 
 import SwiftUI
 
+/// The "Adjust date and time" sheet: a header with the preview line, the typed date and time boxes with their
+/// native pickers, the zone row, and Cancel and Save pinned under them.
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Set when UIKit presents the screen; it is told whether the date was saved.
+    var onClose: ((Bool) -> Void)?
+
+    @State private var focus: DateTimeEntry.Field?
+    @State private var showsDateSheet = false
+    @State private var showsWheels = false
+    @State private var showsZonePicker = false
+    @ScaledMetric(relativeTo: .subheadline) private var iconSize = 24.0
+
+    static let sheetCornerRadius: CGFloat = 38
+
     var body: some View {
         ZStack {
-            NavigationView {
-                VStack {
+            VStack(spacing: 0) {
+                header
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        dateBox
+                        timeBox
+                            .padding(.top, 8)
+                            .zIndex(1)
+                        TimeZoneRow(zone: viewModel.entry.zone, wallClock: viewModel.entry.offsetClock(), isEnabled: viewModel.entry.hasTime) { openZonePicker() }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
                 }
-                .padding(.top, 20)
-                .padding(.horizontal, 24)
-                .navigationBarTitle("Add date and time", displayMode: .inline)
-                .navigationBarItems(leading: Image("editFilenames")
-                    .renderingMode(.template)
-                    .foregroundColor(.white)
-                    .frame(width: 24, height: 24))
+                .onTapGesture { leaveFields() }
             }
-            VStack {
-                if #available(iOS 16.0, *) {
-                    DatePicker("Select a date", selection: $viewModel.selectedDate, in: viewModel.startingDate...viewModel.endingDate)
-                    .datePickerStyle(GraphicalDatePickerStyle())
-                    .labelsHidden()
-                    .padding()
-                    .tint(.darkBlue)
-                } else {
-                    DatePicker("Select a date", selection: $viewModel.selectedDate, in: viewModel.startingDate...viewModel.endingDate)
-                        .datePickerStyle(GraphicalDatePickerStyle())
-                        .labelsHidden()
-                        .padding()
-                        .accentColor(.darkBlue)
-                }
-                Spacer()
-                bottomButtons
+            .safeAreaInset(edge: .bottom) { bottomButtons }
+            .background(Color.white.ignoresSafeArea())
+            .accessibilityHidden(showsZonePicker || viewModel.showsWebOnlyDate)
+            if showsZonePicker {
+                TimeZonePickerSheet(entry: $viewModel.entry) { closeZonePicker() }
+                    .transition(reduceMotion ? .identity : .move(edge: .trailing))
+                    .zIndex(1)
             }
-            .padding(.top, 50)
-            .onChange(of: viewModel.changesWereSaved, perform: { newValue in
-                if newValue {
-                    viewModel.changesWereSaved = false
-                    presentationMode.wrappedValue.dismiss()
+            if viewModel.showsWebOnlyDate {
+                WebOnlyDateMessage(message: viewModel.webOnlyMessage) {
+                    viewModel.showsWebOnlyDate = false
+                    close(saved: false)
                 }
-            })
-            .onChange(of: viewModel.changesConfirmed) { newValue in
-                if newValue {
-                    viewModel.applyChanges()
-                }
-            }
-            .alert(isPresented: $viewModel.showAlert) {
-                Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
-                    viewModel.showAlert = false
-                })
+                .zIndex(2)
             }
             if viewModel.showConfirmation {
-                CustomDialogView(isActive: $viewModel.showConfirmation, title: "Modify file \(viewModel.selectedFiles.count > 1 ? "names" : "name")", message: "Are you sure you want to find and replace these \(viewModel.selectedFiles.count) file \(viewModel.selectedFiles.count > 1 ? "names" : "name")?", buttonTitle: "Modify") {
+                CustomDialogView(isActive: $viewModel.showConfirmation, title: "ChangeDateAndTime".localized(), message: confirmationMessage, buttonTitle: "Modify") {
                     viewModel.applyChanges()
                 }
                 .frame(width: 294)
             }
         }
-    }
-    
-    var bottomButtons: some View {
-        HStack {
-            Button {
-                presentationMode.wrappedValue.dismiss()
-            } label: {
-                Text("Cancel")
+        .sheet(isPresented: $showsDateSheet) {
+            PickADateSheet(selection: calendarStart, range: viewModel.startingDate...viewModel.endingDate) { picked in
+                viewModel.entry.set(date: picked)
             }
-            .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
-            Spacer(minLength: 15)
+        }
+        .onAppear { viewModel.readZoneIfNeeded() }
+        .onChange(of: focus) { field in
+            if field != nil { closeWheels() }
+        }
+        .onChange(of: viewModel.isLoading) { loading in
+            if loading { UIAccessibility.post(notification: .announcement, argument: "Saving".localized()) }
+        }
+        .onChange(of: viewModel.changesWereSaved) { saved in
+            if saved {
+                viewModel.changesWereSaved = false
+                close(saved: true)
+            }
+        }
+        .onChange(of: viewModel.changesConfirmed) { confirmed in
+            if confirmed { viewModel.applyChanges() }
+        }
+        .alert(isPresented: $viewModel.showAlert) {
+            Alert(title: Text("Error".localized()), message: Text("ErrorMessage".localized()), dismissButton: .default(Text(String.ok)) {
+                viewModel.showAlert = false
+            })
+        }
+    }
+
+    // MARK: - Parts
+
+    private var header: some View {
+        HStack(spacing: 0) {
+            Color.clear
+                .frame(width: 48, height: 1)
+            VStack(spacing: 4) {
+                Text("AdjustDateAndTime".localized())
+                    .font(.custom("Usual-Medium", size: 16, relativeTo: .body))
+                    .foregroundColor(.darkBlue)
+                    .accessibilityAddTraits(.isHeader)
+                if let preview = viewModel.entry.preview {
+                    Text(preview)
+                        .font(.custom("Usual-Regular", size: 12, relativeTo: .caption))
+                        .foregroundColor(.blue400)
+                }
+            }
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            SheetCircleButton(symbol: "xmark", label: "Close".localized(), look: .light) { close(saved: false) }
+        }
+        .padding(14)
+    }
+
+    private var dateBox: some View {
+        DateTimeFieldsBox(fields: [.year, .month, .day], separator: "/", entry: $viewModel.entry, focus: $focus) {
+            TimeFormatPill(format: viewModel.entry.format) {}
+                .hidden()
+                .accessibilityHidden(true)
+            accessoryButton("calendar", label: "PickADate".localized()) {
+                leaveFields()
+                showsDateSheet = true
+            }
+        }
+    }
+
+    private var timeBox: some View {
+        DateTimeFieldsBox(fields: [.hour, .minute, .second], separator: ":", entry: $viewModel.entry, focus: $focus) {
+            TimeFormatPill(format: viewModel.entry.format) {
+                viewModel.entry.format = viewModel.entry.format.next
+            }
+            accessoryButton("clock", label: "PickATime".localized()) { toggleWheels() }
+        }
+        .overlay(alignment: .topTrailing) {
+            if showsWheels {
+                TimeWheelCard(entry: $viewModel.entry)
+                    .padding(.trailing, DateTimeDigitsField.boxPadding)
+                    .offset(y: -16)
+                    .transition(reduceMotion ? .identity : .opacity.combined(with: .scale(scale: 0.96, anchor: .topTrailing)))
+            }
+        }
+    }
+
+    private func accessoryButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.title3)
+                .foregroundColor(.darkBlue)
+                .frame(width: iconSize, height: iconSize)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
+    }
+
+    private var bottomButtons: some View {
+        HStack(spacing: 24) {
             Button {
-                viewModel.showConfirmation = true
+                close(saved: false)
+            } label: {
+                Text("Cancel".localized())
+            }
+            .buttonStyle(CustomButtonStyle(backgroundColor: .blue25, foregroundColor: .darkBlue, height: 56, cornerRadius: 12))
+            Button {
+                save()
             } label: {
                 if viewModel.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .accessibilityLabel("Saving".localized())
                 } else {
-                    Text("Apply changes")
+                    Text("Save".localized())
                 }
             }
-            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
+            .buttonStyle(CustomButtonStyle(backgroundColor: viewModel.canSave ? .darkBlue : .blue200, foregroundColor: .white, height: 56, cornerRadius: 12))
+            .disabled(viewModel.isLoading || !viewModel.canSave)
+            .accessibilityHint(viewModel.saveBlockedReason ?? "")
         }
-        .padding()
+        .font(.custom("Usual-Medium", size: 14, relativeTo: .subheadline))
+        .dynamicTypeSize(...DynamicTypeSize.large)
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
+        .padding(.bottom, 32)
+        .background(Color.white)
+    }
+
+    // MARK: - Actions
+
+    private var confirmationMessage: String {
+        let count = viewModel.selectedFiles.count
+        return count > 1 ? String(format: "ChangeDateAndTimeOther".localized(), count) : "ChangeDateAndTimeOne".localized()
+    }
+
+    /// The calendar opens on the typed date, kept inside its range.
+    private var calendarStart: Date {
+        min(max(viewModel.entry.pickerDate(), viewModel.startingDate), viewModel.endingDate)
+    }
+
+    /// One file saves at once; two or more ask first, and close at once when nothing changed.
+    private func save() {
+        guard viewModel.canSave else { return }
+        leaveFields()
+        if viewModel.closesWithoutSaving {
+            close(saved: false)
+        } else if viewModel.selectedFiles.count > 1 {
+            viewModel.showConfirmation = true
+        } else {
+            viewModel.applyChanges()
+        }
+    }
+
+    private func toggleWheels() {
+        focus = nil
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+            showsWheels.toggle()
+        }
+    }
+
+    private func closeWheels() {
+        guard showsWheels else { return }
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+            showsWheels = false
+        }
+    }
+
+    /// The Time zone screen slides in from the right over the sheet's content; Reduce Motion swaps the two.
+    private func openZonePicker() {
+        leaveFields()
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            showsZonePicker = true
+        }
+    }
+
+    private func closeZonePicker() {
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+            showsZonePicker = false
+        }
+    }
+
+    /// Puts the keyboard and the wheel card away.
+    private func leaveFields() {
+        focus = nil
+        closeWheels()
+    }
+
+    private func close(saved: Bool) {
+        if let onClose {
+            onClose(saved)
+        } else {
+            presentationMode.wrappedValue.dismiss()
+        }
+    }
+}
+
+extension EditDateAndTimeView {
+    /// The screen for one file, for UIKit to present. It closes itself, then tells `onClose` whether the date was saved.
+    /// A door that has read the record passes it; a list door passes none and the sheet reads it.
+    static func host(for file: FileModel, record: RecordVOData? = nil, onClose: @escaping (Bool) -> Void) -> UIViewController {
+        host(EditDateAndTimeViewModel(file: file, record: record, hasUpdates: .constant(false)), onClose: onClose)
+    }
+
+    /// What the selection menu's date row opens for several items: the counted web-only message when any item has a
+    /// complex date, as Edit Metadata shows it, else the date sheet.
+    @MainActor
+    static func menuDoor(for files: [FileModel], onSaved: @escaping () -> Void) -> UIViewController {
+        guard !files.contains(where: { WebOnlyDateMessage.applies(to: $0.displayTime) }) else {
+            return WebOnlyDateMessage.host(message: WebOnlyDateMessage.message(for: files))
+        }
+        return host(EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false))) { saved in
+            if saved { onSaved() }
+        }
+    }
+
+    private static func host(_ viewModel: EditDateAndTimeViewModel, onClose: @escaping (Bool) -> Void) -> UIViewController {
+        weak var host: UIViewController?
+        let view = EditDateAndTimeView(viewModel: viewModel, onClose: { saved in
+            host?.dismiss(animated: true) { onClose(saved) }
+        })
+        let controller = UIHostingController(rootView: view)
+        controller.modalPresentationStyle = .pageSheet
+        controller.sheetPresentationController?.preferredCornerRadius = sheetCornerRadius
+        host = controller
+        return controller
+    }
+
+    /// What the item menu's date row opens: the web-only message for a complex date, else the date sheet.
+    @MainActor
+    static func menuDoor(for file: FileModel, onSaved: @escaping () -> Void) -> UIViewController {
+        guard !WebOnlyDateMessage.applies(to: file.displayTime) else {
+            return WebOnlyDateMessage.host(for: file)
+        }
+        return host(for: file) { saved in
+            if saved { onSaved() }
+        }
     }
 }
 

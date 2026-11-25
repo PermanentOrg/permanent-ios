@@ -12,7 +12,6 @@ import UIKit
 
 @MainActor
 final class SharePreviewViewTests: XCTestCase {
-
     func testOnAppearStartsLoadingShareData() async {
         let repo = ObservingRepo()
         let vm = SharePreviewSwiftUIViewModel(shareToken: "test-token", repository: repo)
@@ -124,7 +123,6 @@ final class SharePreviewViewTests: XCTestCase {
         }
         return latest
     }
-
 }
 
 private actor ObservingRepo: SharePreviewRepositoryProtocol {

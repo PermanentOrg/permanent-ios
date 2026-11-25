@@ -12,7 +12,6 @@ import UIKit
 
 @MainActor
 final class ChangePasswordViewTests: XCTestCase {
-
     func testRendersWithInjectedViewModel() async {
         let vm = ChangePasswordViewModel()
         let (host, _) = hostView(ChangePasswordView(viewModel: vm))
@@ -60,5 +59,4 @@ final class ChangePasswordViewTests: XCTestCase {
         window.makeKeyAndVisible()
         return (host, window)
     }
-
 }

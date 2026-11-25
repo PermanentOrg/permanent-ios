@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 28.07.2023.
+//
 
 import Foundation
 import SwiftUI
@@ -63,7 +64,7 @@ class MetadataEditFileNamesViewModel: ObservableObject {
     }
 
     private func applyChangesV1(_ updatedFiles: [FileModel]) {
-        let apiOperation = APIOperation(FilesEndpoint.multipleFilesUpdate(files: updatedFiles))
+        let apiOperation = APIOperation(FilesEndpoint.multipleFilesUpdate(files: updatedFiles, sendsDate: false))
 
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             DispatchQueue.main.async {
@@ -72,8 +73,10 @@ class MetadataEditFileNamesViewModel: ObservableObject {
                 case .json( _, _):
                     self?.hasUpdates.wrappedValue = true
                     self?.changesWereSaved = true
+
                 case .error(_, _):
                     self?.showAlert = true
+
                 default:
                     self?.showAlert = true
                 }

@@ -3,11 +3,11 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 17.09.2024.
+//
 import SwiftUI
 
 struct AuthImageForRightSidePageView: View {
     let page: AuthContentType
-    
     
     var body: some View {
         switch page {
@@ -20,6 +20,7 @@ struct AuthImageForRightSidePageView: View {
                         .aspectRatio(contentMode: .fill)
                         .clipped()
                 )
+
         default:
             Image(.none)
         }
@@ -33,7 +34,7 @@ struct AuthImageForRightSidePageView: View {
                 .ignoresSafeArea(.all)
             AuthImageForRightSidePageView(page: .login)
                 .padding(0)
-            //.padding(Constants.Design.isPhone ? 32 : 64)
+            // .padding(Constants.Design.isPhone ? 32 : 64)
         }
     }
 }

@@ -92,7 +92,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         if descriptionProfileItem?.longDescription?.isNotEmpty ?? false {
             aboutCells.append(.longDescription)
         }
-        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.archiveName,  ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
+        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.archiveName, ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
         
         var informationCells = [ProfileCellType]()
         if basicProfileItem?.fullName?.isNotEmpty ?? false {
@@ -203,7 +203,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-
         let apiOperation: APIOperation
         
         switch operationType {
@@ -248,7 +247,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     
                     completionBlock(true, nil, newProfileItem.profileItemId)
                 }
-                
                 
                 self.trackEditProfileEvent(profileItemId: String(profileItemModel.profileItemId ?? 0))
         
@@ -310,7 +308,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyBasicProfileItem(profileItemId: Int? = nil, newValueFullname: String? = nil, newValueNickName: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-
         let newProfileItem = BasicProfileItem()
         // Preserve existing archive name when updating full name/nickname
         newProfileItem.archiveName = basicProfileItem?.archiveName
@@ -687,7 +684,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
               let payload = EventsPayloadBuilder.build(accountId: accountId,
                                                        eventAction: AccountEventAction.openArchiveProfile,
                                                        entityId: String(accountId),
-                                                       data: ["page":"Archive Profile"]) else { return }
+                                                       data: ["page": "Archive Profile"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }

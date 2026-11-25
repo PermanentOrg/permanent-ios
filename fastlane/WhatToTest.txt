@@ -1,24 +1,33 @@
-Version 1.17.1 fixes a crash at launch. When the server, or something between the app and the server, answered with a web page instead of data, the app closed on its own. It now shows the usual "Server error has occured. Please try again." alert and keeps running. Two views were also tidied for iOS 18: the confirmation dialog and the upload progress bars.
+Version 1.18.0 brings the new dates to the app. You can type a date and a time for a file and pick a time zone. The app now reads and saves dates and locations through Permanent's new backend, and it shows the richer dates that the web app can set (ranges, approximate dates, unknown dates). File details have a new design, and list rows now show the size and the date.
 
 This is a production build. It uses your real account, your real files and real payments.
 
 Please focus on:
 
-1. Launch. Open the app, sign in if asked, and wait for Private Files. The list must load. Close the app from the app switcher and open it again a few times: it must come back to Private Files every time, with no crash and no sign-out.
+1. Set a date. On a file you may edit, tap the three-dot button, then Adjust date and time. Type a year, a month and a day, then tap Save. The list and the file details must show the new date. Open the same file on the web: the date must be the same.
 
-2. Move from the list. Hold a file for a moment, tap Move, pick a folder, tap Move Here. A small circle at the bottom must spin, then show a check mark. The file must be in that folder.
+2. Partial dates. Type only a year, or a year and a month, and save. The app must show exactly what you typed. Save must stay off while a part is missing, for example a day with no month.
 
-3. Move from the file details. Open a file, tap the three-dot button, tap File information, tap Move, pick a folder. The file must move, with no error alert.
+3. Time and time zone. Add a time, then tap Time zone. Search for a city, a country or an offset such as +02:00 and pick one. Save. The time and the zone must show on the file. With no time, the time zone row must wait for a time.
 
-4. Copy. Hold a file for a moment, tap Copy, pick a folder, tap Paste Here. The circle must spin, then show the check mark. A copy must be in that folder.
+4. Several files. Tap Select, pick a few files, and adjust the date for all of them. Each file must get the new date and keep its own time zone.
 
-5. Share from Photos. In the Photos app, open a picture, tap Share, tap Permanent, tap Upload. The picture must upload and show in Private Files.
+5. Dates from the web. On the web, give a file a range (1985 to 1990), an approximate date and an unknown date. In the app, the list and the file details must show them in words. If the app cannot edit such a date, it must say "Coming soon to mobile" and show a message. It must never change that date.
 
-6. iOS 18. On a phone with iOS 18, upload a few photos and watch the progress bars. Then delete a file and confirm in the dialog. Both must work with no crash.
+6. Cancel. Open Adjust date and time, change nothing or tap the X. The date must stay as it was.
 
-7. Everything else. A quick pass over folders, shares, publishing and uploads is welcome. Nothing else changed in this build, which ships on top of 1.17.0.
+7. Folders. A folder's menu must not offer Adjust date and time in this version.
 
-If the service is ever down while you test, the app must show "Server error has occured. Please try again." and stay open. Please report any time the app closes on its own.
+8. File details. Open a photo, then its details. The photo must glide into place, and glide back when you close. The date, the location and the other fields must be correct.
 
-Known, please do not file:
-- The spelling "occured" in the server error alert is the current text and is not part of this fix.
+9. Location. Set a location on a file and save. Close the app and open it again: the place must still be there. A city set on the web must show in the app.
+
+10. Lists. Each row must show the file's size and date. Thumbnails must have small round corners. Open a folder with more than 60 items and scroll: the rest must load as you go, with no gaps and no repeats.
+
+11. Shared with me. Open the three-dot menu on a file and on a folder that someone shared with you as Viewer. The badge must say Viewer and the menu must offer only Leave share. Check again with a file shared as Editor: Rename and Adjust date and time must be there.
+
+12. Video and audio. Open a video and an audio file you uploaded more than an hour ago. Each must play. Tap the screen while a video loads: the app must not close.
+
+13. Smoke pass. Upload a photo, move a file with a drag, sort a folder, and switch archives. All must work as before.
+
+14. Launch. Close the app from the app switcher and open it again a few times. It must not close on its own. If the service is down, the app must show a server error alert and stay open. This build has the crash fix from 1.17.1.

@@ -41,7 +41,6 @@ class PETextField: CustomTextField {
         layer.cornerRadius = 10
         layer.borderWidth = 1
         layer.borderColor = UIColor.white.cgColor
-        
     }
 
     override func textRect(forBounds bounds: CGRect) -> CGRect {

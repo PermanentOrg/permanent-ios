@@ -25,7 +25,7 @@ final class FloatingActionIslandTests: XCTestCase {
             FloatingActionImageItem(image: blank, action: nil),
             FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: { _, _ in }),
             FloatingActionImageItem(image: blank, action: nil),
-            FloatingActionImageItem(image: UIImage(named: "floatingMore")!.templated!, action: { _, _ in more() }),
+            FloatingActionImageItem(image: UIImage(named: "floatingMore")!.templated!, action: { _, _ in more() })
         ]
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: width + 64, height: 300))
         let host = UIViewController()
@@ -120,7 +120,7 @@ final class FloatingActionIslandTests: XCTestCase {
             island.view.centerXAnchor.constraint(equalTo: host.view.centerXAnchor),
             island.view.bottomAnchor.constraint(equalTo: host.view.bottomAnchor, constant: -40),
             island.view.widthAnchor.constraint(equalToConstant: 338),
-            island.view.heightAnchor.constraint(equalToConstant: 64),
+            island.view.heightAnchor.constraint(equalToConstant: 64)
         ])
         island.didMove(toParent: host)
 

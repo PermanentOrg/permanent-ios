@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class OnboardingViewRenderingTests: XCTestCase {
-
     // MARK: - OnboardingContainerViewModel Tests
 
     func testOnboardingContainerViewModel_InitialState() {

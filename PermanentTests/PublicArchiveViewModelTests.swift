@@ -24,7 +24,6 @@ final class StubV1GalleryViewModel: PublicArchiveViewModel {
 }
 
 final class PublicArchiveViewModelTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
         #if DEBUG
@@ -310,7 +309,6 @@ final class PublicArchiveViewModelTests: XCTestCase {
 
 @MainActor
 final class PublicArchiveFileViewControllerTests: XCTestCase {
-
     private func makeController(width: CGFloat = 402, height: CGFloat = 874)
     -> (PublicArchiveFileViewController, UICollectionView) {
         let vc = PublicArchiveFileViewController()
@@ -432,7 +430,6 @@ final class PublicArchiveFileViewControllerTests: XCTestCase {
         XCTAssertFalse(vc.backButton.isHidden, "entering a folder must reveal the back button")
         XCTAssertNil(vm.v2NavigationTarget, "the forward target is one-shot and must be consumed")
     }
-
 
     // The record branch of `didSelectItemAt` is deliberately untested here: it stands up the whole
     // preview stack and fires a real fetch. Covered at the view-model level instead.

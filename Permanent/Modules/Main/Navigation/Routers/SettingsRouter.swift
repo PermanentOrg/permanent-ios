@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 05.02.2024.
+//
 
 import Foundation
 import SwiftUI
@@ -110,6 +111,7 @@ class SettingsRouter {
             UploadManager.shared.cancelAll()
             
             AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+
         case .memberChecklist:
             NotificationCenter.default.post(name: Self.showMemberChecklistNotifName, object: nil, userInfo: nil)
         }

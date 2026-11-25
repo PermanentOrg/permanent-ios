@@ -10,7 +10,7 @@ import XCTest
 @testable import Permanent
 
 class FailedVerificationPublicGalleryTestURLs: TestURLs {
-    override var urls: [URL? : Data] {
+    override var urls: [URL?: Data] {
         return [
             URL(string: "\(APIEnvironment.defaultEnv.baseURL)/auth/verify"): "{\"Results\":[{\"data\":null,\"message\":[\"0 results found\"],\"status\":true,\"resultDT\":\"2022-06-02T07:28:12\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"csrf\":\"a54ddb7d26fafe98ce2ead590ced1f0f\",\"createdDT\":null,\"updatedDT\":null}"
                 .data(using: .utf8)!

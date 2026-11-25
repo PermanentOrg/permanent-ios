@@ -8,7 +8,6 @@
 import Foundation
 
 class JSONHelper {
-    
     static func decoding<M: Codable>(from object: Any?, with decoder: JSONDecoder) -> M? {
         // Only a dictionary or an array can be serialized. A String or a number makes
         // `data(withJSONObject:)` raise an Objective-C exception that `catch` below cannot stop.
@@ -44,7 +43,6 @@ class JSONHelper {
 }
 
 private class JSONNull: Codable, Hashable {
-
     public static func == (lhs: JSONNull, rhs: JSONNull) -> Bool {
         return true
     }
@@ -89,7 +87,6 @@ class JSONCodingKey: CodingKey {
 }
 
 class JSONAny: Codable {
-
     let value: Any
 
     static func decodingError(forCodingPath codingPath: [CodingKey]) -> DecodingError {

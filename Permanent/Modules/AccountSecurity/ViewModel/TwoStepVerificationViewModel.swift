@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 28.11.2024.
+//
 
 import Foundation
 import SwiftUI
@@ -22,7 +23,6 @@ class TwoStepVerificationViewModel: ObservableObject {
     @Published var changeAuthFlow: Bool = false
     @Published var showBottomBanner: Bool = false
     @Published var bottomBannerMessage: BannerBottomMessage = .none
-    
     
     /// Initializes the view model with the current 2FA state
     /// - Parameters:

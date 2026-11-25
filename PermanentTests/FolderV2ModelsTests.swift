@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class FolderV2ModelsTests: XCTestCase {
-
     private func decode(_ json: String) throws -> FolderV2Response {
         try FolderV2Response.decoder.decode(FolderV2Response.self, from: Data(json.utf8))
     }

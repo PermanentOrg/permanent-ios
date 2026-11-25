@@ -8,9 +8,7 @@
 import UIKit
 
 class LinkTextField: PETextField {
-    
     override func setup() {
-        
         // TD: create extension  for this
         contentEdgeInsets = UIEdgeInsets(top: 8,
                                          left: 10,

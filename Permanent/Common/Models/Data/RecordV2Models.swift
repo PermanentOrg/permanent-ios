@@ -26,7 +26,7 @@ struct RecordV2Data: Model {
     let uploadPayerAccountId: String?
     let size: Int?
     let displayDate: String?
-    let displayTimeInEDTF: String?
+    let displayTime: String?
     let fileCreatedAt: String?
     let imageRatio: Double?
     let thumbnail256: String?
@@ -112,6 +112,8 @@ extension RecordV2Data {
         if let value = size { record["size"] = value }
         if let value = type { record["type"] = value }
         if let value = displayDate { record["displayDT"] = value }
+        if let value = displayTime { record["displayTime"] = value }
+        if let value = location?.timezone { record["timezone"] = value }
         if let value = createdAt { record["createdDT"] = value }
         if let value = updatedAt { record["updatedDT"] = value }
         if let value = fileCreatedAt { record["derivedCreatedDT"] = value } // note: V2 has no derivedDT ("Created" row blank)
@@ -123,7 +125,7 @@ extension RecordV2Data {
         if let value = intOf(folderLinkId) { record["folder_linkId"] = value }
         if let value = intOf(parentFolderLinkId) { record["parentFolder_linkId"] = value }
         record["FileVOs"] = (files ?? []).map { $0.toFileVOPayload() }
-        if let location = location { record["LocnVO"] = location.toLocnVOPayload() }
+        if let locn = location?.toLocnVOPayload() { record["LocnVO"] = locn }
         if let tags = tags {
             // tagId is load-bearing: the batch-metadata screen derives its tag state from these VOs and the
             // unlink body sends it, so a nil became `tagId: 0` and unassign no-oped while the chip vanished.
@@ -168,12 +170,16 @@ extension FileV2Data {
         case "image":
             if sub == "jpg" { sub = "jpeg" }
             return sub.isEmpty ? genericMimeType : "image/\(sub)"
+
         case "video":
             return sub.isEmpty ? genericMimeType : "video/\(sub)"
+
         case "audio":
             return sub.isEmpty ? genericMimeType : "audio/\(sub)"
+
         case "pdf":
             return "application/pdf"
+
         default:
             // The preview requires a non-nil contentType in both branches and only needs presence, not
             // accuracy — so a generic MIME keeps docs and archives previewable rather than blank.
@@ -189,46 +195,73 @@ extension LocnVO {
     /// Maps the picked V1 location into the V2 `LocationInput` body. The server updates the existing
     /// row in place, so re-applying is safe; only the fields it accepts are sent.
     func toLocationInputPayload() -> [String: Any] {
+        func nonEmpty(_ value: String?) -> String? {
+            guard let value = value, !value.isEmpty else { return nil }
+            return value
+        }
+
         var location: [String: Any] = [:]
-        if let value = displayName, !value.isEmpty { location["name"] = value }
-        if let value = locality, !value.isEmpty { location["city"] = value }
+        if let value = nonEmpty(displayName) ?? nonEmpty(name) { location["name"] = value }
+        if let value = nonEmpty(locality) ?? nonEmpty(city) { location["city"] = value }
         if let value = adminOneName, !value.isEmpty { location["state"] = value }
         if let value = country, !value.isEmpty { location["country"] = value }
+        if let value = (postalCode?.value as? String) ?? (postalCode?.value as? Int).map(String.init), !value.isEmpty {
+            location["postalCode"] = value
+        }
         if let value = latitude { location["latitude"] = value }
         if let value = longitude { location["longitude"] = value }
         let street = [streetNumber, streetName].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
-        if !street.isEmpty { location["sublocation"] = street }
+        if let value = nonEmpty(street) ?? nonEmpty(sublocation) { location["sublocation"] = value }
         return location
     }
 }
 
 extension LocationV2 {
-    /// Maps to the subset of LocnVO JSON keys the detail map cell reads
-    /// (streetNumber/streetName/locality/country + latitude/longitude).
-    func toLocnVOPayload() -> [String: Any] {
-        var locn: [String: Any] = [:]
-        if let value = streetNumber { locn["streetNumber"] = value }
-        if let value = streetName { locn["streetName"] = value }
-        if let value = locality { locn["locality"] = value }
-        if let value = country { locn["country"] = value }
-        if let value = countryCode { locn["countryCode"] = value }
-        if let value = displayName { locn["displayName"] = value }
+    /// Maps to the LocnVO JSON keys the screens read, the new Stela field first, else the old one.
+    /// Nil when there is no coordinate and no address text, because Stela sends an all-null object then.
+    func toLocnVOPayload() -> [String: Any]? {
+        func nonEmpty(_ value: String?) -> String? {
+            guard let value = value, !value.isEmpty else { return nil }
+            return value
+        }
+
+        let hasOldStreet = nonEmpty(streetNumber) != nil || nonEmpty(streetName) != nil
+        let text: [String: String?] = [
+            "streetNumber": nonEmpty(streetNumber),
+            "streetName": hasOldStreet ? nonEmpty(streetName) : nonEmpty(sublocation),
+            "locality": nonEmpty(city) ?? nonEmpty(locality),
+            "adminOneName": nonEmpty(state),
+            "postalCode": nonEmpty(postalCode),
+            "country": nonEmpty(country),
+            "countryCode": nonEmpty(countryCode),
+            "displayName": nonEmpty(name) ?? nonEmpty(displayName),
+            "name": nonEmpty(name),
+            "sublocation": nonEmpty(sublocation),
+            "city": nonEmpty(city)
+        ]
+        var locn: [String: Any] = text.compactMapValues { $0 }
         if let value = latitude { locn["latitude"] = value }
         if let value = longitude { locn["longitude"] = value }
-        return locn
+        return locn.isEmpty ? nil : locn
     }
 }
 
 struct LocationV2: Model {
     let id: String?
+    let name: String?
+    let sublocation: String?
+    let city: String?
+    let state: String?
+    let postalCode: String?
+    let country: String?
+    let latitude: Double?
+    let longitude: Double?
+    let timezone: String?
+    // Older fields, still sent by Stela and still the only ones on locations saved through V1.
     let streetNumber: String?
     let streetName: String?
     let locality: String?
     let county: String?
-    let state: String?
-    let latitude: Double?
-    let longitude: Double?
-    let country: String?
     let countryCode: String?
     let displayName: String?
 }

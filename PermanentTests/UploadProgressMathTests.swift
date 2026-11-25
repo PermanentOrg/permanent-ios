@@ -12,7 +12,6 @@ import Testing
 /// The ceiling holds the bar below 100% while a file is still registering. These pin when it
 /// applies, and when the remaining gap means work rather than a stall.
 struct UploadProgressMathTests {
-
     private func approx(_ a: Double, _ b: Double, _ location: SourceLocation = #_sourceLocation) {
         #expect(abs(a - b) < 0.0001, "\(a) != \(b)", sourceLocation: location)
     }

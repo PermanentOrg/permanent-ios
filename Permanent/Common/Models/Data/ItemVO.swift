@@ -9,7 +9,7 @@ struct ItemVO: Model {
     let folderID: Int?
     let archiveNbr: String?
     let archiveID: Int?
-    let displayName, displayDT: String?
+    let displayName, displayDT, displayTime: String?
     let displayEndDT: String?
     let derivedDT: String?
     let derivedEndDT: String?
@@ -66,7 +66,7 @@ struct ItemVO: Model {
         case folderID = "folderId"
         case archiveNbr
         case archiveID = "archiveId"
-        case displayName, displayDT, displayEndDT, derivedDT, derivedEndDT, note
+        case displayName, displayDT, displayTime, displayEndDT, derivedDT, derivedEndDT, note
         case itemVODescription = "description"
         case special, sort
         case locnID = "locnId"

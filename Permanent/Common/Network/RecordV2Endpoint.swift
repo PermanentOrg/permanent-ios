@@ -43,8 +43,10 @@ extension RecordV2Endpoint: RequestProtocol {
         switch self {
         case .getRecordById:
             return nil
+
         case .patchRecord(_, let fields):
             return try? JSONSerialization.data(withJSONObject: fields)
+
         case .copyRecord(_, let destinationFolderId):
             return try? JSONSerialization.data(withJSONObject: ["destinationFolderId": destinationFolderId])
         }
@@ -55,8 +57,10 @@ extension RecordV2Endpoint: RequestProtocol {
         switch self {
         case .getRecordById(let recordId, _):
             return "\(baseURL)api/v2/records/\(recordId)"
+
         case .patchRecord(let recordId, _):
             return "\(baseURL)api/v2/records/\(recordId)"
+
         case .copyRecord(let recordId, _):
             return "\(baseURL)api/v2/records/\(recordId)/copies"
         }
@@ -67,6 +71,7 @@ extension RecordV2Endpoint: RequestProtocol {
         case .getRecordById(_, let token):
             guard let token, !token.isEmpty else { return nil }
             return token
+
         case .patchRecord, .copyRecord:
             return nil
         }
@@ -83,6 +88,21 @@ extension RecordV2Endpoint: RequestProtocol {
         case .getRecordById: return true
         case .patchRecord, .copyRecord: return false
         }
+    }
+}
+
+extension FileModel {
+    /// A saved record in the session's archive, whose date saves to Stela V2 `displayTime`. Shared
+    /// records stay on the V1 save, because the app reads them through V1, which shows the old field.
+    func savesDateToV2(sessionArchiveId: Int?) -> Bool {
+        guard let sessionArchiveId, recordId > 0, !type.isFolder else { return false }
+        return archiveId > 0 && archiveId == sessionArchiveId
+    }
+
+    /// Whether the date sheet saves this item to Stela V2. A folder has no V1 date save, so every folder with an
+    /// id goes to V2, shared ones too, as web does; a record follows `savesDateToV2`.
+    func savesDateToStela(sessionArchiveId: Int?) -> Bool {
+        type.isFolder ? folderId > 0 : savesDateToV2(sessionArchiveId: sessionArchiveId)
     }
 }
 

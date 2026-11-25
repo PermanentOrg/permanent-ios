@@ -3,7 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 29.11.2024.
-
+//
 
 import SwiftUI
 
@@ -254,4 +254,3 @@ struct TwoStepVerificationView: View {
         presentationMode.wrappedValue.dismiss()
     }
 }
-

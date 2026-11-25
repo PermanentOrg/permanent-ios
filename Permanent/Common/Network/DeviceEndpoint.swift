@@ -20,6 +20,7 @@ extension DeviceEndpoint: RequestProtocol {
         switch self {
         case .new:
             return "/device/registerDevice"
+
         case .delete:
             return "/device/deleteToken"
         }
@@ -50,6 +51,7 @@ extension DeviceEndpoint: RequestProtocol {
         switch self {
         case .new(let params):
             return Payloads.devicePayload(params: params)
+
         case .delete(let params):
             return Payloads.devicePayload(params: params)
         }

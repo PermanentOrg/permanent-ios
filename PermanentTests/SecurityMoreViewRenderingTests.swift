@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class SecurityMoreViewRenderingTests: XCTestCase {
-
     private func hostView<Content: View>(_ view: Content) -> UIHostingController<Content> {
         let host = UIHostingController(rootView: view)
         let window = UIWindow(frame: UIScreen.main.bounds)

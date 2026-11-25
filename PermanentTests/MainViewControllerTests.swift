@@ -16,7 +16,6 @@ final class MainViewControllerTests: XCTestCase {
         super.tearDown()
     }
 
-
     func testSearchButtonPressedUsesInjectedFactoryAndPresenter() {
         let vc = MainViewController()
         vc.viewModel = MyFilesViewModel()
@@ -1334,7 +1333,6 @@ final class MainViewControllerTests: XCTestCase {
             permissions: [.read]
         )
     }
-
 }
 private final class TestableMainViewController: MainViewController {
     var didDismiss = false

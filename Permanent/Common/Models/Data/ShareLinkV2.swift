@@ -96,5 +96,3 @@ struct ShareLinkV2Data: Model {
         }
     }
 }
-
-

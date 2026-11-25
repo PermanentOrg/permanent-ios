@@ -12,7 +12,6 @@ import UIKit
 
 @MainActor
 final class ShareManagementViewRenderingTests: XCTestCase {
-
     // MARK: - ShareGrantArchiveAccessView
 
     func testGrantArchiveAccess_RendersInDefaultState() async {

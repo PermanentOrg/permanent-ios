@@ -24,6 +24,5 @@ class AuthenticationViewController: BaseViewController<AuthViewModel> {
         childView.view.frame = container.bounds
         container.addSubview(childView.view)
         childView.didMove(toParent: self)
-        
     }
 }

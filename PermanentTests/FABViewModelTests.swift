@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class FABViewModelTests: XCTestCase {
-
     // MARK: - CreateNewFolderViewModel
 
     func testCreateNewFolder_InitialState() {

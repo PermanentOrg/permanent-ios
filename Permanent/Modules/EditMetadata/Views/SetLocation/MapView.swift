@@ -3,12 +3,12 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 24.08.2023.
+//
 
 import SwiftUI
 import GoogleMaps
 
 struct MapView: UIViewRepresentable {
-    
     @Binding var coordinates: CLLocationCoordinate2D?
     let marker: GMSMarker = GMSMarker(position: CLLocationCoordinate2D(latitude: 0, longitude: 0))
 
@@ -35,7 +35,6 @@ struct MapView: UIViewRepresentable {
     }
     
     class Coordinator: NSObject, GMSMapViewDelegate {
-        
         var parent: MapView
         
         init(_ parent: MapView) {

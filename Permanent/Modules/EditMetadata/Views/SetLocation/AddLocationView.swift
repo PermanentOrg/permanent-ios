@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 24.08.2023.
+//
 
 import SwiftUI
 import CoreLocation
@@ -57,11 +58,7 @@ struct AddLocationView: View {
                     .background(Color.clear)
                     .padding()
                 }
-                .navigationBarTitle("Add location", displayMode: .inline)
-                .navigationBarItems(leading: Image("metadataLocations")
-                    .renderingMode(.template)
-                    .foregroundColor(.white)
-                    .frame(width: 24, height: 24))
+                .darkBarSheet(title: "AddLocation".localized()) { presentationMode.wrappedValue.dismiss() }
             }
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "New location", message: "Are you sure you want set a new location for selected items?", buttonTitle: "Set location") {
@@ -104,7 +101,6 @@ struct AddLocationView: View {
                             Text("\(item.attributedSecondaryText?.string ?? "")")
                                 .foregroundColor(.lightGray)
                                 .textStyle(SmallXXXXRegularTextStyle())
-                            
                         })
                     }
                     .onTapGesture {

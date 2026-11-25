@@ -175,5 +175,3 @@ struct RevokeBottomAlertView: View {
         }
     )
 }
-
-

@@ -8,7 +8,6 @@
 import UIKit
 
 class ArchiveScreenSectionTitleTableViewCell: UITableViewHeaderFooterView {
-
     @IBOutlet weak var topSectionTitleLabel: UILabel!
     
     override func awakeFromNib() {

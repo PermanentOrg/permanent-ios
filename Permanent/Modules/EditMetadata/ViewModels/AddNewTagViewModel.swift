@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 17.07.2023.
+//
 
 import Foundation
 
@@ -70,7 +71,7 @@ class AddNewTagViewModel: ObservableObject {
         }
     }
     
-    //MARK: Assign Tags
+    // MARK: Assign Tags
     
     func addButtonPressed(completion: @escaping ((Bool) -> Void)) {
         isLoading = true
@@ -86,8 +87,7 @@ class AddNewTagViewModel: ObservableObject {
                 await MainActor.run {
                     completion(true)
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     completion(false)
                     strongSelf.showAlert = true

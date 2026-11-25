@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 19.12.2024.
+//
 
 import SwiftUI
 
@@ -38,10 +39,13 @@ class TwoStepConfirmPasswordViewModel: ObservableObject {
                 } else {
                     self?.containerViewModel.setContentType(.chooseVerification)
                 }
+
             case .error(message: _):
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .error)
+
             case .unknown:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPassword)
+
             default:
                 break
             }

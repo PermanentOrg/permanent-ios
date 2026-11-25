@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class ChecklistAndDialogViewTests: XCTestCase {
-
     // MARK: - ChecklistBottomMenuViewModel Initial State
 
     func testChecklistVM_InitialState() {

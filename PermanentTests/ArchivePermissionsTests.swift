@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ArchivePermissionsTests: XCTestCase {
-
     // MARK: - ArchiveVOData.permissions(forAccessRole:)
 
     func testPermissions_Owner_HasAllPermissions() {

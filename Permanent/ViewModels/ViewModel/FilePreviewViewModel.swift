@@ -47,6 +47,13 @@ class FilePreviewViewModel: ViewModelInterface {
 
     private var recordFetchAttempts = 0
 
+    /// Test seams for a save: the V2 PATCH, the V1 update and the session's archive stand in for the
+    /// server and the sign-in. Production leaves the requests nil.
+    var patchRecordRequest: ((_ recordId: Int, _ fields: [String: Any], _ completion: @escaping (Bool) -> Void) -> Void)?
+    var updateV1Request: ((_ params: UpdateRecordParams, _ completion: @escaping (Bool) -> Void) -> Void)?
+    var sessionArchiveId: () -> Int? = { AuthenticationManager.shared.session?.selectedArchive?.archiveID }
+    var pinAddressLookup = PinAddressLookup()
+
     /// Extends the V2 record read to foreign archives, for the public gallery — the same bearer-only
     /// credentials already list that archive's children. Reads only; writes stay own-archive.
     private let allowsForeignDetail: Bool
@@ -65,8 +72,10 @@ class FilePreviewViewModel: ViewModelInterface {
         switch imagePreviewState {
         case .loadingFullRes(let hasThumbnail), .failed(let hasThumbnail), .offline(let hasThumbnail):
             return hasThumbnail
+
         case .loadingThumbnail, .loaded:
             return true
+
         case .idle:
             return false
         }
@@ -209,7 +218,7 @@ class FilePreviewViewModel: ViewModelInterface {
     /// True when the record is in the session's selected archive. A foreign or shared record carries
     /// a different or absent archiveId and stays on V1; unknown ownership also falls to V1.
     private func isInCurrentArchive(_ file: FileModel) -> Bool {
-        guard let currentArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return false }
+        guard let currentArchiveId = sessionArchiveId() else { return false }
         return file.archiveId > 0 && file.archiveId == currentArchiveId
     }
 
@@ -228,8 +237,10 @@ class FilePreviewViewModel: ViewModelInterface {
                 switch result {
                 case .json:
                     completion(nil)
+
                 case .error(let error, _):
                     completion(error ?? APIError.unknown)
+
                 default:
                     completion(APIError.unknown)
                 }
@@ -370,8 +381,20 @@ class FilePreviewViewModel: ViewModelInterface {
     } 
     
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
-        // V2 PATCH covers name, description and location, which are idempotent. Date stays on V1: the
-        // PATCH exposes only the EDTF column, not the timestamp the Date row shows. Own archive only.
+        // A complex date is only changed on web.
+        if date != nil, DateUtils.isWebOnlyDate(dateRowDisplayTime) {
+            completion(false)
+            return
+        }
+        if let date = date, name == nil, description == nil, location == nil, file.savesDateToV2(sessionArchiveId: sessionArchiveId()) {
+            updateDateV2(file: file, date: date, completion: completion)
+            return
+        }
+        if let location = location, name == nil, description == nil, date == nil, file.recordId > 0, file.permissions.contains(.edit) {
+            updateLocationV2(file: file, location: location, completion: completion)
+            return
+        }
+        // V2 PATCH covers name, description and location, which are idempotent. Own archive only.
         if file.recordId > 0, isInCurrentArchive(file), date == nil, (name != nil || description != nil || location != nil) {
             updateV2(file: file, name: name, description: description, location: location, completion: completion)
             return
@@ -391,17 +414,15 @@ class FilePreviewViewModel: ViewModelInterface {
             updateV1(file: file, name: name, description: description, date: nil, location: location, completion: completion)
             return
         }
-        let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(file.recordId), fields: fields))
-        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+        sendPatchRecord(recordId: file.recordId, fields: fields) { [weak self] succeeded in
             DispatchQueue.main.async {
                 guard let self = self else { completion(false); return }
-                switch result {
-                case .json:
+                if succeeded {
                     self.getRecord(file: file) { _ in
                         NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
                         completion(true)
                     }
-                default:
+                } else {
                     // Failsafe — re-apply the edit via V1 (idempotent).
                     self.updateV1(file: file, name: name, description: description, date: nil, location: location, completion: completion)
                 }
@@ -409,52 +430,169 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
 
-    private func updateV1(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
-        let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo)
-        let apiOperation = APIOperation(FilesEndpoint.update(params: params))
+    // MARK: - Info tab
 
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+    /// Saves a typed name. An empty or unchanged name is not sent and answers false, so the row shows the saved name again.
+    func saveName(_ typed: String, completion: @escaping (Bool) -> Void) {
+        guard !typed.isEmpty, typed != name else { completion(false); return }
+        let previous = name
+        name = typed
+        update(file: file, name: typed, description: nil, date: nil, location: nil) { [weak self] saved in
+            if !saved { self?.name = previous }
+            completion(saved)
+        }
+    }
+
+    /// Saves a typed description. An empty or unchanged one is not sent and answers false, so the row shows the saved one again.
+    func saveDescription(_ typed: String, completion: @escaping (Bool) -> Void) {
+        guard !typed.isEmpty, typed != recordVO?.recordVO?.recordVODescription else { completion(false); return }
+        update(file: file, name: nil, description: typed, date: nil, location: nil, completion: completion)
+    }
+
+    /// The Info tab's rows, in order. A member with the edit right gets all four, boxed; another member only the
+    /// rows that hold a value, plain. A complex date gives every member the web-only Date row.
+    func infoRows() -> [FileInfoRowModel] {
+        let record = recordVO?.recordVO
+        let style: FileInfoRowModel.Style = isEditable ? .boxed : .plain
+        let values: [(FileInfoRowModel.Kind, String?)] = [
+            (.name, record?.displayName ?? name),
+            (.description, record?.recordVODescription),
+            (.date, infoRowDate()),
+            (.location, record?.locnVO.map { getAddressString([$0.addressText], false) })
+        ]
+        let complexDate = infoRowComplexDate()
+        return values.compactMap { kind, value in
+            let rowComplexDate = kind == .date ? complexDate : nil
+            let shown = rowComplexDate?.infoText ?? value
+            let row = FileInfoRowModel(kind: kind, value: shown, style: style, complexDate: rowComplexDate)
+            return isEditable || row.isSet ? row : nil
+        }
+    }
+
+    /// The `displayTime` the Date row and its tap read: the record once it is loaded, the list row before.
+    var dateRowDisplayTime: String? {
+        guard let record = recordVO?.recordVO else { return file.displayTime }
+        return record.displayTime
+    }
+
+    /// How the complex date reads on the Info tab; each clock time gets its zone as an exact date would.
+    func infoRowComplexDate() -> ComplexDateText? {
+        let record = recordVO?.recordVO
+        guard let displayTime = dateRowDisplayTime, DateUtils.isWebOnlyDate(displayTime) else { return nil }
+        return ComplexDateText(displayTime) { end in
+            DateTimeEntry.timeSuffix(displayTime: end, timeZoneIdentifier: record?.timezone)
+        }
+    }
+
+    /// The Date row's text: the written date, its clock when it has one, then the zone's short name or the string's
+    /// offset, as web shows them.
+    func infoRowDate() -> String? {
+        let record = recordVO?.recordVO
+        let suffix = DateTimeEntry.timeSuffix(displayTime: record?.displayTime, timeZoneIdentifier: record?.timezone)
+        return DateUtils.infoRowDate(displayTime: record?.displayTime, legacy: record?.displayDT, zoneAbbreviation: suffix)
+    }
+
+    /// True when the Info tab shows the map: the record has coordinates.
+    var infoTabHasMap: Bool {
+        recordVO?.recordVO?.locnVO?.latitude != nil && recordVO?.recordVO?.locnVO?.longitude != nil
+    }
+
+    /// True when the Info tab shows the tags row: the member can add tags, or the record has some to show.
+    var infoTabHasTags: Bool {
+        isEditable || !(recordVO?.recordVO?.tagVOS ?? []).isEmpty
+    }
+
+    /// A date goes to `displayTime`, the field both apps read first. After a V2 failure the V1 retry runs
+    /// only while the old field is the date the app shows; otherwise V1 would write a date nobody sees.
+    private func updateDateV2(file: FileModel, date: Date, completion: @escaping ((Bool) -> Void)) {
+        sendPatchRecord(recordId: file.recordId, fields: DateUtils.displayTimeFields(for: date)) { [weak self] succeeded in
             DispatchQueue.main.async {
-                switch result {
-                case .json( _, _):
-                    self.getRecord(file: file) { (record) in
+                guard let self = self else { completion(false); return }
+                if succeeded {
+                    self.getRecord(file: file) { _ in
                         NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
                         completion(true)
                     }
-
-                case .error(_, _):
-                    NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
-                    completion(false)
-
-                default:
+                } else if DateUtils.showsLegacyDate(displayTimes: [self.recordVO?.recordVO?.displayTime, file.displayTime]) {
+                    self.updateV1(file: file, name: nil, description: nil, date: date, location: nil, completion: completion) // failsafe
+                } else {
                     NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
                     completion(false)
                 }
             }
         }
     }
-    
-    func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
-        let params: GeomapLatLongParams = (lat, long)
-        let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let json, _):
-                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
-                    completion(nil)
-                    return
+
+    /// Stela V2 accepts a location from any editor, shared records included. A failed save retries once through V1.
+    private func updateLocationV2(file: FileModel, location: LocnVO, completion: @escaping ((Bool) -> Void)) {
+        var service = ItemLocationService()
+        service.patchRecord = { [weak self] file, fields, done in
+            guard let self = self else { done(false); return }
+            self.sendPatchRecord(recordId: file.recordId, fields: fields, completion: done)
+        }
+        service.save(location, to: [file]) { [weak self] succeeded in
+            guard let self = self else { completion(false); return }
+            if succeeded {
+                self.getRecord(file: file) { _ in
+                    NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
+                    completion(true)
                 }
-                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
-                completion(locnVO)
-                
-            case .error(_, _):
-                completion(nil)
-                
-            default:
-                completion(nil)
+            } else {
+                ItemLocationService.logger.notice("Location not saved through Stela V2, saving through V1.")
+                self.updateV1(file: file, name: nil, description: nil, date: nil, location: location, completion: completion) // failsafe
             }
         }
+    }
+
+    private func sendPatchRecord(recordId: Int, fields: [String: Any], completion: @escaping (Bool) -> Void) {
+        if let injected = patchRecordRequest {
+            injected(recordId, fields, completion)
+            return
+        }
+        let apiOperation = APIOperation(RecordV2Endpoint.patchRecord(recordId: String(recordId), fields: fields))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            if case .json = result {
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }
+
+    private func updateV1(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+        let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo)
+        sendUpdateV1(params) { succeeded in
+            DispatchQueue.main.async {
+                if succeeded {
+                    self.getRecord(file: file) { _ in
+                        NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
+                        completion(true)
+                    }
+                } else {
+                    NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
+                    completion(false)
+                }
+            }
+        }
+    }
+
+    private func sendUpdateV1(_ params: UpdateRecordParams, completion: @escaping (Bool) -> Void) {
+        if let injected = updateV1Request {
+            injected(params, completion)
+            return
+        }
+        let apiOperation = APIOperation(FilesEndpoint.update(params: params))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            if case .json = result {
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }
+    
+    func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
+        pinAddressLookup.locate(latitude: lat, longitude: long, completion: completion)
     }
     
     func getAddressString(_ items: [String?], _ inMetadataScreen: Bool = true) -> String {

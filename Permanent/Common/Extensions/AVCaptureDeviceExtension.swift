@@ -46,6 +46,7 @@ extension AVCaptureDevice {
                     }
                 }
             })
+
         @unknown default:
             completion?(.unknown)
         }

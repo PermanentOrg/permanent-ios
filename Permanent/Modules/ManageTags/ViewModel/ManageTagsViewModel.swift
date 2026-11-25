@@ -105,7 +105,7 @@ class ManageTagsViewModel: ViewModelInterface {
         }
         tagsRepository.assignTagToArchive(tagNames: [tagName]) { tags, error in
             if let _ = tags {
-                NotificationCenter.default.post(name: Self.showBannerNotification, object: self, userInfo: ["message":"Tag added successfully".localized()])
+                NotificationCenter.default.post(name: Self.showBannerNotification, object: self, userInfo: ["message": "Tag added successfully".localized()])
                 self.refreshTags()
                 completion(nil)
             } else {
@@ -125,7 +125,7 @@ class ManageTagsViewModel: ViewModelInterface {
             if let _ = error {
                 completion(.errorMessage)
             } else {
-                NotificationCenter.default.post(name: Self.showBannerNotification, object: self, userInfo: ["message":"Tag edited successfully".localized()])
+                NotificationCenter.default.post(name: Self.showBannerNotification, object: self, userInfo: ["message": "Tag edited successfully".localized()])
                 self.refreshTags()
                 completion(nil)
             }

@@ -8,7 +8,6 @@
 import UIKit
 
 class LeftSideHeaderTableViewCell: UITableViewCell {
-
     @IBOutlet weak var archiveImage: UIImageView!
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var actionDescriptionLabel: UILabel!

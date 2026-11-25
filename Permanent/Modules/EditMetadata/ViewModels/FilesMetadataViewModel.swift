@@ -3,22 +3,23 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 29.06.2023.
+//
 
 import SwiftUI
 import Foundation
 
 class FilesMetadataViewModel: ObservableObject {
-    
     @Published var isLoading: Bool = false
     
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
-            let tags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
+            let tags = Array(Set(selectedFiles.flatMap { $0.tagVOS ?? [] }.map { TagVO(tagVO: $0)}))
             allTags = tags.sorted()
             if !descriptionWasSaved {
                 haveDiffDescription = !selectedFiles.allSatisfy({$0.description == selectedFiles.first?.description})
             }
-            haveDiffDate = !selectedFiles.allSatisfy({$0.createdDT == selectedFiles.first?.createdDT})
+            // The section shows `displayTime`, else the old field, as `getCommonDate()` reads it.
+            haveDiffDate = Set(selectedFiles.map { $0.displayTime ?? $0.createdDT }).count > 1
             if haveDiffDescription {
                 inputText = .enterTextHere
             } else {
@@ -60,6 +61,8 @@ class FilesMetadataViewModel: ObservableObject {
     
     @Published var locationSectionText: String = "Locations"
     @Published var commonLocation: LocnVO?
+    /// The zone every read record shares, for the date sheet; unknown until the reads finish or when they differ.
+    @Published var commonZone: EditDateAndTimeViewModel.RecordZone = .unknown
     
     var descriptionWasSaved: Bool = false
     var downloader: DownloadManagerGCD? = nil
@@ -82,7 +85,8 @@ class FilesMetadataViewModel: ObservableObject {
             guard let strongSelf = self else { return }
             let records = try await strongSelf.selectedFiles.asyncMap(strongSelf.getRecord)
             await MainActor.run {
-                strongSelf.setLocationsSectionText(records: records.compactMap{$0})
+                strongSelf.setLocationsSectionText(records: records.compactMap {$0})
+                strongSelf.commonZone = Self.sharedZone(of: records.map { $0?.recordVO })
                 
                 strongSelf.selectedFiles = records.compactMap { record in
                     if let recordVO = record?.recordVO {
@@ -96,6 +100,13 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
+    /// `.known` only when every record was read and all carry the same zone; any gap or difference is `.unknown`.
+    static func sharedZone(of records: [RecordVOData?]) -> EditDateAndTimeViewModel.RecordZone {
+        let zones = records.map { $0?.timezone }
+        guard let first = zones.first, let zone = first, zones.allSatisfy({ $0 == zone }) else { return .unknown }
+        return .known(zone)
+    }
+
     func updateDescription(_ text: String) {
         update(description: text) { status in
             if status {
@@ -201,7 +212,7 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
-    //MARK: Sections
+    // MARK: Sections
     
     private func setLocationsSectionText(records: [RecordVO]) {
         guard records.filter({ $0.recordVO?.locnVO != nil}).count > 0 else {
@@ -210,13 +221,13 @@ class FilesMetadataViewModel: ObservableObject {
         }
         let sameLocation = Set(records.compactMap { record in
             let locnVO = record.recordVO?.locnVO
-            return getAddressString([locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country])
+            return getAddressString([locnVO?.addressText])
         }).count == 1
         
         if sameLocation {
             let locnVO = records.first?.recordVO?.locnVO
             updateLocation(locnVO)
-            let address = getAddressString([locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country])
+            let address = getAddressString([locnVO?.addressText])
             locationSectionText = address
         } else {
             locationSectionText = "Various locations"
@@ -232,7 +243,7 @@ class FilesMetadataViewModel: ObservableObject {
         return address
     }
     
-    //MARK: Delete Tag
+    // MARK: Delete Tag
     
     func unassignTag(tagName: String, isLoading: Binding<Bool>) {
         isLoading.wrappedValue = true
@@ -250,8 +261,7 @@ class FilesMetadataViewModel: ObservableObject {
                     isLoading.wrappedValue = false
                     strongSelf.allTags.removeAll(where: { $0.tagVO.name == tagName })
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     isLoading.wrappedValue = false
                     strongSelf.showAlert = true
@@ -273,7 +283,7 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
-    //MARK: Assign Tags
+    // MARK: Assign Tags
     
     func assignAllTagsToAll() {
         Task {[weak self] in
@@ -286,8 +296,7 @@ class FilesMetadataViewModel: ObservableObject {
                 await MainActor.run {
                     strongSelf.refreshFiles()
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     strongSelf.showAlert = true
                 }
@@ -309,8 +318,7 @@ class FilesMetadataViewModel: ObservableObject {
                     isLoading.wrappedValue = false
                     strongSelf.refreshFiles()
                 }
-            }
-            catch {
+            } catch {
                 await MainActor.run {
                     isLoading.wrappedValue = false
                     strongSelf.showAlert = true
@@ -332,6 +340,22 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
+    /// True when a selected file has a complex date, which only web may view or change.
+    var hasWebOnlyDate: Bool {
+        selectedFiles.contains { DateUtils.isWebOnlyDate($0.displayTime) }
+    }
+
+    /// The date section's title: one file's complex date as the list shows it, else the shared date.
+    var dateSectionTitle: String {
+        if selectedFiles.count == 1, let complexDate = selectedFiles.first?.complexDate { return complexDate.listText }
+        return haveDiffDate || hasWebOnlyDate ? "VariousDatesAndTimes".localized() : getCommonDate()
+    }
+
+    /// "2 of the 5 selected items have complex EDTF dates…", shown instead of the date sheet.
+    var webOnlyDateMessage: String {
+        WebOnlyDateMessage.message(for: selectedFiles)
+    }
+
     func getCommonDate() -> String {
         let dateFormatter = DateFormatter()
         // en_US_POSIX so parsing this Gregorian ISO string doesn't fail on a device set to a
@@ -340,7 +364,8 @@ class FilesMetadataViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
 
-        let date = dateFormatter.date(from: selectedFiles.first?.createdDT ?? "") ?? Date()
+        let first = selectedFiles.first
+        let date = DateUtils.date(fromDisplayTime: first?.displayTime) ?? dateFormatter.date(from: first?.createdDT ?? "") ?? Date()
 
         let dateFormatterChanged = DateFormatter()
         // Display-only, for the metadata date row. `en_US_POSIX` keeps the year Gregorian on devices

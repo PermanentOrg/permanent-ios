@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 01.02.2024.
+//
 import SwiftUI
 
 /// Description: User for displaying a custom progress bar view
@@ -18,7 +19,6 @@ struct CustomBarProgressGradientStyle: ProgressViewStyle {
     var cornerRadius: Double = 2.0
     
     func makeBody(configuration: Configuration) -> some View {
-        
         let progress = configuration.fractionCompleted ?? 0.0
         
         GeometryReader { geometry in

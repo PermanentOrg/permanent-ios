@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 09.09.2024.
+//
 
 import Foundation
 import SwiftUI
@@ -50,8 +51,10 @@ class LoginViewModel: ObservableObject, LoginEventProtocol {
             switch newStatus {
             case .error(message: let message):
                 self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .error)
+
             case .unknown:
                 self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
+
             default:
                 break
             }
@@ -111,7 +114,7 @@ extension LoginEventProtocol {
               let payload = EventsPayloadBuilder.build(accountId: accountId,
                                                        eventAction: AccountEventAction.openArchiveMenu,
                                                        entityId: String(accountId),
-                                                       data: ["page":"Archive Menu"]) else { return }
+                                                       data: ["page": "Archive Menu"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }

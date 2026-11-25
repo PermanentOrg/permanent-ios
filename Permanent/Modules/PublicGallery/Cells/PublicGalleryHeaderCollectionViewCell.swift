@@ -8,7 +8,6 @@
 import UIKit
 
 class PublicGalleryHeaderCollectionViewCell: UICollectionViewCell {
-    
     static let identifier = "PublicGalleryHeaderCollectionViewCell"
     
     @IBOutlet weak var sectionNameLabel: UILabel!

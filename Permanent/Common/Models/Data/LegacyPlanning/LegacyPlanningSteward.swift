@@ -30,8 +30,10 @@ struct LegacyPlanningSteward {
         switch status {
         case .pending:
             return "Pending invitation"
+
         case .accepted:
             return "Accepted"
+
         case .declined:
             return "Declined"
         }

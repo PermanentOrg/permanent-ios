@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.09.2024.
+//
 
 import SwiftUI
 
@@ -65,7 +66,7 @@ struct AuthVerifyIdentityView: View {
                                     .id(bottomButtonId)
                                     RoundButtonRightImageView(text: "Verify", action: {
                                         signIn()
-                                    },hasImage: false)
+                                    }, hasImage: false)
                                 }
                                 if showEmptySpace && geometry.size.height > 680 {
                                     Spacer()
@@ -89,7 +90,6 @@ struct AuthVerifyIdentityView: View {
                                         .frame(height: 1)
                                         .background(Color(red: 0.54, green: 0.55, blue: 0.64))
                                         .layoutPriority(0.5)
-                                    
                                 }
                                 SmallRoundButtonImageView(type: .noColor, imagePlace: .none, text: "Resend code", image: Image(.iconauthUserPlus), action: {
                                     viewModel.resendPinCode()
@@ -116,7 +116,6 @@ struct AuthVerifyIdentityView: View {
                                 if !showEmptySpace {
                                     if Constants.Design.isPhone {
                                         Spacer()
-                                        
                                     } else {
                                         Spacer()
                                             .frame(height: keyboardHeight)
@@ -190,6 +189,7 @@ struct AuthVerifyIdentityView: View {
                     AppDelegate.shared.rootViewController.present(host, animated: true)
                 }
                 loginSuccess()
+
             default:
                 return
             }
@@ -222,8 +222,7 @@ struct AuthVerifyIdentityView: View {
                     .frame(maxHeight: .infinity)
                     .padding(EdgeInsets(top: 32, leading: 32, bottom: 32, trailing: 64))
                 }
-            }
-            else {
+            } else {
                 AuthVerifyIdentityView(viewModel: AuthVerifyIdentityViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
                 })
                 .frame(maxWidth: .infinity)

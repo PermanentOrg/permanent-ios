@@ -364,16 +364,7 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
             let revertHeader = showHeaderWhileLoading(title: file.name, showsBack: true, entering: file.folderLinkId)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: revertHeader)
         } else {
-            let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-            listPreviewVC.modalPresentationStyle = .fullScreen
-            listPreviewVC.viewModel = viewModel
-            listPreviewVC.currentFile = file
-            
-            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-            fileDetailsNavigationController.filePreviewNavDelegate = self
-            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-            
-            present(fileDetailsNavigationController, animated: true)
+            present(FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self), animated: true)
         }
     }
     
@@ -413,17 +404,14 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
         guard section == pagingSection.sectionIndex else { return .zero }
         return pagingSection.footerSize(width: collectionView.bounds.width - collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right)
     }
-    
 }
 
 // MARK: - Table View Delegates
 extension SearchViewController {
     private func cellRightButtonAction(atPosition position: Int) {
-        
     }
     
     private func handleCellRightButtonAction(for file: FileModel, atIndexPath indexPath: IndexPath) {
-
     }
 }
 
@@ -450,7 +438,6 @@ extension SearchViewController: UISearchBarDelegate {
 
 // MARK: - FileActionSheetDelegate
 extension SearchViewController {
-
 }
 
 // MARK: - FilePreviewNavigationControllerDelegate
@@ -462,7 +449,6 @@ extension SearchViewController: FilePreviewNavigationControllerDelegate {
     }
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
-        
     }
     
     func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel) {

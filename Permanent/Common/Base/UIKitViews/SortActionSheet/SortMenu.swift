@@ -17,8 +17,14 @@ enum SortMenu {
 
     /// The mark on the field and order in force. iOS keeps a checkmark column before every row's image, so the
     /// marks are drawn as images, and the "Sort by" icon shares their column as the design shows.
+    /// A drawing gets a whole number of pixels and a symbol can have a part of one, so the mark is drawn too:
+    /// the mark and the clear mark of an unchecked row then have the same width.
     static var checkmark: UIImage? {
-        UIImage(systemName: "checkmark", withConfiguration: symbolConfiguration)?.withRenderingMode(.alwaysTemplate)
+        UIImage(systemName: "checkmark", withConfiguration: symbolConfiguration).map { symbol in
+            UIGraphicsImageRenderer(size: symbol.size).image { _ in
+                symbol.draw(in: CGRect(origin: .zero, size: symbol.size))
+            }.withRenderingMode(.alwaysTemplate)
+        }
     }
 
     /// The current text size and weight, so both icons follow Dynamic Type and Bold Text.

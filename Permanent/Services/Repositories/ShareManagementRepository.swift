@@ -16,7 +16,7 @@ class ShareManagementRepository {
     
     func getShareLink(file: FileModel, option: ShareLinkOption, then completion: @escaping ShareLinkResponse) {
         remoteDataSource.getShareLink(file: file, option: option) { result, error in
-            completion(result,error)
+            completion(result, error)
         }
     }
     
@@ -30,7 +30,6 @@ class ShareManagementRepository {
         remoteDataSource.updateLink(model: model, shareVO: shareVO) { result, share in
             handler(result, share)
         }
-        
     }
     
     func approveButtonAction(minArchiveVO: MinArchiveVO, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus, ShareVOData?) -> Void) {

@@ -8,7 +8,6 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
     // MARK: - Properties
     
     var actionDialog: ActionDialogView?
@@ -44,7 +43,6 @@ class ViewController: UIViewController {
         cancelButtonColor: UIColor = .brightRed,
         positiveAction: @escaping ButtonAction
     ) {
-        
         guard actionDialog == nil else { return }
         
         actionDialog = ActionDialogView(
@@ -74,5 +72,4 @@ class ViewController: UIViewController {
         view.addSubview(actionDialog!)
         self.view.presentPopup(actionDialog, overlayView: overlayView)
     }
-
 }

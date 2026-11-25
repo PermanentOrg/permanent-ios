@@ -12,7 +12,6 @@ import XCTest
 
 @MainActor
 final class RenameViewTests: XCTestCase {
-
     func testRendersFolderRenameView() async {
         var dismissed = false
         let view = RenameView(

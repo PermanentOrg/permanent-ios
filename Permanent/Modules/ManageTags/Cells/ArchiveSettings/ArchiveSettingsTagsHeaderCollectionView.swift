@@ -18,7 +18,6 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
     @IBOutlet weak var smallArrowButton: UIButton!
     @IBOutlet weak var sortOrderButton: UIButton!
     
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         

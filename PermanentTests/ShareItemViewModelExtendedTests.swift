@@ -3,6 +3,7 @@
 //  PermanentTests
 //
 //  Created by Lucian Cerbu on 07.05.2026.
+//
 
 import XCTest
 import Combine
@@ -10,7 +11,6 @@ import Combine
 
 @MainActor
 final class ShareItemViewModelExtendedTests: XCTestCase {
-
     // MARK: - Finalize Shared Archives Tests
 
     func testFinalizeSharedArchives_EmptyBaseNoPending_ResultsInEmptyList() {
@@ -637,7 +637,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
         vm.performRevokeLink()
 
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        await waitUntil(timeout: 5, !vm.showLinkSettings && vm.navigationDirection == .backward)
 
         XCTAssertFalse(vm.showLinkSettings)
         XCTAssertEqual(vm.navigationDirection, .backward)
@@ -1275,7 +1275,7 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 
     func testFormatDate_ValidDate_ReturnsFormattedString() {
         let result = ShareItemViewModel.formatDate("2026-05-07T10:30:00")
-        XCTAssertEqual(result, "May. 7, 2026")
+        XCTAssertEqual(result, "May 7, 2026")
     }
 
     func testFormatDate_EmptyString_ReturnsEmpty() {
@@ -1946,7 +1946,6 @@ final class ShareItemViewModelExtendedTests: XCTestCase {
 // MARK: - Test Helpers
 
 extension ShareItemViewModelExtendedTests {
-
     private func makeViewModel(isFolder: Bool = false, repository: ShareManagementRepository? = nil) -> ShareItemViewModel {
         let fileModel = isFolder ? FileModel.mockFolder() : FileModel.mockFile()
         let repo = repository ?? TrackingShareManagementRepository()

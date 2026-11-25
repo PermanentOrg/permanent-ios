@@ -7,7 +7,6 @@
 import UIKit
 
 class MilestonesTableViewCell: UITableViewCell {
-
     @IBOutlet weak var milestoneTitleLabel: UILabel!
     @IBOutlet weak var milestoneLocationLabel: UILabel!
     @IBOutlet weak var milestoneDateLabel: UILabel!

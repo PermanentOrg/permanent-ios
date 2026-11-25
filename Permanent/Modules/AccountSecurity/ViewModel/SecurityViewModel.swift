@@ -29,7 +29,6 @@ extension SecurityViewModel: SecurityViewModelDelegate {
         let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data))
         
         changePasswordOperation.execute(in: APIRequestDispatcher()) { result in
-            
             switch result {
             case .json(let response, _):
                 guard
@@ -52,6 +51,7 @@ extension SecurityViewModel: SecurityViewModelDelegate {
                 }
                 handler(.success(message: .passwordChangedSuccessfully))
                 self.viewDelegate?.passwordUpdated(success: true)
+
             case .error:
                 handler(.error(message: .errorMessage))
                 self.viewDelegate?.passwordUpdated(success: false)
@@ -68,8 +68,10 @@ extension SecurityViewModel: SecurityViewModelDelegate {
         switch authType {
         case "Touch ID":
             authTextType = .logInWith + .LogInTouchId
+
         case "Face ID":
             authTextType = .logInWith + .LogInFaceId
+
         default:
             authTextType = authType
         }

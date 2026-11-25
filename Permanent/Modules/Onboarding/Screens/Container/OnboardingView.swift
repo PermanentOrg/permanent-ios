@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 04.03.2024.
+//
 
 import SwiftUI
 
@@ -11,7 +12,7 @@ struct OnboardingView: View {
     
     @State private var isBack = false
     @Environment(\.presentationMode) var presentationMode
-    @State var bottomButtonsPadding: CGFloat =  40
+    @State var bottomButtonsPadding: CGFloat = 40
 
     var body: some View {
         ZStack {
@@ -42,9 +43,10 @@ struct OnboardingView: View {
                             }
                         })
                         .transition(AnyTransition.asymmetric(
-                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            insertion: .move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
+
                     case .pendingWelcome:
                         OnboardingInvitedWelcomeView(viewModel: OnboardingInvitedWelcomeViewModel(containerViewModel: viewModel)) {
                             isBack = false
@@ -58,9 +60,10 @@ struct OnboardingView: View {
                             }
                         }
                         .transition(AnyTransition.asymmetric(
-                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            insertion: .move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
+
                     case .createArchive:
                         OnboardingCreateFirstArchiveView(viewModel: OnboardingCreateFirstArchiveViewModel(containerViewModel: viewModel)) {
                             isBack = true
@@ -74,7 +77,7 @@ struct OnboardingView: View {
                             }
                         }
                         .transition(AnyTransition.asymmetric(
-                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            insertion: .move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
                         
@@ -92,7 +95,7 @@ struct OnboardingView: View {
                             }
                         }
                         .transition(AnyTransition.asymmetric(
-                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            insertion: .move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
                     
@@ -117,7 +120,7 @@ struct OnboardingView: View {
                             viewModel.trackEvents(action: .skipGoals)
                         }
                         .transition(AnyTransition.asymmetric(
-                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            insertion: .move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
                         
@@ -138,13 +141,12 @@ struct OnboardingView: View {
                             viewModel.trackEvents(action: .skipWhyPermanent)
                         }
                         .transition(AnyTransition.asymmetric(
-                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            insertion: .move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
                         
                     case .congratulations:
                         OnboardingCongratulationsView(viewModel: OnboardingCongratulationsViewModel(containerViewModel: viewModel)) {
-                            
                         } nextButton: {
                             AppDelegate.shared.rootViewController.setDrawerRoot()
                             dismissView()
@@ -159,7 +161,7 @@ struct OnboardingView: View {
             .padding(.horizontal, Constants.Design.isPhone ? 32 : 64)
             .padding(.top, Constants.Design.isPhone ? 70 : 48)
             LoadingOverlay()
-                .opacity(viewModel.isLoading  ? 1 : 0)
+                .opacity(viewModel.isLoading ? 1 : 0)
                 .animation(.easeInOut(duration: 0.5), value: viewModel.isLoading)
                 .allowsHitTesting(viewModel.isLoading)
         }
@@ -181,7 +183,6 @@ struct OnboardingView: View {
             }
         })
     }
-    
     
     var topProgressBar: some View {
         HStack(spacing: Constants.Design.isPhone ? 8 : 24) {
@@ -224,7 +225,6 @@ struct OnboardingView: View {
         }
         .padding(.top, 24)
         .padding(.bottom, 32)
-        
     }
     
     private func dismissKeyboard() {
@@ -248,7 +248,7 @@ struct OnboardingView: View {
         OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.pending, archiveID: 355, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 400, thumbnailURL: "", isThumbnailGenerated: false)
-        ]
+    ]
     onboardingViewModel.archiveName = "new archive"
     onboardingViewModel.contentType = .pendingWelcome
     onboardingViewModel.firstViewContentType = .pendingWelcome

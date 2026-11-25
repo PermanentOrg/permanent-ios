@@ -58,4 +58,3 @@ struct LoginData: Codable {
         case tokenVO = "SimpleVO"
     }
 }
-

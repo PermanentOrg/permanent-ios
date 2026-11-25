@@ -8,7 +8,6 @@
 import UIKit
 
 extension UILabel {
-    
     func style(
         withFont font: UIFont,
         textColor: UIColor = .textPrimary,

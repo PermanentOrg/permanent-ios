@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.09.2025.
+//
 import SwiftUI
 
 protocol SelectableOption {

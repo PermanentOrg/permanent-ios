@@ -71,6 +71,7 @@ class AuthRemoteDataSource: AuthRemoteDataSourceInterface {
                     return
                 }
                 handler(.success(model))
+
             case .error(let e, _):
                 handler(.failure(e ?? APIError.clientError))
                 

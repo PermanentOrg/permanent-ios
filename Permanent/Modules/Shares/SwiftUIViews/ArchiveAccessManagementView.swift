@@ -447,5 +447,4 @@ struct ArchiveAccessManagementView: View {
             )
             .ignoresSafeArea()
     }
-    
 }

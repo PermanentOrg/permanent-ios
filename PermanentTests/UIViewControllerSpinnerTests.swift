@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class UIViewControllerSpinnerTests: XCTestCase {
-
     private func makeController() -> UIViewController {
         let controller = UIViewController()
         controller.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)

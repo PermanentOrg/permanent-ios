@@ -13,7 +13,6 @@ struct NotificationVM: NotificationProtocol {
     var type: NotificationType
 
     init(notification: NotificationVO) {
-
         let data = notification.notificationVO
         
         self.message = data?.message ?? ""

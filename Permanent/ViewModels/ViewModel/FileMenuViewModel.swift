@@ -11,7 +11,6 @@ import Foundation
 
 @MainActor
 class FileMenuViewModel: ObservableObject {
-    
     // MARK: - MenuItem Definition
     struct MenuItem: Equatable {
         enum ItemType: String, Equatable, CaseIterable {
@@ -26,6 +25,7 @@ class FileMenuViewModel: ObservableObject {
             case shareToAnotherApp = "shareToAnotherApp"
             case editMetadata = "editMetadata"
             case fileInformation = "fileInformation"
+            case adjustDateTime
 
             var title: String {
                 switch self {
@@ -39,7 +39,8 @@ class FileMenuViewModel: ObservableObject {
                 case .shareToPermanent: return "Share and manage access"
                 case .shareToAnotherApp: return "Save or send a copy"
                 case .editMetadata: return "Edit Metadata"
-                case .fileInformation: return "File information"
+                case .fileInformation: return "ViewInformation".localized()
+                case .adjustDateTime: return "AdjustDateAndTime".localized()
                 }
             }
 
@@ -123,24 +124,16 @@ class FileMenuViewModel: ObservableObject {
         if let selectedFiles = selectedFiles, selectedFiles.count > 1 {
             // Multiple files selected
             let files = selectedFiles.filter { !$0.type.isFolder }
-            let folders = selectedFiles.filter { $0.type.isFolder }
-            
+
             // Calculate total file size (only for files, not folders)
             let totalSize = files.reduce(Int64(0)) { $0 + $1.size }
             self.cachedFormattedFileSize = totalSize > 0 ? Self.formatFileSize(totalSize) : nil
-            
-            // If there are folders, use the date of the first folder, otherwise use the date of the first file
-            if let firstFolder = folders.first {
-                self.cachedFormattedDate = Self.formatDate(firstFolder.date)
-            } else if let firstFile = files.first {
-                self.cachedFormattedDate = Self.formatDate(firstFile.date)
-            } else {
-                self.cachedFormattedDate = ""
-            }
+            // One item's date would stand for all of them, so the header keeps only the total size.
+            self.cachedFormattedDate = ""
         } else {
             // Single file selected
             self.cachedFormattedFileSize = Self.formatFileSize(fileViewModel.size)
-            self.cachedFormattedDate = Self.formatDate(fileViewModel.date)
+            self.cachedFormattedDate = fileViewModel.displayDateText
         }
         
         if showArchiveInfo, let sharedByArchive = fileViewModel.sharedByArchive {
@@ -163,9 +156,8 @@ class FileMenuViewModel: ObservableObject {
     
     // MARK: - File Formatting Logic
     static func formatFileSize(_ size: Int64) -> String? {
-        guard size > 0 else { return nil }
-        // Canonical period-style size (Figma + Storage), locale-stable — see Int64.readableFileSize.
-        return size.readableFileSize
+        // The list rows write the size the same way.
+        FileModel.displaySize(size)
     }
 
     static func formatDate(_ dateString: String) -> String {
@@ -217,7 +209,6 @@ class FileMenuViewModel: ObservableObject {
             bottomPadding += additionalBottomPaddingiOS26
         }
 
-        
         return topPadding + menuItemsHeight + bottomPadding
     }
     
@@ -274,8 +265,14 @@ class FileMenuViewModel: ObservableObject {
             return
         }
 
-        // Folders read the caller's role from Stela. Records, and folders without a folderId, stay on V1.
-        if fileViewModel.type.isFolder, fileViewModel.folderId > 0 {
+        // A record keeps the role from the share list. The V1 record read answers with the role of the
+        // archive that owns the record, not the caller's, so it turned a viewer into an owner.
+        guard fileViewModel.type.isFolder else {
+            return
+        }
+
+        // Folders read the caller's role from Stela. Folders without a folderId stay on V1.
+        if fileViewModel.folderId > 0 {
             fetchFolderAccessRoleV2(folderId: String(fileViewModel.folderId))
         } else {
             fetchUpdatedAccessRoleV1()
@@ -309,6 +306,7 @@ class FileMenuViewModel: ObservableObject {
         }
     }
 
+    /// The V1 folder read. It serves folders only: a failed V2 read, or a folder without a folderId.
     private func fetchUpdatedAccessRoleV1() {
         #if DEBUG
         Self.lastAccessRoleSource = "v1"
@@ -316,39 +314,20 @@ class FileMenuViewModel: ObservableObject {
 
         let itemInfo = (folderLinkId: fileViewModel.folderLinkId, parentFolderLinkId: fileViewModel.parentFolderLinkId)
 
-        let endpoint: FilesEndpoint
-        if fileViewModel.type.isFolder {
-            endpoint = FilesEndpoint.getFolder(itemInfo: itemInfo)
-        } else {
-            endpoint = FilesEndpoint.getRecord(itemInfo: itemInfo)
-        }
-
-        let apiOperation = APIOperation(endpoint)
+        let apiOperation = APIOperation(FilesEndpoint.getFolder(itemInfo: itemInfo))
 
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             guard let self = self else { return }
 
             DispatchQueue.main.async {
-                guard case .json(let response, _) = result else { return }
-
-                let accessRoleString: String?
-                if self.fileViewModel.type.isFolder {
-                    guard let model: APIResults<FolderVO> = JSONHelper.decoding(from: response, with: APIResults<FolderVO>.decoder),
-                          model.isSuccessful,
-                          let folderData = model.results.first?.data?.first?.folderVO else {
-                        return
-                    }
-                    accessRoleString = Self.accessRoleString(accessVO: folderData.accessVO, accessRole: folderData.accessRole)
-                } else {
-                    guard let model: APIResults<RecordVO> = JSONHelper.decoding(from: response, with: APIResults<RecordVO>.decoder),
-                          model.isSuccessful,
-                          let recordData = model.results.first?.data?.first?.recordVO else {
-                        return
-                    }
-                    accessRoleString = Self.accessRoleString(accessVO: recordData.accessVO, accessRole: recordData.accessRole)
+                guard case .json(let response, _) = result,
+                      let model: APIResults<FolderVO> = JSONHelper.decoding(from: response, with: APIResults<FolderVO>.decoder),
+                      model.isSuccessful,
+                      let folderData = model.results.first?.data?.first?.folderVO else {
+                    return
                 }
 
-                if let accessRoleString {
+                if let accessRoleString = Self.accessRoleString(accessVO: folderData.accessVO, accessRole: folderData.accessRole) {
                     self.applyAccessRole(accessRoleString)
                 }
             }
@@ -528,7 +507,7 @@ class FileMenuViewModel: ObservableObject {
         
         if menuItem.type == .shareToAnotherApp || menuItem.type == .shareToPermanent {
             handleMenuItemAction(menuItem)
-        } else if menuItem.type == .editMetadata || menuItem.type == .fileInformation {
+        } else if [.editMetadata, .fileInformation, .adjustDateTime].contains(menuItem.type) {
             // Dismiss menu first, then open the screen the action presents
             dismissWithAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -577,10 +556,13 @@ class FileMenuViewModel: ObservableObject {
         switch menuItem.type {
         case .shareToAnotherApp:
             shareWithOtherApps(from: viewController)
+
         case .shareToPermanent:
             shareWithPermanent(from: viewController)
+
         case .rename:
             rename(from: viewController)
+
         default:
             presentNotImplementedAlert(from: viewController)
         }
@@ -882,24 +864,36 @@ class FileMenuViewModel: ObservableObject {
         switch itemType {
         case .download:
             return Image(.downloadV1)
+
         case .copy:
             return Image(.copyV1)
+
         case .move:
             return Image(.moveV1)
+
         case .delete:
             return Image(.deleteV1)
+
         case .unshare:
             return Image(.publishRevokeLink)
+
         case .rename:
             return Image(.renameV1)
+
         case .publish:
             return Image(.publishOnWebV1)
+
         case .shareToPermanent:
             return Image(.shareAndManageV1)
+
         case .shareToAnotherApp:
             return Image(.saveOrShareV1)
+
         case .editMetadata, .fileInformation:
             return Image(.fileInfoV1)
+
+        case .adjustDateTime:
+            return Image(.calendarV1)
         }
     }
     

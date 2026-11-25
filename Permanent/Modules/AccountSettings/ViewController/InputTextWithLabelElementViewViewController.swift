@@ -52,8 +52,7 @@ class InputTextWithLabelElementViewViewController: UIView {
         }
     }
     
-    func setTextFieldValue(text: String)
-    {
+    func setTextFieldValue(text: String) {
         self.textField.text = text
     }
 }

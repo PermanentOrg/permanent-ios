@@ -12,7 +12,6 @@ import XCTest
 
 @MainActor
 final class LinkSettingsViewTests: XCTestCase {
-
     func testRenders_WhenNoUnsavedChanges() async {
         let vm = makeViewModel()
         await waitForInitialLoad(of: vm)
@@ -102,7 +101,6 @@ final class LinkSettingsViewTests: XCTestCase {
             try? await Task.sleep(nanoseconds: 50_000_000)
         }
     }
-
 }
 
 private final class LinkSettingsPassiveShareManagementRepository: ShareManagementRepository {

@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class AuthViewModelValidationTests: XCTestCase {
-
     // MARK: - LoginViewModel Initial State
 
     func testLoginVM_InitialState() {

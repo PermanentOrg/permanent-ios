@@ -58,6 +58,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
+
             case .success(let steward):
                 self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
                 self?.stewardWasUpdated?(true)
@@ -76,6 +77,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
+
             case .success(let steward):
                 self?.selectedSteward = LegacyPlanningSteward(id: steward.legacyContactId, name: steward.name, email: steward.email, status: .pending, type: .account)
                 self?.stewardWasUpdated?(true)
@@ -98,11 +100,13 @@ class LegacyPlanningViewModel: ViewModelInterface {
                         self?.selectedSteward = nil
                         self?.stewardWasUpdated?(true)
                         break
+
                     default:
                         self?.showError?(error)
                     }
                 }
                 self?.isLoading?(false)
+
             case .success(let response):
                 guard let steward = response?.first else {
                     self?.selectedSteward = nil
@@ -126,6 +130,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
             switch result {
             case .success(_):
                 self?.stewardWasUpdated?(true)
+
             case .failure(let error):
                 self?.showError?(error)
             }
@@ -139,6 +144,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
             switch result {
             case .failure(let error):
                 completion(.failure(error as? APIError ?? .invalidResponse))
+
             case .success(let contact):
                 if let name = contact?.first?.name, let email = contact?.first?.email, let legacyContactId = contact?.first?.legacyContactId {
                     self?.selectedSteward = LegacyPlanningSteward(id: legacyContactId, name: name, email: email, status: .pending, type: .account)
@@ -162,6 +168,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
+
             case .success(let steward):
                 self?.trackUpdateEvents(action: DirectiveEventAction.update, entityId: steward.directiveId)
                 self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
@@ -180,6 +187,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
+
             case .success:
                 self?.trackUpdateEvents(action: LegacyContactEventAction.update, entityId: self?.selectedSteward?.id)
                 self?.selectedSteward = LegacyPlanningSteward(id: self?.selectedSteward?.id ?? "", name: name ?? "", email: stewardEmail ?? "", status: .pending, type: .account)
@@ -214,6 +222,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
             case .success(let hasAccountSteward):
                 self?.hasAccountSteward = hasAccountSteward ?? false
                 self?.accountStewardStatusUpdated?(self?.hasAccountSteward ?? false)
+
             case .failure(_):
                 self?.hasAccountSteward = false
                 self?.accountStewardStatusUpdated?(false)
@@ -221,5 +230,3 @@ class LegacyPlanningViewModel: ViewModelInterface {
         }
     }
 }
-
-

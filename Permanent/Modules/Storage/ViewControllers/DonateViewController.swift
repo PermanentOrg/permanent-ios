@@ -258,6 +258,7 @@ extension DonateViewController: ApplePayContextDelegate {
         switch status {
         case .success:
             showAlert(title: "Thank you!".localized(), message: "Your donation was successful!".localized())
+
         case .error:
             showErrorAlert(message: .errorMessage)
             

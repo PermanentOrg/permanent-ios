@@ -8,7 +8,6 @@
 import Foundation
 
 enum ShareEndpoint {
-    
     case getLink(file: FileModel)
     
     case generateShareLink(file: FileModel) // TODO: Create typealias
@@ -24,7 +23,6 @@ enum ShareEndpoint {
     case requestShareAccess(token: String)
     
     case getShareForPreview(shareId: Int, folder_linkId: Int)
-    
 }
 
 extension ShareEndpoint: RequestProtocol {
@@ -47,7 +45,8 @@ extension ShareEndpoint: RequestProtocol {
         switch self {
         case .getShareForPreview(let shareId, let folder_linkId):
             return getShareForPreview(shareId: shareId, folder_linkId: folder_linkId)
-        default :
+
+        default: 
             return nil
         }
     }
@@ -72,7 +71,6 @@ extension ShareEndpoint: RequestProtocol {
                 let requestVO = APIPayload.make(fromData: [folderVO])
                 
                 return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
-                
             } else {
                 let recordVO = RecordVOPayload(folderLinkId: file.folderLinkId, parentFolderLinkId: file.parentFolderLinkId)
                 let requestVO = APIPayload.make(fromData: [recordVO])

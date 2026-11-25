@@ -8,7 +8,6 @@
 import Foundation
 
 enum SortOption: Int, CaseIterable, Codable {
-
     case nameAscending
     
     case nameDescending

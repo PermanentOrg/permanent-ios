@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class TagEndpointTests: XCTestCase {
-
     private func dict(_ params: RequestParameters?) -> [String: Any]? {
         return params as? [String: Any]
     }

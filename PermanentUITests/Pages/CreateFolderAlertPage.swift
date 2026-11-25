@@ -18,4 +18,3 @@ class CreateFolderAlertPage {
         self.app = app
     }
 }
-

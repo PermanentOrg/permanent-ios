@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 28.07.2025.
+//
 
 import SwiftUI
 import SDWebImageSwiftUI
@@ -56,7 +57,6 @@ struct FileMoreMenuView: View {
         self.onLeaveShareConfirmed = onLeaveShareConfirmed
     }
     
-    
     @ViewBuilder
     private var panelContent: some View {
         VStack(spacing: 0) {
@@ -98,28 +98,11 @@ struct FileMoreMenuView: View {
                             .foregroundColor(Color.blue900)
                             .lineLimit(1)
 
-                        HStack(spacing: 8) {
-                            if let size = viewModel.cachedFormattedFileSize {
-                                Text(size)
-                                    .font(.custom("Usual-Regular", size: 12))
-                                    .foregroundColor(Color.blue400)
-                            }
-
-                            if viewModel.cachedFormattedFileSize != nil && !viewModel.cachedFormattedDate.isEmpty {
-                                Text("•")
-                                    .font(.custom("Usual-Regular", size: 12))
-                                    .foregroundColor(Color.blue400)
-                            }
-
-                            if !viewModel.cachedFormattedDate.isEmpty {
-                                Text(viewModel.cachedFormattedDate)
-                                    .font(.custom("Usual-Regular", size: 12))
-                                    .foregroundColor(Color.blue400)
-                            }
-                        }
+                        FileMenuHeaderDetailLine(size: viewModel.cachedFormattedFileSize,
+                                                 date: viewModel.cachedFormattedDate)
                     }
-
-                    Spacer()
+                    // The text fills the row up to the close button, as in the design.
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                     if #available(iOS 26.0, *) {
                         Button(action: {
@@ -200,7 +183,6 @@ struct FileMoreMenuView: View {
             )
     }
     
-    
     var body: some View {
         ZStack {
             Color.black.opacity(viewModel.backgroundOpacity)
@@ -216,7 +198,7 @@ struct FileMoreMenuView: View {
                     if #available(iOS 26.0, *) {
                         panelContent
                             .background(Color.white)
-                            //.clipShape(ConcentricRectangle())
+                            // .clipShape(ConcentricRectangle())
                             .cornerRadius(32, corners: [.topLeft, .topRight])
                     } else {
                         panelContent
@@ -302,7 +284,6 @@ struct FileMoreMenuView: View {
         }
         .ignoresSafeArea(.container, edges: .bottom)
     }
-    
     
     @ViewBuilder
     private var menuContent: some View {
@@ -419,6 +400,7 @@ struct FileMoreMenuView: View {
                 // Fallback: present via a safe presenter (the presentingViewController of this menu if available)
                 presentShareManagementSafely()
             }
+
         case .rename:
             if let callback = onRenameRequested {
                 callback(viewModel.fileViewModel)
@@ -437,6 +419,7 @@ struct FileMoreMenuView: View {
                 
                 viewModel.executeSpecialMenuItem(menuItem, with: topViewController)
             }
+
         default:
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first,

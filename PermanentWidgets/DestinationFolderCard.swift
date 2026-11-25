@@ -46,10 +46,13 @@ struct DestinationFolderCard: View {
         switch (countText, badgeText) {
         case let (count?, badge?):
             return run("\(count) • ", secondary) + run(badge, badgeColor)
+
         case let (count?, nil):
             return run(count, secondary)
+
         case let (nil, badge?):
             return run(badge, badgeColor)
+
         case (nil, nil):
             return nil
         }

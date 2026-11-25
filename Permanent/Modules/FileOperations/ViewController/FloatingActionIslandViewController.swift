@@ -1,4 +1,7 @@
 //
+//  FloatingActionIslandViewController.swift
+//  Permanent
+//
 // Created by Vlad Alexandru Rusu on 08.12.2022.
 //
 
@@ -105,7 +108,7 @@ class FloatingActionTextSubtitleItem: FloatingActionTextItem {
             button.topAnchor.constraint(equalTo: view.topAnchor),
             button.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             button.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            button.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            button.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
         let barButton = UIBarButtonItem(customView: view)
@@ -288,7 +291,7 @@ class FloatingActionIslandViewController: UIViewController {
                 row.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
                 row.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
                 row.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                row.heightAnchor.constraint(equalToConstant: 44),
+                row.heightAnchor.constraint(equalToConstant: 44)
             ]
         } else {
             toolbarConstraints = [
@@ -296,14 +299,14 @@ class FloatingActionIslandViewController: UIViewController {
                 toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 toolbar.topAnchor.constraint(equalTo: view.topAnchor),
                 toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                toolbar.heightAnchor.constraint(equalToConstant: 64),
+                toolbar.heightAnchor.constraint(equalToConstant: 64)
             ]
         }
         NSLayoutConstraint.activate([
             bgView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             bgView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             bgView.heightAnchor.constraint(equalToConstant: 64),
-            widthConstraint,
+            widthConstraint
         ] + toolbarConstraints)
 
         updateToolbarItems()
@@ -385,7 +388,7 @@ class FloatingActionIslandViewController: UIViewController {
             mark.centerXAnchor.constraint(equalTo: bgView.centerXAnchor),
             mark.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
             mark.widthAnchor.constraint(equalToConstant: size.width),
-            mark.heightAnchor.constraint(equalToConstant: size.height),
+            mark.heightAnchor.constraint(equalToConstant: size.height)
         ])
         // Placed at once, so the pill's own animation does not fly the mark in from a corner.
         UIView.performWithoutAnimation { view.layoutIfNeeded() }

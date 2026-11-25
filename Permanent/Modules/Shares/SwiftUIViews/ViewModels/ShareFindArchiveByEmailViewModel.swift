@@ -80,8 +80,10 @@ final class ShareFindArchiveByEmailViewModel: ObservableObject {
         switch visibleSearchOutcome {
         case .idle:
             return 0
+
         case .found:
             return 1
+
         case .noAccount:
             return 2
         }

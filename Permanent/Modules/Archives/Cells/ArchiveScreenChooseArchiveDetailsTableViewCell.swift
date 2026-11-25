@@ -68,7 +68,6 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
                 rightButton.setImage(UIImage(named: "more"), for: .normal)
                 rightButton.isEnabled = true
             }
-            
         } else if isManaging {
             if !AppEnvironment.shared.isRunningInAppExtension() {
                 rightButton.setImage(UIImage(named: "more"), for: .normal)

@@ -42,7 +42,7 @@ enum AccountEndpoint {
     ///  Redeem code request
     case redeemCode(code: String)
     case getSessionAccount
-    case addRemoveTags(archiveType:String, addGoalTags: [String]?, addWhyTags: [String]?, removeGoalTags: [String]?, removeWhyTags: [String]?)
+    case addRemoveTags(archiveType: String, addGoalTags: [String]?, addWhyTags: [String]?, removeGoalTags: [String]?, removeWhyTags: [String]?)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -50,30 +50,43 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp:
             return "/account/post"
+
         case .signUpV2:
             return "/account/post"
+
         case .delete:
             return "/account/delete"
+
         case .update, .updateEmailAndPhone:
             return "/account/update"
+
         case .sendVerificationCodeSMS:
             return "/auth/resendTextCreatedAccount"
+
         case .changePassword:
             return "/account/changePassword"
+
         case .getUserData:
             return "/account/get"
+
         case .updateUserData:
             return "/account/update"
+
         case .updateHideChecklist:
             return "/account/update"
+
         case .updateShareRequest, .updateShareArchiveRequest:
             return "/share/upsert"
+
         case .deleteShareRequest:
             return "/share/delete"
+
         case .getSessionAccount:
             return "/account/getsessionaccount"
+
         case .redeemCode:
             return "/promo/entry"
+
         case .addRemoveTags:
             return "/account/tags"
         }
@@ -135,6 +148,7 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .addRemoveTags:
             return .put
+
         default:
             return .post
         }
@@ -172,7 +186,8 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .addRemoveTags(_, _, _, _, _):
             return "\(endpointPath)api/v2/accounts/tags"
-        default : return nil
+
+        default: return nil
         }
     }
 }
@@ -342,7 +357,6 @@ extension AccountEndpoint {
     }
     
     func updateHideChecklist(accountId: AccountVOData, hideChecklist: Bool) -> RequestParameters {
-        
         return [
             "RequestVO": [
                 "data": [
@@ -364,7 +378,6 @@ extension AccountEndpoint {
                 ]
             ]
         ]
-
     }
     
     func updateShareRequest(shareVO: ShareVOData) -> RequestParameters {

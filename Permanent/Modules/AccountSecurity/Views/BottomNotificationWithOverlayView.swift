@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 26.02.2025.
+//
 import SwiftUI
 
 struct BottomNotificationWithOverlayView: View {
@@ -51,7 +52,7 @@ struct BottomNotificationWithOverlayView: View {
                     }
                     .padding(24)
                     .frame(maxWidth: .infinity)
-                    //.frame(height: 64)
+                    // .frame(height: 64)
                     .background(message.isError ? Color(red: 1, green: 0.89, blue: 0.89) : Color(red: 0.92, green: 0.99, blue: 0.95))
                     .cornerRadius(12)
                     .overlay(

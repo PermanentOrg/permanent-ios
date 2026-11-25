@@ -24,8 +24,10 @@ enum PublicRootRequestStatus: Equatable {
         switch (lhs, rhs) {
         case (.success(let lhsFolder), .success(let rhsFolder)):
             return lhsFolder?.folderID == rhsFolder?.folderID && lhsFolder?.folderLinkID == rhsFolder?.folderLinkID
+
         case (.error(let lhsMessage), .error(let rhsMessage)):
             return lhsMessage == rhsMessage
+
         default:
             return false
         }
@@ -40,8 +42,10 @@ enum PublicRootRequestStatus: Equatable {
                 return
             }
             self = .success(folder: model.results?.first?.data?.first?.folderVO)
+
         case .error(let error, _):
             self = .error(message: error?.localizedDescription)
+
         case .file:
             self = .error(message: .errorMessage)
         }
@@ -120,6 +124,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var selectedFiles: [FileModel]? = []
     var currentFolder: FileModel? { navigationStack.last }
     var isSelecting: Bool = false
+
+    /// A new select mode starts with nothing picked. A Move or Copy that waits for its folder keeps its files.
+    func startSelecting() {
+        if fileAction == .none {
+            selectedFiles = []
+        }
+        isSelecting = true
+    }
     var isSelectingDestination: Bool = false
     var checkboxState: CheckboxState = .none
     
@@ -174,6 +186,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         switch section {
         case FileListType.downloading.rawValue: return .downloads
         case FileListType.uploading.rawValue: return .uploads
+
         // Until root discovery names the folder, the header keeps the sort it has.
         case FileListType.synced.rawValue: return isLoadingFirstPage && firstPageSort == nil ? activeSortOption.title : listingSortTitle
         default: return "" // We cannot have more than 3 sections.
@@ -520,8 +533,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     } else {
                         errors.append("Unknown error")
                     }
+
                 case .error(let error, _):
                     errors.append(error?.localizedDescription ?? "Unknown error")
+
                 default:
                     break
                 }
@@ -542,8 +557,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     } else {
                         errors.append("Unknown error")
                     }
+
                 case .error(let error, _):
                     errors.append(error?.localizedDescription ?? "Unknown error")
+
                 default:
                     break
                 }
@@ -607,6 +624,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                         self.fileAction = .none
                         handler(.error(message: .errorMessage))
                     }
+
                 case .error(let message):
                     self.fileAction = .none
                     handler(.error(message: message))
@@ -668,8 +686,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     if let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder), !model.isSuccessful {
                         folderError = .errorMessage
                     }
+
                 case .error(let error, _):
                     folderError = error?.localizedDescription
+
                 default:
                     break
                 }
@@ -686,8 +706,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     if let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder), !model.isSuccessful {
                         recordError = .errorMessage
                     }
+
                 case .error(let error, _):
                     recordError = error?.localizedDescription
+
                 default:
                     break
                 }
@@ -703,7 +725,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
             }
         }
     }
-
 
     func removeFromQueue(_ position: Int) {
         // `position` is a captured cell index and the queue can shrink between render and tap, so
@@ -880,12 +901,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 FilesViewModel.lastNavigationSource = "v2"
                 #endif
                 handler(.success)
+
             case .superseded:
                 if !backNavigation, retriesLeft > 0 {
                     self.navigateV2(target: target, params: params, backNavigation: backNavigation, retriesLeft: retriesLeft - 1, then: handler)
                 } else {
                     handler(.success)
                 }
+
             case .failed:
                 // Failsafe — fall back to the legacy V1 navigation transparently.
                 self.performV1NavigateMinListingWholeFolder(params: params, backNavigation: backNavigation, then: handler)
@@ -1186,6 +1209,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 } else {
                     outcome = .failure(ChildrenPageFailure(message: .errorMessage, isContractBreak: true))
                 }
+
             case .failure(let failure):
                 outcome = .failure(failure)
             }
@@ -1318,12 +1342,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
         switch option {
         case .nameAscending:  return items.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         case .nameDescending: return items.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedDescending }
+
         case .dateAscending, .dateDescending:
-            let decorated = items.map { (key: parseSortDate($0.createdDT), file: $0) }
+            let decorated = items.map { (key: DateUtils.date(fromDisplayTime: $0.displayTime) ?? parseSortDate($0.createdDT), file: $0) }
             let sorted = option == .dateAscending
                 ? decorated.sorted { $0.key < $1.key }
                 : decorated.sorted { $0.key > $1.key }
             return sorted.map { $0.file }
+
         case .typeAscending, .typeDescending:
             let decorated = items.map { (key: $0.type.rawValue + "|" + $0.name.lowercased(), file: $0) }
             let sorted = option == .typeAscending
@@ -1431,9 +1457,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
             switch result {
             case .json(let response, _):
                 completion(FilesViewModel.stelaResponseSavedSort(response, as: option))
+
             case .error(let error, _):
                 if error as? APIError == .badRequest { FilesViewModel.stelaRejectsSortPatch = true }
                 completion(false)
+
             default:
                 completion(false)
             }
@@ -1582,6 +1610,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 switch result {
                 case .json:
                     handler(.success)
+
                 default:
                     self?.performV1Rename(file: file, name: name, then: handler) // failsafe
                 }

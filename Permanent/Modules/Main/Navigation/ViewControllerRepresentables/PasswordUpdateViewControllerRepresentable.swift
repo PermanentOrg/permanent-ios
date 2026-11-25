@@ -3,7 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 11.03.2025.
-
+//
 
 import SwiftUI
 import UIKit
@@ -17,6 +17,5 @@ struct PasswordUpdateViewControllerRepresentable: UIViewControllerRepresentable 
     }
     
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        
     }
 }

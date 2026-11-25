@@ -42,8 +42,6 @@ struct LinkSettingsView: View {
                 }
                 
                 ScrollView(showsIndicators: false) {
-
-                        
                         VStack(spacing: 20) {
                             linkDisplaySection
                             
@@ -264,7 +262,6 @@ struct LinkSettingsView: View {
             
             // Show additional options when Restricted is selected
             if viewModel.selectedAccessLevel == .restricted {
-                
                 // Default Access Role Section
                 VStack(alignment: .leading, spacing: 16) {
                     Text("DEFAULT ACCESS ROLE")
@@ -430,7 +427,6 @@ struct LinkSettingsView: View {
         }
     }
 
-    
     // MARK: - Loading Overlay
     private var loadingOverlay: some View {
         Color.black.opacity(0.3)

@@ -16,7 +16,7 @@ enum FileContextMenu {
     static let topRow: [ItemType] = [.copy, .move, .shareToAnotherApp]
     static let groups: [[ItemType]] = [[.shareToPermanent, .publish, .fileInformation, .rename], [.delete, .unshare]]
 
-    /// Whether the menu would show anything; Save, a viewer's only action in a shared folder, stays in the … sheet.
+    /// Whether the menu would show anything; Adjust date and time stays in the … sheet.
     static func hasActions(for types: [ItemType]) -> Bool {
         types.contains { topRow.contains($0) || groups.joined().contains($0) }
     }
@@ -56,6 +56,7 @@ enum FileContextMenu {
         case .shareToPermanent: name = "ShareAndManageV1"
         case .publish: name = "publishOnWebV1"
         case .fileInformation, .editMetadata: name = "fileInfoV1"
+        case .adjustDateTime: name = "calendarV1"
         case .rename: name = "renameV1"
         case .download: name = "downloadV1"
         case .delete: name = "deleteV1"

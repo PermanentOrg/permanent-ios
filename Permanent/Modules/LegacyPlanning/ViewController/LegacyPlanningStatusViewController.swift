@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatusViewModel>, UITableViewDataSource {
-    
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {

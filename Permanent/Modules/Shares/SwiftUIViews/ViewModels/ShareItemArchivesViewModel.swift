@@ -8,7 +8,6 @@
 import Foundation
 
 extension ShareItemViewModel {
-
     // MARK: - Loading State Queries
 
     func isApprovingShare(shareID: Int) -> Bool {
@@ -186,6 +185,7 @@ extension ShareItemViewModel {
                         return
                     }
                     completion(folderData.pendingShares)
+
                 default:
                     completion(nil)
                 }
@@ -208,6 +208,7 @@ extension ShareItemViewModel {
                         return
                     }
                     completion(recordData.pendingShares)
+
                 default:
                     completion(nil)
                 }
@@ -771,7 +772,6 @@ extension ShareItemViewModel {
                            let folderData = folderVO.folderVO,
                            let shareVOs = folderData.shareVOS,
                            let completeShare = shareVOs.first(where: { $0.shareID == shareID }) {
-
                             if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
                                 self.sharedArchives[index] = completeShare
                             }
@@ -807,7 +807,6 @@ extension ShareItemViewModel {
                            let recordData = recordVO.recordVO,
                            let shareVOs = recordData.shareVOS,
                            let completeShare = shareVOs.first(where: { $0.shareID == shareID }) {
-
                             if index < self.sharedArchives.count && self.sharedArchives[index].shareID == shareID {
                                 self.sharedArchives[index] = completeShare
                             }

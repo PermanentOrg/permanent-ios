@@ -66,5 +66,4 @@ class ArchiveSettingsTagCollectionViewCell: UICollectionViewCell {
     @IBAction func editButtonAction(_ sender: Any) {
         editButtonAction?()
     }
-    
 }

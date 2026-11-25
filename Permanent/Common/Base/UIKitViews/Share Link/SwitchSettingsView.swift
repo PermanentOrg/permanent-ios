@@ -42,7 +42,6 @@ class SwitchSettingsView: UIView {
     }
     
     fileprivate func commonInit() {
-        
         textLabel = UILabel()
         textLabel.font = TextFontStyle.style3.font
         textLabel.textColor = .primary
@@ -69,11 +68,11 @@ class SwitchSettingsView: UIView {
         switchView.addTarget(self, action: #selector(toggleWasPressed(sender:)), for: .touchUpInside)
     }
     
-    @objc func toggleWasPressed(sender: UISwitch){
+    @objc func toggleWasPressed(sender: UISwitch) {
         delegate?.switchToggleWasPressed(sender: sender)
     }
 }
 
-protocol ActionForSwitchSettingsView  {
+protocol ActionForSwitchSettingsView {
     func switchToggleWasPressed(sender: UISwitch)
 }

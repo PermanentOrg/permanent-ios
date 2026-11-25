@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 19.11.2024.
+//
 
 import Foundation
 import SwiftUI
@@ -80,8 +81,10 @@ class LoginSecurityViewModel: ObservableObject {
         switch authType {
         case "Touch ID":
             authTextType = .LogInTouchId
+
         case "Face ID":
             authTextType = .LogInFaceId
+
         default:
             authTextType = authType
         }

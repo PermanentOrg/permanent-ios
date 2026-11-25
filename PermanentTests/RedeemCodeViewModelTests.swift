@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class RedeemCodeViewModelTests: XCTestCase {
-
     // MARK: - Initial State
 
     func testInit_DefaultState() {

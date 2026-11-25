@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 enum AccessRole: Int, CaseIterable, Codable {
- 
     case owner = 0
     
     case manager
@@ -53,7 +52,6 @@ enum AccessRole: Int, CaseIterable, Codable {
         case "access.role.contributor", "contributor": return .contributor
         case "access.role.viewer", "viewer": return .viewer
         default: return .viewer
-
         }
     }
     
@@ -86,14 +84,19 @@ extension AccessRole: SelectableOption {
         switch self {
         case .viewer:
             return "Can view all materials but cannot edit, delete, upload, publish, or share anything."
+
         case .contributor:
             return "Can upload new materials but cannot edit metadata, delete items, publish content, or share."
+
         case .editor:
             return "Can upload and edit metadata but cannot delete materials, publish them, or share anything."
+
         case .curator:
             return "Trusted member with full control: edit, organize, delete, publish, share, and manage archive membership."
+
         case .manager:
             return "Trusted member with full control: edit, organize, delete, publish, share, and manage archive membership."
+
         case .owner:
             return "Has ultimate control: manages roles, settings, and full archive access, including deletion."
         }

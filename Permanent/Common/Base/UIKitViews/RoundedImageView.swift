@@ -3,12 +3,12 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 26.05.2023.
+//
 
 import UIKit
 
 @IBDesignable
 class RoundedImageView: UIImageView {
-    
     @IBInspectable var cornerRadius: Double {
         get {
             return Double(self.layer.cornerRadius)
@@ -35,5 +35,4 @@ class RoundedImageView: UIImageView {
             self.layer.borderColor = newValue?.cgColor
         }
     }
-    
 }

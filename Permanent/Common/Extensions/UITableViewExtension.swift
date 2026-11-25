@@ -8,11 +8,10 @@
 import UIKit
 
 extension UITableView {
-    
     public func reloadData(_ completion: (() -> ())? = nil) {
         UIView.animate(withDuration: 0, animations: {
             self.reloadData()
-        }, completion:{ _ in
+        }, completion: { _ in
             completion?()
         })
     }

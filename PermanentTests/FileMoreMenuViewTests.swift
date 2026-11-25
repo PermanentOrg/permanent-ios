@@ -12,7 +12,6 @@ import UIKit
 
 @MainActor
 final class FileMoreMenuViewTests: XCTestCase {
-
     func testOnAppearTriggersViewModelPreparationCalls() async {
         let vm = makeSpyViewModel()
         let (host, _) = hostView(FileMoreMenuView(viewModel: vm))
@@ -87,5 +86,4 @@ private final class SpyFileMenuViewModel: FileMenuViewModel {
     override func startPresentationAnimation() {
         startAnimationCalled = true
     }
-
 }

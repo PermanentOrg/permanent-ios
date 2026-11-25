@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 31.10.2023.
+//
 
 import SwiftUI
 
@@ -78,7 +79,7 @@ class GiftStorageViewModel: ObservableObject {
                 giftBorderColor = .error200
             } else {
                 notEnoughStorageSpace = false
-                isSendButtonDisabled =  false
+                isSendButtonDisabled = false
                 amountText = "Total gifted: \(spaceNeeded.bytesToReadableForm(useDecimal: true)) • Forecasted remaining: \(spaceLeftAfterDonation.bytesToReadableForm(useDecimal: true))"
                 giftBorderColor = .galleryGray
             }
@@ -106,16 +107,18 @@ class GiftStorageViewModel: ObservableObject {
                             self.sentGiftError = true
                             return
                         }
-                        //Handle success here
+                        // Handle success here
                         if model.storageGifted > 0 {
                             self.storageGifted = model.storageGifted
                             self.sentGiftWasSuccessfull = true
                         } else {
                             self.sentGiftError = true
                         }
+
                     case .error( _, _):
                         // Handle error here
                         self.sentGiftError = true
+
                     default:
                         self.sentGiftError = true
                     }

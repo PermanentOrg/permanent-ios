@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 03.10.2024.
+//
 
 import SwiftUI
 
@@ -103,7 +104,6 @@ struct ForgotPasswordView: View {
                                     .frame(height: 1)
                                     .background(Color(red: 0.54, green: 0.55, blue: 0.64))
                                     .layoutPriority(0.5)
-                                
                             }
                             SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back to Sign in", image: Image(.backArrowOnboarding), action: {
                                 viewModel.containerViewModel.setContentType(.login)
@@ -111,12 +111,10 @@ struct ForgotPasswordView: View {
                             if !showEmptySpace {
                                 if Constants.Design.isPhone {
                                     Spacer()
-                                        
                                 } else {
                                     Spacer()
                                         .frame(height: keyboardHeight)
                                 }
-                                    
                             }
                         }
                         .frame(height: geometry.size.height - (Constants.Design.isPhone ? 10 : 0))
@@ -153,7 +151,7 @@ struct ForgotPasswordView: View {
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 keyboardHeight = 0
                 if keyboardSize.height > 120 {
-                    if keyboardOpenend && self.focusedField == nil{
+                    if keyboardOpenend && self.focusedField == nil {
                         keyboardOpenend = false
                         withAnimation(.bouncy(duration: 0.3)) {
                             showEmptySpace = true
@@ -194,9 +192,8 @@ struct ForgotPasswordView: View {
                 }
                 VStack(spacing: 0) {
                     ForgotPasswordView(viewModel: ForgotPasswordViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
-                        
                     })
-                    //Spacer()
+                    // Spacer()
                 }
             }
             .padding(Constants.Design.isPhone ? 32 : 64)

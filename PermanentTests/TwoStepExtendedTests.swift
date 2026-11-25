@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class TwoStepExtendedTests: XCTestCase {
-
     // MARK: - TwoStepVerificationViewModel Initial State
 
     func testVerificationVM_InitialState_Disabled() {

@@ -14,7 +14,6 @@ import Testing
 @MainActor
 @Suite(.serialized)
 struct ShareInvitationIdTests {
-
     // MARK: - Round trip: captured id -> stored row -> recovered id
 
     @Test("An invite id from /invite/share round-trips through the stored row")

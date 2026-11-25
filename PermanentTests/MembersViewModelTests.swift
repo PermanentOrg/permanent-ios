@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class MembersViewModelTests: XCTestCase {
-
     // MARK: - permissions(forAccessRole:)
 
     func testPermissions_Owner_HasAll() {

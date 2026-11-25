@@ -24,6 +24,7 @@ struct ShareFindArchiveByEmailView: View {
         switch findArchiveViewModel.visibleSearchOutcome {
         case .noAccount:
             return .blue25
+
         default:
             return .white
         }
@@ -82,10 +83,12 @@ struct ShareFindArchiveByEmailView: View {
                             archiveResultsSection(archives)
                                 .padding(.horizontal, 24)
                                 .transition(.opacity)
+
                         case .noAccount(let email):
                             noAccountSection(email)
                                 .padding(.horizontal, 24)
                                 .transition(.opacity)
+
                         case .idle:
                             EmptyView()
                                 .transition(.opacity)

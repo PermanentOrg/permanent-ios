@@ -16,7 +16,6 @@ struct ArchiveVO: Model {
 }
 
 struct ArchiveVOData: Model {
-    
     enum Status: String, Codable {
         case ok = "status.generic.ok"
         case pending = "status.generic.pending"

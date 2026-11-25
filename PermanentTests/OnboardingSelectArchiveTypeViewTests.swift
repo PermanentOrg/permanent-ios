@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class OnboardingSelectArchiveTypeViewTests: XCTestCase {
-
     // MARK: - OnboardingSelectArchiveTypeViewModel
 
     func testViewModel_InitialState() {

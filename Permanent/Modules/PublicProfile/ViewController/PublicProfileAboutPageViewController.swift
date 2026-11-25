@@ -133,7 +133,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
             if archiveNameTextField != viewModel?.archiveNameProfileItem?.archiveName && archiveNameTextField.count <= 30 {
                 if !archiveNameTextField.isEmpty {
                         group.enter()
-                        viewModel?.renameArchiveNameProfileItem(profileItemId: viewModel?.archiveNameProfileItem?.profileItemId ,newValue: archiveNameTextField, { result, error, itemId in
+                        viewModel?.renameArchiveNameProfileItem(profileItemId: viewModel?.archiveNameProfileItem?.profileItemId, newValue: archiveNameTextField, { result, error, itemId in
                             if result {
                                 self.viewModel?.archiveNameProfileItem?.profileItemId = itemId
                                 
@@ -141,7 +141,6 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                                 if let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
                                    let localArchiveData = self.viewModel?.archiveData,
                                    currentArchive.archiveID == localArchiveData.archiveID {
-                
                                     // Skip session sync and notification posting to prevent unwanted archive switching
                                     // The main profile page (PublicProfilePageViewController) handles this correctly
                                 }

@@ -3,13 +3,14 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 01.08.2024.
+//
 
 import Foundation
 
 class OnboardingContainerViewModel: ObservableObject {
     @Published var contentType: OnboardingContentType = .none
     @Published var firstViewContentType: OnboardingContentType = .none
-    @Published var bottomButtonsPadding: CGFloat =  40
+    @Published var bottomButtonsPadding: CGFloat = 40
     @Published var isBack = false
     @Published var isLoading: Bool = false
     @Published var initIsLoading: Bool = false

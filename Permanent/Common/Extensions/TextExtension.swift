@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 23.06.2023.
+//
 
 import SwiftUI
 

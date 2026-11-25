@@ -59,5 +59,4 @@ class NavigationBarView: UIView {
     @IBAction func leftButtonAction(_ sender: UIButton) {
         delegate?.didTapLeftButton()
     }
-    
 }

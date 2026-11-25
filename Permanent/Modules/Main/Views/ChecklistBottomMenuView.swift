@@ -3,7 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 05.05.2025.
-
+//
 
 import SwiftUI
 import UIKit
@@ -38,7 +38,7 @@ struct ChecklistBottomMenuView: View {
                                 Image(.memberChecklistTitleLogo)
                                 .frame(width: 24, height: 24)
                             }
-                            .frame(width:40, height: 40, alignment: .center)
+                            .frame(width: 40, height: 40, alignment: .center)
                             .background(.white)
                             .cornerRadius(40)
                             
@@ -88,6 +88,7 @@ struct ChecklistBottomMenuView: View {
                     switch viewModel.viewState {
                     case .loading:
                         ChecklistLoadingView()
+
                     case .content:
                         ChecklistOptionsView(
                             items: viewModel.items,
@@ -97,6 +98,7 @@ struct ChecklistBottomMenuView: View {
                                 viewModel.changeChecklistContent(.dontShowAgain)
                             }
                         )
+
                     case .dontShowAgain:
                         ChecklistDisableView {
                             viewModel.setHideChecklist { result in
@@ -114,6 +116,7 @@ struct ChecklistBottomMenuView: View {
                                 viewModel.changeChecklistContent(.content)
                             }
                         }
+
                     case .congrats:
                         ChecklistCongratsView {
                             viewModel.changeChecklistContent(.dontShowAgain)
@@ -134,7 +137,6 @@ struct ChecklistBottomMenuView: View {
 struct ChecklistBottomMenu_Previews: PreviewProvider {
     static var previews: some View {
         ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel(showsChecklistButton: false)), dismissAction: {
-            
         })
     }
 }

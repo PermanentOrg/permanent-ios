@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 19.06.2024.
+//
 
 import SwiftUI
 import SDWebImageSwiftUI
@@ -13,7 +14,6 @@ struct ArchiveDetailsView: View {
     var showStatus: Bool = false
     var isLoading: Bool = false
     var acceptArchive: (() -> Void) = { }
-    
     
     var body: some View {
         if Constants.Design.isPhone {
@@ -172,14 +172,13 @@ struct ArchiveDetailsView: View {
     return ZStack {
         Color(.primary)
         VStack {
-            ArchiveDetailsView(archive: archivePending, showStatus: true, isLoading:  true) {
+            ArchiveDetailsView(archive: archivePending, showStatus: true, isLoading: true) {
                 print("Accepted")
             }
-            ArchiveDetailsView(archive: archiveSecondPending, showStatus: true, isLoading:  false) {
+            ArchiveDetailsView(archive: archiveSecondPending, showStatus: true, isLoading: false) {
                 print("Accepted")
             }
             ArchiveDetailsView(archive: archiveOk, showStatus: false) {
-                
             }
         }
     }

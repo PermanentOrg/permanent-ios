@@ -8,7 +8,6 @@
 import UIKit.UIImage
 
 enum NotificationType: String {
-    
     case share
     
     case relationship

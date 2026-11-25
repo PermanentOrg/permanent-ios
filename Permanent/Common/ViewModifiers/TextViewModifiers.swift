@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 23.06.2023.
+//
 
 import SwiftUI
 
@@ -173,7 +174,6 @@ struct UsualSmallXXXRegularTextStyle: ViewModifier {
                              relativeTo: .largeTitle))
     }
 }
-
 
 struct SmallXXXSemiBoldTextStyle: ViewModifier {
     func body(content: Content) -> some View {

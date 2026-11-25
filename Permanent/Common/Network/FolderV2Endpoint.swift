@@ -45,6 +45,7 @@ extension FolderV2Endpoint: RequestProtocol {
         switch self {
         case .getFolderById, .getFolderChildren:
             return nil
+
         case .patchFolder(_, let fields):
             return try? JSONSerialization.data(withJSONObject: fields)
         }
@@ -57,12 +58,14 @@ extension FolderV2Endpoint: RequestProtocol {
             // Canonical plural route; the singular `/folder` alias is deprecated. `pageSize` is required even for
             // one id (400 without it); 9999 also covers a future multi-id call without paging.
             return "\(baseURL)api/v2/folders?folderIds[]=\(folderId)&pageSize=9999"
+
         case .getFolderChildren(let folderId, _, let pageSize, let cursor):
             var components = URLComponents(string: "\(baseURL)api/v2/folders/\(folderId)/children")
             var items = [URLQueryItem(name: "pageSize", value: "\(pageSize)")]
             if let cursor { items.append(URLQueryItem(name: "cursor", value: cursor)) }
             components?.queryItems = items
             return components?.url?.absoluteString
+
         case .patchFolder(let folderId, _):
             return "\(baseURL)api/v2/folders/\(folderId)"
         }
@@ -72,6 +75,7 @@ extension FolderV2Endpoint: RequestProtocol {
         switch self {
         case .getFolderById(_, let token), .getFolderChildren(_, let token, _, _):
             return token.isEmpty ? nil : token
+
         case .patchFolder:
             return nil
         }
@@ -81,12 +85,7 @@ extension FolderV2Endpoint: RequestProtocol {
         return ["Content-Type": "application/json", "Request-Version": "2"]
     }
 
-    /// The reads have V1 failsafes, so a 401 there must not force-logout: it can be a foreign-archive
-    /// rejection. The PATCH runs on the session's own archive only, so its 401 really is an expired session.
-    var ignoreErrors: Bool {
-        switch self {
-        case .getFolderById, .getFolderChildren: return true
-        case .patchFolder: return false
-        }
-    }
+    /// No folder call forces a logout on 401: the reads fall back to V1, and the PATCH also edits folders shared
+    /// from other archives, where a 401 is a refusal that the caller shows as a save error.
+    var ignoreErrors: Bool { true }
 }

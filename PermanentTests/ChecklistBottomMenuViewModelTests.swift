@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ChecklistBottomMenuViewModelTests: XCTestCase {
-
     // MARK: - Init
 
     func testInit_ShowsChecklistButton_True() {

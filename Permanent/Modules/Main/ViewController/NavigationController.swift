@@ -8,7 +8,6 @@
 import UIKit
 
 class NavigationController: UINavigationController {
-    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return viewControllers.last?.preferredStatusBarStyle ?? .default
     }

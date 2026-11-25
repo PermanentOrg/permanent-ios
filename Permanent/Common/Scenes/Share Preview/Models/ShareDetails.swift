@@ -8,7 +8,6 @@
 import Foundation
 
 protocol ShareDetails {
-    
     var archiveName: String { get }
     
     var accountName: String { get }

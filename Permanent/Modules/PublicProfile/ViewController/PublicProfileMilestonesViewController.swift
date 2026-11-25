@@ -8,7 +8,6 @@
 import UIKit
 
 class PublicProfileMilestonesViewController: BaseViewController<PublicProfilePageViewModel> {
-    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addMilestoneButton: RoundedButton!
     

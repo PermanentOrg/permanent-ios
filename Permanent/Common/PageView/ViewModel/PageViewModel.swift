@@ -11,7 +11,7 @@ class PageViewModel: PageViewModelInterface {
     weak var delegate: PageViewModelDelegate?
     var currentPage = 0 {
         didSet {
-            onCurrentPageChange?(currentPage,delegate?.numberOfViewControllers() ?? 0)
+            onCurrentPageChange?(currentPage, delegate?.numberOfViewControllers() ?? 0)
         }
     }
     var onCurrentPageChange: ((Int, Int) -> Void)?

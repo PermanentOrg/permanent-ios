@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class SharePreviewSwiftUIViewModelTests: XCTestCase {
-    
     // MARK: - Cancellation Tests
     
     func testCancelLoadingResetsIsLoading() async {
@@ -185,7 +184,7 @@ final class SharePreviewSwiftUIViewModelTests: XCTestCase {
     
     // MARK: - Display Mode Tests
     
-    //MARK: - Archive Picker State Tests
+    // MARK: - Archive Picker State Tests
     
     func testShouldOpenArchivePicker_InitiallyFalse() {
         let vm = SharePreviewSwiftUIViewModel(shareToken: "token", repository: SharePreviewMockRepository())

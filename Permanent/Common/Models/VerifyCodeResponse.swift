@@ -55,4 +55,3 @@ struct VerifyData: Codable {
         case tokenVO = "AuthSimpleVO"
     }
 }
-

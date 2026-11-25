@@ -175,6 +175,18 @@
 		5E29FA572E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29FA552E0D52A000BF28B2 /* LegacyPlanningSimpleGoToButton.swift */; };
 		5E2A61C72DE0F3EE00B5EA2D /* ChecklistCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A61C62DE0F3EE00B5EA2D /* ChecklistCoordinator.swift */; };
 		5E2A61C92DE0F41000B5EA2D /* ChecklistOptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A61C82DE0F41000B5EA2D /* ChecklistOptionsViewModel.swift */; };
+		5E2A880930B083CE00A0AE8A /* ListTimeTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A880830B083CE00A0AE8A /* ListTimeTextTests.swift */; };
+		5E2A880B30B083CE00A0AE8A /* UnknownMonthDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A880A30B083CE00A0AE8A /* UnknownMonthDateTests.swift */; };
+		5E2C06453080148D00C579A8 /* EDTFBundleSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C063E3080148D00C579A8 /* EDTFBundleSource.swift */; };
+		5E2C06463080148D00C579A8 /* EDTFDateParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C063F3080148D00C579A8 /* EDTFDateParts.swift */; };
+		5E2C06473080148D00C579A8 /* EDTFError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C06403080148D00C579A8 /* EDTFError.swift */; };
+		5E2C06483080148D00C579A8 /* EDTFFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C06413080148D00C579A8 /* EDTFFormatting.swift */; };
+		5E2C06493080148D00C579A8 /* EDTFInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C06423080148D00C579A8 /* EDTFInterval.swift */; };
+		5E2C064A3080148D00C579A8 /* JavaScriptCoreEDTF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C06443080148D00C579A8 /* JavaScriptCoreEDTF.swift */; };
+		5E2C064B3080148D00C579A8 /* EDTFValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C06433080148D00C579A8 /* EDTFValue.swift */; };
+		5E2C0654308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C0653308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift */; };
+		5E2C065730824E2900C579A8 /* DisplayTimeV2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C065630824E2900C579A8 /* DisplayTimeV2Tests.swift */; };
+		5E2C065830824E2900C579A8 /* DisplayTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C065530824E2900C579A8 /* DisplayTimeTests.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
 		5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2324D98EE300E2B95F /* Assets.xcassets */; };
 		5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2524D98EE300E2B95F /* Launch.storyboard */; };
@@ -199,6 +211,11 @@
 		5E317C6D2E7C274E00DE5A77 /* ShareLinkV2Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E317C6B2E7C274E00DE5A77 /* ShareLinkV2Response.swift */; };
 		5E317F542CFE5B1B00937DF2 /* SimpleTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E317F522CFE5B1B00937DF2 /* SimpleTagView.swift */; };
 		5E328DEB2D59FF0F00EE2307 /* Add2FAFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */; };
+		5E34465530922ABE008ABE46 /* FileInfoTabTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E34465330922ABE008ABE46 /* FileInfoTabTests.swift */; };
+		5E34465630922ABE008ABE46 /* FileInfoRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E34465230922ABE008ABE46 /* FileInfoRowTests.swift */; };
+		5E34465730922ABE008ABE46 /* InfoRowDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E34465430922ABE008ABE46 /* InfoRowDateTests.swift */; };
+		5E34465A30922AF5008ABE46 /* FileInfoRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E34465830922AF5008ABE46 /* FileInfoRow.swift */; };
+		5E34465B30922AF5008ABE46 /* FileInfoRowModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E34465930922AF5008ABE46 /* FileInfoRowModel.swift */; };
 		5E37F2D52AA75248004F00E8 /* CustomDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */; };
 		5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */; };
 		5E390B442E1FEF1F00F623D3 /* TagsRemoteDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E390B432E1FEF1F00F623D3 /* TagsRemoteDataSourceInterface.swift */; };
@@ -278,6 +295,33 @@
 		5E4A25752FB4937D009B1BF9 /* FileMenuActionsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25742FB4937D009B1BF9 /* FileMenuActionsUITests.swift */; };
 		5E4A25772FB4AE8D009B1BF9 /* FilePreviewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25762FB4AE8D009B1BF9 /* FilePreviewPage.swift */; };
 		5E4A25792FB4AE99009B1BF9 /* FileDetailsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A25782FB4AE99009B1BF9 /* FileDetailsPage.swift */; };
+		5E4E1E56309247AC007E980B /* FileInfoOpenTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E55309247AC007E980B /* FileInfoOpenTransition.swift */; };
+		5E4E1E583092484C007E980B /* FileInfoOpenTransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E573092484C007E980B /* FileInfoOpenTransitionTests.swift */; };
+		5E4E1E5A30925004007E980B /* FileInfoCloseTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5930925004007E980B /* FileInfoCloseTransition.swift */; };
+		5E4E1E5D309337D8007E980B /* DateTimeEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */; };
+		5E4E1E66309337FF007E980B /* TimeWheelCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E64309337FF007E980B /* TimeWheelCard.swift */; };
+		5E4E1E67309337FF007E980B /* DateTimeFieldsBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E60309337FF007E980B /* DateTimeFieldsBox.swift */; };
+		5E4E1E68309337FF007E980B /* PickADateSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E61309337FF007E980B /* PickADateSheet.swift */; };
+		5E4E1E69309337FF007E980B /* ClearDateAndTimeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5E309337FF007E980B /* ClearDateAndTimeRow.swift */; };
+		5E4E1E6A309337FF007E980B /* DateTimeDigitsField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5F309337FF007E980B /* DateTimeDigitsField.swift */; };
+		5E4E1E6B309337FF007E980B /* TimeFormatPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E63309337FF007E980B /* TimeFormatPill.swift */; };
+		5E4E1E6C309337FF007E980B /* SheetCircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E62309337FF007E980B /* SheetCircleButton.swift */; };
+		5E4E1E6F30933819007E980B /* DateTimeEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E6E30933819007E980B /* DateTimeEntryTests.swift */; };
+		5E4E1E7030933819007E980B /* AdjustDateAndTimeViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E6D30933819007E980B /* AdjustDateAndTimeViewTests.swift */; };
+		5E4E1E7230937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */; };
+		5E4E1E7330937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */; };
+		5E4E1E7530937184007E980B /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7430937184007E980B /* FeatureFlags.swift */; };
+		5E4E1E7630937184007E980B /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7430937184007E980B /* FeatureFlags.swift */; };
+		5E4E1E7830937196007E980B /* FeatureFlagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */; };
+		5E4E1E7C30938F37007E980B /* TimeZoneCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */; };
+		5E4E1E7D30938F37007E980B /* TimeZoneCountryCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */; };
+		5E4E1E7E30938F37007E980B /* TimeZoneOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */; };
+		5E4E1E8330938F46007E980B /* TimeZonePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8030938F46007E980B /* TimeZonePickerSheet.swift */; };
+		5E4E1E8430938F46007E980B /* TimeZoneSearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8230938F46007E980B /* TimeZoneSearchField.swift */; };
+		5E4E1E8530938F46007E980B /* TimeZoneRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8130938F46007E980B /* TimeZoneRow.swift */; };
+		5E4E1E8630938F46007E980B /* TimeZoneOptionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7F30938F46007E980B /* TimeZoneOptionRow.swift */; };
+		5E4E1E8930938F62007E980B /* TimeZoneCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8730938F62007E980B /* TimeZoneCatalogTests.swift */; };
+		5E4E1E8A30938F62007E980B /* TimeZonePickerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E8830938F62007E980B /* TimeZonePickerViewTests.swift */; };
 		5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */; };
 		5E4E4CD029826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */; };
 		5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E548E832B29F9D600DD2C59 /* AddStorageView.swift */; };
@@ -370,6 +414,14 @@
 		5E72081D2E9D455D001300CA /* ArchiveAccessManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E72081C2E9D455D001300CA /* ArchiveAccessManagementView.swift */; };
 		5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9027E36EAA00A47D27 /* RCValues.swift */; };
 		5E744F9327E38DB900A47D27 /* LoadingScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */; };
+		5E752282308624E4008003BA /* ItemLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E752280308624E4008003BA /* ItemLocationService.swift */; };
+		5E752283308624E4008003BA /* PinAddressLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E752281308624E4008003BA /* PinAddressLookup.swift */; };
+		5E75228830862522008003BA /* PinAddressLookupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228730862522008003BA /* PinAddressLookupTests.swift */; };
+		5E75228930862522008003BA /* LocationSaveRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228530862522008003BA /* LocationSaveRouteTests.swift */; };
+		5E75228A30862522008003BA /* LocationV2MappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228630862522008003BA /* LocationV2MappingTests.swift */; };
+		5E75228B30862522008003BA /* ItemLocationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228430862522008003BA /* ItemLocationServiceTests.swift */; };
+		5E75228E3088E9F3008003BA /* FileSizeAndDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228C3088E9F3008003BA /* FileSizeAndDateTests.swift */; };
+		5E75228F3088E9F3008003BA /* ItemMenuLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75228D3088E9F3008003BA /* ItemMenuLayoutTests.swift */; };
 		5E752291308A9E0E008003BA /* NonJSONResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E752290308A9E0E008003BA /* NonJSONResponseTests.swift */; };
 		5E75AFE12DBFC0250074159F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75AFE02DBFC0160074159F /* ChecklistItem.swift */; };
 		5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E781EA72787006B0007E397 /* ProfileItemOperation.swift */; };
@@ -657,6 +709,7 @@
 		5EC48B602E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */; };
 		5EC48B612E2F8735006C8E5E /* FileMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
+		5EC6236930AB7271006D9356 /* FileModelLegacyDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC6236830AB7271006D9356 /* FileModelLegacyDateTests.swift */; };
 		5EC7CD292E26A74E00D80AE4 /* FileMoreMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */; };
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
@@ -670,6 +723,18 @@
 		5ECBAFA72A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
 		5ECBAFA82A1B735900FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
 		5ECD1DA12C1346810049A03F /* GradientSemiCirclesLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECD1DA02C1346810049A03F /* GradientSemiCirclesLoaderView.swift */; };
+		5ECE8B7830ADFB1C0000DF56 /* ComplexDateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B7730ADFB1C0000DF56 /* ComplexDateTests.swift */; };
+		5ECE8B7A30ADFB320000DF56 /* WebOnlyDateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B7930ADFB320000DF56 /* WebOnlyDateMessage.swift */; };
+		5ECE8B7C30AE04010000DF56 /* ComplexDateTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B7B30AE04010000DF56 /* ComplexDateTextTests.swift */; };
+		5ECE8B7E30AE04140000DF56 /* ComplexDateText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B7D30AE04140000DF56 /* ComplexDateText.swift */; };
+		5ECE8B7F30AE04F60000DF56 /* ComplexDateText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B7D30AE04140000DF56 /* ComplexDateText.swift */; };
+		5ECE8B8030B084BA0000DF56 /* TimeZoneOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */; };
+		5ECE8B8130B084BA0000DF56 /* DateTimeEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */; };
+		5ECE8B8230B084BA0000DF56 /* TimeZoneCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */; };
+		5ECE8B8330B0966B0000DF56 /* TimeZoneCountryCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */; };
+		5ECE8B8530B47DD50000DF56 /* FolderDateSheetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B8430B47DD50000DF56 /* FolderDateSheetTests.swift */; };
+		5ECE8B8730B4872F0000DF56 /* FileMenuHeaderDetailLineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B8630B4872F0000DF56 /* FileMenuHeaderDetailLineTests.swift */; };
+		5ECE8B8930B4874A0000DF56 /* FileMenuHeaderDetailLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE8B8830B4874A0000DF56 /* FileMenuHeaderDetailLine.swift */; };
 		5ECF1DA52B74FD440086EF21 /* ViewRepresentableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECF1DA42B74FD440086EF21 /* ViewRepresentableContainer.swift */; };
 		5ECF1DB32B7520E20086EF21 /* Usual-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DA92B7520E10086EF21 /* Usual-ExtraBold.ttf */; };
 		5ECF1DB42B7520E20086EF21 /* Usual-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DA92B7520E10086EF21 /* Usual-ExtraBold.ttf */; };
@@ -870,6 +935,7 @@
 		9BA5F397E5F0B66C8C90494F /* GoogleMapsBase in Frameworks */ = {isa = PBXBuildFile; productRef = 0419759C07B96AF8F0FD9B32 /* GoogleMapsBase */; };
 		9C0AE0CDC73368F944668631 /* StickyHeaderTestList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54D8C6B47540A780B6E3E85 /* StickyHeaderTestList.swift */; };
 		9CBB9ACA108840A69B585109 /* UIViewControllerSpinnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D35817F0254FCE858EC0E6 /* UIViewControllerSpinnerTests.swift */; };
+		A8ECEF86E64C557150570451 /* RootNavigationControllerTitleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E148CCD0200929B81BF0F0A /* RootNavigationControllerTitleTests.swift */; };
 		AFD7C67C00B9F221C96666F6 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 668D9C17F676DD94A397602A /* SDWebImage */; };
 		B17FBAA79A19C452630997CA /* FileListPagingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7086DD1E6242F48025317F07 /* FileListPagingSection.swift */; };
 		B7B83532690A0C16583E5E31 /* SlidingTabControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D8AA3B5F1D96BC712D9591 /* SlidingTabControl.swift */; };
@@ -1322,6 +1388,7 @@
 		06B0EB2724E67E6A003D90C6 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		06B0EB2924E67EC4003D90C6 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		06F82D9E049D7EB8E387A2B3 /* SceneLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneLifecycleTests.swift; sourceTree = "<group>"; };
+		0E148CCD0200929B81BF0F0A /* RootNavigationControllerTitleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootNavigationControllerTitleTests.swift; sourceTree = "<group>"; };
 		16D34C347B2E6046FFB1EE77 /* FolderOpenSlideTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FolderOpenSlideTests.swift; sourceTree = "<group>"; };
 		1996E0E74A174FC78FCB44EF /* ShareArchivesV2SourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareArchivesV2SourceTests.swift; sourceTree = "<group>"; };
 		2E841DA53D2335AEFA61F758 /* ContextMenuDeferral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuDeferral.swift; sourceTree = "<group>"; };
@@ -1440,6 +1507,21 @@
 		5E29FA552E0D52A000BF28B2 /* LegacyPlanningSimpleGoToButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningSimpleGoToButton.swift; sourceTree = "<group>"; };
 		5E2A61C62DE0F3EE00B5EA2D /* ChecklistCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCoordinator.swift; sourceTree = "<group>"; };
 		5E2A61C82DE0F41000B5EA2D /* ChecklistOptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistOptionsViewModel.swift; sourceTree = "<group>"; };
+		5E2A880830B083CE00A0AE8A /* ListTimeTextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTimeTextTests.swift; sourceTree = "<group>"; };
+		5E2A880A30B083CE00A0AE8A /* UnknownMonthDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownMonthDateTests.swift; sourceTree = "<group>"; };
+		5E2C063E3080148D00C579A8 /* EDTFBundleSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EDTFBundleSource.swift; sourceTree = "<group>"; };
+		5E2C063F3080148D00C579A8 /* EDTFDateParts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EDTFDateParts.swift; sourceTree = "<group>"; };
+		5E2C06403080148D00C579A8 /* EDTFError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EDTFError.swift; sourceTree = "<group>"; };
+		5E2C06413080148D00C579A8 /* EDTFFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EDTFFormatting.swift; sourceTree = "<group>"; };
+		5E2C06423080148D00C579A8 /* EDTFInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EDTFInterval.swift; sourceTree = "<group>"; };
+		5E2C06433080148D00C579A8 /* EDTFValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EDTFValue.swift; sourceTree = "<group>"; };
+		5E2C06443080148D00C579A8 /* JavaScriptCoreEDTF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavaScriptCoreEDTF.swift; sourceTree = "<group>"; };
+		5E2C064C308014B200C579A8 /* build-edtf-bundle.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-edtf-bundle.sh"; sourceTree = "<group>"; };
+		5E2C064D308014B200C579A8 /* edtf-bundle.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "edtf-bundle.js"; sourceTree = "<group>"; };
+		5E2C064E308014B200C579A8 /* permanent-edtf.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "permanent-edtf.js"; sourceTree = "<group>"; };
+		5E2C0653308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavaScriptCoreEDTFTests.swift; sourceTree = "<group>"; };
+		5E2C065530824E2900C579A8 /* DisplayTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTimeTests.swift; sourceTree = "<group>"; };
+		5E2C065630824E2900C579A8 /* DisplayTimeV2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTimeV2Tests.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5E2C5D2324D98EE300E2B95F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -1462,6 +1544,11 @@
 		5E317C6B2E7C274E00DE5A77 /* ShareLinkV2Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkV2Response.swift; sourceTree = "<group>"; };
 		5E317F522CFE5B1B00937DF2 /* SimpleTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleTagView.swift; sourceTree = "<group>"; };
 		5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Add2FAFieldView.swift; sourceTree = "<group>"; };
+		5E34465230922ABE008ABE46 /* FileInfoRowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoRowTests.swift; sourceTree = "<group>"; };
+		5E34465330922ABE008ABE46 /* FileInfoTabTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoTabTests.swift; sourceTree = "<group>"; };
+		5E34465430922ABE008ABE46 /* InfoRowDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoRowDateTests.swift; sourceTree = "<group>"; };
+		5E34465830922AF5008ABE46 /* FileInfoRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoRow.swift; sourceTree = "<group>"; };
+		5E34465930922AF5008ABE46 /* FileInfoRowModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoRowModel.swift; sourceTree = "<group>"; };
 		5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogView.swift; sourceTree = "<group>"; };
 		5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesTableViewCell.swift; sourceTree = "<group>"; };
 		5E390B3D2E1FEF1F00F623D3 /* AccountRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRemoteDataSource.swift; sourceTree = "<group>"; };
@@ -1499,6 +1586,31 @@
 		5E4A25742FB4937D009B1BF9 /* FileMenuActionsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuActionsUITests.swift; sourceTree = "<group>"; };
 		5E4A25762FB4AE8D009B1BF9 /* FilePreviewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewPage.swift; sourceTree = "<group>"; };
 		5E4A25782FB4AE99009B1BF9 /* FileDetailsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsPage.swift; sourceTree = "<group>"; };
+		5E4E1E55309247AC007E980B /* FileInfoOpenTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoOpenTransition.swift; sourceTree = "<group>"; };
+		5E4E1E573092484C007E980B /* FileInfoOpenTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoOpenTransitionTests.swift; sourceTree = "<group>"; };
+		5E4E1E5930925004007E980B /* FileInfoCloseTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoCloseTransition.swift; sourceTree = "<group>"; };
+		5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeEntry.swift; sourceTree = "<group>"; };
+		5E4E1E5E309337FF007E980B /* ClearDateAndTimeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearDateAndTimeRow.swift; sourceTree = "<group>"; };
+		5E4E1E5F309337FF007E980B /* DateTimeDigitsField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeDigitsField.swift; sourceTree = "<group>"; };
+		5E4E1E60309337FF007E980B /* DateTimeFieldsBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeFieldsBox.swift; sourceTree = "<group>"; };
+		5E4E1E61309337FF007E980B /* PickADateSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickADateSheet.swift; sourceTree = "<group>"; };
+		5E4E1E62309337FF007E980B /* SheetCircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCircleButton.swift; sourceTree = "<group>"; };
+		5E4E1E63309337FF007E980B /* TimeFormatPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatPill.swift; sourceTree = "<group>"; };
+		5E4E1E64309337FF007E980B /* TimeWheelCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeWheelCard.swift; sourceTree = "<group>"; };
+		5E4E1E6D30933819007E980B /* AdjustDateAndTimeViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDateAndTimeViewTests.swift; sourceTree = "<group>"; };
+		5E4E1E6E30933819007E980B /* DateTimeEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeEntryTests.swift; sourceTree = "<group>"; };
+		5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsV2Endpoint.swift; sourceTree = "<group>"; };
+		5E4E1E7430937184007E980B /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
+		5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagsTests.swift; sourceTree = "<group>"; };
+		5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneCatalog.swift; sourceTree = "<group>"; };
+		5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneCountryCodes.swift; sourceTree = "<group>"; };
+		5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneOption.swift; sourceTree = "<group>"; };
+		5E4E1E7F30938F46007E980B /* TimeZoneOptionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneOptionRow.swift; sourceTree = "<group>"; };
+		5E4E1E8030938F46007E980B /* TimeZonePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZonePickerSheet.swift; sourceTree = "<group>"; };
+		5E4E1E8130938F46007E980B /* TimeZoneRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneRow.swift; sourceTree = "<group>"; };
+		5E4E1E8230938F46007E980B /* TimeZoneSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneSearchField.swift; sourceTree = "<group>"; };
+		5E4E1E8730938F62007E980B /* TimeZoneCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneCatalogTests.swift; sourceTree = "<group>"; };
+		5E4E1E8830938F62007E980B /* TimeZonePickerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZonePickerViewTests.swift; sourceTree = "<group>"; };
 		5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagsHeaderCollectionView.swift; sourceTree = "<group>"; };
 		5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagsHeaderCollectionView.xib; sourceTree = "<group>"; };
 		5E548E832B29F9D600DD2C59 /* AddStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStorageView.swift; sourceTree = "<group>"; };
@@ -1588,6 +1700,14 @@
 		5E72081C2E9D455D001300CA /* ArchiveAccessManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveAccessManagementView.swift; sourceTree = "<group>"; };
 		5E744F9027E36EAA00A47D27 /* RCValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCValues.swift; sourceTree = "<group>"; };
 		5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenViewController.swift; sourceTree = "<group>"; };
+		5E752280308624E4008003BA /* ItemLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemLocationService.swift; sourceTree = "<group>"; };
+		5E752281308624E4008003BA /* PinAddressLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinAddressLookup.swift; sourceTree = "<group>"; };
+		5E75228430862522008003BA /* ItemLocationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemLocationServiceTests.swift; sourceTree = "<group>"; };
+		5E75228530862522008003BA /* LocationSaveRouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSaveRouteTests.swift; sourceTree = "<group>"; };
+		5E75228630862522008003BA /* LocationV2MappingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationV2MappingTests.swift; sourceTree = "<group>"; };
+		5E75228730862522008003BA /* PinAddressLookupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinAddressLookupTests.swift; sourceTree = "<group>"; };
+		5E75228C3088E9F3008003BA /* FileSizeAndDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSizeAndDateTests.swift; sourceTree = "<group>"; };
+		5E75228D3088E9F3008003BA /* ItemMenuLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemMenuLayoutTests.swift; sourceTree = "<group>"; };
 		5E752290308A9E0E008003BA /* NonJSONResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonJSONResponseTests.swift; sourceTree = "<group>"; };
 		5E75AFE02DBFC0160074159F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 		5E781EA72787006B0007E397 /* ProfileItemOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileItemOperation.swift; sourceTree = "<group>"; };
@@ -1848,6 +1968,7 @@
 		5EC230912F2CD30A00143911 /* ShareItemViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareItemViewModelTests.swift; sourceTree = "<group>"; };
 		5EC48B5F2E2F872B006C8E5E /* FileMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuViewModel.swift; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
+		5EC6236830AB7271006D9356 /* FileModelLegacyDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileModelLegacyDateTests.swift; sourceTree = "<group>"; };
 		5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMoreMenuView.swift; sourceTree = "<group>"; };
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
@@ -1857,6 +1978,13 @@
 		5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStewardResponseTriggerType.swift; sourceTree = "<group>"; };
 		5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningArchiveDetails.swift; sourceTree = "<group>"; };
 		5ECD1DA02C1346810049A03F /* GradientSemiCirclesLoaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSemiCirclesLoaderView.swift; sourceTree = "<group>"; };
+		5ECE8B7730ADFB1C0000DF56 /* ComplexDateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexDateTests.swift; sourceTree = "<group>"; };
+		5ECE8B7930ADFB320000DF56 /* WebOnlyDateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebOnlyDateMessage.swift; sourceTree = "<group>"; };
+		5ECE8B7B30AE04010000DF56 /* ComplexDateTextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexDateTextTests.swift; sourceTree = "<group>"; };
+		5ECE8B7D30AE04140000DF56 /* ComplexDateText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexDateText.swift; sourceTree = "<group>"; };
+		5ECE8B8430B47DD50000DF56 /* FolderDateSheetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDateSheetTests.swift; sourceTree = "<group>"; };
+		5ECE8B8630B4872F0000DF56 /* FileMenuHeaderDetailLineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuHeaderDetailLineTests.swift; sourceTree = "<group>"; };
+		5ECE8B8830B4874A0000DF56 /* FileMenuHeaderDetailLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuHeaderDetailLine.swift; sourceTree = "<group>"; };
 		5ECF1DA42B74FD440086EF21 /* ViewRepresentableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewRepresentableContainer.swift; sourceTree = "<group>"; };
 		5ECF1DA92B7520E10086EF21 /* Usual-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-ExtraBold.ttf"; sourceTree = "<group>"; };
 		5ECF1DAA2B7520E10086EF21 /* Usual-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-Bold.ttf"; sourceTree = "<group>"; };
@@ -2706,6 +2834,16 @@
 			path = CustomViews;
 			sourceTree = "<group>";
 		};
+		5E2C064F308014B200C579A8 /* JS */ = {
+			isa = PBXGroup;
+			children = (
+				5E2C064C308014B200C579A8 /* build-edtf-bundle.sh */,
+				5E2C064D308014B200C579A8 /* edtf-bundle.js */,
+				5E2C064E308014B200C579A8 /* permanent-edtf.js */,
+			);
+			path = JS;
+			sourceTree = "<group>";
+		};
 		5E2C5D0E24D98EE100E2B95F = {
 			isa = PBXGroup;
 			children = (
@@ -3250,6 +3388,7 @@
 		5E47399C2A40BDCD00A20D85 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5E2C064F308014B200C579A8 /* JS */,
 				BC1BDF162513558800F2D239 /* Assets */,
 				BC1BDF17251355E100F2D239 /* Storyboards */,
 			);
@@ -3629,6 +3768,35 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		5E4E1E5C309337D8007E980B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5E4E1E7930938F37007E980B /* TimeZoneCatalog.swift */,
+				5E4E1E7A30938F37007E980B /* TimeZoneCountryCodes.swift */,
+				5E4E1E7B30938F37007E980B /* TimeZoneOption.swift */,
+				5E4E1E5B309337D8007E980B /* DateTimeEntry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5E4E1E65309337FF007E980B /* DateAndTime */ = {
+			isa = PBXGroup;
+			children = (
+				5E4E1E7F30938F46007E980B /* TimeZoneOptionRow.swift */,
+				5E4E1E8030938F46007E980B /* TimeZonePickerSheet.swift */,
+				5E4E1E8130938F46007E980B /* TimeZoneRow.swift */,
+				5E4E1E8230938F46007E980B /* TimeZoneSearchField.swift */,
+				5E4E1E5E309337FF007E980B /* ClearDateAndTimeRow.swift */,
+				5E4E1E5F309337FF007E980B /* DateTimeDigitsField.swift */,
+				5E4E1E60309337FF007E980B /* DateTimeFieldsBox.swift */,
+				5E4E1E61309337FF007E980B /* PickADateSheet.swift */,
+				5E4E1E62309337FF007E980B /* SheetCircleButton.swift */,
+				5E4E1E63309337FF007E980B /* TimeFormatPill.swift */,
+				5E4E1E64309337FF007E980B /* TimeWheelCard.swift */,
+			);
+			path = DateAndTime;
+			sourceTree = "<group>";
+		};
 		5E548E8B2B2AF43200DD2C59 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -3730,6 +3898,29 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
+				5ECE8B8630B4872F0000DF56 /* FileMenuHeaderDetailLineTests.swift */,
+				5ECE8B8430B47DD50000DF56 /* FolderDateSheetTests.swift */,
+				5ECE8B7B30AE04010000DF56 /* ComplexDateTextTests.swift */,
+				5ECE8B7730ADFB1C0000DF56 /* ComplexDateTests.swift */,
+				5EC6236830AB7271006D9356 /* FileModelLegacyDateTests.swift */,
+				5E4E1E8730938F62007E980B /* TimeZoneCatalogTests.swift */,
+				5E4E1E8830938F62007E980B /* TimeZonePickerViewTests.swift */,
+				5E4E1E7730937196007E980B /* FeatureFlagsTests.swift */,
+				5E4E1E6D30933819007E980B /* AdjustDateAndTimeViewTests.swift */,
+				5E4E1E6E30933819007E980B /* DateTimeEntryTests.swift */,
+				5E4E1E573092484C007E980B /* FileInfoOpenTransitionTests.swift */,
+				5E34465230922ABE008ABE46 /* FileInfoRowTests.swift */,
+				5E34465330922ABE008ABE46 /* FileInfoTabTests.swift */,
+				5E34465430922ABE008ABE46 /* InfoRowDateTests.swift */,
+				5E75228C3088E9F3008003BA /* FileSizeAndDateTests.swift */,
+				5E75228D3088E9F3008003BA /* ItemMenuLayoutTests.swift */,
+				5E75228430862522008003BA /* ItemLocationServiceTests.swift */,
+				5E75228530862522008003BA /* LocationSaveRouteTests.swift */,
+				5E75228630862522008003BA /* LocationV2MappingTests.swift */,
+				5E75228730862522008003BA /* PinAddressLookupTests.swift */,
+				5E2C065530824E2900C579A8 /* DisplayTimeTests.swift */,
+				5E2C065630824E2900C579A8 /* DisplayTimeV2Tests.swift */,
+				5E2C0653308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift */,
 				5E752290308A9E0E008003BA /* NonJSONResponseTests.swift */,
 				5E219E10303CA0400062F4C6 /* LegacyEndpointSurfaceTests.swift */,
 				5E8B7C252FD83F8500CFC501 /* UploadActivityTerminalStateTests.swift */,
@@ -3804,6 +3995,7 @@
 				CDC60F3AAB1F46C3BF13FF68 /* FolderV2ModelsTests.swift */,
 				C26E991100BD450E8FD1389C /* BillingEndpointTests.swift */,
 				5EA7C10130A10001000A1851 /* UploadQuotaGateTests.swift */,
+				0E148CCD0200929B81BF0F0A /* RootNavigationControllerTitleTests.swift */,
 				5E7B9B9E2FB1300200C1D3D0 /* EditMetadataViewModelTests.swift */,
 				5E7B9B9F2FB1300200C1D3D0 /* FABViewModelTests.swift */,
 				5E7B9BA02FB1300200C1D3D0 /* GiftStorageViewModelTests.swift */,
@@ -3903,6 +4095,8 @@
 				8EF5DCF37712E0BA4760C336 /* StickyHeaderRevealTests.swift */,
 				F8E9752EFEFFADA970A3297F /* FileCollectionViewHeaderCellTests.swift */,
 				06F82D9E049D7EB8E387A2B3 /* SceneLifecycleTests.swift */,
+				5E2A880830B083CE00A0AE8A /* ListTimeTextTests.swift */,
+				5E2A880A30B083CE00A0AE8A /* UnknownMonthDateTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -3978,6 +4172,7 @@
 		5E991EDC2A48E018006229C0 /* EditMetadata */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E5C309337D8007E980B /* Models */,
 				5E991EDD2A48E032006229C0 /* Views */,
 				5E991EEA2A4C8FF3006229C0 /* ViewModels */,
 			);
@@ -3987,6 +4182,8 @@
 		5E991EDD2A48E032006229C0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5ECE8B7930ADFB320000DF56 /* WebOnlyDateMessage.swift */,
+				5E4E1E65309337FF007E980B /* DateAndTime */,
 				92B9886C2A9783D30040941E /* SetLocation */,
 				5E991EDE2A48E05C006229C0 /* MetadataEditView.swift */,
 				5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */,
@@ -4193,7 +4390,12 @@
 		5EC7CD282E26A74E00D80AE4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5ECE8B8830B4874A0000DF56 /* FileMenuHeaderDetailLine.swift */,
+				5E4E1E5930925004007E980B /* FileInfoCloseTransition.swift */,
+				5E4E1E55309247AC007E980B /* FileInfoOpenTransition.swift */,
 				5E7A697C2EBA4CB4005FA69B /* Components */,
+				5E34465830922AF5008ABE46 /* FileInfoRow.swift */,
+				5E34465930922AF5008ABE46 /* FileInfoRowModel.swift */,
 				5EC7CD262E26A74E00D80AE4 /* FileMoreMenuView.swift */,
 				2E841DA53D2335AEFA61F758 /* ContextMenuDeferral.swift */,
 				619A8CB28927DE2F72AEE205 /* DropMoveProgress.swift */,
@@ -4537,6 +4739,7 @@
 		BC1BDF18251355ED00F2D239 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				5E4E1E7130937172007E980B /* FeatureFlagsV2Endpoint.swift */,
 				5E63C8EF300FD2A00094665D /* ArchiveV2Endpoint.swift */,
 				5E0913392F3E1BD400425568 /* RecordV2Endpoint.swift */,
 				5EA522DB2F23CE33003072FB /* FolderV2Endpoint.swift */,
@@ -4700,6 +4903,17 @@
 		BC4526E6251CACD500E24A51 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				5ECE8B7D30AE04140000DF56 /* ComplexDateText.swift */,
+				5E4E1E7430937184007E980B /* FeatureFlags.swift */,
+				5E752280308624E4008003BA /* ItemLocationService.swift */,
+				5E752281308624E4008003BA /* PinAddressLookup.swift */,
+				5E2C063E3080148D00C579A8 /* EDTFBundleSource.swift */,
+				5E2C063F3080148D00C579A8 /* EDTFDateParts.swift */,
+				5E2C06403080148D00C579A8 /* EDTFError.swift */,
+				5E2C06413080148D00C579A8 /* EDTFFormatting.swift */,
+				5E2C06423080148D00C579A8 /* EDTFInterval.swift */,
+				5E2C06433080148D00C579A8 /* EDTFValue.swift */,
+				5E2C06443080148D00C579A8 /* JavaScriptCoreEDTF.swift */,
 				5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */,
 				92430A8D2B10A55E0098597D /* Events */,
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
@@ -5521,6 +5735,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DEF21AD0B830ED3966AAAAEF /* FileActionConfirmationView.swift in Sources */,
+				5E4E1E5D309337D8007E980B /* DateTimeEntry.swift in Sources */,
 				6F65263B985012E21A61EF95 /* ContextMenuDeferral.swift in Sources */,
 				7CC9CF8E0F47B2D81D59409D /* DropMoveProgress.swift in Sources */,
 				2EA142DA375E24F94FD138D3 /* DropProgressIsland.swift in Sources */,
@@ -5563,10 +5778,13 @@
 				5E60451E25120826002E47CB /* AuthenticationViewController.swift in Sources */,
 				BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
+				5E4E1E7630937184007E980B /* FeatureFlags.swift in Sources */,
 				5EE5A8E22C470ECB0060301A /* OnboardingInvitedWelcomeView.swift in Sources */,
 				9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
+				5E752282308624E4008003BA /* ItemLocationService.swift in Sources */,
+				5E752283308624E4008003BA /* PinAddressLookup.swift in Sources */,
 				5E24A2262CF67E6C003F22AE /* CustomToggleView.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				5EB053D32BD120C400AFE66D /* TextField+Extension.swift in Sources */,
@@ -5681,6 +5899,10 @@
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				5ED428832A12432E001F88FB /* LegacyPlanningEndpoint.swift in Sources */,
 				5E974B5D2F75C7AD004F9D74 /* PhotoLibraryPickerView.swift in Sources */,
+				5E4E1E8330938F46007E980B /* TimeZonePickerSheet.swift in Sources */,
+				5E4E1E8430938F46007E980B /* TimeZoneSearchField.swift in Sources */,
+				5E4E1E8530938F46007E980B /* TimeZoneRow.swift in Sources */,
+				5E4E1E8630938F46007E980B /* TimeZoneOptionRow.swift in Sources */,
 				F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
 				927DFCC32CDA6696007A0489 /* EventsPayloadBuilder.swift in Sources */,
@@ -5700,6 +5922,8 @@
 				5E051C0E2B6C39E900274657 /* CustomBarProgressGradientStyle.swift in Sources */,
 				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
+				5E34465A30922AF5008ABE46 /* FileInfoRow.swift in Sources */,
+				5E34465B30922AF5008ABE46 /* FileInfoRowModel.swift in Sources */,
 				5EB721132B35C9DC0036B28F /* RedeemVO.swift in Sources */,
 				5E2114922B026CB300944386 /* ViewExtension.swift in Sources */,
 				92C95C4F2CCFB154002CE018 /* EventsEndpoint.swift in Sources */,
@@ -5813,6 +6037,9 @@
 				5EF300362D4AC010001FFEE7 /* TwoStepChooseEmailView.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */,
+				5E4E1E7C30938F37007E980B /* TimeZoneCatalog.swift in Sources */,
+				5E4E1E7D30938F37007E980B /* TimeZoneCountryCodes.swift in Sources */,
+				5E4E1E7E30938F37007E980B /* TimeZoneOption.swift in Sources */,
 				5E548E862B29F9F000DD2C59 /* RedeemCodeView.swift in Sources */,
 				5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */,
 				924F16372A45CC6200B75D4E /* TextViewModifiers.swift in Sources */,
@@ -5833,6 +6060,14 @@
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
+				5ECE8B7A30ADFB320000DF56 /* WebOnlyDateMessage.swift in Sources */,
+				5E4E1E66309337FF007E980B /* TimeWheelCard.swift in Sources */,
+				5E4E1E67309337FF007E980B /* DateTimeFieldsBox.swift in Sources */,
+				5E4E1E68309337FF007E980B /* PickADateSheet.swift in Sources */,
+				5E4E1E69309337FF007E980B /* ClearDateAndTimeRow.swift in Sources */,
+				5E4E1E6A309337FF007E980B /* DateTimeDigitsField.swift in Sources */,
+				5E4E1E6B309337FF007E980B /* TimeFormatPill.swift in Sources */,
+				5E4E1E6C309337FF007E980B /* SheetCircleButton.swift in Sources */,
 				5EB66F022C872875000D4C82 /* LoginView.swift in Sources */,
 				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
 				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
@@ -5866,6 +6101,7 @@
 				F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */,
 				5E2E3D1126D0F6840090EF02 /* ArchivesViewController.swift in Sources */,
 				5EBAFCEA2A1572CD005DB527 /* LegacyPlanningSetUpButton.swift in Sources */,
+				5ECE8B8930B4874A0000DF56 /* FileMenuHeaderDetailLine.swift in Sources */,
 				5EF3003C2D4AC773001FFEE7 /* TwoStepChoosePhoneView.swift in Sources */,
 				5ECF1DA52B74FD440086EF21 /* ViewRepresentableContainer.swift in Sources */,
 				F559F88A28FEBCC10015A522 /* FolderContentView.swift in Sources */,
@@ -5874,6 +6110,7 @@
 				5E991EE22A4AD2F3006229C0 /* RightButtonView.swift in Sources */,
 				5E1C3C4C28ECA77A007C1A63 /* TagsLocalDataSource.swift in Sources */,
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
+				5E4E1E5A30925004007E980B /* FileInfoCloseTransition.swift in Sources */,
 				5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */,
 				F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */,
 				5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */,
@@ -5944,6 +6181,7 @@
 				5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */,
 				BC59BAB625C2B7D6005A45D3 /* FileVM.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
+				5E4E1E7230937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */,
 				5ED581C025EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift in Sources */,
 				5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */,
 				F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */,
@@ -6030,6 +6268,14 @@
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				5EDDAE5E2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift in Sources */,
 				5E9097C12F9962BD00C2EAEC /* UploadLiveActivityManager.swift in Sources */,
+				5E2C06453080148D00C579A8 /* EDTFBundleSource.swift in Sources */,
+				5E2C06463080148D00C579A8 /* EDTFDateParts.swift in Sources */,
+				5E2C06473080148D00C579A8 /* EDTFError.swift in Sources */,
+				5E2C06483080148D00C579A8 /* EDTFFormatting.swift in Sources */,
+				5ECE8B7E30AE04140000DF56 /* ComplexDateText.swift in Sources */,
+				5E2C06493080148D00C579A8 /* EDTFInterval.swift in Sources */,
+				5E2C064A3080148D00C579A8 /* JavaScriptCoreEDTF.swift in Sources */,
+				5E2C064B3080148D00C579A8 /* EDTFValue.swift in Sources */,
 				5EB503B72C04CB5500534F09 /* OnboardingWhatsImportant.swift in Sources */,
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
@@ -6087,6 +6333,7 @@
 				5E390B492E1FEF1F00F623D3 /* AccountRemoteDataSource.swift in Sources */,
 				5E390B4A2E1FEF1F00F623D3 /* FilesRemoteDataSource.swift in Sources */,
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
+				5E4E1E56309247AC007E980B /* FileInfoOpenTransition.swift in Sources */,
 				5ED9A7B62BBF3294009BDD70 /* OnboardingSelectArchiveTypeView.swift in Sources */,
 				5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
@@ -6256,6 +6503,7 @@
 				5E7B9BA62FB1300200C1D3D0 /* ManageTagsViewModelTests.swift in Sources */,
 				5E7B9BA72FB1300200C1D3D0 /* TwoStepEmailPhoneViewModelTests.swift in Sources */,
 				5E7B9BA82FB1300200C1D3D0 /* AccessRoleAndPermissionTests.swift in Sources */,
+				5E2C0654308014EE00C579A8 /* JavaScriptCoreEDTFTests.swift in Sources */,
 				5E7B9BA92FB1300200C1D3D0 /* InfoViewModelTests.swift in Sources */,
 				5E7B9BAA2FB1300200C1D3D0 /* EditMetadataViewModelTests.swift in Sources */,
 				5E7B9BAB2FB1300200C1D3D0 /* FABViewModelTests.swift in Sources */,
@@ -6269,14 +6517,18 @@
 				5E7B9BAC2FB1300200C1D3D0 /* ActivityFeedAndInviteViewModelTests.swift in Sources */,
 				5E7B9BAD2FB1300200C1D3D0 /* ArrayAndSequenceExtensionTests.swift in Sources */,
 				5E7B9BC72FB13D9000C1D3D0 /* FilePreviewViewModelTests.swift in Sources */,
+				5E4E1E583092484C007E980B /* FileInfoOpenTransitionTests.swift in Sources */,
 				5E7B9BAE2FB1300200C1D3D0 /* DonateViewModelTests.swift in Sources */,
 				9CBB9ACA108840A69B585109 /* UIViewControllerSpinnerTests.swift in Sources */,
 				13F57C8DB2DB4A4EB984A0BE /* FolderV2ModelsTests.swift in Sources */,
 				615BE4F55BBD469EBDCCA6CD /* BillingEndpointTests.swift in Sources */,
 				5EA7C10230A10002000A1851 /* UploadQuotaGateTests.swift in Sources */,
+				A8ECEF86E64C557150570451 /* RootNavigationControllerTitleTests.swift in Sources */,
 				5E7B9BAF2FB1300200C1D3D0 /* GiftStorageViewModelTests.swift in Sources */,
 				5E7B9B7B2FB0D11B00C1D3D0 /* GiftStorageViewTests.swift in Sources */,
+				5E4E1E7830937196007E980B /* FeatureFlagsTests.swift in Sources */,
 				5E7B9B7C2FB0D11B00C1D3D0 /* ChecklistAndDialogViewTests.swift in Sources */,
+				5E2A880930B083CE00A0AE8A /* ListTimeTextTests.swift in Sources */,
 				5E7B9B7D2FB0D11B00C1D3D0 /* AddLocationViewTests.swift in Sources */,
 				5E219E11303CA0400062F4C6 /* LegacyEndpointSurfaceTests.swift in Sources */,
 				5E7B9B7E2FB0D11B00C1D3D0 /* ArchivesViewModelTests.swift in Sources */,
@@ -6317,6 +6569,9 @@
 				5E7B9BE32FB1C4A400C1D3D0 /* AuthSecurityViewRenderingTests.swift in Sources */,
 				5E7B9BE42FB1C4A400C1D3D0 /* TwoStepVerificationViewRenderingTests.swift in Sources */,
 				5E7B9BE52FB1C4A400C1D3D0 /* RenameAndStorageViewRenderingTests.swift in Sources */,
+				5E4E1E8930938F62007E980B /* TimeZoneCatalogTests.swift in Sources */,
+				5E4E1E8A30938F62007E980B /* TimeZonePickerViewTests.swift in Sources */,
+				5ECE8B8730B4872F0000DF56 /* FileMenuHeaderDetailLineTests.swift in Sources */,
 				5E7B9BE62FB1C4A400C1D3D0 /* AlertAndDialogViewRenderingTests.swift in Sources */,
 				5E7B9C212FB3169200C1D3D0 /* AccountOnboardingViewModelTests.swift in Sources */,
 				5E7B9C222FB3169200C1D3D0 /* PublicArchiveViewModelTests.swift in Sources */,
@@ -6326,6 +6581,8 @@
 				5E7B9BE92FB1C4A400C1D3D0 /* FilenameViewModelTests.swift in Sources */,
 				5E7B9BEA2FB1C4A400C1D3D0 /* SecurityMoreViewRenderingTests.swift in Sources */,
 				5E7B9BEB2FB1C4A400C1D3D0 /* ComponentViewRenderingTests.swift in Sources */,
+				5E4E1E6F30933819007E980B /* DateTimeEntryTests.swift in Sources */,
+				5E4E1E7030933819007E980B /* AdjustDateAndTimeViewTests.swift in Sources */,
 				5E7B9BEC2FB1C4A400C1D3D0 /* TagAndMetadataViewRenderingTests.swift in Sources */,
 				5E7B9BED2FB1C4A400C1D3D0 /* CommonUIRenderingTests.swift in Sources */,
 				5E7B9B972FB1224B00C1D3D0 /* ChecklistOptionsViewModelTests.swift in Sources */,
@@ -6337,14 +6594,28 @@
 				F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */,
 				F559F87D28F9AB070015A522 /* FolderContentViewModelTests.swift in Sources */,
 				5E173EB32F6373D300C6D151 /* SharePreviewViewTests.swift in Sources */,
+				5E75228E3088E9F3008003BA /* FileSizeAndDateTests.swift in Sources */,
+				5E75228F3088E9F3008003BA /* ItemMenuLayoutTests.swift in Sources */,
 				F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */,
+				5E2C065730824E2900C579A8 /* DisplayTimeV2Tests.swift in Sources */,
+				5E2C065830824E2900C579A8 /* DisplayTimeTests.swift in Sources */,
 				5E7B9C0D2FB27AC800C1D3D0 /* ArchivesEndpointTests.swift in Sources */,
 				5E7B9C082FB272E200C1D3D0 /* IntExtensionTests.swift in Sources */,
 				5E7B9C092FB272E200C1D3D0 /* ArchiveTypeTests.swift in Sources */,
+				5ECE8B7C30AE04010000DF56 /* ComplexDateTextTests.swift in Sources */,
 				5E7B9C0A2FB272E200C1D3D0 /* StringExtensionTests.swift in Sources */,
 				5E7B9C0B2FB272E200C1D3D0 /* FilesEndpointTests.swift in Sources */,
 				F54861FA28912F4300500F6F /* SessionTests.swift in Sources */,
 				5E7B9B592FAE2E8E00C1D3D0 /* ShareFindArchiveByEmailViewModelTests.swift in Sources */,
+				5E2A880B30B083CE00A0AE8A /* UnknownMonthDateTests.swift in Sources */,
+				5E75228830862522008003BA /* PinAddressLookupTests.swift in Sources */,
+				5ECE8B8530B47DD50000DF56 /* FolderDateSheetTests.swift in Sources */,
+				5E75228930862522008003BA /* LocationSaveRouteTests.swift in Sources */,
+				5E75228A30862522008003BA /* LocationV2MappingTests.swift in Sources */,
+				5E34465530922ABE008ABE46 /* FileInfoTabTests.swift in Sources */,
+				5E34465630922ABE008ABE46 /* FileInfoRowTests.swift in Sources */,
+				5E34465730922ABE008ABE46 /* InfoRowDateTests.swift in Sources */,
+				5E75228B30862522008003BA /* ItemLocationServiceTests.swift in Sources */,
 				5E7B9B882FB11A5E00C1D3D0 /* LegacyPlanningViewModelTests.swift in Sources */,
 				5E7B9B892FB11A5E00C1D3D0 /* ArchiveDetailsViewTests.swift in Sources */,
 				5E7B9B8A2FB11A5E00C1D3D0 /* ShareContainerViewTests.swift in Sources */,
@@ -6355,7 +6626,9 @@
 				5E7B9B8F2FB11A5E00C1D3D0 /* TwoStepVerificationTests.swift in Sources */,
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				5E7B9BBB2FB139DF00C1D3D0 /* OnboardingPathAndChartTests.swift in Sources */,
+				5EC6236930AB7271006D9356 /* FileModelLegacyDateTests.swift in Sources */,
 				5E7B9BBC2FB139DF00C1D3D0 /* FilePreviewViewModelTests.swift in Sources */,
+				5ECE8B7830ADFB1C0000DF56 /* ComplexDateTests.swift in Sources */,
 				5E7B9BBD2FB139DF00C1D3D0 /* PageViewModelTests.swift in Sources */,
 				5E7B9BBE2FB139DF00C1D3D0 /* AuthVerifyIdentityViewModelTests.swift in Sources */,
 				5E7B9BBF2FB139DF00C1D3D0 /* AuthContainerAndContentTypeTests.swift in Sources */,
@@ -6440,8 +6713,12 @@
 				5E8B7C202FD83F8500CFC501 /* RefreshThrottle.swift in Sources */,
 				5E8B7C192FD83F8500CFC501 /* FolderItemCountMath.swift in Sources */,
 				5E8B7C432FD83F8500CFC501 /* UploadProgressMath.swift in Sources */,
+				5ECE8B7F30AE04F60000DF56 /* ComplexDateText.swift in Sources */,
 				5ED4B9C82876DFC200CF044B /* ItemVO.swift in Sources */,
 				5E1CCC21287F050E00913EEA /* UIColor.swift in Sources */,
+				5ECE8B8030B084BA0000DF56 /* TimeZoneOption.swift in Sources */,
+				5ECE8B8130B084BA0000DF56 /* DateTimeEntry.swift in Sources */,
+				5ECE8B8230B084BA0000DF56 /* TimeZoneCatalog.swift in Sources */,
 				925FF46B2D00668C000B44D4 /* EventsPayload.swift in Sources */,
 				5E1CCC23287F052400913EEA /* UIViewExtension.swift in Sources */,
 				5ED4B9D02876E03B00CF044B /* FolderVO.swift in Sources */,
@@ -6522,6 +6799,7 @@
 				F559F8B128FF03340015A522 /* UploadFileMetaResponse.swift in Sources */,
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
 				5E4642312F55A1E4002DB512 /* ShareAccessEndpoint.swift in Sources */,
+				5E4E1E7330937172007E980B /* FeatureFlagsV2Endpoint.swift in Sources */,
 				5E5AA3B42FAA26C1002D84E8 /* RelationVO.swift in Sources */,
 				5E317C692E7C273800DE5A77 /* CreatorAccountForShare.swift in Sources */,
 				F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */,
@@ -6582,6 +6860,7 @@
 				F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */,
 				5E4739CE2A410B9600A20D85 /* BaseViewController.swift in Sources */,
 				F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */,
+				5ECE8B8330B0966B0000DF56 /* TimeZoneCountryCodes.swift in Sources */,
 				5EA106E62E67177C0083B6A0 /* ShareLinkV2.swift in Sources */,
 				5E3A060429E73B2100A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
 				5ED4B9CC2876E01E00CF044B /* FolderLinkVO.swift in Sources */,
@@ -6605,6 +6884,7 @@
 				5E1CCC26287F055100913EEA /* CustomTextField.swift in Sources */,
 				5E1CCC25287F054000913EEA /* DropdownView.swift in Sources */,
 				F559F89028FEE9690015A522 /* FolderNavigationViewModel.swift in Sources */,
+				5E4E1E7530937184007E980B /* FeatureFlags.swift in Sources */,
 				5E1E92F92FC993C700F44FA8 /* ItemVOMatching.swift in Sources */,
 				5E4739F52A41879800A20D85 /* BlurbProfileItem.swift in Sources */,
 				5E3E12462A41F3B700682DE5 /* FileCollectionViewCell.swift in Sources */,
@@ -6780,7 +7060,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -6838,7 +7118,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -6866,7 +7146,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -6903,7 +7183,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -6932,7 +7212,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6957,7 +7237,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -6982,7 +7262,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7007,7 +7287,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7037,7 +7317,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7066,7 +7346,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7095,7 +7375,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7124,7 +7404,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -7164,7 +7444,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7207,7 +7487,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -7250,7 +7530,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7292,7 +7572,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -7330,7 +7610,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7368,7 +7648,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7406,7 +7686,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7444,7 +7724,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7514,7 +7794,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -7542,7 +7822,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -7608,7 +7888,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -7636,7 +7916,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -7671,7 +7951,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7700,7 +7980,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7729,7 +8009,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7758,7 +8038,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.17.1;
+				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

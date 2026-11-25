@@ -10,7 +10,6 @@ import CoreLocation
 import GoogleMaps
 
 class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCell {
-
     static let identifier = "FileDetailsMapViewCellCollectionViewCell"
  
     @IBOutlet weak var titleLabelField: UILabel!
@@ -41,12 +40,17 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
     override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
         super.configure(withViewModel: viewModel, type: type)
 
-        titleLabelField.text = title
+        // Under the Info tab's Location row only the map shows; the two labels fold away.
+        let mapOnly = type == .locationMap
+        titleLabelField.isHidden = mapOnly
+        detailsLabelField.isHidden = mapOnly
+        detailsLabelField.constraints.first { $0.firstAttribute == .height }?.constant = mapOnly ? 0 : 30
+        titleLabelField.text = mapOnly ? nil : title
         titleLabelField.textColor = .white
         titleLabelField.font = TextFontStyle.style9.font
 
         if let locnVO = viewModel.recordVO?.recordVO?.locnVO {
-            let address = viewModel.getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
+            let address = viewModel.getAddressString([locnVO.addressText])
             detailsLabelField.text = address
         } else {
             detailsLabelField.text = isEditable ? "Tap to set location".localized() : "No Location".localized()
@@ -60,7 +64,7 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
         detailsLabelField.baselineAdjustment = .alignCenters
         
         let locationDetails = getLocationDetails()
-        mapViewContainer.isHidden = locationDetails == (0,0)
+        mapViewContainer.isHidden = locationDetails == (0, 0)
         
         setLocation(locationDetails.latitude, locationDetails.longitude)
         
@@ -84,9 +88,9 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
     func getLocationDetails() -> (latitude: Double, longitude: Double) {
         if let latitude = viewModel?.recordVO?.recordVO?.locnVO?.latitude,
            let longitude = viewModel?.recordVO?.recordVO?.locnVO?.longitude {
-            return (latitude,longitude)
+            return (latitude, longitude)
         } else {
-            return (0,0)
+            return (0, 0)
         }
     }
 }

@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ShareLinksV2EndpointTests: XCTestCase {
-
     private func dict(_ params: RequestParameters?) -> [String: Any]? {
         return params as? [String: Any]
     }

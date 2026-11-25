@@ -8,7 +8,6 @@
 import Foundation
 
 protocol Downloader {
-    
     func download(_ file: FileModel,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,

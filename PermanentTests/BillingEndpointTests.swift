@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class BillingEndpointTests: XCTestCase {
-
     private func bodyJSON(_ endpoint: BillingEndpoint) -> [String: Any]? {
         guard let data = endpoint.bodyData else { return nil }
         return try? JSONSerialization.jsonObject(with: data) as? [String: Any]

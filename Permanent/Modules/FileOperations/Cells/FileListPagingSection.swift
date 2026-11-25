@@ -82,6 +82,7 @@ final class FileListPagingSection {
         switch viewModel.childrenPagingState {
         case .complete: return 0
         case .loadingMore: return nextPagePlaceholders(isGrid: isGrid)
+
         // A few, so the retry footer stays close to the rows.
         case .failed: return isGrid ? Self.fewGridTiles : Self.fewListRows
         }
@@ -132,6 +133,7 @@ final class FileListPagingSection {
         switch viewModel.childrenPagingState {
         case .failed: return .failed
         case .loadingMore: return .hidden
+
         case .complete:
             guard !viewModel.syncedViewModels.isEmpty else { return .hidden }
             return .counts(folders: viewModel.loadedFolderCount, files: viewModel.loadedFileCount)

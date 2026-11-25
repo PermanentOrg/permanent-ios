@@ -413,7 +413,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let subtitle = selectedFiles.count == 1 ? selectedFiles.first!.name : "\(selectedFiles.count) files"
         let leftItems = [
             fileIconItem,
-            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil),
+            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil)
         ]
         
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
@@ -426,7 +426,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 }
                 
                 self?.relocate(files: selectedFiles, to: destination)
-            },
+            }
         ]
         if #available(iOS 26, *) {
             rightItems.append(FloatingActionImageItem(image: UIColor.clear.imageWithColor(width: 0, height: 0), action: nil))
@@ -450,12 +450,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let blankImage = UIColor.clear.imageWithColor(width: 0, height: 0)
         let numberOfItems = viewModel?.selectedFiles?.count ?? 0
         let itemsText = numberOfItems > 1 ? "Items".localized() : "Item".localized()
-        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>" , with: String(numberOfItems)), action: nil)
+        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>", with: String(numberOfItems)), action: nil)
         itemsNumber.barButtonItem?.tintColor = .middleGray
         
         let leftItems = [itemsNumber]
         let rightItems = [
-            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _,_  in
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _, _  in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
@@ -472,7 +472,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
             FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: {
-                [weak self] _,_  in
+                [weak self] _, _  in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
@@ -488,7 +488,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 })
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
-            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _,_  in
+            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _, _  in
                 self?.showFileActionSheetForSelection()
             })
         ]
@@ -858,7 +858,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 viewModel.selectedFiles = viewModel.viewModels
             }
         } else {
-            viewModel.isSelecting = true
+            viewModel.startSelecting()
         }
 
         refreshCollectionView()
@@ -955,11 +955,23 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         case .unshare: return { [weak self] in self?.unshareAction(file: file, atIndexPath: indexPath) }
         case .delete: return { [weak self] in self?.deleteAction(file: file, atIndexPath: indexPath) }
         case .fileInformation: return { [weak self] in self?.showFileInformation(for: file) }
+        case .adjustDateTime: return { [weak self] in self?.showDateAndTime(for: file) }
         }
     }
 
     private func showFileInformation(for file: FileModel) {
         present(FileDetailsViewController.navigation(for: file, delegate: self), animated: true)
+    }
+
+    private func showDateAndTime(for file: FileModel) {
+        present(EditDateAndTimeView.menuDoor(for: file) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
+    }
+
+    /// The selection ends when the sheet opens, as Edit Metadata does.
+    private func showDateAndTime(forSelection files: [FileModel]) {
+        present(EditDateAndTimeView.menuDoor(for: files) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
+        dismissFloatingActionIsland()
+        clearButtonWasPressed(UIButton())
     }
 
     private var menuPlace: FileMenuItems.Place {
@@ -1099,6 +1111,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     }
                 }))
             }
+        }
+
+        if let selection = viewModel?.selectedFiles, FileMenuItems.selectionAdjustsDate(selection, sessionArchiveId: sessionArchiveId) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .adjustDateTime, action: { [weak self] in
+                self?.showDateAndTime(forSelection: selection)
+            }))
         }
         
         if file.permissions.contains(.delete) {
@@ -1709,9 +1727,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     let filtered = files.filter { !duplicateIds.contains($0.id) }
                     self.showSpinner()
                     self.upload(files: filtered, completion: completion)
+
                 case .uploadAll:
                     self.showSpinner()
                     self.upload(files: files, completion: completion)
+
                 case .cancel:
                     completion(false)
                 }
@@ -1839,7 +1859,7 @@ extension SharesViewController {
         case .fileInformation: showFileInformation(for: file)
         case .delete: confirmMenuAction(.delete, on: file) { [weak self] in self?.deleteFile([file]) }
         case .unshare: confirmMenuAction(.leaveShare, on: file) { [weak self] in self?.unshareFile(file, atIndexPath: indexPath) }
-        case .publish, .editMetadata: break
+        case .publish, .editMetadata, .adjustDateTime: break
         }
     }
 
@@ -1939,6 +1959,7 @@ extension SharesViewController {
                 } else if destination.folderLinkId == folder.folderLinkId {
                     self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
                 }
+
             case .error(let message):
                 self.showErrorAlert(message: message)
                 self.refreshCurrentFolder(shouldDisplaySpinner: false, silenceErrors: true)
@@ -2086,23 +2107,13 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
             }
             self.refreshCollectionView()
         } else {
-
             if file.type.isFolder {
                 // Seed the V2 forward-nav target so drill-in engages and children inherit this folder's
                 // accessRole. Nil falls through to V1 safely.
                 viewModel.v2NavigationTarget = file
                 enter(file, from: collectionView)
             } else {
-                let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-                listPreviewVC.modalPresentationStyle = .fullScreen
-                listPreviewVC.viewModel = viewModel
-                listPreviewVC.currentFile = file
-                
-                let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-                fileDetailsNavigationController.filePreviewNavDelegate = self
-                fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-                
-                present(fileDetailsNavigationController, animated: true)
+                present(FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self), animated: true)
             }
         }
     }
@@ -2314,6 +2325,13 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
         }
     }
     
+    func filePreviewNavigationControllerRequestsPreview(_ details: UIViewController, file: FileModel, hasChanges: Bool) {
+        (details as? FileDetailsViewController)?.showPreview(FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self))
+        if hasChanges {
+            refreshCurrentFolder(shouldDisplaySpinner: false)
+        }
+    }
+    
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
     }
     
@@ -2397,7 +2415,6 @@ extension SharesViewController: FABViewDelegate {
         checklistView.modalPresentationStyle = .formSheet
         checklistView.view.backgroundColor = .clear
         checklistView.sheetPresentationController?.detents = [.large()]
-        
         
         present(checklistView, animated: true)
     }

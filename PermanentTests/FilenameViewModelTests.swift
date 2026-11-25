@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class FilenameViewModelTests: XCTestCase {
-
     // MARK: - ReplaceFilenameViewModel
 
     func testReplace_InitState() {

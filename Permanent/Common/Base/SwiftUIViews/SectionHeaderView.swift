@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 03.07.2023.
+//
 
 import SwiftUI
 import SDWebImageSwiftUI

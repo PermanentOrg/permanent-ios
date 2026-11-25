@@ -3,11 +3,11 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 06.06.2023.
+//
 
 import UIKit
 
 class BannerView: UIView {
-    
     var action: (() -> Void)?
     var dismissAction: (() -> Void)?
     

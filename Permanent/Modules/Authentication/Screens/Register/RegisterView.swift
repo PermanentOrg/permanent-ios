@@ -3,7 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 18.10.2024.
-
+//
 
 import SwiftUI
 
@@ -160,7 +160,6 @@ struct RegisterView: View {
                                     .frame(height: 1)
                                     .background(Color(red: 0.54, green: 0.55, blue: 0.64))
                                     .layoutPriority(0.5)
-                                
                             }
                             SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Sign in", image: Image(.authRegisterKey), action: {
                                 self.viewModel.containerViewModel.setContentType(.login)
@@ -238,7 +237,6 @@ struct RegisterView: View {
     }
     
     private func registerAccount() {
-        
     }
 }
 
@@ -256,7 +254,6 @@ struct RegisterView: View {
                 }
                 VStack(spacing: 0) {
                     RegisterView(viewModel: RegisterViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
-                        
                     })
                     Spacer()
                 }

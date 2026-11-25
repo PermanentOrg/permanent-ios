@@ -8,7 +8,6 @@
 import UIKit
 
 class TagsNamesCollectionViewCell: FileDetailsBaseCollectionViewCell {
-    
     static let identifier = "TagsNamesCollectionViewCell"
     
     var tagNames: [String] {
@@ -36,7 +35,7 @@ class TagsNamesCollectionViewCell: FileDetailsBaseCollectionViewCell {
         
         cellTitleLabel.text = "Tags".localized()
         cellTitleLabel.textColor = .white
-        cellTitleLabel.font = TextFontStyle.style9.font
+        cellTitleLabel.font = FileInfoRowModel.labelUIFont
         
         cellNoItemLabel.text = "Tap to add tags".localized()
         cellNoItemLabel.textColor = .white
@@ -93,6 +92,6 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
         let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: TextFontStyle.style8.font as Any])
         let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.width.rounded(.up)
         
-        return CGSize(width: 20 + width , height: 30)
+        return CGSize(width: 20 + width, height: 30)
     }
 }

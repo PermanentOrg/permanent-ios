@@ -36,5 +36,4 @@ class LegacyPlanningRepository {
     func updateArchiveSteward(directiveId: String, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void) {
         remoteDataSource.updateArchiveSteward(directiveId: directiveId, stewardEmail: stewardEmail, note: note, completion: completion)
     }
-
 }

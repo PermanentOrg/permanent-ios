@@ -8,11 +8,9 @@
 import Foundation
 
 protocol FileDownloadInfo {
-    
     var folderLinkId: Int { get }
     
     var parentFolderLinkId: Int { get }
     
     var fileType: FileType { get }
-    
 }

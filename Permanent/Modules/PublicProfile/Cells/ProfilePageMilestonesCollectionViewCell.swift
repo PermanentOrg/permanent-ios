@@ -76,7 +76,7 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         return UINib(nibName: identifier, bundle: nil)
     }
     
-    static func size(withTitleText titleText: String?, withDescriptionText descriptionText: String?, withDateText dateText: String?, withLocationText locationText: String?, isEditEnabled: Bool,  collectionView: UICollectionView) -> CGSize {
+    static func size(withTitleText titleText: String?, withDescriptionText descriptionText: String?, withDateText dateText: String?, withLocationText locationText: String?, isEditEnabled: Bool, collectionView: UICollectionView) -> CGSize {
         var fieldHeight: CGFloat = 0
         let horizontalMargin: CGFloat = 40
         let verticalMargin: CGFloat = 20

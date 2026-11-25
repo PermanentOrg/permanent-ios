@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class StringAndIntExtensionTests: XCTestCase {
-
     // MARK: - String isNotEmpty
 
     func testIsNotEmpty() {

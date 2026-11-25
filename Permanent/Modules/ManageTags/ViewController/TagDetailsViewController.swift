@@ -19,7 +19,6 @@ struct SortedTagVO {
 }
 
 class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
-    
     var file: FileModel!
     let maximumNumberOfCharactersForTagName: Int = 16
 
@@ -123,11 +122,9 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
             self.delegate?.tagDetailsViewControllerDidUpdate(self)
             self.dismiss(animated: true, completion: nil)
         }
-        
     }
     
     @IBAction func addTagButtonAction(_ sender: Any) {
-        
         if let findTag = tagSearchBar.text,
            !findTag.isEmpty,
            sortedArray.first(where: { $0.tagVO.tagVO.name == findTag }) == nil {
@@ -151,11 +148,11 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
                 return
             }
             
-            self.sortedArray = tagsArchive.map( { SortedTagVO(tagVO: $0) } )
+            self.sortedArray = tagsArchive.map( { SortedTagVO(tagVO: $0) })
             
             if let tags = self.recordVO?.tagVOS {
                 for tagItem in tags {
-                    var idx : Int?
+                    var idx: Int?
                     idx = self.sortedArray.firstIndex(where: { $0.tagVO.tagVO.name == tagItem.name})
 
                     if idx != nil { self.sortedArray[idx!].checked = true }
@@ -191,7 +188,7 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
         let cell = collectionView.cellForItem(at: indexPath) as! TagCollectionViewCell
         
         UIView.animate(withDuration: 0.05, animations: { cell.alpha = 0.5 }) { (completed) in
-            UIView.animate(withDuration: 0.05, animations: { cell.alpha = 1 })  { (completed) in
+            UIView.animate(withDuration: 0.05, animations: { cell.alpha = 1 }) { (completed) in
                 collectionView.reloadData()
             }
         }
@@ -211,13 +208,12 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         if  let name = filteredTagVO[indexPath.row].tagVO.name,
             let isChecked = sortedArray.first(where: { $0.tagVO.tagVO.name == name })?.checked {
             let additionalSpace: CGFloat = isChecked ? ( 45 ) : ( 35 )
             let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: TextFontStyle.style2.font as Any])
             let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
-            return CGSize(width: additionalSpace + width , height: 40)
+            return CGSize(width: additionalSpace + width, height: 40)
         }
         return CGSize(width: 0, height: 0)
     }
@@ -229,7 +225,7 @@ extension TagDetailsViewController: UISearchBarDelegate {
             return item.tagVO
         })
         
-        filteredTagVO = searchText.isEmpty ? currentTagVO  : currentTagVO.filter({ (tag) -> Bool in
+        filteredTagVO = searchText.isEmpty ? currentTagVO : currentTagVO.filter({ (tag) -> Bool in
             return tag.tagVO.name?.lowercased().contains(searchText.lowercased()) ?? false
         })
         

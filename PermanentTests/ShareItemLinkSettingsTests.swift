@@ -3,13 +3,13 @@
 //  PermanentTests
 //
 //  Created by Lucian Cerbu on 11.05.2026.
+//
 
 import XCTest
 @testable import Permanent
 
 @MainActor
 final class ShareItemLinkSettingsTests: XCTestCase {
-
     // MARK: - Helpers
 
     private func makeViewModel() -> ShareItemViewModel {

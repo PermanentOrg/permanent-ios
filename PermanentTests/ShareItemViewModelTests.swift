@@ -3,6 +3,7 @@
 //  PermanentTests
 //
 //  Created by Lucian Cerbu on 30.01.2026.
+//
 
 import XCTest
 import Combine
@@ -10,7 +11,6 @@ import Combine
 
 @MainActor
 final class ShareItemViewModelTests: XCTestCase {
-    
     // MARK: - Initialization Tests
     
     func testInitialization_SetsInitialState() {

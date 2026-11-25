@@ -100,7 +100,6 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
                    with: APIResults<NoDataModel>.decoder
                ),
                model.isSuccessful {
-
                 let accountArchives = model.results.first?.data ?? []
                 var archiveMap: [Int: ArchiveVOData] = [:]
 
@@ -134,7 +133,6 @@ final class ShareArchivesFromPastSharesViewModel: ObservableObject {
                    with: APIResults<NoDataModel>.decoder
                ),
                model.isSuccessful {
-
                 let relations = model.results.first?.data ?? []
                 var archiveMap: [Int: ArchiveVOData] = [:]
 

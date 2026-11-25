@@ -42,7 +42,7 @@ class RootNavigationController: UINavigationController {
             appearance.backgroundColor = UIColor.darkBlue
             appearance.titleTextAttributes = [
                 .foregroundColor: UIColor.white,
-                NSAttributedString.Key.font: TextFontStyle.style51.font
+                NSAttributedString.Key.font: TextFontStyle.navigationBarTitle.font
             ]
             navigationBar.standardAppearance = appearance
             navigationBar.compactAppearance = appearance

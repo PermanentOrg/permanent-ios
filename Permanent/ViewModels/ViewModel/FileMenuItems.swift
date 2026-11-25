@@ -19,8 +19,9 @@ enum FileMenuItems {
         case sharedWithMe(isRoot: Bool)
     }
 
-    /// In the sheet's order, with the one destructive item last.
-    static func types(for file: FileModel, in place: Place) -> [ItemType] {
+    /// In the sheet's order, with the one destructive item last. A folder's date row waits for the folder date flag.
+    static func types(for file: FileModel, in place: Place,
+                      editsFolderDates: Bool = FeatureFlags.shared.editsFolderDates) -> [ItemType] {
         let permissions = file.permissions
         let isFolder = file.type.isFolder
         var types: [ItemType] = []
@@ -28,25 +29,24 @@ enum FileMenuItems {
         if permissions.contains(.ownership) && (!place.isShared || permissions.contains(.share)) {
             types.append(.shareToPermanent)
         }
+        if place == .privateFiles && permissions.contains(.delete) {
+            types.append(.publish)
+        }
+        // Save or send a copy also saves the file, so there is no separate Save row.
         if permissions.contains(.share) && !isFolder {
             types.append(.shareToAnotherApp)
         }
-        if place == .privateFiles && permissions.contains(.delete) {
-            types.append(.publish)
+        if permissions.contains(.edit) {
+            types.append(.rename)
+            if !isFolder || editsFolderDates { types.append(.adjustDateTime) }
         }
         // The details screen reads a record from the user's own archive, so a file shared with them is left out.
         if permissions.contains(.read) && !isFolder && !place.isSharedWithMe {
             types.append(.fileInformation)
         }
-        if permissions.contains(.edit) {
-            types.append(.rename)
-        }
         if !place.isSharedRoot {
             if permissions.contains(.move) { types.append(.move) }
             if permissions.contains(.create) { types.append(.copy) }
-        }
-        if permissions.contains(.read) && !isFolder {
-            types.append(.download)
         }
         if place == .sharedWithMe(isRoot: true) {
             types.append(.unshare)
@@ -54,6 +54,16 @@ enum FileMenuItems {
             types.append(.delete)
         }
         return types
+    }
+
+    /// Whether a selection of several items with a folder gets "Adjust date and time". Each item needs the edit
+    /// right and a Stela V2 date save, because the V1 batch cannot save a folder. Files alone keep Edit Metadata.
+    static func selectionAdjustsDate(_ files: [FileModel], sessionArchiveId: Int?,
+                                     editsFolderDates: Bool = FeatureFlags.shared.editsFolderDates) -> Bool {
+        editsFolderDates
+            && files.count > 1
+            && files.contains { $0.type.isFolder }
+            && files.allSatisfy { $0.permissions.contains(.edit) && $0.savesDateToStela(sessionArchiveId: sessionArchiveId) }
     }
 }
 

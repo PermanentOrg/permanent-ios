@@ -12,7 +12,6 @@ import Testing
 /// The silent-failure path in the completion hold: suspended mid-hold, a finished batch looks
 /// exactly like a zombie on the next launch, and ending it `.failed` would lie to the user.
 struct UploadActivityTerminalStateTests {
-
     private func state(
         _ status: UploadActivityAttributes.UploadStatus,
         completed: Int = 5,

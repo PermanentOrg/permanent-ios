@@ -493,7 +493,6 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func deleteAddedLegacyPersonButtonAction(_ sender: Any) {
-
     }
     
     @IBAction func designateLegacyContact(_ sender: Any) {

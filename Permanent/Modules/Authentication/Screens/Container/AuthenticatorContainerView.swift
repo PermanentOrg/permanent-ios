@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 03.09.2024.
+//
 
 import SwiftUI
 
@@ -40,7 +41,7 @@ struct AuthenticatorContainerView: View {
                     }
                 }
                 LoadingOverlay()
-                    .opacity(viewModel.isLoading  ? 1 : 0)
+                    .opacity(viewModel.isLoading ? 1 : 0)
                     .animation(.easeInOut(duration: 0.5), value: viewModel.isLoading)
                     .allowsHitTesting(viewModel.isLoading)
             }
@@ -78,6 +79,7 @@ struct AuthenticatorContainerView: View {
                             insertion: viewModel.insertionViewTransition,
                             removal: .opacity)
                         )
+
                     case .register:
                         RegisterView(viewModel: RegisterViewModel(containerViewModel: viewModel), loginSuccess: {
                             dismissView()
@@ -86,24 +88,28 @@ struct AuthenticatorContainerView: View {
                             insertion: viewModel.insertionViewTransition,
                             removal: .opacity)
                         )
+
                     case .verifyIdentity:
                         AuthVerifyIdentityView(viewModel: AuthVerifyIdentityViewModel(containerViewModel: viewModel), loginSuccess: {})
                             .transition(AnyTransition.asymmetric(
                                 insertion: viewModel.insertionViewTransition,
                                 removal: .opacity)
                             )
+
                     case .forgotPassword:
                         ForgotPasswordView(viewModel: ForgotPasswordViewModel(containerViewModel: viewModel)) {}
                             .transition(AnyTransition.asymmetric(
                                 insertion: viewModel.insertionViewTransition,
                                 removal: .opacity)
                             )
+
                     case .forgotPasswordConfirmation:
                         ForgotPasswordConfimationView(viewModel: viewModel)
                             .transition(AnyTransition.asymmetric(
                                 insertion: viewModel.insertionViewTransition,
                                 removal: .opacity)
                             )
+
                     default:
                         Spacer()
                     }

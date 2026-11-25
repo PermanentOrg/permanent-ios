@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class ShareItemViewModelFormatTests: XCTestCase {
-
     // MARK: - ShareItemViewModel.formatDate
 
     func testFormatDate_ValidDate() {
@@ -193,11 +192,8 @@ final class ShareItemViewModelFormatTests: XCTestCase {
     }
 
     func testDisplayDate_September_UsesAbbreviatedMonthAndYear() {
-        // Figma shows "Sept. 16, 2023"; asserted loosely so it stays stable across the OS's
-        // month abbreviation ("Sep." vs "Sept.").
-        let result = DateUtils.displayDate(from: "2023-09-16T00:00:00.000Z")
-        XCTAssertTrue(result.hasPrefix("Sep"), "Expected abbreviated September, got: \(result)")
-        XCTAssertTrue(result.hasSuffix("16, 2023"), "Expected '16, 2023', got: \(result)")
+        // The design and Android write "Sept." on every iOS version.
+        XCTAssertEqual(DateUtils.displayDate(from: "2023-09-16T00:00:00.000Z"), "Sept. 16, 2023")
     }
 
     func testDisplayDate_NilEmptyDash_ReturnEmpty() {

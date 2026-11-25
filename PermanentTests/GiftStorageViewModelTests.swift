@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class GiftStorageViewModelTests: XCTestCase {
-
     // MARK: - Initial State
 
     func testViewModel_InitialState_NilAccount() {

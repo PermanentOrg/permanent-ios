@@ -25,6 +25,7 @@ struct FolderV2Data: Model {
     let imageRatio: Double?
     let description: String?
     let displayTimestamp: String?
+    let displayTime: String?
     let createdAt: String?
     let updatedAt: String?
     let archive: FolderArchiveV2?
@@ -36,6 +37,7 @@ struct FolderV2Data: Model {
     /// The caller's effective role on this folder, as Stela computes it across membership, shares,
     /// share token and public access. Short form ("owner"), which `AccessRole.roleForValue` accepts.
     let accessRole: String?
+    let location: LocationV2?
 
     init(folderId: String? = nil,
          displayName: String? = nil,
@@ -48,6 +50,7 @@ struct FolderV2Data: Model {
          imageRatio: Double? = nil,
          description: String? = nil,
          displayTimestamp: String? = nil,
+         displayTime: String? = nil,
          createdAt: String? = nil,
          updatedAt: String? = nil,
          archive: FolderArchiveV2? = nil,
@@ -56,7 +59,8 @@ struct FolderV2Data: Model {
          thumbnailUrls: ThumbnailUrlsV2? = nil,
          shares: [RecordShareV2]? = nil,
          pendingShares: [PendingShareV2]? = nil,
-         accessRole: String? = nil) {
+         accessRole: String? = nil,
+         location: LocationV2? = nil) {
         self.folderId = folderId
         self.displayName = displayName
         self.size = size
@@ -68,6 +72,7 @@ struct FolderV2Data: Model {
         self.imageRatio = imageRatio
         self.description = description
         self.displayTimestamp = displayTimestamp
+        self.displayTime = displayTime
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.archive = archive
@@ -77,6 +82,7 @@ struct FolderV2Data: Model {
         self.shares = shares
         self.pendingShares = pendingShares
         self.accessRole = accessRole
+        self.location = location
     }
 }
 
@@ -162,6 +168,10 @@ struct FolderChildV2Data: Model {
     let thumbnailUrls: ThumbnailUrlsV2?
     // Folders date themselves via displayTimestamp; records use displayDate.
     let displayTimestamp: String?
+    // The EDTF date, on records and folders alike; the list shows it before the two fields above.
+    let displayTime: String?
+    // Its `timezone` names the zone after the list date's clock.
+    let location: LocationV2?
     // Per-item access (folder/record both carry it under Stela). Unused on the
     // Private Files path (permissions are archive-derived) but decoded for reuse.
     let shares: [RecordShareV2]?

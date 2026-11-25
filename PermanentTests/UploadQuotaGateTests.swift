@@ -12,7 +12,6 @@ import Testing
 /// The upload gate's second opinion: the archive payer's storage can only turn a refusal into a
 /// pass. Every row of the outcome table is pinned here, plus the byte parsing and the endpoint shape.
 struct UploadQuotaGateTests {
-
     // MARK: - The payer's answer, one row per outcome
 
     @Test("A payer with room allows")

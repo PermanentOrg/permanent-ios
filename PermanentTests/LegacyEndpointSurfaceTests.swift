@@ -13,7 +13,6 @@ import Testing
 /// gains, loses or changes its Stela V2 route reddens a test here instead of a hand audit.
 @Suite
 struct LegacyEndpointSurfaceTests {
-
     /// `customURL` wins over `path` when it is non-nil, so a V1 `path` string with a V2
     /// `customURL` beside it never reaches the network.
     private func sendsV2(_ endpoint: RequestProtocol, _ route: String) -> Bool {

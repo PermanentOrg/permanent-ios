@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class OnboardingPathAndChartTests: XCTestCase {
-
     // MARK: - OnboardingPath Enum
 
     func testOnboardingPath_AllCasesCount() {

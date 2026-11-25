@@ -186,6 +186,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
                         switch quotaError {
                         case .insufficientSpace:
                             self.showStorageQuotaExceededAlert()
+
                         case .apiError:
                             // The quota check itself failed, so don't claim "Storage Full" or cancel the share — show a
                             // retryable message instead. The upload button is already re-enabled above.

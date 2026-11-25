@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class SettingsScreenViewTests: XCTestCase {
-
     // MARK: - SettingsScreenViewModel Initial State
 
     func testViewModel_InitialState() {

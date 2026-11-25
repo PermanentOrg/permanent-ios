@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class OnboardingArchiveNameViewTests: XCTestCase {
-
     // MARK: - OnboardingArchiveNameViewModel Tests
 
     func testViewModel_InitialState() {

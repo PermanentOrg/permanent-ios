@@ -13,7 +13,6 @@ public protocol CollectionCellAutoLayout: AnyObject {
 }
 
 public extension CollectionCellAutoLayout where Self: UICollectionViewCell {
- 
     func preferredLayoutAttributes(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         setNeedsLayout()
         layoutIfNeeded()

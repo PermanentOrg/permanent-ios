@@ -95,8 +95,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
 
         getUserDetails()
         
-        
-        //toolbar for having a next button on phone number introduction
+        // toolbar for having a next button on phone number introduction
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         let nextButton = UIBarButtonItem(title: "Next", style: .done, target: self, action: #selector(moveToNextFromPhone))

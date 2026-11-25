@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class FilesEndpointTests: XCTestCase {
-
     private func dict(_ params: RequestParameters?) -> [String: Any]? {
         return params as? [String: Any]
     }
@@ -118,8 +117,8 @@ final class FilesEndpointTests: XCTestCase {
     }
 
     // MARK: - 401 force-logout exemption contract (ignoreErrors)
-    // Reads are exempt, since a bearer-only fetch of a foreign item legitimately 401s. Writes must
-    // keep the signal, or an expired session fails silently with no re-login prompt.
+    // Reads are exempt, since a bearer-only fetch of a foreign item legitimately 401s. Record writes keep
+    // the signal; the folder PATCH is exempt, as it also edits shared folders and shows its own error.
 
     func testV2AuthExemption_ReadsExempt_WritesKeepExpirySignal() {
         XCTAssertTrue(RecordV2Endpoint.getRecordById(recordId: "1", shareToken: nil).ignoreErrors)
@@ -127,7 +126,7 @@ final class FilesEndpointTests: XCTestCase {
         XCTAssertFalse(RecordV2Endpoint.copyRecord(recordId: "1", destinationFolderId: "2").ignoreErrors)
         XCTAssertTrue(FolderV2Endpoint.getFolderChildren(folderId: "1", shareToken: "", pageSize: 10).ignoreErrors)
         XCTAssertTrue(FolderV2Endpoint.getFolderById(folderId: "1", shareToken: "").ignoreErrors)
-        XCTAssertFalse(FolderV2Endpoint.patchFolder(folderId: "1", fields: ["sort": "date-ascending"]).ignoreErrors)
+        XCTAssertTrue(FolderV2Endpoint.patchFolder(folderId: "1", fields: ["sort": "date-ascending"]).ignoreErrors)
     }
 
     // MARK: - FolderV2Endpoint (Stela) — folder PATCH, the sort write
@@ -268,6 +267,40 @@ final class FilesEndpointTests: XCTestCase {
 
     func testMultipleFilesUpdate_Path() {
         XCTAssertEqual(FilesEndpoint.multipleFilesUpdate(files: [makeRecordFile()]).path, "/record/update")
+    }
+
+    private func renamePayload(for file: FileModel, sendsDate: Bool = true) throws -> [String: Any] {
+        let endpoint = FilesEndpoint.multipleFilesUpdate(files: [file], sendsDate: sendsDate)
+        let request = try XCTUnwrap(endpoint.parameters as? [String: Any])["RequestVO"] as? [String: Any]
+        let data = try XCTUnwrap(request?["data"] as? [[String: Any]])
+        return try XCTUnwrap(data.first?["RecordVO"] as? [String: Any])
+    }
+
+    func testMultipleFilesUpdate_KeepsAnExactDate() throws {
+        var file = makeRecordFile()
+        file.date = "2001-02-03T09:30:00"
+        XCTAssertEqual(try renamePayload(for: file)["displayDT"] as? String, "2001-02-03T09:30:00")
+    }
+
+    func testMultipleFilesUpdate_ARenameSendsNoDate() throws {
+        var file = makeRecordFile()
+        file.date = "1985"
+        let payload = try renamePayload(for: file, sendsDate: false)
+        XCTAssertNil(payload["displayDT"])
+        XCTAssertEqual(payload["displayName"] as? String, file.name)
+    }
+
+    func testMultipleFilesUpdate_LeavesOutAMissingDate() throws {
+        var file = makeRecordFile()
+        file.date = ""
+        XCTAssertNil(try renamePayload(for: file)["displayDT"])
+    }
+
+    func testMultipleFilesUpdate_LeavesOutTheOldDateOfAComplexDate() throws {
+        var file = makeFolderFile()
+        file.displayTime = "1985/1990"
+        file.date = "1985-01-01T00:00:00"
+        XCTAssertNil(try renamePayload(for: file)["displayDT"])
     }
 
     func testRenameFolder_Path() {

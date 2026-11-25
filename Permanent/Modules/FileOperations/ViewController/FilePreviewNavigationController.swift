@@ -11,10 +11,12 @@ protocol FilePreviewNavigationControllerDelegate: AnyObject {
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
     func filePreviewNavigationControllerRequestsDownload(_ filePreviewNavigationVC: UIViewController, file: FileModel)
+    /// The picture on an Info screen a list opened straight: the list opens the file's preview over that screen, the
+    /// `FileDetailsViewController` passed here. The share extension compiles this file too, so the type stays general.
+    func filePreviewNavigationControllerRequestsPreview(_ details: UIViewController, file: FileModel, hasChanges: Bool)
 }
 
 class FilePreviewNavigationController: UINavigationController {
-    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return topViewController?.supportedInterfaceOrientations ?? (UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all])
     }
@@ -24,6 +26,21 @@ class FilePreviewNavigationController: UINavigationController {
     }
     
     weak var filePreviewNavDelegate: FilePreviewNavigationControllerDelegate?
+
+    /// The opening animation from the preview; nil keeps the system one.
+    var openTransition: UIViewControllerAnimatedTransitioning?
+    /// The way back to the preview when the Info screen dismisses itself; nil keeps the system one.
+    var closeTransition: UIViewControllerAnimatedTransitioning?
+
+    /// The screen under every preview navigation stacked here. A list-opened Info screen keeps its preview above it,
+    /// so the preview's X closes from here to take both down.
+    var chainRoot: UIViewController {
+        var root: UIViewController = self
+        while root is FilePreviewNavigationController, let presenter = root.presentingViewController {
+            root = presenter
+        }
+        return root
+    }
     
     var hasChanges: Bool = false {
         didSet {
@@ -75,5 +92,23 @@ class FilePreviewNavigationController: UINavigationController {
         if isBeingDismissed {
             filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
         }
+    }
+}
+
+// MARK: - UIViewControllerTransitioningDelegate
+extension FilePreviewNavigationController: UIViewControllerTransitioningDelegate {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        openTransition
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        closeTransition
+    }
+}
+
+extension FilePreviewNavigationControllerDelegate {
+    /// A door with no list behind it closes the screen, as the picture did before.
+    func filePreviewNavigationControllerRequestsPreview(_ details: UIViewController, file: FileModel, hasChanges: Bool) {
+        details.dismiss(animated: true)
     }
 }

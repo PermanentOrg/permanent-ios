@@ -109,7 +109,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
         return String(format: "%.1f", Date().timeIntervalSince(start))
     }
 
-    init(file:FileInfo, handler: @escaping ((Error?) -> Void)) {
+    init(file: FileInfo, handler: @escaping ((Error?) -> Void)) {
         self.file = file
         self.handler = handler
     }
@@ -258,7 +258,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
     private func getPresignedUrl(success: @escaping (() -> Void)) {
         phaseStartTime = Date()
 
-        guard let resources = try? file.url.resourceValues(forKeys:[.fileSizeKey]),
+        guard let resources = try? file.url.resourceValues(forKeys: [.fileSizeKey]),
               let fileSize = resources.fileSize else {
             flowLogger.error("🔼 [PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s Cannot get file size for: \(self.file.name, privacy: .public)")
             error = UploadError.presignedURL
@@ -305,6 +305,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                     handler(UploadError.presignedURL)
                     finish()
                 }
+
             case .error(let err, _):
                 self.flowLogger.error("🔼 [PHASE 1 FAILED] t=\(self.elapsed, privacy: .public)s presignedUrl network error: \(err?.localizedDescription ?? "unknown", privacy: .public)")
                 // Preserve URLError so UploadManager's isTransientNetworkError
@@ -317,6 +318,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                     handler(UploadError.presignedURL)
                 }
                 finish()
+
             default:
                 finish()
                 break
@@ -629,6 +631,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                     handler(UploadError.registerRecord)
                     finish()
                 }
+
             case .error(let error, _):
                 flowLogger.error("🔼 [PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s dur=\(self.phaseDuration, privacy: .public)s network error: \(error?.localizedDescription ?? "unknown", privacy: .public)")
                 // Leave in-flight marker — the lost response is *exactly* the
@@ -641,6 +644,7 @@ class UploadOperation: BaseOperation, @unchecked Sendable {
                     handler(UploadError.registerRecord)
                 }
                 finish()
+
             default:
                 flowLogger.error("🔼 [PHASE 3 FAILED] t=\(self.elapsed, privacy: .public)s unexpected result type")
                 // Leave in-flight marker.
@@ -676,4 +680,3 @@ extension UploadOperation {
         return body
     }
 }
-

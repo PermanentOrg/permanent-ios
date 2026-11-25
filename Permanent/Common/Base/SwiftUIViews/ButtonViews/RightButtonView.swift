@@ -35,7 +35,6 @@ struct RightButtonView: View {
 struct RightButtonView_Previews: PreviewProvider {
     static var previews: some View {
         RightButtonView(text: "Your text here") {
-            
         }
     }
 }

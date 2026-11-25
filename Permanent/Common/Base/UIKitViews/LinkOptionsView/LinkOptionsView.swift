@@ -41,13 +41,11 @@ class LinkOptionsView: UIView {
     }
     
     fileprivate func commonInit() {
-        
         loadNib()
         setupView(contentView)
     }
     
     func configureButtons(withData data: [(String, UIColor)]) {
-        
         guard
             let buttons = [copyLinkButton, manageLinkButton, revokeLinkButton] as? [RoundedButton],
             data.count == buttons.count else { return }

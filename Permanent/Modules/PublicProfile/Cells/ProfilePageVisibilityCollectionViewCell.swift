@@ -32,5 +32,4 @@ class ProfilePageVisibilityCollectionViewCell: UICollectionViewCell {
     @IBAction func switchValueChanged(_ sender: Any) {
         switchAction?(self)
     }
-    
 }

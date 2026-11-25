@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class ArchivesEndpointTests: XCTestCase {
-
     // MARK: - Helpers
 
     private func dict(_ params: RequestParameters?) -> [String: Any]? {

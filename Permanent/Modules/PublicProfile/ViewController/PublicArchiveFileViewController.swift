@@ -197,16 +197,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     }
     
     func presentFileDetails(file: FileModel) {
-        let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-        listPreviewVC.modalPresentationStyle = .fullScreen
-        listPreviewVC.viewModel = viewModel
-        listPreviewVC.currentFile = file
-        
-        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-        fileDetailsNavigationController.filePreviewNavDelegate = self
-        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-        
-        present(fileDetailsNavigationController, animated: true)
+        present(FilePreviewListViewController.navigation(for: file, in: viewModel, delegate: self), animated: true)
     }
     
     // MARK: - Network Related

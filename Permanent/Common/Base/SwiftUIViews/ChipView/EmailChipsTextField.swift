@@ -1,13 +1,13 @@
 //
 //  ChipsTextField.swift
-//  ChipsApp
+//  Permanent
 //
 //  Created by Flaviu Silaghi on 01.11.2023.
+//
 
 import SwiftUI
 
 struct EmailChipsTextField: UIViewRepresentable {
-    
     @Binding var text: String
     
     @Binding var isFirstResponder: Bool // false by default
@@ -50,7 +50,6 @@ extension EmailChipsTextField {
     class Coordinator: NSObject, UITextFieldDelegate {
         var didBecomeFirstResponder: Bool? = nil
         var didResignFirstResponder: Bool? = nil
-        
         
         @Binding var text: String
         @Binding var isFirstResponder: Bool

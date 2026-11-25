@@ -8,7 +8,6 @@
 import Foundation
 
 enum ShareStatus {
-    
     /// Approval has not been requested.
     case needsApproval
 
@@ -33,5 +32,4 @@ enum ShareStatus {
         case .accepted: return .viewInArchive
         }
     }
-    
 }

@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class LegacyPlanningViewModelTests: XCTestCase {
-
     // MARK: - Initial State
 
     func testViewModel_InitialState() {

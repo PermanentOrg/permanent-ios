@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 20.02.2025.
+//
 import SwiftUI
 
 struct DeleteBottomAlertView: View {
@@ -61,7 +62,6 @@ struct DeleteBottomAlertView: View {
                                         .font(.custom("Usual-Regular", size: 14))
                                         .foregroundColor(Color(.white))
                                     Spacer()
-                                       
                                 }
                                 .padding(16)
                                 .frame(height: 56)
@@ -96,7 +96,6 @@ struct DeleteBottomAlertView: View {
                             })
                         }
                         .padding(32)
-                        
                     }
                 }
                 .frame(maxWidth: .infinity)

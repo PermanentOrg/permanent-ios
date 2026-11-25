@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 03.12.2024.
+//
 
 import Foundation
 
@@ -13,7 +14,6 @@ protocol EventAction: RawRepresentable<String> {
 }
 
 extension EventAction {
-    
     var action: String {
         return self.rawValue
     }
@@ -57,58 +57,85 @@ enum AccountEventAction: String, EventAction {
         switch self {
         case .create:
             return "Sign up"
+
         case .login:
             return "Sign in"
+
         case .startOnboarding:
             return "Onboarding: start"
+
         case .submitGoals:
             return "Onboarding: goals"
+
         case .submitReasons:
             return "Onboarding: reason"
+
         case .openAccountMenu:
             return "Screen View"
+
         case .openArchiveMenu:
             return "Screen View"
+
         case .openStorageModal:
             return "Screen View"
+
         case .purchaseStorage:
             return "Purchase Storage"
+
         case .openPromoEntry:
             return "Screen View"
+
         case .submitPromo:
             return "Redeem Gift"
+
         case .skipCreateArchive:
             return "Skip create archive"
+
         case .skipGoals:
             return "Skip goals"
+
         case .skipWhyPermanent:
             return "Skip why permanent"
+
         case .openLoginInfo:
             return "View Login Info"
+
         case .openVerifyEmail:
             return "Verify Email"
+
         case .openBillingInfo:
             return "View Billing Info"
+
         case .update:
             return "Edit Address"
+
         case .openLegacyContact:
             return "View Legacy Contact"
+
         case .openArchiveSteward:
             return "View Archive Steward"
+
         case .openPrivateWorkspace:
             return "View Private Workspace"
+
         case .openPublicWorkspace:
             return "View Public Workspace"
+
         case .openSharedWorkspace:
             return "View Shared Workspace"
+
         case .openPublicGallery:
             return "View Public Gallery"
+
         case .openRedeemGift:
             return "View Redeem Gift"
+
         case .openShareModal:
             return "Share"
+
         case .copyShareLink:
             return "Copy Share Link"
+
         case .openArchiveProfile:
             return "Screen View"
         }
@@ -116,7 +143,6 @@ enum AccountEventAction: String, EventAction {
 }
 
 enum RecordEventAction: String, EventAction {
-    
     case initiateUpload = "initiate_upload"
     case submit = "submit"
     case move = "move"
@@ -130,10 +156,13 @@ enum RecordEventAction: String, EventAction {
         switch self {
         case .initiateUpload:
             return "Initiate Upload"
+
         case .submit:
             return "Finalize Upload"
+
         case .move:
             return "Move Record"
+
         case .copy:
             return "Copy Record"
         }
@@ -178,7 +207,6 @@ enum DirectiveEventAction: String, EventAction {
     var entity: String {
         return "directive"
     }
-
 
     var event: String {
         switch self {

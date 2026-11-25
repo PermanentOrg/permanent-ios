@@ -50,8 +50,7 @@ class TooltipView: UIView {
             infoLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             infoLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
             infoLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            infoLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            infoLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
         ])
     }
-
 }

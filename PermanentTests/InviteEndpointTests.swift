@@ -13,7 +13,6 @@ import Testing
 /// so its paths must not drift. Asserts the id handed in is the id that goes out.
 @Suite
 struct InviteEndpointTests {
-
     /// `RequestParameters` is `Any`, so the optional cannot be compared against nil directly.
     private func isNil(_ value: Any?) -> Bool {
         if case .none = value { return true }

@@ -12,7 +12,6 @@ import Testing
 /// `FolderInfo` is persisted with the upload queue, so an older archive must still decode —
 /// and as `nil`, not `0`/`false`, which would label a Shared destination "Private".
 struct FolderInfoCodingTests {
-
     /// Encodes with `NSKeyedArchiver` and decodes through `init?(coder:)`, which is the
     /// path `PreferencesManager`'s custom-object storage takes for the upload queue.
     private func roundTrip(_ folder: FolderInfo) throws -> FolderInfo {

@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class PublicProfilePicturesViewModelTests: XCTestCase {
-
     private func makeVM() -> PublicProfilePicturesViewModel {
         let vm = PublicProfilePicturesViewModel()
         vm.archiveData = ArchiveVOData.mock()

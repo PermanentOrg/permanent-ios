@@ -20,7 +20,6 @@ class FolderNavigationView: UIView {
     
     let folderTitleLabel = UILabel()
 
-    
     init() {
         super.init(frame: .zero)
         

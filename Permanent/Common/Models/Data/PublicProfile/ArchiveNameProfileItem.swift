@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 04.06.2025.
+//
 import Foundation
 
 class ArchiveNameProfileItem: ProfileItemModel {

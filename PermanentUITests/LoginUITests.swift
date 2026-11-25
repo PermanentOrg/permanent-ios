@@ -16,8 +16,8 @@ class LoginUITests: BaseUITestCase {
     }
 
     func testPositiveLogin() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)
@@ -47,7 +47,7 @@ class LoginUITests: BaseUITestCase {
     }
 
     func testForgotPasswordScreen() throws {
-        let accountEmail = uiTestCredentials.username
+        let accountEmail = account.username
         let invalidAccountEmail = "invalidUsername@server.com"
 
         let loginPage = LoginPage(app: app, testCase: self)

@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class AuthVerifyIdentityViewModelTests: XCTestCase {
-
     private func makeVM() -> AuthVerifyIdentityViewModel {
         let container = AuthenticatorContainerViewModel()
         return AuthVerifyIdentityViewModel(containerViewModel: container)

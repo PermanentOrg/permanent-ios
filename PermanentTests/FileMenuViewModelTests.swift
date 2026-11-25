@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class FileMenuViewModelTests: XCTestCase {
-
     // MARK: - Initialization Tests
 
     func testInit_SingleFile_SetsFormattedSizeAndDate() {
@@ -99,7 +98,7 @@ final class FileMenuViewModelTests: XCTestCase {
 
     func testFormatDate_ValidDate_ReturnsFormatted() {
         let result = FileMenuViewModel.formatDate("2026-05-07")
-        XCTAssertEqual(result, "May. 7, 2026")
+        XCTAssertEqual(result, "May 7, 2026")
     }
 
     func testFormatDate_EmptyString_ReturnsEmpty() {
@@ -638,7 +637,8 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertEqual(sut.getTitle(for: .shareToPermanent), "Share and manage access")
         XCTAssertEqual(sut.getTitle(for: .shareToAnotherApp), "Save or send a copy")
         XCTAssertEqual(sut.getTitle(for: .editMetadata), "Edit Metadata")
-        XCTAssertEqual(sut.getTitle(for: .fileInformation), "File information")
+        XCTAssertEqual(sut.getTitle(for: .fileInformation), "View information")
+        XCTAssertEqual(sut.getTitle(for: .adjustDateTime), "Adjust date and time")
     }
 
     // MARK: - Pending Invitation Badge Tests
@@ -735,19 +735,21 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertNotNil(sut.cachedFormattedDate)
     }
 
-    func testInit_MultipleFilesWithFolder_UseFolderDateFirst() {
+    func testInit_MultipleItemsWithFolder_HeaderShowsNoDate() {
         let file1 = makeFileModel(name: "A.pdf")
-        let folder = makeFolderModel()
+        var folder = makeFolderModel()
+        folder.displayTime = "2018-03-30T22:14:00+03:00"
+        XCTAssertFalse(folder.displayDateText.isEmpty)
 
         let sut = FileMenuViewModel(
-            fileViewModel: file1,
+            fileViewModel: folder,
             menuItems: [],
             selectedItemCount: 2,
-            selectedFiles: [file1, folder],
+            selectedFiles: [folder, file1],
             onDismiss: {}
         )
 
-        XCTAssertNotNil(sut.cachedFormattedDate)
+        XCTAssertEqual(sut.cachedFormattedDate, "", "one item's date must not stand for the whole selection")
     }
 
     // MARK: - Scrolling Tests
@@ -870,7 +872,7 @@ final class FileMenuViewModelTests: XCTestCase {
     // MARK: - MenuItem.ItemType
 
     func testMenuItemType_AllCases_Has11Cases() {
-        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.allCases.count, 11)
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.allCases.count, 12)
     }
 
     func testMenuItemType_RawValues() {
@@ -885,6 +887,7 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.shareToAnotherApp.rawValue, "shareToAnotherApp")
         XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.editMetadata.rawValue, "editMetadata")
         XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.fileInformation.rawValue, "fileInformation")
+        XCTAssertEqual(FileMenuViewModel.MenuItem.ItemType.adjustDateTime.rawValue, "adjustDateTime")
     }
 
     // MARK: - MenuItem Equatable
@@ -1016,10 +1019,13 @@ final class FileMenuViewModelTests: XCTestCase {
         XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
     }
 
-    func testFetchUpdatedAccessRole_Record_UsesV1Directly() {
+    /// The V1 record read answers with the owning archive's role, so a shared record must not ask it.
+    func testFetchUpdatedAccessRole_SharedRecord_KeepsTheListRole() {
         FileMenuViewModel.lastAccessRoleSource = "none"
         var fm = makeFileModel()
         fm.sharedByArchive = MinArchiveVO(name: "Family Archive", thumbnail: nil, shareStatus: "", shareId: 0, archiveID: 42, folderLinkID: nil, accessRole: nil)
+        let roleBefore = fm.accessRole
+        let permissionsBefore = fm.permissions
         let sut = FileMenuViewModel(fileViewModel: fm, menuItems: [], showArchiveInfo: true, onDismiss: {})
         var v2Called = false
         sut.folderFetchV2Request = { _, _ in v2Called = true }
@@ -1027,7 +1033,9 @@ final class FileMenuViewModelTests: XCTestCase {
         sut.fetchUpdatedAccessRole()
 
         XCTAssertFalse(v2Called)
-        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "v1")
+        XCTAssertEqual(FileMenuViewModel.lastAccessRoleSource, "none")
+        XCTAssertEqual(sut.fileViewModel.accessRole, roleBefore)
+        XCTAssertEqual(sut.fileViewModel.permissions, permissionsBefore)
     }
 
     func testFetchUpdatedAccessRole_NotShared_DoesNothing() {
@@ -1063,5 +1071,4 @@ final class FileMenuViewModelTests: XCTestCase {
             permissions: [.read, .edit, .share]
         )
     }
-
 }

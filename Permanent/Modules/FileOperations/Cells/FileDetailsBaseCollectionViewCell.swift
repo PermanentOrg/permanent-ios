@@ -8,7 +8,6 @@
 import UIKit
 
 class FileDetailsBaseCollectionViewCell: UICollectionViewCell {
-    
     var viewModel: FilePreviewViewModel?
     var cellType: FileDetailsViewController.CellType?
     
@@ -31,11 +30,9 @@ class FileDetailsBaseCollectionViewCell: UICollectionViewCell {
             
         case .uploaded:
             return "Uploaded".localized()
+
         case .lastModified:
             return "Last Modified".localized()
-            
-        case .created:
-            return "Created".localized()
             
         case .fileCreated:
             return "File Created".localized()

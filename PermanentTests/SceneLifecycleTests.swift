@@ -11,7 +11,6 @@ import UIKit
 
 @MainActor
 struct SceneLifecycleTests {
-
     // MARK: - Manifest
 
     @Test("Info.plist declares one window scene served by SceneDelegate, built in code")
@@ -109,10 +108,9 @@ struct SceneLifecycleTests {
     func defaultActivityHandlerReachesAppDelegate() async throws {
         let (scene, _) = try await connectedSceneDelegate()
         let root = try #require(AppDelegate.shared.connectedRootViewController)
-        // An earlier test can leave the signed-in drawer as root, and the handler would then navigate
-        // instead of parking the token, so start from the sign-in root.
+        // Another test can leave the signed-in screen as root; the token is parked only from the sign-in screen.
         if root.isDrawerRootActive {
-            await MainActor.run { root.setRoot(named: .signUp, from: .authentication) }
+            root.setRoot(named: .signUp, from: .authentication)
         }
         try #require(root.isDrawerRootActive == false, "A signed-in host would navigate instead of parking the token")
         let activity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)

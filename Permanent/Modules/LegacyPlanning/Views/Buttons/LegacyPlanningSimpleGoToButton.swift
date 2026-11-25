@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 26.06.2025.
+//
 
 import UIKit
 
@@ -69,4 +70,3 @@ class LegacyPlanningSimpleGoToButton: UIButton {
         }
     }
 }
-

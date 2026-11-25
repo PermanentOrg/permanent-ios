@@ -144,7 +144,6 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
         clearButtonAction?(self)
     }
     
-    
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
     }

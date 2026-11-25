@@ -60,6 +60,7 @@ class AuthenticationManagerTests: XCTestCase {
             switch status {
             case .success:
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected success but got a different status")
             }
@@ -83,6 +84,7 @@ class AuthenticationManagerTests: XCTestCase {
             case .error(let message):
                 XCTAssertEqual(message, "Authorization error")
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected error but got a different status")
             }
@@ -111,6 +113,7 @@ class AuthenticationManagerTests: XCTestCase {
             switch status {
             case .success:
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected success but got a different status")
             }
@@ -136,6 +139,7 @@ class AuthenticationManagerTests: XCTestCase {
             case .error(let message):
                 XCTAssertEqual(message, "Authorization error")
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected error but got a different status")
             }
@@ -158,6 +162,7 @@ class AuthenticationManagerTests: XCTestCase {
             switch status {
             case .success:
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected success but got a different status")
             }
@@ -181,6 +186,7 @@ class AuthenticationManagerTests: XCTestCase {
             case .error(let message):
                 XCTAssertEqual(message, "Sorry for the inconvenience, the action could not be completed please try again.")
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected error but got a different status")
             }
@@ -207,6 +213,7 @@ class AuthenticationManagerTests: XCTestCase {
             switch status {
             case .success:
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected success but got a different status")
             }
@@ -234,6 +241,7 @@ class AuthenticationManagerTests: XCTestCase {
             case .error(let message):
                 XCTAssertEqual(message, .error)
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected error but got a different status")
             }
@@ -375,6 +383,7 @@ class AuthenticationManagerTests: XCTestCase {
             switch status {
             case .success:
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected success but got a different status")
             }
@@ -408,6 +417,7 @@ class AuthenticationManagerTests: XCTestCase {
             case .error(let message):
                 XCTAssertEqual(message, .errorMessage)
                 expectation.fulfill()
+
             default:
                 XCTFail("Expected error but got a different status")
             }

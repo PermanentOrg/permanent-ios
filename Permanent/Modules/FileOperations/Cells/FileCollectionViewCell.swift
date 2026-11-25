@@ -71,6 +71,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileImageView.sd_cancelCurrentImageLoad()
         awaitedThumbnail = nil
         showThumbnailSkeleton(false)
+        showProcessing(false)
         fileImageView.image = nil
         progressView.setProgress(.zero, animated: false)
         activityIndicator.stopAnimating()
@@ -107,7 +108,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         heightConstraint.priority = .defaultHigh
         heightConstraint.isActive = true
         fileDateLabel.font = TextFontStyle.style12.font
-        fileDateLabel.textColor = .lightGray
+        fileDateLabel.textColor = UIColor(.blue400)
         fileImageView.clipsToBounds = true
         // Pictures share the skeleton square's corners, so nothing changes shape as a picture lands.
         fileImageView.layer.cornerRadius = SkeletonSquareView.cornerRadius
@@ -139,10 +140,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(moreButtonBadgeView)
         
-        //moreButtonBadgeWidthConstraint = moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 10)
+        // moreButtonBadgeWidthConstraint = moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 10)
         
         NSLayoutConstraint.activate([
-            //moreButtonBadgeWidthConstraint!,
+            // moreButtonBadgeWidthConstraint!,
             moreButtonBadgeView.widthAnchor.constraint(equalToConstant: 20),
             moreButtonBadgeView.heightAnchor.constraint(equalToConstant: 16),
             moreButtonBadgeView.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
@@ -177,6 +178,14 @@ class FileCollectionViewCell: UICollectionViewCell {
         thumbnailSkeleton.shimmer.update()
     }
 
+    /// While the server has not made the picture yet, VoiceOver reads the square as "Processing".
+    private func showProcessing(_ shows: Bool) {
+        thumbnailSkeleton.accessibilityElementsHidden = !shows
+        thumbnailSkeleton.isAccessibilityElement = shows
+        thumbnailSkeleton.accessibilityLabel = shows ? "FileProcessing".localized() : nil
+        thumbnailSkeleton.accessibilityIdentifier = shows ? "fileProcessing" : nil
+    }
+
     private func loadThumbnail(_ url: URL) {
         awaitedThumbnail = url
         // `.retryFailed`, because one transient CDN failure otherwise blacklists the URL session-wide and
@@ -196,6 +205,20 @@ class FileCollectionViewCell: UICollectionViewCell {
         (error as? SDWebImageError)?.code == .cancelled || (error as? URLError)?.code == .cancelled
     }
 
+    /// A complex date in two tones: the date darker, its marks such as "After", "AM" and "?" lighter.
+    private func complexDateLine(_ complexDate: ComplexDateText, size: String?) -> NSAttributedString {
+        let font = TextFontStyle.style12.font
+        let line = NSMutableAttributedString()
+        if let size {
+            line.append(NSAttributedString(string: size + " • ", attributes: [.font: font, .foregroundColor: UIColor(.blue400)]))
+        }
+        for segment in complexDate.listSegments {
+            let color = segment.isMuted ? UIColor(.blue400) : UIColor(.blue600)
+            line.append(NSAttributedString(string: segment.text, attributes: [.font: font, .foregroundColor: color]))
+        }
+        return line
+    }
+
     func updateCell(model: FileModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isSelecting: Bool = false, isFileSelected: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
@@ -207,8 +230,18 @@ class FileCollectionViewCell: UICollectionViewCell {
         rightButtonImageView.isHidden = false
         
         fileNameLabel.text = model.name
-        fileDateLabel.text = model.date
-        
+        let complexDate = model.complexDate
+        if let complexDate {
+            fileDateLabel.attributedText = complexDateLine(complexDate, size: model.type.isFolder ? nil : FileModel.displaySize(model.size))
+        } else {
+            fileDateLabel.attributedText = nil
+            fileDateLabel.textColor = UIColor(.blue400)
+            fileDateLabel.text = model.sizeAndDate(complexDate: nil)
+        }
+        fileDateLabel.accessibilityLabel = model.sizeAndDateForVoiceOver(complexDate: complexDate)
+        // An empty label still costs the stack its spacing, which pushes the shares icon off the left edge.
+        fileDateLabel.isHidden = (fileDateLabel.text ?? "").isEmpty
+
         sharesImageView.isHidden = model.minArchiveVOS.isEmpty || sharedFile
         
         setFileImage(forModel: model)
@@ -255,7 +288,6 @@ class FileCollectionViewCell: UICollectionViewCell {
                     fileNameLabel.textColor = .darkBlue
                     rightButtonImageView.tintColor = .darkBlue
                 }
-                
             }
         }
     }
@@ -304,6 +336,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileImageView.sd_cancelCurrentImageLoad()
         awaitedThumbnail = nil
         showThumbnailSkeleton(false)
+        showProcessing(false)
         if model.type.isFolder {
             fileImageView.contentMode = .scaleAspectFit
             fileImageView.image = UIImage.folder.templated
@@ -318,6 +351,8 @@ class FileCollectionViewCell: UICollectionViewCell {
                 showThumbnailSkeleton(true)
                 if let fileURL = URL(string: model.thumbnailURL) {
                     loadThumbnail(fileURL)
+                } else {
+                    showProcessing(true)
                 }
 
             case .downloading:

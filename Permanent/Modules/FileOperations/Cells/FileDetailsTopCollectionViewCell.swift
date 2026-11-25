@@ -9,22 +9,27 @@ import UIKit
 import SDWebImage
 
 class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
-    
     @IBOutlet var imageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     static let identifier = "FileDetailsTopCollectionViewCell"
-    
+
+    /// The picture the screen opened with. Shown at once, so the photo that moved in lands on the same image.
+    var openingImage: UIImage?
+    /// True once the slot shows the file's full size rather than its thumbnail.
+    var showsFullSize = false
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-    
+
     override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
         super.configure(withViewModel: viewModel, type: type)
-        
+
         activityIndicator.startAnimating()
 
-        imageView.image = nil
+        showsFullSize = false
+        imageView.image = openingImage
 
         // Stage 1: Load the 256px thumbnail quickly
         let thumbnailURLString = viewModel.file.preferredThumbnailURL ?? viewModel.fileThumbnailURL() ?? ""
@@ -45,33 +50,43 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
             return URL(string: urlString)
         }()
 
+        if openingImage != nil {
+            // The small thumbnail would only replace a sharper picture; go straight to the full size.
+            upgradeToFullRes(fullResURL, thumbnailURL: thumbnailURL)
+            return
+        }
+
         imageView.sd_setImage(with: thumbnailURL) { [weak self] _, _, _, _ in
+            // A cached thumbnail answers inside this call, and a load started here is cancelled by the call's own bookkeeping.
+            DispatchQueue.main.async { self?.upgradeToFullRes(fullResURL, thumbnailURL: thumbnailURL) }
+        }
+    }
+
+    /// Stage 2: the full-size image from the download URL (images only), over whatever shows now.
+    private func upgradeToFullRes(_ fullResURL: URL?, thumbnailURL: URL) {
+        guard let fullResURL = fullResURL, fullResURL != thumbnailURL else {
+            activityIndicator.stopAnimating()
+            return
+        }
+
+        imageView.sd_setImage(
+            with: fullResURL,
+            placeholderImage: imageView.image,
+            options: [.avoidAutoSetImage, .retryFailed],
+            progress: nil
+        ) { [weak self] image, _, cacheType, _ in
             guard let self = self else { return }
+            // Always stop the spinner, even if the full-res load failed — keep the
+            // thumbnail rather than swallowing the failure with the spinner running.
+            self.activityIndicator.stopAnimating()
+            guard let image = image else { return }
+            self.showsFullSize = true
 
-            guard let fullResURL = fullResURL, fullResURL != thumbnailURL else {
-                self.activityIndicator.stopAnimating()
-                return
-            }
-
-            // Stage 2: Upgrade to full-res from download URL (images only)
-            self.imageView.sd_setImage(
-                with: fullResURL,
-                placeholderImage: self.imageView.image,
-                options: [.avoidAutoSetImage, .retryFailed],
-                progress: nil
-            ) { [weak self] image, _, cacheType, _ in
-                guard let self = self else { return }
-                // Always stop the spinner, even if the full-res load failed — keep the
-                // thumbnail rather than swallowing the failure with the spinner running.
-                self.activityIndicator.stopAnimating()
-                guard let image = image else { return }
-
-                if cacheType == .memory {
+            if cacheType == .memory {
+                self.imageView.image = image
+            } else {
+                UIView.transition(with: self.imageView, duration: 0.3, options: .transitionCrossDissolve) {
                     self.imageView.image = image
-                } else {
-                    UIView.transition(with: self.imageView, duration: 0.3, options: .transitionCrossDissolve) {
-                        self.imageView.image = image
-                    }
                 }
             }
         }
@@ -80,5 +95,4 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
     }
-    
 }

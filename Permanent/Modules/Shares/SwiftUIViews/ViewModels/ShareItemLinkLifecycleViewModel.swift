@@ -9,7 +9,6 @@ import SwiftUI
 import Foundation
 
 extension ShareItemViewModel {
-
     // MARK: - Load / Retrieve
 
     func getShareLink(option: ShareLinkOption) {
@@ -220,6 +219,7 @@ extension ShareItemViewModel {
                                 self.showLinkSettings = false
                                 self.showRevokeLinkSuccessNotification()
                                 self.fetchSharedArchives()
+
                             case .error(let message):
                                 self.errorMessage = message
                             }
@@ -244,6 +244,7 @@ extension ShareItemViewModel {
                                 self.showLinkSettings = false
                                 self.showRevokeLinkSuccessNotification()
                                 self.fetchSharedArchives()
+
                             case .error:
                                 // If V2 API fails, fallback to V1 API
                                 self.revokeLinkV1(shareVO: shareVO)
@@ -275,6 +276,7 @@ extension ShareItemViewModel {
                         self.showLinkSettings = false
                         self.showRevokeLinkSuccessNotification()
                         self.fetchSharedArchives()
+
                     case .error(let message):
                         self.errorMessage = message
                     }

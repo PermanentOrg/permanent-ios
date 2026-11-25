@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 24.03.2025.
+//
 
 import SwiftUI
 
@@ -103,7 +104,6 @@ struct ChangePasswordView: View {
                                         .focused($focusedField, equals: .new)
                                         if showPassStrength {
                                             VStack(alignment: .leading, spacing: 8) {
-                                                
                                                 StrengthBar(strength: strength)
                                                 Text("Password strength: \(strength.rawValue)")
                                                     .foregroundColor(strength.color)
@@ -118,7 +118,6 @@ struct ChangePasswordView: View {
                                             })
                                             .padding(.horizontal, 24)
                                         }
-
                                     }
                                     .onChange(of: viewModel.newPassword, perform: { newValue in
                                         if newValue.count > 7 {
@@ -132,7 +131,6 @@ struct ChangePasswordView: View {
                                         }
                                     })
                                 }
-                                
                                 
                                 VStack(alignment: .leading, spacing: 16) {
                                     Text("Re-type new password".uppercased())
@@ -295,22 +293,24 @@ struct ChangePasswordView: View {
                 switch strength {
                 case .weak:
                     HStack(spacing: 4) {
-                        StrenghtBarSegment(color: strength.color, maxWidth: geometry.size.width/3, height: height)
+                        StrenghtBarSegment(color: strength.color, maxWidth: geometry.size.width / 3, height: height)
                         ForEach(0..<2) { _ in
-                            StrenghtBarSegment(color: Color(red: 0.91, green: 0.91, blue: 0.93), maxWidth: geometry.size.width/3, height: height)
+                            StrenghtBarSegment(color: Color(red: 0.91, green: 0.91, blue: 0.93), maxWidth: geometry.size.width / 3, height: height)
                         }
                     }
+
                 case .medium:
                     HStack(spacing: 4) {
                         ForEach(0..<2) { _ in
-                            StrenghtBarSegment(color: strength.color, maxWidth: geometry.size.width/3, height: height)
+                            StrenghtBarSegment(color: strength.color, maxWidth: geometry.size.width / 3, height: height)
                         }
-                        StrenghtBarSegment(color: Color(red: 0.91, green: 0.91, blue: 0.93), maxWidth: geometry.size.width/3, height: height)
+                        StrenghtBarSegment(color: Color(red: 0.91, green: 0.91, blue: 0.93), maxWidth: geometry.size.width / 3, height: height)
                     }
+
                 case .strong:
                     HStack(spacing: 4) {
                         ForEach(0..<3) { _ in
-                            StrenghtBarSegment(color: strength.color, maxWidth: geometry.size.width/3, height: height)
+                            StrenghtBarSegment(color: strength.color, maxWidth: geometry.size.width / 3, height: height)
                         }
                     }
                 }

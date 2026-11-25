@@ -35,16 +35,16 @@ extension Int {
 }
 
 extension Int64 {
-    /// File size in the app's canonical style — "4 MB", "2.8 MB" — with 1000-based units and a period
-    /// separator pinned to `en_US_POSIX`, so a comma-locale device can't render "2,8 MB".
+    /// File size as web shows it: 1024 bytes to a KB and two decimals, "5.61 MB". A whole number has no
+    /// decimals, "4 MB". The period is pinned to `en_US_POSIX`, so a comma-locale device can't render "5,61 MB".
     var readableFileSize: String {
         guard self > 0 else { return "" }
 
         let units = ["bytes", "KB", "MB", "GB", "TB", "PB"]
         var value = Double(self)
         var unitIndex = 0
-        while value >= 1000 && unitIndex < units.count - 1 {
-            value /= 1000
+        while value >= 1024 && unitIndex < units.count - 1 {
+            value /= 1024
             unitIndex += 1
         }
 
@@ -53,8 +53,8 @@ extension Int64 {
         formatter.numberStyle = .decimal
         formatter.usesGroupingSeparator = false
         formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = unitIndex == 0 ? 0 : 1
-        let number = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
+        formatter.maximumFractionDigits = unitIndex == 0 ? 0 : 2
+        let number = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.2f", value)
         // ByteCountFormatter emits the singular "1 byte"; preserve that grammar.
         let unit = (unitIndex == 0 && value == 1) ? "byte" : units[unitIndex]
         return "\(number) \(unit)"

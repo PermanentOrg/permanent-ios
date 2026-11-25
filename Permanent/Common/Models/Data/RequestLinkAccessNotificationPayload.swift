@@ -39,5 +39,4 @@ class RequestLinkAccessNotificationPayload: BaseNotificationPayload {
         
         super.encode(with: coder)
     }
-    
 }

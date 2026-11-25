@@ -10,7 +10,6 @@ import XCTest
 /// The full-screen image preview's loading and failure states, driven deterministically through
 /// the DEBUG-only launch arguments.
 class FilePreviewStateUITests: BaseUITestCase {
-
     override func setUpWithError() throws {
         // Launch arguments must be appended before BaseUITestCase launches the app.
         if name.contains("LoadFailed") {
@@ -24,8 +23,8 @@ class FilePreviewStateUITests: BaseUITestCase {
     /// S6 → S8 → S4: the first full-res load fails and shows the retry card;
     /// tapping it retries and the image eventually renders without the overlay.
     func testImagePreviewLoadFailedShowsRetryAndRecovers() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)
@@ -78,8 +77,8 @@ class FilePreviewStateUITests: BaseUITestCase {
     /// S7: while offline, opening an image shows the offline card and tapping it
     /// does not start a load — the card stays until connectivity returns.
     func testImagePreviewOfflineStateBlocksLoading() throws {
-        let accountEmail = uiTestCredentials.username
-        let accountPassword = uiTestCredentials.password
+        let accountEmail = account.username
+        let accountPassword = account.password
 
         let loginPage = LoginPage(app: app, testCase: self)
         loginPage.login(username: accountEmail, password: accountPassword)

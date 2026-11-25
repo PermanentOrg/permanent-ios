@@ -8,7 +8,6 @@
 import Foundation
 
 enum InviteOperation {
-    
     case send(name: String, email: String)
     
     case resend(id: Int)
@@ -19,8 +18,10 @@ enum InviteOperation {
         switch self {
         case .send(let name, let email):
             return .sendInvite(name: name, email: email)
+
         case .resend(let id):
             return .resendInvite(id: id)
+
         case .revoke(let id):
             return .revokeInvite(id: id)
         }
@@ -32,5 +33,4 @@ enum InviteOperation {
         default: return .inviteSent
         }
     }
-    
 }

@@ -3,6 +3,7 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 12.03.2025.
+//
 import SwiftUI
 
 struct TwoStepTabletModalAlertView: View {
@@ -83,7 +84,6 @@ struct TwoStepTabletModalAlertView: View {
                                         .font(.custom("Usual-Regular", size: 14))
                                         .foregroundColor(Color(.white))
                                     Spacer()
-                                       
                                 }
                                 .padding(16)
                                 .frame(height: 56)

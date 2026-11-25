@@ -10,7 +10,6 @@ import XCTest
 
 @MainActor
 final class UploadManagerTests: XCTestCase {
-
     // MARK: - Singleton
 
     func testSharedInstance_IsSameReference() {

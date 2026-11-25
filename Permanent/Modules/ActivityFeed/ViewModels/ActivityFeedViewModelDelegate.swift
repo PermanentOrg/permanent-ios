@@ -8,7 +8,6 @@
 import Foundation
 
 protocol ActivityFeedViewModelDelegate {
-    
     var viewDelegate: ActivityFeedViewModelViewDelegate? { get set }
     
     // Data Source

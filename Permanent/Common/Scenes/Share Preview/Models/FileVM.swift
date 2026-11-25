@@ -23,5 +23,4 @@ struct FileVM: File {
         date = record.displayDT ?? ""
         thumbStringURL = record.preferredThumbnailURL ?? ""
     }
-    
 }

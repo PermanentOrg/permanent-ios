@@ -37,7 +37,7 @@ enum FilesEndpoint {
     case relocate(params: RelocateParams)
     case update(params: UpdateRecordParams)
     case multipleUpdate(params: UpdateMultipleRecordsParams)
-    case multipleFilesUpdate(files: [FileModel])
+    case multipleFilesUpdate(files: [FileModel], sendsDate: Bool = true)
     
     // UPLOAD
     case getPresignedUrl(params: GetPresignedUrlParams)
@@ -55,7 +55,7 @@ enum FilesEndpoint {
     /// Saves a folder's sort on V1. The failsafe behind `FolderV2Endpoint.patchFolder`.
     case sortFolder(params: SortFolderParams)
     
-    //UNSHARE
+    // UNSHARE
     case unshareRecord(archiveId: Int, folderLinkId: Int)
     
     case updateRootColumns(params: UpdateRootColumnsParams)
@@ -66,18 +66,25 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .getRoot:
             return "/folder/getRoot"
+
         case .getPublicRoot:
             return "/folder/getPublicRoot"
+
         case .navigateMin:
             return "/folder/navigateMin"
+
         case .getLeanItems:
             return "/folder/getLeanItems"
+
         case .getPresignedUrl:
             return "/record/getPresignedUrl"
+
         case .registerRecord:
             return "/record/registerRecord"
+
         case .newFolder:
             return "/folder/post"
+
         case .delete(let parameters):
             let allFolders = parameters.allSatisfy { $0.type.isFolder }
             if allFolders {
@@ -85,10 +92,13 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/delete"
             }
+
         case .getRecord:
             return "/record/get"
+
         case .getFolder:
             return "/folder/get"
+
         case .relocate(let parameters):
             let allFolders = parameters.items.files.allSatisfy { $0.type.isFolder }
             if allFolders {
@@ -96,16 +106,22 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
+
         case .update, .multipleUpdate, .multipleFilesUpdate:
             return "/record/update"
+
         case .renameFolder:
             return "/folder/update"
+
         case .sortFolder:
             return "/folder/sort"
+
         case .updateRootColumns:
             return "/folder/updateRootColumns"
+
         case .unshareRecord:
             return "/share/delete"
+
         default:
             return ""
         }
@@ -147,8 +163,8 @@ extension FilesEndpoint: RequestProtocol {
         case .multipleUpdate(let params):
             return FilesEndpointPayloads.updateMultipleRecordsRequest(params: params)
             
-        case .multipleFilesUpdate(let files):
-            return FilesEndpointPayloads.multipleFilesUpdate(files: files)
+        case .multipleFilesUpdate(let files, let sendsDate):
+            return FilesEndpointPayloads.multipleFilesUpdate(files: files, sendsDate: sendsDate)
             
         case .renameFolder(let params):
             return FilesEndpointPayloads.renameFolderRequest(params: params)
@@ -462,7 +478,7 @@ class FilesEndpointPayloads {
             }
             
             return [
-                "RecordVO": recordVO as [String : Any]
+                "RecordVO": recordVO as [String: Any]
             ]
         }
 
@@ -474,18 +490,20 @@ class FilesEndpointPayloads {
         ]
     }
     
-    static func multipleFilesUpdate(files: [FileModel]) -> RequestParameters {
-        let data = files.map {
-            [
-                "RecordVO": [
-                    "recordId": $0.recordId,
-                    "archiveNbr": $0.archiveNo,
-                    "folder_linkId": $0.folderLinkId,
-                    "description": $0.description,
-                    "displayName": $0.name,
-                    "displayDT": $0.date
-                ] as [String : Any]
+    /// Leaves out `displayDT` when `sendsDate` is false, as a rename does, or when the row has no exact date.
+    static func multipleFilesUpdate(files: [FileModel], sendsDate: Bool = true) -> RequestParameters {
+        let data = files.map { file -> [String: Any] in
+            var record: [String: Any] = [
+                "recordId": file.recordId,
+                "archiveNbr": file.archiveNo,
+                "folder_linkId": file.folderLinkId,
+                "description": file.description,
+                "displayName": file.name
             ]
+            if sendsDate, !file.date.isEmpty, file.complexDate == nil {
+                record["displayDT"] = file.date
+            }
+            return ["RecordVO": record]
         }
 
         return [

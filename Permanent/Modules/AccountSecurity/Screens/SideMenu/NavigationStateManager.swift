@@ -19,13 +19,11 @@ class NavigationStateManager: ObservableObject {
     @Published var selectionState: SelectionState = .none
     @Published var refreshTwoStepData: Bool = false
     
-    
     var data: Data? {
         get {
            try? JSONEncoder().encode(selectionState)
         }
         set {
-            
             guard let data = newValue,
                   let selectionState = try? JSONDecoder().decode(SelectionState.self, from: data) else {
                 return
@@ -34,7 +32,6 @@ class NavigationStateManager: ObservableObject {
             self.selectionState = selectionState
         }
     }
-    
     
     func popToRoot() {
         selectionState = .none

@@ -11,7 +11,6 @@ import SwiftUI
 
 @MainActor
 final class SequenceFilenameViewTests: XCTestCase {
-
     // MARK: - SequenceFilenameViewModel Initial State
 
     func testViewModel_InitialState() {

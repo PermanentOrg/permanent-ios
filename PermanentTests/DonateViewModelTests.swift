@@ -9,7 +9,6 @@ import XCTest
 @testable import Permanent
 
 final class DonateViewModelTests: XCTestCase {
-
     // MARK: - storageSizeForAmount
 
     func testStorageSize_NilAmount_ReturnsZero() {

@@ -17,6 +17,7 @@ extension SearchEndpoint: RequestProtocol {
         switch self {
         case .folderAndRecord:
             return "/search/folderAndRecord"
+
         case .archiveByEmail:
             return "/search/archiveByEmail"
         }
@@ -38,6 +39,7 @@ extension SearchEndpoint: RequestProtocol {
         switch self {
         case .folderAndRecord(let text, let tags):
             return Payloads.searchFolderAndRecord(text: text, tags: tags)
+
         case .archiveByEmail(let email):
             return Payloads.searchArchiveByEmail(email: email)
         }

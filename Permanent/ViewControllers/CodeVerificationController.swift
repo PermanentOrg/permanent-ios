@@ -45,7 +45,7 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(confirmAction(_:)) )
-        toolBar.setItems([flexibleSpace,doneButton], animated: false)
+        toolBar.setItems([flexibleSpace, doneButton], animated: false)
         
         codeField.inputAccessoryView = toolBar
     }
@@ -74,6 +74,7 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         switch status {
         case .success:
             AppDelegate.shared.rootViewController.setDrawerRoot()
+
         case .error(let message):
             showAlert(title: .error, message: message)
         }

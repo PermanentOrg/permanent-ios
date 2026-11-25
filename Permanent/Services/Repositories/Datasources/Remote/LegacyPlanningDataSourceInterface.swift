@@ -28,9 +28,11 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
                     return
                 }
                 completion(.success(model))
+
             case .error(let error, _):
                 completion(.failure(error ?? APIError.invalidResponse))
                 return
+
             default:
                 completion(.failure(APIError.invalidResponse))
                 return
@@ -58,11 +60,12 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
              case .error(let error, _):
                  completion(.failure(error ?? APIError.invalidResponse))
                  return
+
              default:
                  completion(.failure(APIError.invalidResponse))
                  return
              }
-         }
+        }
      }
 
      func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void) {
@@ -76,9 +79,11 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
                  }
                  completion(.success(model))
                  return
+
              case .error(let error, _):
                  completion(.failure(error ?? APIError.invalidResponse))
                  return
+
              default:
                  completion(.failure(APIError.invalidResponse))
                  return
@@ -97,9 +102,11 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
                 }
                 completion(.success(model))
                 return
+
             case .error(let error, _):
                 completion(.failure(error ?? APIError.invalidResponse))
                 return
+
             default:
                 completion(.failure(APIError.invalidResponse))
                 return
@@ -120,9 +127,11 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
                 }
                 completion(.success(model))
                 return
+
             case .error(let error, _):
                 completion(.failure(error ?? APIError.invalidResponse))
                 return
+
             default:
                 completion(.failure(APIError.invalidResponse))
                 return
@@ -143,9 +152,11 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
                 }
                 completion(.success(model))
                 return
+
             case .error(let error, _):
                 completion(.failure(error ?? APIError.invalidResponse))
                 return
+
             default:
                 completion(.failure(APIError.invalidResponse))
                 return

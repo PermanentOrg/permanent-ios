@@ -8,7 +8,6 @@
 import UIKit
 
 class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
-    
     @IBOutlet weak var archiveTitleNameLabel: UILabel!
     @IBOutlet weak var archiveTitleTagsCountLabel: UILabel!
     @IBOutlet weak var searchTags: UISearchBar!
@@ -174,13 +173,14 @@ extension TagManagementViewController: UICollectionViewDataSource {
         case ArchiveSettingsTagsHeaderCollectionView.kind:
             reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ArchiveSettingsTagsHeaderCollectionView.identifier, for: indexPath) as! ArchiveSettingsTagsHeaderCollectionView
             return reusableView
+
         default:
             return reusableView
         }
     }
 }
 
-//MARK: - CollectionView FlowLayout Delegate
+// MARK: - CollectionView FlowLayout Delegate
 extension TagManagementViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let cellWidth = collectionView.bounds.width

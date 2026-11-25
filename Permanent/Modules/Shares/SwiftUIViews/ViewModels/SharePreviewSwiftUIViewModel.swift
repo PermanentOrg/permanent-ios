@@ -226,8 +226,10 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
         switch currentButtonState {
         case .open:
             return "Open"
+
         case .requestAccess:
             return "Request Access"
+
         case .accessRequested:
             return "Access Requested"
         }
@@ -345,7 +347,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             do {
                 _ = try await repository.requestShareAccess(shareToken: shareToken)
                 await loadShareData()
-                
             } catch let error as NSError where error.code == 409 {
                 await loadShareData()
             } catch {
@@ -458,8 +459,10 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                             return
                         }
                         continuation.resume(returning: model.items ?? [])
+
                     case .error(let error, _):
                         continuation.resume(throwing: error ?? NSError(domain: "SharePreview", code: -1, userInfo: nil))
+
                     default:
                         continuation.resume(throwing: NSError(domain: "SharePreview", code: -1, userInfo: nil))
                     }
@@ -481,7 +484,6 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
             
             items = extractedItems
             hasLoadedRealThumbnails = true
-            
         } catch {
             if let cachedData = shareDataCache {
                 extractFiles(from: cachedData)
@@ -535,6 +537,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                     case .success(let archiveVOs):
                         let archives = self.filterSelectableArchives(archiveVOs.compactMap { $0.archiveVO })
                         continuation.resume(returning: archives)
+
                     case .failure:
                         continuation.resume(returning: [])
                     }
@@ -865,8 +868,7 @@ final class SharePreviewSwiftUIViewModel: ObservableObject {
                 )
                 extractedItems.append(item)
             }
-        }
-        else if let recordData = shareByURL.recordData {
+        } else if let recordData = shareByURL.recordData {
             let item = SharePreviewItem(
                 id: "\(recordData.recordID ?? 0)",
                 name: recordData.displayName ?? "",

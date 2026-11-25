@@ -85,19 +85,27 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         switch cellType {
         case .uploaded:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.createdDT)
+
         case .lastModified:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.updatedDT)
+
         case .date:
-            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.displayDT)
-        case .created:
-            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedDT)
+            return recordDate()
+
         case .fileCreated:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedCreatedDT)
+
         default:
             return nil
         }
     }
     
+    /// The record's date as the Date row shows it: `displayTime` as written, else the old field.
+    func recordDate() -> Date? {
+        let record = viewModel?.recordVO?.recordVO
+        return DateUtils.date(fromDisplayTime: record?.displayTime) ?? DateUtils.date(fromISO: record?.displayDT)
+    }
+
     @objc func datePickerDoneButtonPressed(_ sender: Any) {
         detailsTextField.resignFirstResponder()
     }
@@ -116,13 +124,13 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
 extension FileDetailsDateCollectionViewCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
-        let initialDate = DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.displayDT) ?? Date()
+        let initialValue = recordDate()
+        let initialDate = initialValue ?? Date()
         if date == nil || Calendar.autoupdatingCurrent.isDate(date!, equalTo: initialDate, toGranularity: .minute) {
             return
         } else if let file = viewModel?.file {
-            let initialValue = viewModel?.recordVO?.recordVO?.displayDT ?? ""
             viewModel?.update(file: file, name: nil, description: nil, date: date, location: nil, completion: { (success) in
-                if !success, let date = DateUtils.date(fromISO: initialValue) {
+                if !success, let date = initialValue {
                     textField.text = FileDetailsDateCollectionViewCell.dateFormatter.string(from: date)
                 }
             })
