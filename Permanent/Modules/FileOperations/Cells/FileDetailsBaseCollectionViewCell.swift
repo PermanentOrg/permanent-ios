@@ -34,9 +34,6 @@ class FileDetailsBaseCollectionViewCell: UICollectionViewCell {
         case .lastModified:
             return "Last Modified".localized()
             
-        case .created:
-            return "Created".localized()
-            
         case .fileCreated:
             return "File Created".localized()
             

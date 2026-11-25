@@ -104,9 +104,9 @@ struct FileInfoTabTests {
         #expect(cells(of: untagged) == [.name])
     }
 
-    @Test("The Details tab keeps its eight rows")
+    @Test("The Details tab has the rows that web shows, so no Created row")
     func detailsRows() {
-        #expect(FileDetailsViewController.detailsCells == [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType])
+        #expect(FileDetailsViewController.detailsCells == [.uploaded, .lastModified, .fileCreated, .size, .fileType, .originalFileName, .originalFileType])
     }
 
     @Test("Before the record arrives, an editor already sees the four boxed rows with the file's name")

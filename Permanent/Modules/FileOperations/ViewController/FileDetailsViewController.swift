@@ -25,7 +25,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         case tags
         case uploaded
         case lastModified
-        case created
         case fileCreated
         case size
         case fileType
@@ -43,7 +42,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     let topSectionCells: [CellType] = [.thumbnail, .segmentedControl]
     var bottomSectionCells: [CellType] = []
-    static let detailsCells: [CellType] = [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
+    static let detailsCells: [CellType] = [.uploaded, .lastModified, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
     private static let infoRowCellIdentifier = "FileInfoRowCell"
 
     private var showsDetailsTab = false
@@ -690,7 +689,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
 
             returnedCell = cell
 
-        case .uploaded, .lastModified, .created, .fileCreated:
+        case .uploaded, .lastModified, .fileCreated:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsDateCollectionViewCell.identifier, for: indexPath) as! FileDetailsDateCollectionViewCell
             
             returnedCell = cell
