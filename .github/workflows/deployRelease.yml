@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: macos-26
+    runs-on: xcode-27
     environment: production
 
     steps:
@@ -21,7 +21,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.2'
+          xcode-version: '27.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:
@@ -68,7 +68,7 @@ jobs:
   build:
     needs: test
     name: Build and deploy a release build to TestFlight
-    runs-on: macos-26
+    runs-on: xcode-27
     environment: production
 
     steps:
@@ -81,7 +81,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.2'
+          xcode-version: '27.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:

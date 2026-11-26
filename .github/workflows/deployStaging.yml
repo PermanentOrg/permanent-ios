@@ -3,12 +3,12 @@ name: Deploy Firebase Beta
 on:
   workflow_dispatch:
   push:
-    branches: [ "main","Development","feature/Share-and-Publish" ]
+    branches: [ "main","Development","feature/Share-and-Publish","Release-**","releases/**" ]
 
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: macos-26
+    runs-on: xcode-27
     environment: staging
     
     steps:
@@ -21,7 +21,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.2'
+          xcode-version: '27.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:
@@ -68,7 +68,7 @@ jobs:
   build:
     needs: test
     name: Build and deploy a beta build to Firebase Distribution
-    runs-on: macos-26
+    runs-on: xcode-27
     environment: staging
 
     steps:
@@ -81,7 +81,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.2'
+          xcode-version: '27.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:
