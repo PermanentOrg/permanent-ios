@@ -47,6 +47,30 @@ final class DrawerWorkspaceTests: XCTestCase {
         XCTAssertNil(DrawerViewController.workspace(of: UIViewController()))
     }
 
+    func testRowsThatOpenOverTheScreen_KeepTheScreensRowLit() {
+        XCTAssertTrue(DrawerOption.legacyPlanning.keepsScreen)
+        XCTAssertTrue(DrawerOption.archiveSettings.keepsScreen)
+        for screen in [DrawerOption.files, .shares, .publicFiles, .manageMembers, .manageTags, .publicGallery, .archives] {
+            XCTAssertFalse(screen.keepsScreen, "\(screen) changes the screen")
+        }
+    }
+
+    func testTapOnArchiveSettings_KeepsTheOpenScreensRowLit() {
+        let menu = SideMenuViewController()
+        menu.selectedMenuOption = .publicFiles
+        let rows = MenuRowsStub()
+        let table = UITableView()
+        table.dataSource = rows
+        table.reloadData()
+        let archiveSettings = IndexPath(row: 0, section: LeftDrawerSection.archiveSettings.rawValue)
+        table.selectRow(at: archiveSettings, animated: false, scrollPosition: .none)
+
+        menu.tableView(table, didSelectRowAt: archiveSettings)
+
+        XCTAssertEqual(menu.selectedMenuOption, .publicFiles)
+        XCTAssertEqual(table.indexPathForSelectedRow, IndexPath(row: 2, section: LeftDrawerSection.files.rawValue))
+    }
+
     func testAnotherWorkspace_DropsThePickedFiles() {
         let drawer = drawer(showing: filesScreen(MyFilesViewModel()))
         pickPhotoForMove()
@@ -85,4 +109,44 @@ final class DrawerWorkspaceTests: XCTestCase {
         XCTAssertEqual(AuthenticationManager.shared.session?.selectedFiles?.count, 1)
         XCTAssertEqual(AuthenticationManager.shared.session?.fileAction, .move)
     }
+
+    func testTheSameWorkspaceAgain_NewSelectModeStartsEmpty() {
+        let drawer = drawer(showing: filesScreen(MyFilesViewModel()))
+        AuthenticationManager.shared.session?.selectedFiles = [photo, photo, photo, photo]
+        let reopened = MyFilesViewModel()
+        drawer.changeRoot(viewController: filesScreen(reopened))
+
+        reopened.startSelecting()
+
+        XCTAssertTrue(reopened.isSelecting)
+        XCTAssertEqual(reopened.selectedFiles?.count, 0, "files picked in an earlier select mode stay unpicked")
+    }
+
+    func testMoveWaitingForItsFolder_NewSelectModeKeepsItsFiles() {
+        let drawer = drawer(showing: filesScreen(MyFilesViewModel()))
+        pickPhotoForMove()
+        let reopened = MyFilesViewModel()
+        drawer.changeRoot(viewController: filesScreen(reopened))
+
+        reopened.startSelecting()
+
+        XCTAssertEqual(reopened.selectedFiles?.count, 1)
+        XCTAssertEqual(AuthenticationManager.shared.session?.fileAction, .move)
+    }
+
+    func testSharesScreen_NewSelectModeStartsEmpty() {
+        let shares = SharedFilesViewModel()
+        shares.selectedFiles = [photo]
+
+        shares.startSelecting()
+
+        XCTAssertEqual(shares.selectedFiles?.count, 0)
+    }
+}
+
+/// Gives the table as many rows as the side menu has, so a row can be selected without the menu's cells.
+private final class MenuRowsStub: NSObject, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int { 4 }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 3 }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { UITableViewCell() }
 }

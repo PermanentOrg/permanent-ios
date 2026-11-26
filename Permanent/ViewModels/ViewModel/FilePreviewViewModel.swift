@@ -381,6 +381,11 @@ class FilePreviewViewModel: ViewModelInterface {
     } 
     
     func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+        // A complex date is only changed on web.
+        if date != nil, DateUtils.isWebOnlyDate(dateRowDisplayTime) {
+            completion(false)
+            return
+        }
         if let date = date, name == nil, description == nil, location == nil, file.savesDateToV2(sessionArchiveId: sessionArchiveId()) {
             updateDateV2(file: file, date: date, completion: completion)
             return
@@ -445,24 +450,46 @@ class FilePreviewViewModel: ViewModelInterface {
     }
 
     /// The Info tab's rows, in order. A member with the edit right gets all four, boxed; another member only the
-    /// rows that hold a value, plain.
+    /// rows that hold a value, plain. A complex date gives every member the web-only Date row.
     func infoRows() -> [FileInfoRowModel] {
         let record = recordVO?.recordVO
         let style: FileInfoRowModel.Style = isEditable ? .boxed : .plain
-        let rows = [
-            FileInfoRowModel(kind: .name, value: record?.displayName ?? name, style: style),
-            FileInfoRowModel(kind: .description, value: record?.recordVODescription, style: style),
-            FileInfoRowModel(date: infoRowDate(), style: style),
-            FileInfoRowModel(kind: .location, value: record?.locnVO.map { getAddressString([$0.addressText], false) }, style: style)
+        let values: [(FileInfoRowModel.Kind, String?)] = [
+            (.name, record?.displayName ?? name),
+            (.description, record?.recordVODescription),
+            (.date, infoRowDate()),
+            (.location, record?.locnVO.map { getAddressString([$0.addressText], false) })
         ]
-        return rows.filter { isEditable || $0.isSet }
+        let complexDate = infoRowComplexDate()
+        return values.compactMap { kind, value in
+            let rowComplexDate = kind == .date ? complexDate : nil
+            let shown = rowComplexDate?.infoText ?? value
+            let row = FileInfoRowModel(kind: kind, value: shown, style: style, complexDate: rowComplexDate)
+            return isEditable || row.isSet ? row : nil
+        }
     }
 
-    /// The Date row's text for every shape `displayTime` holds: one date or a range's two lines, each clock
-    /// followed by the zone's short name or the string's offset, and the qualifier words for the label.
-    func infoRowDate() -> DisplayTimeText? {
+    /// The `displayTime` the Date row and its tap read: the record once it is loaded, the list row before.
+    var dateRowDisplayTime: String? {
+        guard let record = recordVO?.recordVO else { return file.displayTime }
+        return record.displayTime
+    }
+
+    /// How the complex date reads on the Info tab; each clock time gets its zone as an exact date would.
+    func infoRowComplexDate() -> ComplexDateText? {
         let record = recordVO?.recordVO
-        return DisplayTimeText(displayTime: record?.displayTime, legacy: record?.displayDT, timeZoneIdentifier: record?.timezone)
+        guard let displayTime = dateRowDisplayTime, DateUtils.isWebOnlyDate(displayTime) else { return nil }
+        return ComplexDateText(displayTime) { end in
+            DateTimeEntry.timeSuffix(displayTime: end, timeZoneIdentifier: record?.timezone)
+        }
+    }
+
+    /// The Date row's text: the written date, its clock when it has one, then the zone's short name or the string's
+    /// offset, as web shows them.
+    func infoRowDate() -> String? {
+        let record = recordVO?.recordVO
+        let suffix = DateTimeEntry.timeSuffix(displayTime: record?.displayTime, timeZoneIdentifier: record?.timezone)
+        return DateUtils.infoRowDate(displayTime: record?.displayTime, legacy: record?.displayDT, zoneAbbreviation: suffix)
     }
 
     /// True when the Info tab shows the map: the record has coordinates.

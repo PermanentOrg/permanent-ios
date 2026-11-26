@@ -26,12 +26,16 @@ struct SectionHeaderView: View {
                             .frame(width: 24, height: 24)
                             .aspectRatio(contentMode: .fill)
                     }
-                    Text("Editing \(Int(files.count)) items")
+                    Text(Self.title(fileCount: files.count))
                         .textStyle(SmallBoldTextStyle())
                 Spacer()
             }
         }
         .padding(.top, 24)
+    }
+
+    static func title(fileCount: Int) -> String {
+        fileCount == 1 ? "EditFileMetadataTitle".localized() : String(format: "EditingItemsCount".localized(), fileCount)
     }
 }
 

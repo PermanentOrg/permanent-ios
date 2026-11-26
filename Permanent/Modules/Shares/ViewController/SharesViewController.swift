@@ -858,7 +858,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 viewModel.selectedFiles = viewModel.viewModels
             }
         } else {
-            viewModel.isSelecting = true
+            viewModel.startSelecting()
         }
 
         refreshCollectionView()
@@ -964,9 +964,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 
     private func showDateAndTime(for file: FileModel) {
-        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
-            if saved { self?.refreshCurrentFolder() }
-        }, animated: true)
+        present(EditDateAndTimeView.menuDoor(for: file) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
+    }
+
+    /// The selection ends when the sheet opens, as Edit Metadata does.
+    private func showDateAndTime(forSelection files: [FileModel]) {
+        present(EditDateAndTimeView.menuDoor(for: files) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
+        dismissFloatingActionIsland()
+        clearButtonWasPressed(UIButton())
     }
 
     private var menuPlace: FileMenuItems.Place {
@@ -1106,6 +1111,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     }
                 }))
             }
+        }
+
+        if let selection = viewModel?.selectedFiles, FileMenuItems.selectionAdjustsDate(selection, sessionArchiveId: sessionArchiveId) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .adjustDateTime, action: { [weak self] in
+                self?.showDateAndTime(forSelection: selection)
+            }))
         }
         
         if file.permissions.contains(.delete) {

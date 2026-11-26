@@ -61,6 +61,8 @@ class FilesMetadataViewModel: ObservableObject {
     
     @Published var locationSectionText: String = "Locations"
     @Published var commonLocation: LocnVO?
+    /// The zone every read record shares, for the date sheet; unknown until the reads finish or when they differ.
+    @Published var commonZone: EditDateAndTimeViewModel.RecordZone = .unknown
     
     var descriptionWasSaved: Bool = false
     var downloader: DownloadManagerGCD? = nil
@@ -84,6 +86,7 @@ class FilesMetadataViewModel: ObservableObject {
             let records = try await strongSelf.selectedFiles.asyncMap(strongSelf.getRecord)
             await MainActor.run {
                 strongSelf.setLocationsSectionText(records: records.compactMap {$0})
+                strongSelf.commonZone = Self.sharedZone(of: records.map { $0?.recordVO })
                 
                 strongSelf.selectedFiles = records.compactMap { record in
                     if let recordVO = record?.recordVO {
@@ -97,6 +100,13 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
+    /// `.known` only when every record was read and all carry the same zone; any gap or difference is `.unknown`.
+    static func sharedZone(of records: [RecordVOData?]) -> EditDateAndTimeViewModel.RecordZone {
+        let zones = records.map { $0?.timezone }
+        guard let first = zones.first, let zone = first, zones.allSatisfy({ $0 == zone }) else { return .unknown }
+        return .known(zone)
+    }
+
     func updateDescription(_ text: String) {
         update(description: text) { status in
             if status {
@@ -330,6 +340,27 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
+    /// True when a selected file has a complex date, which only web may view or change.
+    var hasWebOnlyDate: Bool {
+        selectedFiles.contains { DateUtils.isWebOnlyDate($0.displayTime) }
+    }
+
+    /// True when the date row must show the web-only message and keep the date sheet shut.
+    var stopsDateEdit: Bool {
+        WebOnlyDateMessage.stopsEdit(of: selectedFiles)
+    }
+
+    /// The date section's title: one file's complex date as the list shows it, else the shared date.
+    var dateSectionTitle: String {
+        if selectedFiles.count == 1, let complexDate = selectedFiles.first?.complexDate { return complexDate.listText }
+        return haveDiffDate || hasWebOnlyDate ? "VariousDatesAndTimes".localized() : getCommonDate()
+    }
+
+    /// "2 of the 5 selected items have complex EDTF dates…", shown instead of the date sheet.
+    var webOnlyDateMessage: String {
+        WebOnlyDateMessage.message(for: selectedFiles)
+    }
+
     func getCommonDate() -> String {
         let dateFormatter = DateFormatter()
         // en_US_POSIX so parsing this Gregorian ISO string doesn't fail on a device set to a

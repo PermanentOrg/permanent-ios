@@ -48,28 +48,18 @@ struct DisplayTimeV2Tests {
         #expect(record.displayTime == "2026-07-15T12:45:00")
         #expect(record.createdDT == "2023-08-15T00:00:00.000Z")
         #expect(folder.date == "1990-05-01")
-        #expect(DateUtils.displayDate(from: folder.date) == "May. 1, 1990")
+        #expect(DateUtils.displayDate(from: folder.date) == "May 1, 1990")
     }
 
-    @Test("A child with no readable displayTime keeps the old date")
+    @Test("A child with a complex displayTime shows no date; one with none keeps the old date")
     func childWithoutReadableDisplayTimeKeepsOldDate() throws {
-        let unreadable = try child(#""recordId": "301", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "198X""#)
+        let qualified = try child(#""recordId": "301", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "1985~""#)
         let untouched = try child(#""recordId": "302", "displayDate": "2023-08-15T00:00:00.000Z""#)
 
-        #expect(unreadable.date == "2023-08-15")
+        #expect(qualified.date.isEmpty)
         #expect(untouched.date == "2023-08-15")
+        #expect(try child(#""recordId": "302", "displayDate": "2023-08-15T00:00:00.000Z""#, onlyEDTF: true).date == "-")
         #expect(untouched.displayTime == nil)
-    }
-
-    @Test("A child with a qualified date, a range or an unknown date shows it, not the upload date")
-    func childWithStage2DisplayTimeShowsIt() throws {
-        let qualified = try child(#""recordId": "301", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "1985~""#)
-        let range = try child(#""recordId": "302", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "../1985-11-23""#)
-        let unknown = try child(#""recordId": "303", "displayDate": "2023-08-15T00:00:00.000Z", "displayTime": "XXXX-XX-XX""#)
-
-        #expect(qualified.date == "1985")
-        #expect(range.date == "1985-11-23")
-        #expect(unknown.date == "-")
     }
 
     @Test("With the server's edtf-date switch on, the list and the Info row show displayTime only")
@@ -95,9 +85,11 @@ struct DisplayTimeV2Tests {
         ] }
         """
         let folders = try FolderV2Response.decoder.decode(FolderV2Response.self, from: Data(json.utf8)).items ?? []
-        let files = folders.map { FileModel(model: $0, fallbackArchiveNo: "0005-0000", permissions: [], accessRole: .owner) }
+        let files = folders.map { FileModel(model: $0, fallbackArchiveNo: "0005-0000", permissions: [], accessRole: .owner, onlyEDTF: false) }
+        let onlyEDTF = folders.map { FileModel(model: $0, fallbackArchiveNo: "0005-0000", permissions: [], accessRole: .owner, onlyEDTF: true) }
 
         #expect(files.map(\.date) == ["1990-05-01", "1980-01-01"])
+        #expect(onlyEDTF.map(\.date) == ["1990-05-01", "-"])
     }
 
     // MARK: - Request bodies
@@ -192,6 +184,256 @@ struct DisplayTimeV2Tests {
     }
 
     @MainActor
+    @Test("A batch with a complex date saves only the other files")
+    func batchSkipsComplexDate() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5", "displayTime": "1985?""#), child(#""recordId": "302", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.changesWereSaved)
+        #expect(server.patches.map(\.recordId) == [302])
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch of only complex dates sends nothing and shows the web-only message")
+    func batchOfComplexDatesSendsNothing() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5", "displayTime": "1985/1990""#), child(#""recordId": "302", "archiveId": "5", "displayTime": "198X""#)]
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = batchViewModel(files: files, server: server)
+
+        await applyChanges(in: viewModel)
+
+        #expect(viewModel.showsWebOnlyDate)
+        #expect(!viewModel.changesWereSaved)
+        #expect(server.patches.isEmpty)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A list row with no displayTime learns a complex date the sheet can hold from the record read, and opens on it")
+    func listDoorOpensReadableComplexDate() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "../1990"
+        let viewModel = listDoorViewModel(file: file, server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.range.edtfString == "../1990" }
+
+        #expect(!viewModel.showsWebOnlyDate)
+        #expect(viewModel.range.edtfString == "../1990")
+        #expect(viewModel.showsOptions)
+        #expect(viewModel.canSave)
+    }
+
+    @MainActor
+    @Test("A list row with no displayTime learns a date the sheet cannot hold from the record read and never saves it")
+    func listDoorReadsComplexDate() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "198X"
+        let viewModel = listDoorViewModel(file: file, server: server)
+        viewModel.patchRecordRequest = { file, fields, completion in
+            server.patches.append((file.recordId, fields))
+            completion(true)
+        }
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+        #expect(viewModel.showsWebOnlyDate)
+
+        viewModel.entry = DateTimeEntry(displayTime: "2001-02-03", legacy: nil)
+        await applyChanges(in: viewModel)
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A shared row with no displayTime reads it too, and a complex one sends nothing to V1")
+    func sharedListDoorReadsComplexDate() async throws {
+        let shared = try child(#""recordId": "303", "archiveId": "9""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "1985~"
+        let viewModel = batchViewModel(files: [shared], server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+
+        #expect(server.zoneReads == [303])
+        await applyChanges(in: viewModel)
+        #expect(server.v1Batches.isEmpty)
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("Save stays off while a list door reads its item, then turns on for an exact date")
+    func saveWaitsForTheRead() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+        #expect(!viewModel.canSave)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+
+        server.answerHeldZoneReads()
+        await wait { viewModel.canSave }
+        #expect(viewModel.canSave)
+        #expect(!viewModel.showsWebOnlyDate)
+    }
+
+    @MainActor
+    @Test("A failed read of a row with no displayTime keeps Save off and sends nothing")
+    func failedReadKeepsSaveOff() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.failsReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.recordReadFailed }
+
+        #expect(!viewModel.canSave)
+        #expect(viewModel.saveBlockedReason != nil)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A read that never answers counts as failed after the time limit, so the sheet stops reading")
+    func unansweredReadTimesOut() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+        viewModel.readTimeout = 0.2
+
+        viewModel.readZoneIfNeeded()
+        #expect(viewModel.isReadingRecord)
+        await wait { !viewModel.isReadingRecord }
+
+        #expect(viewModel.recordReadFailed)
+        #expect(viewModel.saveBlockedReason == "DateReadFailed".localized())
+        server.answerHeldZoneReads()
+        // The late answer lands on the main queue; one hop behind it is after it.
+        await withCheckedContinuation { continuation in DispatchQueue.main.async { continuation.resume() } }
+        #expect(viewModel.recordReadFailed, "a late answer changes nothing")
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch reads only the rows with no displayTime, and a complex one stops the save with the counted message")
+    func batchReadsRowsWithoutDisplayTime() async throws {
+        let files = try [
+            child(#""recordId": "301", "archiveId": "5", "displayTime": "2001-02-03""#),
+            child(#""recordId": "302", "archiveId": "5""#)
+        ]
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "1985~"
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+
+        #expect(server.zoneReads == [302])
+        #expect(viewModel.webOnlyMessage == WebOnlyDateMessage.batchMessage(complexCount: 1, of: 2))
+        await applyChanges(in: viewModel)
+        #expect(server.patches.map(\.recordId) == [301])
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch with a failed read keeps Save off")
+    func batchFailedReadKeepsSaveOff() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#), child(#""recordId": "302", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        server.failsReads = true
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.recordReadFailed }
+
+        #expect(!viewModel.canSave)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch keeps Save off when one read fails, so no file is skipped silently")
+    func batchOneFailedReadKeepsSaveOff() async throws {
+        let files = try [child(#""recordId": "301", "archiveId": "5""#), child(#""recordId": "302", "archiveId": "5""#)]
+        let server = FakeServer(patchSucceeds: true)
+        server.failsReadsOf = [302]
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { !viewModel.isReadingRecord }
+
+        #expect(viewModel.recordReadFailed)
+        #expect(!viewModel.canSave)
+        viewModel.applyChanges()
+        #expect(server.patches.isEmpty)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
+    @Test("A batch runs at most four reads at once and starts the next as one returns")
+    func batchLimitsReadsAtOnce() async throws {
+        let files = try (301...306).map { try child(#""recordId": "\#($0)", "archiveId": "5""#) }
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: files, server: server)
+
+        viewModel.readZoneIfNeeded()
+        #expect(server.zoneReads.count == EditDateAndTimeViewModel.maxConcurrentReads)
+
+        server.answerHeldZoneReads()
+        await wait { server.zoneReads.count == 6 }
+        #expect(server.zoneReads.count == 6)
+        server.answerHeldZoneReads()
+        await wait { !viewModel.isReadingRecord }
+        #expect(viewModel.canSave)
+    }
+
+    @MainActor
+    @Test("While the sheet reads its item, Save says it is reading the date")
+    func readingGivesSaveAReason() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.holdsZoneReads = true
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+
+        #expect(viewModel.saveBlockedReason == "Reading the date…")
+        server.answerHeldZoneReads()
+        await wait { !viewModel.isReadingRecord }
+        #expect(viewModel.saveBlockedReason == nil)
+    }
+
+    @MainActor
+    @Test("A list row with an old exact date whose read the sheet cannot hold shows the message and saves nothing")
+    func staleExactRowReadsComplexDate() async throws {
+        let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "2001-02-03""#)
+        let server = FakeServer(patchSucceeds: true)
+        server.recordDisplayTime = "198X"
+        let viewModel = batchViewModel(files: [file], server: server)
+
+        viewModel.readZoneIfNeeded()
+        await wait { viewModel.showsWebOnlyDate }
+
+        #expect(viewModel.showsWebOnlyDate)
+        await applyChanges(in: viewModel)
+        #expect(server.patches.isEmpty)
+        #expect(server.v1Batches.isEmpty)
+    }
+
+    @MainActor
     @Test("A year alone saves as the year")
     func batchSaveYearAlone() async throws {
         let files = try [child(#""recordId": "301", "archiveId": "5""#)]
@@ -251,6 +493,110 @@ struct DisplayTimeV2Tests {
         #expect(viewModel.showAlert)
         #expect(server.patches.isEmpty)
         #expect(server.v1Batches.isEmpty)
+    }
+
+    // MARK: - Save needs a date
+
+    @MainActor
+    @Test("An undated record opens with Save off")
+    func undatedRecordCannotSave() throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        #expect(viewModel.entry.isEmpty)
+        #expect(!viewModel.canSave)
+    }
+
+    @MainActor
+    @Test("A batch whose files have different dates opens empty with Save off")
+    func mixedDateBatchCannotSave() throws {
+        let files = try [
+            child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10""#),
+            child(#""recordId": "302", "archiveId": "5", "displayTime": "2001-02-03""#)
+        ]
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false))
+
+        #expect(viewModel.entry.isEmpty)
+        #expect(!viewModel.canSave)
+    }
+
+    @MainActor
+    @Test("A year alone turns Save on")
+    func yearAloneCanSave() throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        viewModel.entry.year = "1999"
+
+        #expect(viewModel.canSave)
+        #expect(viewModel.entry.edtfString == "1999")
+    }
+
+    @MainActor
+    @Test("A dated entry emptied from the last field to the first turns Save off only with the last field")
+    func emptiedFieldByFieldCannotSave() throws {
+        let dated = try child(#""recordId": "301", "archiveId": "5", "displayTime": "2001-02-03T09:30:15""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [dated], hasUpdates: .constant(false))
+        #expect(viewModel.canSave)
+
+        let fields: [DateTimeEntry.Field] = [.second, .minute, .hour, .day, .month, .year]
+        for field in fields.dropLast() {
+            viewModel.entry[field] = ""
+            #expect(viewModel.canSave, "Save stays on after \(field.label) is emptied")
+        }
+        if let last = fields.last { viewModel.entry[last] = "" }
+
+        #expect(!viewModel.canSave)
+        #expect(viewModel.saveBlockedReason == "Enter a date first")
+    }
+
+    @MainActor
+    @Test(
+        "A time needs a year, a month and a day before Save turns on, as on web",
+        arguments: [
+            ("", "", "", "09", false),
+            ("1999", "", "", "09", false),
+            ("1999", "10", "", "09", false),
+            ("1999", "10", "23", "09", true),
+            ("1999", "10", "", "", true)
+        ]
+    )
+    func timeNeedsFullDate(year: String, month: String, day: String, hour: String, saves: Bool) throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        viewModel.entry.year = year
+        viewModel.entry.month = month
+        viewModel.entry.day = day
+        viewModel.entry.hour = hour
+
+        #expect(viewModel.canSave == saves)
+        #expect(viewModel.saveBlockedReason == (saves ? nil : "A complete date is required when time is provided."))
+    }
+
+    @MainActor
+    @Test(
+        "A later field needs the ones before it, and minutes need an hour",
+        arguments: [
+            ("", "10", "", "", "", "Add a year"),
+            ("", "", "23", "", "", "Add a year"),
+            ("1999", "", "23", "", "", "Add a month"),
+            ("1999", "10", "23", "", "30", "Add an hour"),
+            ("1999", "10", "23", "09", "30", nil)
+        ] as [(String, String, String, String, String, String?)]
+    )
+    func laterFieldNeedsEarlierOnes(year: String, month: String, day: String, hour: String, minute: String, reason: String?) throws {
+        let undated = try child(#""recordId": "301", "archiveId": "5""#)
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: [undated], hasUpdates: .constant(false))
+
+        viewModel.entry.year = year
+        viewModel.entry.month = month
+        viewModel.entry.day = day
+        viewModel.entry.hour = hour
+        viewModel.entry.minute = minute
+
+        #expect(viewModel.saveBlockedReason == reason)
+        #expect(viewModel.canSave == (reason == nil))
     }
 
     @MainActor
@@ -438,7 +784,7 @@ struct DisplayTimeV2Tests {
     }
 
     @MainActor
-    @Test("A batch and a shared record's list door open on web's guess at once, with no record read")
+    @Test("A batch opens with no zone, and a shared record's list door on web's guess at once, with no record read")
     func guessWithoutAReadOpensAtOnce() throws {
         let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00+01:00""#)
         let other = try child(#""recordId": "302", "archiveId": "5", "displayTime": "1985-10-23T17:00:00+01:00""#)
@@ -447,7 +793,7 @@ struct DisplayTimeV2Tests {
         let batch = EditDateAndTimeViewModel(selectedFiles: [file, other], hasUpdates: .constant(false))
         let sharedDoor = listDoorViewModel(file: shared, server: server)
 
-        #expect(batch.entry.timeZoneIdentifier == "Africa/Algiers")
+        #expect(batch.entry.timeZoneIdentifier == nil)
         #expect(sharedDoor.entry.timeZoneIdentifier == nil)
         sharedDoor.readZoneIfNeeded()
 
@@ -457,7 +803,7 @@ struct DisplayTimeV2Tests {
     }
 
     @MainActor
-    @Test("A list door reads one record's zone once; the Info door and a batch do not read")
+    @Test("A list door reads one record's zone once; the Info door does not read, and a batch reads only its undated row")
     func oneFileReadsTheZoneOnce() async throws {
         let file = try child(#""recordId": "301", "archiveId": "5", "displayTime": "1985-10-23T17:00:00""#)
         let other = try child(#""recordId": "302", "archiveId": "5""#)
@@ -474,7 +820,7 @@ struct DisplayTimeV2Tests {
         batch.readZoneIfNeeded()
         await wait { listDoor.entry.timeZoneIdentifier != nil }
 
-        #expect(server.zoneReads == [301])
+        #expect(server.zoneReads == [301, 302])
         #expect(listDoor.entry.timeZoneIdentifier == "Europe/Paris")
         #expect(listDoor.openingZone == "Europe/Paris")
         #expect(listDoor.patchFields["location"] as? [String: String] == ["timezone": "Europe/Paris"])
@@ -572,7 +918,7 @@ struct DisplayTimeV2Tests {
     }
 
     @MainActor
-    @Test("A shared record offers no More options and opens on its first written side as one plain date")
+    @Test("A shared record offers no More options, and its complex date stops at the door; the owner's opens in full")
     func sharedRecordKeepsTheSimpleSheet() throws {
         let server = FakeServer(patchSucceeds: true)
         let shared = try fullViewModel(displayTime: "../1985-11-23~", archiveId: 9, server: server)
@@ -580,8 +926,10 @@ struct DisplayTimeV2Tests {
 
         #expect(!shared.offersMoreOptions)
         #expect(!shared.range.isRange && !shared.range.opensFull)
-        #expect([shared.entry.year, shared.entry.month, shared.entry.day] == ["1985", "11", "23"])
-        #expect(shared.entry.qualifiers.isEmpty)
+        #expect(shared.range.isEmpty)
+        #expect(WebOnlyDateMessage.stopsEdit(of: shared.selectedFiles, sessionArchiveId: ownArchiveId))
+        #expect(!WebOnlyDateMessage.stopsEdit(of: own.selectedFiles, sessionArchiveId: ownArchiveId))
+        #expect(WebOnlyDateMessage.stopsEdit(of: own.selectedFiles + own.selectedFiles, sessionArchiveId: ownArchiveId), "a selection keeps the strict rule")
         #expect(own.offersMoreOptions)
         #expect(own.range.opensFull)
         #expect(own.range.edtfString == "../1985-11-23~")
@@ -614,7 +962,7 @@ struct DisplayTimeV2Tests {
         let server = FakeServer(patchSucceeds: true)
         let zoneless = try fullViewModel(displayTime: "1985-10-23T17:00:00", server: server)
         let cleared = try fullViewModel(displayTime: "1985-10-23", server: server)
-        cleared.clear()
+        cleared.clear(.start)
         let shared = try fullViewModel(displayTime: nil, archiveId: 9, server: server)
         shared.entry.year = "1985"
         shared.entry.day = "23"
@@ -624,6 +972,78 @@ struct DisplayTimeV2Tests {
         #expect(cleared.validation == nil)
         #expect(cleared.patchFields["displayTime"] is NSNull)
         #expect(shared.validation == nil, "V1 takes a moment, so edtf.js has no say")
+    }
+
+    // MARK: - Zones on several files
+
+    @MainActor
+    @Test("Several files that share a zone open on it, and a new day saves it back with its offset")
+    func sharedZoneOpensAndSaves() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = try newYorkBatch(server: server, recordZone: .known("America/New_York"))
+
+        #expect(viewModel.entry.timeZoneIdentifier == "America/New_York")
+        viewModel.entry.day = "13"
+        await applyChanges(in: viewModel)
+
+        #expect(server.patches.map(\.recordId) == [301, 302])
+        for patch in server.patches {
+            #expect(patch.fields["displayTime"] as? String == "1990-05-13T10:30:00-04:00")
+            #expect(patch.fields["location"] as? [String: String] == ["timezone": "America/New_York"])
+        }
+    }
+
+    @MainActor
+    @Test("Several files with no shared zone open with no zone, and a save sends no zone and no offset")
+    func unsharedZonesKeepEachFilesZone() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let viewModel = try newYorkBatch(server: server, recordZone: .unknown)
+
+        #expect(viewModel.entry.timeZoneIdentifier == nil, "a zone guessed from the offset would overwrite each file's own")
+        viewModel.entry.day = "13"
+        await applyChanges(in: viewModel)
+
+        #expect(server.patches.count == 2)
+        for patch in server.patches {
+            #expect(patch.fields["displayTime"] as? String == "1990-05-13T10:30:00")
+            #expect(patch.fields["location"] == nil)
+        }
+    }
+
+    @MainActor
+    @Test("An untouched Save on several files closes without a request; any change, a zone included, saves")
+    func untouchedBatchSaveWritesNothing() throws {
+        let server = FakeServer(patchSucceeds: true)
+        let batch = try newYorkBatch(server: server, recordZone: .unknown)
+        let file = try #require(batch.selectedFiles.first)
+        let single = EditDateAndTimeViewModel(selectedFiles: [file], hasUpdates: .constant(false), recordZone: .known(nil))
+
+        #expect(batch.closesWithoutSaving)
+        #expect(!single.closesWithoutSaving, "one file keeps its own save path")
+        batch.entry.timeZoneIdentifier = "Europe/London"
+        #expect(!batch.closesWithoutSaving)
+        batch.entry.timeZoneIdentifier = nil
+        batch.entry.format = batch.entry.format.next
+        #expect(!batch.closesWithoutSaving)
+    }
+
+    @Test("The batch screen hands the sheet a zone only when every record was read and all share it", arguments: [
+        (["America/New_York", "America/New_York"], EditDateAndTimeViewModel.RecordZone.known("America/New_York")),
+        (["America/New_York", "America/Toronto"], .unknown),
+        (["America/New_York", nil], .unknown),
+        ([nil, nil], .unknown),
+        ([], .unknown)
+    ] as [([String?], EditDateAndTimeViewModel.RecordZone)])
+    func sharedZoneOfRecords(zones: [String?], expected: EditDateAndTimeViewModel.RecordZone) throws {
+        let records = try zones.map { try record(zone: $0) }
+        #expect(FilesMetadataViewModel.sharedZone(of: records) == expected)
+    }
+
+    @Test("A record that could not be read leaves the zone unknown")
+    func unreadRecordLeavesTheZoneUnknown() throws {
+        let read = try record(zone: "America/New_York")
+        #expect(FilesMetadataViewModel.sharedZone(of: [read, nil]) == .unknown)
+        #expect(FilesMetadataViewModel.sharedZone(of: [nil, read]) == .unknown)
     }
 
     // MARK: - Helpers
@@ -656,9 +1076,13 @@ struct DisplayTimeV2Tests {
         var patches: [(recordId: Int, fields: [String: Any])] = []
         var v1Dates: [Date] = []
         var v1Batches: [[FileModel]] = []
+        var v1Succeeds = true
         var zone: String?
+        var recordDisplayTime: String?
         var zoneReads: [Int] = []
         var holdsZoneReads = false
+        var failsReads = false
+        var failsReadsOf: Set<Int> = []
         private var heldZoneReads: [(String?) -> Void] = []
 
         func readZone(of file: FileModel, completion: @escaping (String?) -> Void) {
@@ -688,11 +1112,11 @@ struct DisplayTimeV2Tests {
         }
     }
 
-    private func child(_ fields: String) throws -> FileModel {
+    private func child(_ fields: String, onlyEDTF: Bool = false) throws -> FileModel {
         let json = #"{ "items": [ { "type": "type.record.image", "folderLinkId": "900", \#(fields) } ] }"#
         let response = try FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: Data(json.utf8))
         let item = try #require(response.items?.first)
-        return FileModel(model: item, permissions: [.read, .edit], accessRole: .editor)
+        return FileModel(model: item, permissions: [.read, .edit], accessRole: .editor, onlyEDTF: onlyEDTF)
     }
 
     private func body(of data: Data?) throws -> [String: String]? {
@@ -710,7 +1134,7 @@ struct DisplayTimeV2Tests {
         }
         viewModel.updateV1Request = { params, completion in
             if let date = params.date { server.v1Dates.append(date) }
-            completion(true)
+            completion(server.v1Succeeds)
         }
         return viewModel
     }
@@ -722,7 +1146,7 @@ struct DisplayTimeV2Tests {
         let archiveId = ownArchiveId
         viewModel.sessionArchiveId = { archiveId }
         viewModel.fetchRecordZone = { file, completion in
-            server.readZone(of: file, completion: completion)
+            server.readZone(of: file) { completion(server.failsReads || server.failsReadsOf.contains(file.recordId) ? nil : (zone: $0, displayTime: server.recordDisplayTime)) }
         }
         return viewModel
     }
@@ -736,7 +1160,7 @@ struct DisplayTimeV2Tests {
         viewModel.entry = DateTimeEntry(displayTime: "2001-02-03T09:30:00", legacy: nil, timeZoneIdentifier: viewModel.entry.timeZoneIdentifier)
         viewModel.sessionArchiveId = { archiveId }
         viewModel.fetchRecordZone = { file, completion in
-            server.readZone(of: file, completion: completion)
+            server.readZone(of: file) { completion(server.failsReads || server.failsReadsOf.contains(file.recordId) ? nil : (zone: $0, displayTime: server.recordDisplayTime)) }
         }
         viewModel.patchRecordRequest = { file, fields, completion in
             server.patches.append((file.recordId, fields))
@@ -747,6 +1171,30 @@ struct DisplayTimeV2Tests {
             completion(true)
         }
         return viewModel
+    }
+
+    /// Two own records saved as 10:30 in New York, as the batch screen hands them to the sheet.
+    @MainActor
+    private func newYorkBatch(server: FakeServer, recordZone: EditDateAndTimeViewModel.RecordZone) throws -> EditDateAndTimeViewModel {
+        let files = try [301, 302].map { try child(#""recordId": "\#($0)", "archiveId": "5", "displayTime": "1990-05-12T10:30:00-04:00""#) }
+        let viewModel = EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false), recordZone: recordZone)
+        let archiveId = ownArchiveId
+        viewModel.sessionArchiveId = { archiveId }
+        viewModel.patchRecordRequest = { file, fields, completion in
+            server.patches.append((file.recordId, fields))
+            completion(server.patchSucceeds)
+        }
+        return viewModel
+    }
+
+    private func record(zone: String?) throws -> RecordVOData {
+        let location = zone.map { #", "location": { "id": "7", "timezone": "\#($0)" }"# } ?? ""
+        let json = """
+        { "data": { "recordId": "301", "archiveId": "5", "type": "type.record.image", \
+        "displayTime": "1990-05-12T10:30:00-04:00"\(location) } }
+        """
+        let data = try #require(try RecordV2Response.decoder.decode(RecordV2Response.self, from: Data(json.utf8)).data)
+        return try #require((JSONHelper.decoding(from: data.toRecordVOPayload(), with: RecordVO.decoder) as RecordVO?)?.recordVO)
     }
 
     @MainActor

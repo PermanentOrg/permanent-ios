@@ -336,12 +336,12 @@ struct DateTimeRangeEntryTests {
         #expect(DateTimeRangeEntry(displayTime: displayTime, legacy: nil).opensFull == expected)
     }
 
-    @Test("A string that does not read falls back to the old field as one date, and no date gives an empty entry")
+    @Test("A string that does not read gives an empty entry, never the old field, and so does no date")
     func unreadableFallsBack() {
         let unreadable = DateTimeRangeEntry(displayTime: "198X", legacy: "2023-08-15T09:30:00.000Z", timeZone: plusThree)
         let none = DateTimeRangeEntry(displayTime: nil, legacy: nil)
 
-        #expect([unreadable.start.year, unreadable.start.month, unreadable.start.day] == ["2023", "08", "15"])
+        #expect(unreadable.isEmpty)
         #expect(!unreadable.isRange && !unreadable.opensFull)
         #expect(none == DateTimeRangeEntry())
         #expect(none.isEmpty)

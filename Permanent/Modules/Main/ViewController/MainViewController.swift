@@ -785,7 +785,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 viewModel.selectedFiles = viewModel.viewModels
             }
         } else {
-            viewModel.isSelecting = true
+            viewModel.startSelecting()
         }
 
         refreshCollectionView()
@@ -1616,9 +1616,14 @@ extension MainViewController {
     }
 
     private func showDateAndTime(for file: FileModel) {
-        present(EditDateAndTimeView.host(for: file) { [weak self] saved in
-            if saved { self?.refreshCurrentFolder() }
-        }, animated: true)
+        present(EditDateAndTimeView.menuDoor(for: file) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
+    }
+
+    /// The selection ends when the sheet opens, as Edit Metadata does.
+    private func showDateAndTime(forSelection files: [FileModel]) {
+        present(EditDateAndTimeView.menuDoor(for: files) { [weak self] in self?.refreshCurrentFolder() }, animated: true)
+        dismissFloatingActionIsland()
+        clearButtonWasPressed(UIButton())
     }
 
     /// The row's file when its … button would open the sheet right now; otherwise the long press does nothing.
@@ -2170,6 +2175,13 @@ extension MainViewController: FABActionSheetDelegate {
                     }
                 }))
             }
+        }
+
+        let sessionArchiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID
+        if let selection = viewModel?.selectedFiles, FileMenuItems.selectionAdjustsDate(selection, sessionArchiveId: sessionArchiveId) {
+            menuItems.append(FileMenuViewModel.MenuItem(type: .adjustDateTime, action: { [weak self] in
+                self?.showDateAndTime(forSelection: selection)
+            }))
         }
         
         if file.permissions.contains(.move) {

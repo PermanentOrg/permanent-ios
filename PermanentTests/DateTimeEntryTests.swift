@@ -52,25 +52,25 @@ struct DateTimeEntryTests {
         #expect(entry.format == .pm)
     }
 
-    @Test("Without a readable displayTime the old field fills the fields on the phone's clock")
+    @Test("Without a displayTime the old field fills the fields on the phone's clock; a complex one fills nothing")
     func prefillFromLegacy() {
-        let noDisplayTime = DateTimeEntry(displayTime: nil, legacy: "2023-08-15T09:30:00.000Z", timeZone: plusThree)
+        let noDisplayTime = DateTimeEntry(displayTime: nil, legacy: "2023-08-15T09:30:00.000Z", timeZone: plusThree, onlyEDTF: false)
+        let onlyEDTF = DateTimeEntry(displayTime: nil, legacy: "2023-08-15T09:30:00.000Z", timeZone: plusThree, onlyEDTF: true)
         let unreadable = DateTimeEntry(displayTime: "198X", legacy: "2023-08-15T00:00:00.000Z", timeZone: utc)
 
         #expect(fields(of: noDisplayTime) == ["2023", "08", "15", "12", "30", "00"])
         #expect(noDisplayTime.format == .pm)
-        #expect(fields(of: unreadable) == ["2023", "08", "15", "12", "00", "00"])
-        #expect(unreadable.format == .am)
+        #expect(onlyEDTF.isEmpty)
+        #expect(unreadable.isEmpty)
     }
 
-    @Test("A qualified date or a range fills the fields from its first written side, not from the old field")
+    @Test("A qualified date or a range fills no field of one entry, and never the old field; the range entry reads it")
     func prefillFromQualifiedAndRange() {
         let qualified = DateTimeEntry(displayTime: "1985~", legacy: "2023-08-15T00:00:00.000Z", timeZone: utc)
         let openStart = DateTimeEntry(displayTime: "../1985-11-23", legacy: "2023-08-15T00:00:00.000Z", timeZone: utc)
 
-        #expect(fields(of: qualified) == ["1985", "", "", "", "", ""])
-        #expect(qualified.qualifiers.isEmpty, "the Stage 1 sheet reads the date only")
-        #expect(fields(of: openStart) == ["1985", "11", "23", "", "", ""])
+        #expect(qualified.isEmpty)
+        #expect(openStart.isEmpty)
     }
 
     @Test("A side with a symbol writes its date and the symbol, and never a clock")
@@ -155,9 +155,7 @@ struct DateTimeEntryTests {
         ("5", DateTimeEntry.TimeFormat.am, 5),
         ("5", .pm, 17),
         ("12", .am, 0),
-        ("12", .pm, 12),
-        ("17", .h24, 17),
-        ("0", .h24, 0)
+        ("12", .pm, 12)
     ])
     func hourPerFormat(hour: String, format: DateTimeEntry.TimeFormat, expected: Int) {
         var entry = DateTimeEntry()
@@ -168,26 +166,26 @@ struct DateTimeEntryTests {
         #expect(entry.hour == hour)
     }
 
-    @Test("A format switch keeps the digits and cycles AM, PM, 24H")
+    @Test("A format switch keeps the digits and goes between AM and PM")
     func formatSwitchKeepsDigits() {
         var entry = DateTimeEntry()
         entry.year = "1985"
         entry.month = "10"
         entry.day = "23"
         entry.hour = "5"
-        entry.format = .pm
+        entry.format = .am
 
         entry.format = entry.format.next
-        #expect(entry.format == .h24)
+        #expect(entry.format == .pm)
         #expect(entry.hour == "5")
-        #expect(entry.edtfString == "1985-10-23T05:00:00")
+        #expect(entry.edtfString == "1985-10-23T17:00:00")
         #expect(entry.format.next == .am)
         #expect(DateTimeEntry.TimeFormat.am.next == .pm)
     }
 
     @Test("The pill's labels")
     func formatLabels() {
-        #expect(DateTimeEntry.TimeFormat.allCases.map(\.label) == ["AM", "PM", "24H"])
+        #expect(DateTimeEntry.TimeFormat.allCases.map(\.label) == ["AM", "PM"])
     }
 
     // MARK: - Preview
@@ -376,12 +374,10 @@ struct DateTimeEntryTests {
         #expect(entry.day == "29")
     }
 
-    @Test("The hour's bounds follow the pill: 1 to 12 on AM and PM, 0 to 23 on 24H", arguments: [
+    @Test("The hour's bounds follow the pill: 1 to 12 on AM and PM", arguments: [
         ("13", DateTimeEntry.TimeFormat.am, "12"),
         ("0", .pm, "01"),
-        ("12", .pm, "12"),
-        ("24", .h24, "23"),
-        ("00", .h24, "00")
+        ("12", .pm, "12")
     ])
     func hourBoundsPerFormat(typed: String, format: DateTimeEntry.TimeFormat, expected: String) {
         var entry = DateTimeEntry()

@@ -170,6 +170,8 @@ struct FolderChildV2Data: Model {
     let displayTimestamp: String?
     // The EDTF date, on records and folders alike; the list shows it before the two fields above.
     let displayTime: String?
+    // Its `timezone` names the zone after the list date's clock.
+    let location: LocationV2?
     // Per-item access (folder/record both carry it under Stela). Unused on the
     // Private Files path (permissions are archive-derived) but decoded for reuse.
     let shares: [RecordShareV2]?

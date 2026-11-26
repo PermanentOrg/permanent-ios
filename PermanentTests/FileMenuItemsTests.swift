@@ -22,8 +22,9 @@ final class FileMenuItemsTests: XCTestCase {
         )
     }
 
-    private func types(_ role: String, isFolder: Bool = false, in place: FileMenuItems.Place) -> [ItemType] {
-        FileMenuItems.types(for: file(role: role, isFolder: isFolder), in: place)
+    /// The folder date flag is on unless a test says otherwise.
+    private func types(_ role: String, isFolder: Bool = false, in place: FileMenuItems.Place, editsFolderDates: Bool = true) -> [ItemType] {
+        FileMenuItems.types(for: file(role: role, isFolder: isFolder), in: place, editsFolderDates: editsFolderDates)
     }
 
     // MARK: - Private Files
@@ -35,7 +36,34 @@ final class FileMenuItemsTests: XCTestCase {
 
     func testPrivateFiles_OwnerFolder_HasNoSaveAndNoSendACopy() {
         XCTAssertEqual(types("access.role.owner", isFolder: true, in: .privateFiles),
+                       [.shareToPermanent, .publish, .rename, .adjustDateTime, .move, .copy, .delete])
+    }
+
+    func testFolderDateFlagOff_OwnerFolder_HasNoDateRow() {
+        XCTAssertEqual(types("access.role.owner", isFolder: true, in: .privateFiles, editsFolderDates: false),
                        [.shareToPermanent, .publish, .rename, .move, .copy, .delete])
+    }
+
+    func testFolderDateFlagOff_FilesKeepTheDateRow() {
+        XCTAssertEqual(types("access.role.owner", in: .privateFiles, editsFolderDates: false),
+                       [.shareToPermanent, .publish, .shareToAnotherApp, .rename, .adjustDateTime, .fileInformation, .move, .copy, .delete])
+    }
+
+    func testPrivateFiles_EditorFolder_AdjustsTheDateAfterRename() {
+        XCTAssertEqual(types("access.role.editor", isFolder: true, in: .privateFiles), [.rename, .adjustDateTime, .copy])
+    }
+
+    func testSharedWithMe_TopLevelCuratorFolder_AdjustsTheDate() {
+        XCTAssertTrue(types("access.role.curator", isFolder: true, in: .sharedWithMe(isRoot: true)).contains(.adjustDateTime))
+    }
+
+    func testEveryPlace_ViewerAndContributorFolders_HaveNoDateRow() {
+        let places: [FileMenuItems.Place] = [.privateFiles, .publicFiles, .sharedByMe(isRoot: true), .sharedByMe(isRoot: false), .sharedWithMe(isRoot: true), .sharedWithMe(isRoot: false)]
+        for role in ["access.role.viewer", "access.role.contributor"] {
+            for place in places {
+                XCTAssertFalse(types(role, isFolder: true, in: place).contains(.adjustDateTime), "\(role), \(place)")
+            }
+        }
     }
 
     func testPrivateFiles_ManagerAndCurator_LoseOnlyShareAndManageAccess() {

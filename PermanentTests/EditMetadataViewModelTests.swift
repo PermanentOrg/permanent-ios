@@ -260,6 +260,25 @@ final class EditMetadataViewModelTests: XCTestCase {
         XCTAssertEqual(vm.locationSectionText, "Locations")
     }
 
+    func testFilesMetadata_ComplexDate_TitleAndCountedMessage() {
+        let vm = FilesMetadataViewModel(files: [])
+        var complex = mockFile(name: "Range.jpg")
+        complex.displayTime = "1985/1990"
+        var exact = mockFile(name: "Exact.jpg")
+        exact.displayTime = "1985-10-23"
+        vm.selectedFiles = [complex, exact]
+
+        XCTAssertTrue(vm.hasWebOnlyDate)
+        XCTAssertEqual(vm.dateSectionTitle, "Various dates and times")
+        XCTAssertTrue(vm.webOnlyDateMessage.hasPrefix("1 of the 2 selected items has a complex EDTF date"))
+
+        vm.selectedFiles = [complex]
+        XCTAssertEqual(vm.dateSectionTitle, "1985 — 1990")
+
+        vm.selectedFiles = [exact]
+        XCTAssertFalse(vm.hasWebOnlyDate)
+    }
+
     func testFilesMetadata_GetAddressString() {
         let vm = FilesMetadataViewModel(files: [])
 
@@ -272,6 +291,30 @@ final class EditMetadataViewModelTests: XCTestCase {
 
         let address = vm.getAddressString([nil, "Main St", nil, "US"])
         XCTAssertEqual(address, "Main St, US")
+    }
+
+    // MARK: - Header and size texts
+
+    func testHeaderTitle_OneFileSaysEditFileMetadata() {
+        XCTAssertEqual(SectionHeaderView.title(fileCount: 1), "Edit file metadata")
+    }
+
+    func testHeaderTitle_SeveralFilesSayTheCount() {
+        XCTAssertEqual(SectionHeaderView.title(fileCount: 3), "Editing 3 items")
+    }
+
+    func testFileNamesSize_MatchesTheListText() {
+        XCTAssertEqual(FileModel.displaySize(5_882_511), "5.61 MB")
+        XCTAssertNil(MetadataEditFileNamesViewModel.sizePreview(for: []))
+        XCTAssertNil(MetadataEditFileNamesViewModel.sizePreview(for: [mockFile()]))
+    }
+
+    func testFileNamesSize_AFileOf5882511BytesShows561MB() throws {
+        let json = #"{ "displayName": "Scan.jpg", "type": "type.record.image", "size": 5882511 }"#
+        let item = try JSONDecoder().decode(ItemVO.self, from: try XCTUnwrap(json.data(using: .utf8)))
+        let file = FileModel(model: item, permissions: [], accessRole: .owner)
+
+        XCTAssertEqual(MetadataEditFileNamesViewModel.sizePreview(for: [file]), "5.61 MB")
     }
 
     func testFilesMetadata_GetAddressString_AllNil() {

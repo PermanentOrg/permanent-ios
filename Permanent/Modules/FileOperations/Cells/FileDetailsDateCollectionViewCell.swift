@@ -92,9 +92,6 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         case .date:
             return recordDate()
 
-        case .created:
-            return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedDT)
-
         case .fileCreated:
             return DateUtils.date(fromISO: viewModel?.recordVO?.recordVO?.derivedCreatedDT)
 

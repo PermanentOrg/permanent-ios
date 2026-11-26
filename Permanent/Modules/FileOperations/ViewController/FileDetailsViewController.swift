@@ -25,7 +25,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         case tags
         case uploaded
         case lastModified
-        case created
         case fileCreated
         case size
         case fileType
@@ -43,7 +42,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     let topSectionCells: [CellType] = [.thumbnail, .segmentedControl]
     var bottomSectionCells: [CellType] = []
-    static let detailsCells: [CellType] = [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
+    static let detailsCells: [CellType] = [.uploaded, .lastModified, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
     private static let infoRowCellIdentifier = "FileInfoRowCell"
 
     private var showsDetailsTab = false
@@ -424,6 +423,10 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
 
     private func open(_ kind: FileInfoRowModel.Kind) {
+        if kind == .date, WebOnlyDateMessage.stopsEdit(of: file, displayTime: viewModel.map(\.dateRowDisplayTime) ?? file.displayTime) {
+            present(WebOnlyDateMessage.host(for: file), animated: true)
+            return
+        }
         guard viewModel?.isEditable ?? false else { return }
         switch kind {
         case .date: openDateScreen()
@@ -686,7 +689,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
 
             returnedCell = cell
 
-        case .uploaded, .lastModified, .created, .fileCreated:
+        case .uploaded, .lastModified, .fileCreated:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsDateCollectionViewCell.identifier, for: indexPath) as! FileDetailsDateCollectionViewCell
             
             returnedCell = cell
@@ -741,13 +744,10 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
 
-        case .name, .description, .location:
-            return CGSize(width: UIScreen.main.bounds.width, height: FileInfoRowModel.height(for: infoRowStyle, compatibleWith: collectionView.traitCollection))
-
-        case .date:
-            // A date range stacks a From and a To line, so the row is one line taller.
-            let lines = infoRows.first { $0.kind == .date }?.lineCount ?? 1
-            return CGSize(width: UIScreen.main.bounds.width, height: FileInfoRowModel.height(for: infoRowStyle, lines: lines, compatibleWith: collectionView.traitCollection))
+        case .name, .description, .date, .location:
+            let lines = infoRows.first { Self.cellType(for: $0.kind) == currentCellType }?.valueLineCount ?? 1
+            let height = FileInfoRowModel.height(for: infoRowStyle, lines: lines, compatibleWith: collectionView.traitCollection)
+            return CGSize(width: UIScreen.main.bounds.width, height: height)
 
         case .locationMap:
             return CGSize(width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.width * 0.5).rounded())

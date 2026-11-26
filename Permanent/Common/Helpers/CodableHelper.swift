@@ -9,7 +9,9 @@ import Foundation
 
 class JSONHelper {
     static func decoding<M: Codable>(from object: Any?, with decoder: JSONDecoder) -> M? {
-        guard let json = object else { return nil }
+        // Only a dictionary or an array can be serialized. A String or a number makes
+        // `data(withJSONObject:)` raise an Objective-C exception that `catch` below cannot stop.
+        guard let json = object, JSONSerialization.isValidJSONObject(json) else { return nil }
         
         do {
             // Compact, not pretty-printed: this is an internal intermediate handed straight
@@ -24,7 +26,8 @@ class JSONHelper {
     }
     
     static func convertToModel<T: Decodable>(from object: Any?) -> T? {
-        guard let json = object else { return nil }
+        // Same guard as `decoding`: anything but a dictionary or an array would crash below.
+        guard let json = object, JSONSerialization.isValidJSONObject(json) else { return nil }
 
         do {
             // Compact, not pretty-printed: this is an internal intermediate handed straight

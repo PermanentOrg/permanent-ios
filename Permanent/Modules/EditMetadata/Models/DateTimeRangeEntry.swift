@@ -95,15 +95,16 @@ struct DateTimeRangeEntry: Hashable {
         self.start = start
     }
 
-    /// The sides from a record: every shape `displayTime` can hold, else the old field as one date while the
-    /// screens still show it. The record's zone, when known, serves both sides.
+    /// The sides from a record: every shape `displayTime` can hold, else one date as the simple sheet reads it: a
+    /// year with an unknown month as the year, the old field while the screens still show it. The record's zone,
+    /// when known, serves both sides.
     init(
         displayTime: String?, legacy: String?, timeZoneIdentifier: String? = nil, timeZone: TimeZone = .current,
         onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate
     ) {
         guard let value = DisplayTimeValue(displayTime) else {
             start = DateTimeEntry(
-                displayTime: nil, legacy: legacy, timeZoneIdentifier: timeZoneIdentifier, timeZone: timeZone, onlyEDTF: onlyEDTF
+                displayTime: displayTime, legacy: legacy, timeZoneIdentifier: timeZoneIdentifier, timeZone: timeZone, onlyEDTF: onlyEDTF
             )
             return
         }

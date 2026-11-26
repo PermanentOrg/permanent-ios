@@ -37,7 +37,7 @@ enum FilesEndpoint {
     case relocate(params: RelocateParams)
     case update(params: UpdateRecordParams)
     case multipleUpdate(params: UpdateMultipleRecordsParams)
-    case multipleFilesUpdate(files: [FileModel])
+    case multipleFilesUpdate(files: [FileModel], sendsDate: Bool = true)
     
     // UPLOAD
     case getPresignedUrl(params: GetPresignedUrlParams)
@@ -163,8 +163,8 @@ extension FilesEndpoint: RequestProtocol {
         case .multipleUpdate(let params):
             return FilesEndpointPayloads.updateMultipleRecordsRequest(params: params)
             
-        case .multipleFilesUpdate(let files):
-            return FilesEndpointPayloads.multipleFilesUpdate(files: files)
+        case .multipleFilesUpdate(let files, let sendsDate):
+            return FilesEndpointPayloads.multipleFilesUpdate(files: files, sendsDate: sendsDate)
             
         case .renameFolder(let params):
             return FilesEndpointPayloads.renameFolderRequest(params: params)
@@ -490,18 +490,20 @@ class FilesEndpointPayloads {
         ]
     }
     
-    static func multipleFilesUpdate(files: [FileModel]) -> RequestParameters {
-        let data = files.map {
-            [
-                "RecordVO": [
-                    "recordId": $0.recordId,
-                    "archiveNbr": $0.archiveNo,
-                    "folder_linkId": $0.folderLinkId,
-                    "description": $0.description,
-                    "displayName": $0.name,
-                    "displayDT": $0.date
-                ] as [String: Any]
+    /// Leaves out `displayDT` when `sendsDate` is false, as a rename does, or when the row has no exact date.
+    static func multipleFilesUpdate(files: [FileModel], sendsDate: Bool = true) -> RequestParameters {
+        let data = files.map { file -> [String: Any] in
+            var record: [String: Any] = [
+                "recordId": file.recordId,
+                "archiveNbr": file.archiveNo,
+                "folder_linkId": file.folderLinkId,
+                "description": file.description,
+                "displayName": file.name
             ]
+            if sendsDate, !file.date.isEmpty, file.complexDate == nil {
+                record["displayDT"] = file.date
+            }
+            return ["RecordVO": record]
         }
 
         return [

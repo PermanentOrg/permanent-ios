@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 import Testing
 import UIKit
 @testable import Permanent
@@ -60,6 +59,42 @@ struct FileInfoTabTests {
         #expect(described.infoRows().map(\.kind) == [.name, .description])
     }
 
+    @Test("A complex date gives the owner, an editor and a viewer its From and To lines", arguments: [
+        [Permission.read, .edit], [Permission.read]
+    ])
+    func complexDateRow(permissions: [Permission]) throws {
+        let screen = try makeScreen(fields: #""displayName": "C", "displayTime": "1985/1990""#, permissions: permissions)
+
+        let date = try #require(screen.infoRows().first { $0.kind == .date })
+        #expect(date.isWebOnly)
+        #expect(date.text == "From 1985, To 1990")
+        #expect(date.valueLineCount == 2)
+        #expect(date.isButton)
+        #expect(cells(of: screen).contains(.date))
+    }
+
+    @Test("Before the record loads, the Date row and its tap read the list row's date")
+    func complexDateRowBeforeRecordLoads() throws {
+        let screen = try makeScreen(fields: #""displayName": "C", "displayTime": "1985~""#, permissions: [.read, .edit])
+        screen.recordVO = nil
+
+        #expect(screen.dateRowDisplayTime == "1985~")
+        let date = try #require(screen.infoRows().first { $0.kind == .date })
+        #expect(date.isWebOnly)
+    }
+
+    @Test("A date save on a record with a complex date sends nothing and answers false")
+    func complexDateIsNeverSaved() async throws {
+        let server = FakeServer(patchSucceeds: true)
+        let screen = try makeScreen(fields: #""displayName": "C", "displayTime": "1985~""#, permissions: [.read, .edit], server: server)
+        var outcome: Bool?
+        screen.update(file: screen.file, name: nil, description: nil, date: Date(), location: nil) { outcome = $0 }
+        await wait { outcome != nil }
+
+        #expect(outcome == false)
+        #expect(server.patches.isEmpty)
+    }
+
     @Test("The tags row shows a viewer only the tags the record has")
     func viewerTags() throws {
         let tagged = try makeScreen(fields: #""displayName": "C", "tags": [{ "tagId": "1", "name": "hike" }]"#, permissions: [.read])
@@ -69,9 +104,9 @@ struct FileInfoTabTests {
         #expect(cells(of: untagged) == [.name])
     }
 
-    @Test("The Details tab keeps its eight rows")
+    @Test("The Details tab has the rows that web shows, so no Created row")
     func detailsRows() {
-        #expect(FileDetailsViewController.detailsCells == [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType])
+        #expect(FileDetailsViewController.detailsCells == [.uploaded, .lastModified, .fileCreated, .size, .fileType, .originalFileName, .originalFileType])
     }
 
     @Test("Before the record arrives, an editor already sees the four boxed rows with the file's name")
@@ -149,7 +184,7 @@ struct FileInfoTabTests {
     func dateRowWithZone(fields: String, expected: String) throws {
         let screen = try makeScreen(fields: #""displayName": "B", "# + fields, permissions: [.read, .edit])
 
-        #expect(screen.infoRowDate()?.text == expected)
+        #expect(screen.infoRowDate() == expected)
         #expect(screen.infoRows().first { $0.kind == .date }?.text == expected)
     }
 
@@ -162,58 +197,6 @@ struct FileInfoTabTests {
         #expect(zoned.recordVO?.timezone == "Europe/Paris")
         #expect(placed.recordVO?.timezone == nil)
         #expect(bare.recordVO?.timezone == nil)
-    }
-
-    // MARK: - The Date row's qualifiers and range
-
-    @Test("A date range gives the Date row a From and a To line, read as one element, and a row one line taller")
-    func dateRowForARange() throws {
-        let fields = #""displayName": "B", "displayTime": "1985-10-23T16:16:00+01:00/1985-11-23", "location": { "timezone": "Europe/Paris" }"#
-        let screen = try makeScreen(fields: fields, permissions: [.read, .edit])
-        let row = try #require(screen.infoRows().first { $0.kind == .date })
-        let defaultSize = UITraitCollection(preferredContentSizeCategory: .large)
-
-        #expect(row.lines.map(\.caption) == ["From", "To"])
-        #expect(row.lines.map(\.text) == ["October 23, 1985 • 4:16 PM +01", "November 23, 1985"])
-        #expect(row.labelDetail == nil)
-        #expect(row.lineCount == 2)
-        #expect(row.accessibilityLabel == "Date, From October 23, 1985 • 4:16 PM +01, To November 23, 1985")
-        #expect(FileInfoRowModel.height(for: .boxed, lines: 2, compatibleWith: defaultSize) == 104)
-        #expect(FileInfoRowModel.height(for: .plain, lines: 2, compatibleWith: defaultSize) == 80)
-        #expect(FileInfoRowModel.height(for: .boxed, lines: 1, compatibleWith: defaultSize) == 72)
-    }
-
-    @Test("A hosted range row is as tall as its model says", arguments: FileInfoRowModel.Style.allCases)
-    func hostedRangeRowMatchesTheModelHeight(style: FileInfoRowModel.Style) throws {
-        let text = try #require(DisplayTimeText(displayTime: "1985-10-23~/1985-11-23~", legacy: nil))
-        let model = FileInfoRowModel(date: text, style: style)
-        // Measured outside a window, where no safe area is added to the row.
-        let host = UIHostingController(rootView: FileInfoRow(model: model))
-        host.loadViewIfNeeded()
-
-        let fitted = host.sizeThatFits(in: CGSize(width: 342, height: 1000)).height
-        let expected = FileInfoRowModel.height(for: style, lines: model.lineCount, compatibleWith: host.traitCollection)
-
-        #expect(model.labelDetail == "Approximate")
-        #expect(abs(fitted - expected) <= 1, "fitted \(fitted), model \(expected)")
-    }
-
-    @Test("The qualifier words follow the label of one date, and an unknown date reads as such for every role", arguments: [
-        (#""displayTime": "1985-10-23%""#, "Approximate • Uncertain", "October 23, 1985"),
-        (#""displayTime": "1985~""#, "Approximate", "1985"),
-        (#""displayTime": "XXXX-XX-XX""#, nil, "Unknown date and time"),
-        (#""displayTime": "../1985-11-23""#, nil, "Before November 23, 1985")
-    ])
-    func dateRowWithQualifiers(fields: String, detail: String?, expected: String) throws {
-        let editor = try makeScreen(fields: #""displayName": "B", "# + fields, permissions: [.read, .edit])
-        let viewer = try makeScreen(fields: #""displayName": "B", "# + fields, permissions: [.read])
-        let row = try #require(editor.infoRows().first { $0.kind == .date })
-
-        #expect(row.labelDetail == detail)
-        #expect(row.text == expected)
-        #expect(row.lineCount == 1)
-        #expect(row.accessibilityLabel == ["Date", detail, expected].compactMap { $0 }.joined(separator: ", "))
-        #expect(viewer.infoRows().first { $0.kind == .date }?.text == expected)
     }
 
     // MARK: - After the date screen

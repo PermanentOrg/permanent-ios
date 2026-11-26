@@ -10,18 +10,17 @@ import Testing
 @testable import Permanent
 
 /// The line under a row's name in the file lists, "4 MB • Aug. 15, 2023", and its VoiceOver text.
-/// August, because iOS versions write September as "Sep." or "Sept.".
 struct FileSizeAndDateTests {
-    private func child(_ fields: String) throws -> FileModel {
+    private func child(_ fields: String, onlyEDTF: Bool = false) throws -> FileModel {
         let json = "{ \"items\": [ { \(fields) } ] }"
         let response = try FolderChildrenV2Response.decoder.decode(FolderChildrenV2Response.self, from: Data(json.utf8))
         let item = try #require(response.items?.first)
-        return FileModel(model: item, permissions: [.read], accessRole: .viewer)
+        return FileModel(model: item, permissions: [.read], accessRole: .viewer, onlyEDTF: onlyEDTF)
     }
 
     @Test("A file shows its size, a dot and its written date")
     func fileShowsSizeAndDate() throws {
-        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 4000000, \"displayDate\": \"2023-08-15T00:00:00.000Z\"")
+        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 4194304, \"displayDate\": \"2023-08-15T00:00:00.000Z\"")
         #expect(file.sizeAndDate == "4 MB • Aug. 15, 2023")
         #expect(file.sizeAndDateForVoiceOver == "4 MB, Aug. 15, 2023")
     }
@@ -40,9 +39,16 @@ struct FileSizeAndDateTests {
         #expect(file.sizeAndDateForVoiceOver == "Aug. 15, 2023")
     }
 
+    @Test("With the edtf-date switch on, a file with only the old date shows its size alone")
+    func onlyEDTFLeavesTheOldDateOut() throws {
+        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 4194304, \"displayDate\": \"2023-08-15T00:00:00.000Z\"", onlyEDTF: true)
+        #expect(file.date == "-")
+        #expect(file.sizeAndDate == "4 MB")
+    }
+
     @Test("A file with no date shows only its size, and never a dash")
     func fileWithNoDateShowsTheSizeOnly() throws {
-        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 2800000")
+        let file = try child("\"recordId\": \"8\", \"type\": \"type.record.image\", \"size\": 2936013")
         #expect(file.date == "-")
         #expect(file.sizeAndDate == "2.8 MB")
     }

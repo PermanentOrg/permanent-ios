@@ -14,6 +14,8 @@ final class FeatureFlags {
 
     /// On, the screens show `displayTime` only and leave the old date field out, as web does.
     static let edtfDateName = "edtf-date"
+    /// On, a folder's date can be set from the app. Off until the server stops changing it when a file is added.
+    static let folderDateEditName = "folder-date-edit"
 
     /// The fetch, replaceable by a test: it answers with the names that are on, or an error.
     var listRequest: (@escaping (Result<[String], Error>) -> Void) -> Void = FeatureFlags.fetchFromServer
@@ -29,6 +31,10 @@ final class FeatureFlags {
 
     var showsOnlyEDTFDate: Bool {
         isEnabled(Self.edtfDateName)
+    }
+
+    var editsFolderDates: Bool {
+        isEnabled(Self.folderDateEditName)
     }
 
     func isEnabled(_ name: String) -> Bool {

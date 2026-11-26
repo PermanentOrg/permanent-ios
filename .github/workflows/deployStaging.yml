@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: macos-26
+    runs-on: xcode-27
     environment: staging
     
     steps:
@@ -21,7 +21,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.2'
+          xcode-version: '27.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:
@@ -52,13 +52,14 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          # fastlane prefixes and colours every line, so GitHub only picks up the ::error lines when printed plain.
-          perl -pe 's/\e\[[0-9;]*m//g' fastlane-tests.log | grep -o '::error .*' | sed "s#${GITHUB_WORKSPACE}/##" | sort -u > failures.txt || true
+          # fastlane colours its lines, and its ::error lines name no test, so the script adds the name from the result bundle.
+          bundle=$(find . -maxdepth 3 -name '*.xcresult' -type d | head -1)
+          python3 Scripts/list-failed-tests.py fastlane-tests.log "$bundle" > failures.txt || true
           if [ -s failures.txt ]; then
             cat failures.txt
             {
               echo "### Failed tests and build errors"
-              sed -E -e 's/^::error file=([^,]*),line=([0-9]+)[^:]*::[[:space:]]*(.*)$/- `\1:\2` \3/' -e 's/^::error [^:]*::[[:space:]]*(.*)$/- \1/' failures.txt
+              sed -E -e 's/^::error file=([^,]*),line=([0-9]+)[^:]*::[[:space:]]*(.*)$/- `\1:\2` \3/' -e 's/^::error [^:]*::[[:space:]]*(.*)$/- \1/' -e 's/^::error::(.*)$/- \1/' failures.txt
             } >> "$GITHUB_STEP_SUMMARY"
           else
             echo "No failed test was found. Search the Run Unit Tests step for 'error:'."
@@ -67,7 +68,7 @@ jobs:
   build:
     needs: test
     name: Build and deploy a beta build to Firebase Distribution
-    runs-on: macos-26
+    runs-on: xcode-27
     environment: staging
 
     steps:
@@ -80,7 +81,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.2'
+          xcode-version: '27.2'
       - name: Cache Swift packages
         uses: actions/cache@v3
         with:

@@ -73,7 +73,7 @@ struct AdjustDateAndTimeViewTests {
 
     @Test("A shared record keeps the simple sheet: no More options row and no full view")
     func sharedRecordKeepsTheSimpleSheet() throws {
-        let viewModel = try fullViewModel(displayTime: "1985-10-23~/1985-11-23", archiveId: 9)
+        let viewModel = try fullViewModel(displayTime: "1985-10-23", archiveId: 9)
 
         #expect(!viewModel.offersMoreOptions)
         #expect(!viewModel.showsOptions)
@@ -146,18 +146,23 @@ struct AdjustDateAndTimeViewTests {
         #expect(viewModel.range.edtfString == "1985-10-23T17:00:00")
     }
 
-    @Test("An end at the start shows its reason under the title, and Clear empties the sheet and the reason")
+    @Test("An end at the start shows its reason under the title, and Clear on a side empties that side and the reason")
     func errorLineAndClear() throws {
         let viewModel = try fullViewModel(displayTime: "1985-10-23/1985-10-23")
 
         #expect(viewModel.validation == "The end must come after the start")
         #expect(render(EditDateAndTimeView(viewModel: viewModel)).view != nil)
 
-        viewModel.clear()
+        viewModel.clear(.end)
 
         #expect(viewModel.validation == nil)
-        #expect(viewModel.range == DateTimeRangeEntry())
-        #expect(viewModel.range.preview == nil)
+        #expect(viewModel.range.edtfString == "1985-10-23/..")
+        #expect(viewModel.canSave)
+
+        viewModel.clear(.start)
+
+        #expect(viewModel.range.isEmpty)
+        #expect(!viewModel.canSave, "Save needs a date")
     }
 
     @Test("The date sheet and the wheel card render on their own")
@@ -192,7 +197,7 @@ struct AdjustDateAndTimeViewTests {
         let other = try child(#""recordId": "303", "archiveId": "5", "displayTime": "2001-02-03""#)
         let undated = try child(#""recordId": "304", "archiveId": "5""#)
 
-        #expect(EditDateAndTimeViewModel.commonEntry(for: [dated, same]).edtfString == "1985-10")
+        #expect(EditDateAndTimeViewModel.commonEntry(for: [dated, same], full: true).edtfString == "1985-10")
         #expect(EditDateAndTimeViewModel.commonEntry(for: [dated, other]).isEmpty)
         #expect(EditDateAndTimeViewModel.commonEntry(for: [dated, undated]).edtfString == "1985-10")
         #expect(EditDateAndTimeViewModel.commonEntry(for: [undated]).isEmpty)
@@ -212,6 +217,9 @@ struct AdjustDateAndTimeViewTests {
         #expect("TimeFormatLabel".localized() == "Time format")
         #expect("TimeFormatHint".localized() == "Double tap to change")
         #expect("ClearDateAndTime".localized() == "Clear date and time")
+        #expect("SaveNeedsDate".localized() == "Enter a date first")
+        #expect("TimeNeedsFullDate".localized() == "A complete date is required when time is provided.")
+        #expect(["DateNeedsYear", "DateNeedsMonth", "TimeNeedsHour"].map { $0.localized() } == ["Add a year", "Add a month", "Add an hour"])
         #expect("PickADate".localized() == "Pick a date")
         #expect("PickATime".localized() == "Pick a time")
     }

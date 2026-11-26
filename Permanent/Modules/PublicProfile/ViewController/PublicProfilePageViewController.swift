@@ -162,14 +162,18 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        
-        if currentSegmentValue == 0 {
-            if viewModel?.archiveType != nil {
-                collectionView.reloadSections([1])
+
+        // An animated section reload swallows a reloadData that lands while it runs, which left the
+        // profile's first load on screen without its text.
+        UIView.performWithoutAnimation {
+            if currentSegmentValue == 0 {
+                if viewModel?.archiveType != nil {
+                    collectionView.reloadSections([1])
+                }
+            } else {
+                let bottomSectionsSet = IndexSet(integersIn: 1...4)
+                collectionView.reloadSections(bottomSectionsSet)
             }
-        } else {
-            let bottomSectionsSet = IndexSet(integersIn: 1...4)
-            collectionView.reloadSections(bottomSectionsSet)
         }
     }
     

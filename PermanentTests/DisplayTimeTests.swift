@@ -23,20 +23,10 @@ struct DisplayTimeTests {
             ("1985-10", "1985-10"),
             ("1985-10-23", "1985-10-23"),
             ("2026-07-15T12:45:00", "2026-07-15"),
-            ("2026-07-15T12:45:00Z", "2026-07-15"),
             ("2026-07-15T23:45:00+03:00", "2026-07-15"),
             ("2026-07-15T01:15:00-05:30", "2026-07-15"),
-            ("1985-10-23T23:30:00.000Z", "1985-10-23"),
-            ("1990-10-05T16:15:38.000Z", "1990-10-05"),
             ("2026-07-15T12:45:00.5+03:00", "2026-07-15"),
-            ("2026-07-15T12:45:00.123", "2026-07-15"),
-            ("1964/2008", "1964"),
-            ("2004-02-01/2005-02-08", "2004-02-01"),
-            ("1985~", "1985"),
-            ("1985?", "1985"),
-            ("../1985", "1985"),
-            ("1985/..", "1985"),
-            ("2004-02-01T10:00:00/2005", "2004-02-01")
+            ("2026-07-15T12:45:00.123", "2026-07-15")
         ]
     )
     func level0ValueReads(displayTime: String, listDate: String) {
@@ -45,23 +35,46 @@ struct DisplayTimeTests {
     }
 
     @Test(
-        "A value the app cannot read, or a broken one, falls back to the old field",
+        "A Z time lists the day on the phone's clock, an offset keeps the day as written",
         arguments: [
-            "", "198X", "1985-13", "1985-02-30", "85-10-23", "1985-10-23T25:00:00",
-            "1985-10-23T12:45", "1985-10-23T12:45:00+3", "1985-10T12:45:00",
-            "1985-10-23T12:45:00.", "1985-10-23T12:45:00.5.5", "1985-10-23T12:45:00.x", "1985-10-23T12:45.5",
-            "1985/1990/1995", "1985-10-23T12:45:00~", "-1985"
+            ("1985-10-23T23:30:00.000Z", "Europe/Bucharest", "1985-10-24"),
+            ("1985-10-23T23:30:00.000Z", "UTC", "1985-10-23"),
+            ("2026-07-15T01:00:00Z", "America/New_York", "2026-07-14"),
+            ("1990-10-05T16:15:38.000Z", "Europe/Bucharest", "1990-10-05"),
+            ("2026-07-15T23:45:00-05:30", "Europe/Bucharest", "2026-07-15")
         ]
     )
-    func otherValueFallsBack(displayTime: String) {
-        #expect(DateUtils.listDate(displayTime: displayTime, legacy: "2023-08-15T00:00:00.000Z") == "2023-08-15")
+    func zTimeListsLocalDay(displayTime: String, zoneIdentifier: String, listDate: String) throws {
+        let zone = try #require(TimeZone(identifier: zoneIdentifier))
+        #expect(DateUtils.listDate(displayTime: displayTime, legacy: nil, timeZone: zone) == listDate)
+    }
+
+    @Test(
+        "A value that is set but is not one exact Level 0 date lists no date and never the old field",
+        arguments: [
+            "1985~", "1985?", "198X", "1985-13", "1985-02-30", "85-10-23", "1985-10-23T25:00:00",
+            "1985-10-23T12:45", "1985-10-23T12:45:00+3", "1985-10T12:45:00",
+            "1985-10-23T12:45:00.", "1985-10-23T12:45:00.5.5", "1985-10-23T12:45:00.x", "1985-10-23T12:45.5",
+            "../1985", "1985/..", "1985/1990/1995", "2004-02-01T10:00:00/2005", "-1985",
+            "1964/2008", "2004-02-01/2005-02-08"
+        ]
+    )
+    func otherValueShowsNoDate(displayTime: String) {
+        #expect(DateUtils.listDate(displayTime: displayTime, legacy: "2023-08-15T00:00:00.000Z").isEmpty)
         #expect(DateUtils.date(fromDisplayTime: displayTime) == nil)
-        #expect(DateUtils.showsLegacyDate(displayTimes: [displayTime]))
+        #expect(!DateUtils.showsLegacyDate(displayTimes: [displayTime]))
+    }
+
+    @Test("An empty displayTime falls back to the old field")
+    func emptyValueFallsBack() {
+        #expect(DateUtils.listDate(displayTime: "", legacy: "2023-08-15T00:00:00.000Z", onlyEDTF: false) == "2023-08-15")
+        #expect(DateUtils.showsLegacyDate(displayTimes: [""]))
     }
 
     @Test("With no displayTime the list keeps today's old-field text")
     func noDisplayTimeKeepsOldText() {
-        #expect(DateUtils.listDate(displayTime: nil, legacy: "2023-08-15 12:34:56+00") == "2023-08-15")
+        #expect(DateUtils.listDate(displayTime: nil, legacy: "2023-08-15 12:34:56+00", onlyEDTF: false) == "2023-08-15")
+        #expect(DateUtils.listDate(displayTime: nil, legacy: "2023-08-15 12:34:56+00", onlyEDTF: true) == "-")
         #expect(DateUtils.listDate(displayTime: nil, legacy: nil) == "-")
     }
 
@@ -150,10 +163,9 @@ struct DisplayTimeTests {
 
     // MARK: - Failsafe check
 
-    @Test("The old field is shown only when no record being saved has a displayTime that reads")
+    @Test("The old field is shown only when no record being saved has a displayTime")
     func legacyShownOnlyWithoutReadableDisplayTime() {
         #expect(DateUtils.showsLegacyDate(displayTimes: [nil, nil]))
-        #expect(DateUtils.showsLegacyDate(displayTimes: [nil, "198X"]))
         #expect(!DateUtils.showsLegacyDate(displayTimes: [nil, "1985~"]))
         #expect(!DateUtils.showsLegacyDate(displayTimes: [nil, "1985"]))
     }
@@ -162,7 +174,7 @@ struct DisplayTimeTests {
 
     @Test(
         "File information shows only the parts a date has",
-        arguments: [("1985", "1985"), ("1985-10", "Oct. 1985"), ("1985-10-23", "Oct. 23, 1985")]
+        arguments: [("1985", "1985"), ("1985-10", "October 1985"), ("1985-10-23", "Oct. 23, 1985")]
     )
     func fileInformationText(listDate: String, text: String) {
         #expect(DateUtils.displayDate(from: listDate) == text)

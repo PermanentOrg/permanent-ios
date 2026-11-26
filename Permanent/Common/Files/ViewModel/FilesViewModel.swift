@@ -124,6 +124,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var selectedFiles: [FileModel]? = []
     var currentFolder: FileModel? { navigationStack.last }
     var isSelecting: Bool = false
+
+    /// A new select mode starts with nothing picked. A Move or Copy that waits for its folder keeps its files.
+    func startSelecting() {
+        if fileAction == .none {
+            selectedFiles = []
+        }
+        isSelecting = true
+    }
     var isSelectingDestination: Bool = false
     var checkboxState: CheckboxState = .none
     
@@ -519,10 +527,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             folderApiOperation.execute(in: APIRequestDispatcher()) { result in
                 switch result {
                 case .json(let httpResponse, _):
-                    if let response = httpResponse,
-                       let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
-                       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                       let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                    if (httpResponse as? [String: Any])?["isSuccessful"] as? Bool == true {
                         // Handle successful folder response
                         break
                     } else {
@@ -546,10 +551,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             nonFolderApiOperation.execute(in: APIRequestDispatcher()) { result in
                 switch result {
                 case .json(let httpResponse, _):
-                    if let response = httpResponse,
-                       let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
-                       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                       let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                    if (httpResponse as? [String: Any])?["isSuccessful"] as? Bool == true {
                         // Handle successful non-folder response
                         break
                     } else {

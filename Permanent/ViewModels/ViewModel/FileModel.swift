@@ -44,6 +44,8 @@ struct FileModel: Equatable, Codable {
     let uploadedDT: String?
     /// The EDTF date from Stela V2, read before `createdDT` wherever a date shows; nil from V1.
     var displayTime: String?
+    /// The record's zone id ("America/Chicago"), which names the zone after a list date's clock; nil from V1.
+    var timeZoneIdentifier: String?
     
     let archiveThumbnailURL: String?
     let archiveId: Int
@@ -128,11 +130,12 @@ struct FileModel: Equatable, Codable {
         self.permissions = permissions
     }
     
-    init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole) {
+    init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = model.recordID == nil ? SortOption(serverValue: model.sort) : nil
-        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
+        self.displayTime = model.displayTime
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
 
@@ -187,6 +190,7 @@ struct FileModel: Equatable, Codable {
         self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayDT)
         self.createdDT = model.displayDT
         self.displayTime = model.displayTime
+        self.timeZoneIdentifier = model.timezone
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
 
@@ -231,11 +235,12 @@ struct FileModel: Equatable, Codable {
         }
     }
     
-    init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
+    init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = SortOption(serverValue: model.sort)
-        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
+        self.displayTime = model.displayTime
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
             
@@ -277,10 +282,10 @@ struct FileModel: Equatable, Codable {
         }
     }
     
-    init(model: FolderVOData) {
+    init(model: FolderVOData, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = SortOption(serverValue: model.sort)
-        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.date = DateUtils.listDate(displayTime: nil, legacy: model.displayDT, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayDT
         self.uploadedDT = model.createdDT
         self.modifiedDT = model.updatedDT
@@ -313,14 +318,15 @@ struct FileModel: Equatable, Codable {
     
     /// Maps a V2 child into `FileModel`. Permissions come from the caller — the per-item `shares[]` is
     /// deliberately not read — and string ids convert at the `intId` boundary, except `archiveNo`.
-    init(model: FolderChildV2Data, permissions: [Permission], accessRole: AccessRole) {
+    init(model: FolderChildV2Data, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = model.isFolder ? SortOption(serverValue: model.sort) : nil
         // Records carry displayDate; folders carry displayTimestamp.
         let rawDate = model.displayDate ?? model.displayTimestamp ?? model.fileCreatedAt
-        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: rawDate)
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: rawDate, onlyEDTF: onlyEDTF)
         self.createdDT = rawDate
         self.displayTime = model.displayTime
+        self.timeZoneIdentifier = model.location?.timezone
         self.uploadedDT = model.createdAt   // parity with V1: uploadedDT <- createdAt
         self.modifiedDT = model.updatedAt   // parity with V1: modifiedDT <- updatedAt
 
@@ -373,12 +379,13 @@ struct FileModel: Equatable, Codable {
 
     /// A folder's own V2 details, as a share link opens it. Permissions come from the caller, and the
     /// archive number from the folder's path, or `fallbackArchiveNo` when the path has none.
-    init(model: FolderV2Data, fallbackArchiveNo: String, permissions: [Permission], accessRole: AccessRole) {
+    init(model: FolderV2Data, fallbackArchiveNo: String, permissions: [Permission], accessRole: AccessRole, onlyEDTF: Bool = FeatureFlags.shared.showsOnlyEDTFDate) {
         self.name = model.displayName ?? "-"
         self.savedSortOption = SortOption(serverValue: model.sort)
-        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayTimestamp)
+        self.date = DateUtils.listDate(displayTime: model.displayTime, legacy: model.displayTimestamp, onlyEDTF: onlyEDTF)
         self.createdDT = model.displayTimestamp
         self.displayTime = model.displayTime
+        self.timeZoneIdentifier = model.location?.timezone
         self.uploadedDT = model.createdAt
         self.modifiedDT = model.updatedAt
 
@@ -432,18 +439,50 @@ struct FileModel: Equatable, Codable {
 
 extension FileModel {
     /// The line under a row's name, "4 MB • Aug. 15, 2023". A folder, or a file with no size, shows the date alone.
-    var sizeAndDate: String { sizeAndDateParts.joined(separator: " • ") }
+    var sizeAndDate: String { sizeAndDate(complexDate: complexDate) }
 
-    /// The same line for VoiceOver, with a comma where the dot is.
-    var sizeAndDateForVoiceOver: String { sizeAndDateParts.joined(separator: ", ") }
+    /// The same line for a caller that has already read `complexDate`.
+    func sizeAndDate(complexDate: ComplexDateText?) -> String {
+        sizeAndDateParts(complexDate: complexDate).joined(separator: " • ")
+    }
+
+    /// The same line for VoiceOver, with a comma where the dot is and a complex date's marks as words.
+    var sizeAndDateForVoiceOver: String { sizeAndDateForVoiceOver(complexDate: complexDate) }
+
+    /// The VoiceOver line for a caller that has already read `complexDate`, so a cell parses it once.
+    func sizeAndDateForVoiceOver(complexDate: ComplexDateText?) -> String {
+        let size = type.isFolder ? nil : Self.displaySize(size)
+        let date = complexDate?.voiceOverText ?? exactDateText.replacingOccurrences(of: " • ", with: ", ")
+        return [size, date].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ", ")
+    }
 
     static func displaySize(_ size: Int64) -> String? {
         size > 0 ? size.readableFileSize : nil
     }
 
-    private var sizeAndDateParts: [String] {
+    /// The date as every list surface shows it: a complex date as written on web, else the date of `date`.
+    var displayDateText: String { displayDateText(complexDate: complexDate) }
+
+    private func displayDateText(complexDate: ComplexDateText?) -> String {
+        complexDate?.listText ?? exactDateText
+    }
+
+    /// "Jun. 24, 2026 • 12:56 AM CDT" for a date with a clock, with the zone rule the Info tab uses; else the day.
+    private var exactDateText: String {
+        DateUtils.listDateText(displayTime: displayTime, listDate: date) { [timeZoneIdentifier] end in
+            DateTimeEntry.timeSuffix(displayTime: end, timeZoneIdentifier: timeZoneIdentifier)
+        }
+    }
+
+    /// How a web-only `displayTime` reads; nil for one exact date, a year with an unknown month, or none.
+    var complexDate: ComplexDateText? {
+        guard let displayTime, DateUtils.isWebOnlyDate(displayTime) else { return nil }
+        return ComplexDateText(displayTime)
+    }
+
+    private func sizeAndDateParts(complexDate: ComplexDateText?) -> [String] {
         let size = type.isFolder ? nil : Self.displaySize(size)
-        return [size, DateUtils.displayDate(from: date)].compactMap { $0 }.filter { !$0.isEmpty }
+        return [size, displayDateText(complexDate: complexDate)].compactMap { $0 }.filter { !$0.isEmpty }
     }
 }
 
@@ -452,6 +491,7 @@ extension FileModel {
     func withDates(of record: RecordVOData) -> FileModel {
         var current = self
         current.displayTime = record.displayTime
+        current.timeZoneIdentifier = record.timezone
         current.createdDT = record.displayDT
         current.date = DateUtils.listDate(displayTime: record.displayTime, legacy: record.displayDT)
         return current

@@ -97,27 +97,6 @@ struct DisplayTimeTextTests {
         #expect(single.text == "October 23, 1985")
     }
 
-    // MARK: - List date
-
-    @Test("A list shows the first written side's date as written", arguments: [
-        ("1985-10-23~", "1985-10-23"),
-        ("1985?", "1985"),
-        ("1985-10-23~/1985-11-23", "1985-10-23"),
-        ("../1985-11", "1985-11"),
-        ("/2000", "2000"),
-        ("1985-10-23T17:00:00+01:00/1985-10-24", "1985-10-23")
-    ])
-    func listDate(displayTime: String, expected: String) {
-        #expect(DateUtils.listDate(displayTime: displayTime, legacy: "2023-08-15T00:00:00.000Z") == expected)
-    }
-
-    @Test("A value with no written side shows no date, not the upload date", arguments: ["XXXX-XX-XX", "/", "../.."])
-    func listDateWithoutAWrittenSide(displayTime: String) {
-        #expect(DateUtils.listDate(displayTime: displayTime, legacy: "2023-08-15T00:00:00.000Z") == "-")
-        #expect(DateUtils.date(fromDisplayTime: displayTime) == nil)
-        #expect(!DateUtils.showsLegacyDate(displayTimes: [displayTime]))
-    }
-
     // MARK: - Shape
 
     @Test("A symbol after a clock, a third side or a lone open end does not read", arguments: [

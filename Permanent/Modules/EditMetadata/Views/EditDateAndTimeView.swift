@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// The "Adjust date and time" sheet: a header with the preview line, the typed date and time boxes with their
-/// native pickers, the zone row, the Clear row and the full view's switches, and Cancel and Save pinned under them.
+/// native pickers, the zone row and the full view's switches, and Cancel and Save pinned under them.
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -48,9 +48,6 @@ struct EditDateAndTimeView: View {
                             rule
                                 .transition(reduceMotion ? .identity : .opacity)
                         }
-                        if !viewModel.range.isRange {
-                            ClearDateAndTimeRow { clear() }
-                        }
                         if viewModel.offersMoreOptions {
                             MoreOptionsRow(isOpen: viewModel.showsOptions) { toggleOptions() }
                         }
@@ -63,11 +60,18 @@ struct EditDateAndTimeView: View {
             .safeAreaInset(edge: .bottom, spacing: 0) { bottomButtons }
             .ignoresSafeArea(.container, edges: .bottom)
             .background(Color.white.ignoresSafeArea())
-            .accessibilityHidden(zoneSide != nil)
+            .accessibilityHidden(zoneSide != nil || viewModel.showsWebOnlyDate)
             if let zoneSide {
                 TimeZonePickerSheet(entry: entry(zoneSide)) { closeZonePicker() }
                     .transition(reduceMotion ? .identity : .move(edge: .trailing))
                     .zIndex(1)
+            }
+            if viewModel.showsWebOnlyDate {
+                WebOnlyDateMessage(message: viewModel.webOnlyMessage) {
+                    viewModel.showsWebOnlyDate = false
+                    close(saved: false)
+                }
+                .zIndex(2)
             }
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "ChangeDateAndTime".localized(), message: confirmationMessage, buttonTitle: "Modify") {
@@ -259,9 +263,9 @@ struct EditDateAndTimeView: View {
                     Text("Save".localized())
                 }
             }
-            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white, height: 56, cornerRadius: 12))
-            .disabled(viewModel.isLoading || viewModel.validation != nil)
-            .opacity(viewModel.validation == nil ? 1 : 0.4)
+            .buttonStyle(CustomButtonStyle(backgroundColor: viewModel.canSave ? .darkBlue : .blue200, foregroundColor: .white, height: 56, cornerRadius: 12))
+            .disabled(viewModel.isLoading || !viewModel.canSave)
+            .accessibilityHint(viewModel.saveBlockedReason ?? "")
         }
         .font(.custom("Usual-Medium", size: 14, relativeTo: .subheadline))
         .dynamicTypeSize(...DynamicTypeSize.large)
@@ -294,20 +298,16 @@ struct EditDateAndTimeView: View {
         min(max(entry(side).wrappedValue.pickerDate(), viewModel.startingDate), viewModel.endingDate)
     }
 
-    /// One file saves at once; two or more ask first.
+    /// One file saves at once; two or more ask first, and close at once when nothing changed.
     private func save() {
+        guard viewModel.canSave else { return }
         leaveFields()
-        if viewModel.selectedFiles.count > 1 {
+        if viewModel.closesWithoutSaving {
+            close(saved: false)
+        } else if viewModel.selectedFiles.count > 1 {
             viewModel.showConfirmation = true
         } else {
             viewModel.applyChanges()
-        }
-    }
-
-    private func clear() {
-        leaveFields()
-        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
-            viewModel.clear()
         }
     }
 
@@ -393,8 +393,23 @@ extension EditDateAndTimeView {
     /// The screen for one file, for UIKit to present. It closes itself, then tells `onClose` whether the date was saved.
     /// A door that has read the record passes it; a list door passes none and the sheet reads it.
     static func host(for file: FileModel, record: RecordVOData? = nil, onClose: @escaping (Bool) -> Void) -> UIViewController {
+        host(EditDateAndTimeViewModel(file: file, record: record, hasUpdates: .constant(false)), onClose: onClose)
+    }
+
+    /// What the selection menu's date row opens for several items: the counted web-only message when any item has a
+    /// complex date, as Edit Metadata shows it, else the date sheet.
+    @MainActor
+    static func menuDoor(for files: [FileModel], onSaved: @escaping () -> Void) -> UIViewController {
+        guard !WebOnlyDateMessage.stopsEdit(of: files) else {
+            return WebOnlyDateMessage.host(message: WebOnlyDateMessage.message(for: files))
+        }
+        return host(EditDateAndTimeViewModel(selectedFiles: files, hasUpdates: .constant(false))) { saved in
+            if saved { onSaved() }
+        }
+    }
+
+    private static func host(_ viewModel: EditDateAndTimeViewModel, onClose: @escaping (Bool) -> Void) -> UIViewController {
         weak var host: UIViewController?
-        let viewModel = EditDateAndTimeViewModel(file: file, record: record, hasUpdates: .constant(false))
         let view = EditDateAndTimeView(viewModel: viewModel, onClose: { saved in
             host?.dismiss(animated: true) { onClose(saved) }
         })
@@ -403,6 +418,17 @@ extension EditDateAndTimeView {
         controller.sheetPresentationController?.preferredCornerRadius = sheetCornerRadius
         host = controller
         return controller
+    }
+
+    /// What the item menu's date row opens: the web-only message for a date the sheet cannot edit, else the date sheet.
+    @MainActor
+    static func menuDoor(for file: FileModel, onSaved: @escaping () -> Void) -> UIViewController {
+        guard !WebOnlyDateMessage.stopsEdit(of: [file]) else {
+            return WebOnlyDateMessage.host(for: file)
+        }
+        return host(for: file) { saved in
+            if saved { onSaved() }
+        }
     }
 }
 
