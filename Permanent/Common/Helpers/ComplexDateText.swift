@@ -16,13 +16,14 @@ struct ComplexDateText: Equatable {
         let isMuted: Bool
     }
 
-    /// One line of the Info Date box; a range labels its lines "From" and "To".
+    /// One line of the Info Date box, with "c." and "?" in place; a range labels its lines "From" and "To".
     struct InfoLine: Equatable {
         let label: String?
         let text: String
     }
 
     let listSegments: [Segment]
+    /// The marks as words, for the list's VoiceOver text.
     let qualifiers: [String]
     let infoLines: [InfoLine]
     /// The list line without "c." and "?", which VoiceOver reads as symbols.
@@ -68,23 +69,23 @@ struct ComplexDateText: Equatable {
         let line: (Bool) -> [Segment]
         if ends.count == 1, let point = points.first.flatMap({ $0 }) {
             line = { point.qualified(point.shortSegments(), marks: $0) }
-            info = [InfoLine(label: nil, text: point.longText(zoneSuffix: suffixes[0]))]
+            info = [InfoLine(label: nil, text: point.markedLongText(zoneSuffix: suffixes[0]))]
         } else {
             switch (points[0], points[1]) {
             case let (start?, end?):
                 line = { Self.range(start, end, marks: $0) }
                 info = [
-                    InfoLine(label: "ComplexDateFrom".localized(), text: start.longText(zoneSuffix: suffixes[0])),
-                    InfoLine(label: "ComplexDateTo".localized(), text: end.longText(zoneSuffix: suffixes[1]))
+                    InfoLine(label: "ComplexDateFrom".localized(), text: start.markedLongText(zoneSuffix: suffixes[0])),
+                    InfoLine(label: "ComplexDateTo".localized(), text: end.markedLongText(zoneSuffix: suffixes[1]))
                 ]
 
             case let (start?, nil):
                 line = { [Segment(text: after, isMuted: true)] + start.qualified(start.shortSegments(), marks: $0) }
-                info = [InfoLine(label: nil, text: after + start.longText(zoneSuffix: suffixes[0]))]
+                info = [InfoLine(label: nil, text: after + start.markedLongText(zoneSuffix: suffixes[0]))]
 
             case let (nil, end?):
                 line = { [Segment(text: before, isMuted: true)] + end.qualified(end.shortSegments(), marks: $0) }
-                info = [InfoLine(label: nil, text: before + end.longText(zoneSuffix: suffixes[1]))]
+                info = [InfoLine(label: nil, text: before + end.markedLongText(zoneSuffix: suffixes[1]))]
 
             case (nil, nil):
                 line = { _ in [Segment(text: unknown, isMuted: false)] }
@@ -130,7 +131,8 @@ private extension ComplexDateText {
     /// One end of a value: its known fields, a clock time as written or on the phone's clock, and its marks.
     struct Point: Equatable {
         var year: Int?
-        var decade: String?
+        /// A year with `X` digits, kept as written: "198X".
+        var partYear: String?
         var month: Int?
         var day: Int?
         var hour: Int?
@@ -170,7 +172,7 @@ private extension ComplexDateText {
                 + (uncertain ? [Segment(text: " ?", isMuted: true)] : [])
         }
 
-        /// The list form: "1985", "1980s", "March 1980", "Sept. 30, 1980", then the clock when written.
+        /// The list form: "1985", "198X", "March 1980", "Sept. 30, 1980", then the clock when written.
         func shortSegments() -> [Segment] {
             [Segment(text: dateText(dayPattern: "MMM. d, yyyy"), isMuted: false)] + clockSegments()
         }
@@ -181,8 +183,12 @@ private extension ComplexDateText {
             return [Segment(text: leading + clock.time, isMuted: false), Segment(text: " " + clock.period, isMuted: true)]
         }
 
-        /// The Info form: "October 23, 1985  •  4:16 PM" and the zone when given.
-        func longText(zoneSuffix: String?) -> String {
+        /// The Info form with its marks: "c. October 23, 1985  •  4:16 PM" and the zone when given, then " ?".
+        func markedLongText(zoneSuffix: String?) -> String {
+            qualified([Segment(text: longText(zoneSuffix: zoneSuffix), isMuted: false)]).map(\.text).joined()
+        }
+
+        private func longText(zoneSuffix: String?) -> String {
             var text = dateText(dayPattern: "MMMM d, yyyy")
             if let clock = clockParts() {
                 text += ComplexDateText.separator + clock.time + " " + clock.period
@@ -192,10 +198,19 @@ private extension ComplexDateText {
         }
 
         private func dateText(dayPattern: String) -> String {
-            guard let year else { return decade ?? "ComplexDateUnknown".localized() }
+            guard let year else { return partYearText(dayPattern: dayPattern) }
             guard let month else { return String(year) }
             guard let day else { return Self.formatted(year: year, month: month, day: 1, pattern: "MMMM yyyy") }
             return Self.formatted(year: year, month: month, day: day, pattern: dayPattern)
+        }
+
+        /// "198X", "May 198X", "May 5, 198X" or "Unknown" without a year.
+        private func partYearText(dayPattern: String) -> String {
+            guard let partYear else { return "ComplexDateUnknown".localized() }
+            guard let month else { return partYear }
+            guard let day else { return "\(DateUtils.monthName(month)) \(partYear)" }
+            let monthName = dayPattern == "MMMM d, yyyy" ? DateUtils.monthName(month) : DateUtils.shortMonthName(month)
+            return "\(monthName) \(day), \(partYear)"
         }
 
         private func clockParts() -> (time: String, period: String)? {
@@ -230,8 +245,8 @@ private extension ComplexDateText {
             return (pattern, formatter)
         })
 
-        /// `YYYY`, `YYYY-MM`, `YYYY-MM-DD`, with `X` for unknown digits. A partly unknown year reads as its
-        /// decade or century, and an unknown month or day is left out.
+        /// `YYYY`, `YYYY-MM`, `YYYY-MM-DD`, with `X` for unknown digits. A partly unknown year stays as written,
+        /// and an unknown month or day is left out.
         private mutating func readDate(_ text: String) -> Bool {
             let fields = text.components(separatedBy: "-")
             guard (1...3).contains(fields.count), fields[0].count == 4 else { return false }
@@ -239,12 +254,11 @@ private extension ComplexDateText {
             guard yearText.allSatisfy({ $0.isASCII && ($0.isNumber || $0 == "X") }) else { return false }
             if yearText.contains("X") {
                 let digits = yearText.prefix { $0 != "X" }
-                guard !digits.isEmpty, yearText.dropFirst(digits.count).allSatisfy({ $0 == "X" }), let lead = Int(digits) else {
+                guard !digits.isEmpty, yearText.dropFirst(digits.count).allSatisfy({ $0 == "X" }), Int(digits) != nil else {
                     return fields.dropFirst().allSatisfy { $0 == "XX" }
                 }
-                let scale = Int(pow(10, Double(4 - digits.count)))
-                decade = "\(lead * scale)s"
-                return true
+                partYear = yearText
+                return readPartYearMonthAndDay(fields.dropFirst())
             }
             year = Int(yearText)
             guard fields.count > 1 else { return true }
@@ -262,6 +276,25 @@ private extension ComplexDateText {
             guard fields[2].count == 2, let day = Int(fields[2]), let year,
                   Self.formatted(year: year, month: month, day: day, pattern: "yyyy-MM-dd") == String(format: "%04d-%02d-%02d", year, month, day)
             else { return false }
+            self.day = day
+            return true
+        }
+
+        /// The month and day after a year with `X`; with no full year, a day is checked only against 31.
+        private mutating func readPartYearMonthAndDay(_ fields: ArraySlice<String>) -> Bool {
+            guard let monthText = fields.first else { return true }
+            guard monthText != "XX" else {
+                unspecified = true
+                return fields.dropFirst().allSatisfy { $0 == "XX" }
+            }
+            guard monthText.count == 2, let month = Int(monthText), (1...12).contains(month) else { return false }
+            self.month = month
+            guard let dayText = fields.dropFirst().first else { return true }
+            guard dayText != "XX" else {
+                unspecified = true
+                return true
+            }
+            guard dayText.count == 2, let day = Int(dayText), (1...31).contains(day) else { return false }
             self.day = day
             return true
         }

@@ -115,7 +115,12 @@ struct NonJSONResponseTests {
         func downloadTask(with request: URLRequest, fileName: String, progressHandler: ProgressHandler?, completion: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? { nil }
     }
 
-    private struct TimedOut: Error {}
+    /// Names the test that waited, so a CI failure line says which test ran out of time.
+    private struct TimedOut: Error, CustomStringConvertible {
+        let test: String
+        let seconds: Int
+        var description: String { "\(test) got no result in \(seconds) s" }
+    }
 
     /// Lets the first of the completion and the timeout resume the continuation, never both.
     private final class Once {
@@ -132,17 +137,19 @@ struct NonJSONResponseTests {
     }
 
     /// Sends the launch request, `/archive/change`, through a dispatcher on the given session and
-    /// waits for its result. Fails after a few seconds instead of hanging on a slow machine.
-    private func changeArchiveResult(through session: NetworkSessionProtocol) async throws -> OperationResult {
+    /// waits for its result. The result comes on the main queue, which a busy CI machine can hold for seconds.
+    private func changeArchiveResult(through session: NetworkSessionProtocol, test: String = #function) async throws -> OperationResult {
         let dispatcher = APIRequestDispatcher(networkSession: session)
         let request = ArchivesEndpoint.change(archiveId: 1, archiveNbr: "0001-0000")
         let once = Once()
+        let seconds = 30
+        let testName = Test.current?.displayName ?? test
 
         return try await withCheckedThrowingContinuation { continuation in
             let timeout = DispatchSource.makeTimerSource(queue: .global())
-            timeout.schedule(deadline: .now() + .seconds(5))
+            timeout.schedule(deadline: .now() + .seconds(seconds))
             timeout.setEventHandler {
-                if once.claim() { continuation.resume(throwing: TimedOut()) }
+                if once.claim() { continuation.resume(throwing: TimedOut(test: testName, seconds: seconds)) }
             }
             timeout.resume()
             dispatcher.execute(request: request, createdTask: { _ in }) { result in

@@ -9,7 +9,7 @@ import Foundation
 import Testing
 @testable import Permanent
 
-/// How each complex `displayTime` reads in the list line, the Info caption and the Info lines.
+/// How each complex `displayTime` reads in the list line and the Info lines.
 struct ComplexDateTextTests {
     private let utc = TimeZone(secondsFromGMT: 0) ?? .current
     private let bucharest = TimeZone(identifier: "Europe/Bucharest") ?? .current
@@ -24,8 +24,12 @@ struct ComplexDateTextTests {
         ("/2025-11-12", "Before Nov. 12, 2025"),
         ("../..", "Unknown"),
         ("XXXX", "Unknown"),
-        ("198X", "1980s"),
-        ("19XX", "1900s"),
+        ("198X", "198X"),
+        ("198X?", "198X ?"),
+        ("199X", "199X"),
+        ("19XX", "19XX"),
+        ("198X-05", "May 198X"),
+        ("198X-05-03", "May 3, 198X"),
         ("1985-XX", "1985"),
         ("1985-XX-XX", "1985"),
         ("1985-06-XX", "June 1985"),
@@ -69,19 +73,16 @@ struct ComplexDateTextTests {
         #expect(ComplexDateText("2001-09-24T23:30:00Z/..", timeZone: bucharest).listText == "After Sept. 25, 2001  •  2:30 AM")
     }
 
-    @Test("Info gets the marks as a caption and a range as From and To lines")
+    @Test("Info puts c. and ? on each line and a range on From and To lines")
     func infoLines() {
         let range = ComplexDateText("1985-10-23T16:16:00~/1985-11-23?", timeZone: utc, zoneSuffix: { _ in "CEST" })
-        #expect(range.qualifiers == ["Approximate", "Uncertain"])
         #expect(range.infoLines == [
-            .init(label: "From", text: "October 23, 1985  •  4:16 PM CEST"),
-            .init(label: "To", text: "November 23, 1985")
+            .init(label: "From", text: "c. October 23, 1985  •  4:16 PM CEST"),
+            .init(label: "To", text: "November 23, 1985 ?")
         ])
-        #expect(range.infoText == "From October 23, 1985  •  4:16 PM CEST, To November 23, 1985")
+        #expect(range.infoText == "From c. October 23, 1985  •  4:16 PM CEST, To November 23, 1985 ?")
 
-        let single = ComplexDateText("1980-03?", timeZone: utc)
-        #expect(single.qualifiers == ["Uncertain"])
-        #expect(single.infoLines == [.init(label: nil, text: "March 1980")])
+        #expect(ComplexDateText("1980-03?", timeZone: utc).infoLines == [.init(label: nil, text: "March 1980 ?")])
 
         let openEnd = ComplexDateText("1980-09-30/..", timeZone: utc)
         #expect(openEnd.qualifiers.isEmpty)
@@ -89,7 +90,33 @@ struct ComplexDateTextTests {
         #expect(ComplexDateText("../2025-11-12", timeZone: utc).infoLines == [.init(label: nil, text: "Before November 12, 2025")])
     }
 
-    @Test("An unknown month or day adds the Unspecified mark; an unknown year digit reads as its decade", arguments: [
+    @Test("Info reads each value as the ticket writes it", arguments: [
+        ("1985~/1990?", ["From c. 1985", "To 1990 ?"]),
+        ("1985~", ["c. 1985"]),
+        ("1985?", ["1985 ?"]),
+        ("1985%", ["c. 1985 ?"]),
+        ("1985-10~", ["c. October 1985"]),
+        ("198X", ["198X"]),
+        ("198X?", ["198X ?"]),
+        ("199X", ["199X"]),
+        ("19XX", ["19XX"]),
+        ("198X/1990", ["From 198X", "To 1990"]),
+        ("198X-05-03", ["May 3, 198X"]),
+        ("1985~/..", ["After c. 1985"]),
+        ("../1990?", ["Before 1990 ?"]),
+        ("1985/1990", ["From 1985", "To 1990"])
+    ])
+    func infoTable(displayTime: String, expected: [String]) {
+        let lines = ComplexDateText(displayTime, timeZone: utc).infoLines
+        #expect(lines.map { [$0.label, $0.text].compactMap { $0 }.joined(separator: " ") } == expected)
+    }
+
+    @Test("A year with X takes only real months and days", arguments: ["198X-13", "198X-05-32", "198X-5"])
+    func partYearRejectsBadFields(displayTime: String) {
+        #expect(ComplexDateText(displayTime, timeZone: utc).listText == "Unknown")
+    }
+
+    @Test("An unknown month or day adds the Unspecified mark; a year with X adds none", arguments: [
         ("1985-XX", ["Unspecified"]),
         ("1985-XX-XX", ["Unspecified"]),
         ("1985-06-XX", ["Unspecified"]),
@@ -109,10 +136,10 @@ struct ComplexDateTextTests {
             return end.hasSuffix("Z") ? "UTC" : "+02"
         }
         #expect(asked == ["1985-10-23T10:00:00Z", "1985-10-24T10:00:00+02:00"])
-        #expect(range.infoLines.map(\.text) == ["October 23, 1985  •  10:00 AM UTC", "October 24, 1985  •  10:00 AM +02"])
+        #expect(range.infoLines.map(\.text) == ["c. October 23, 1985  •  10:00 AM UTC", "October 24, 1985  •  10:00 AM +02"])
     }
 
-    @Test("VoiceOver hears the marks as words, never c. or ?", arguments: [
+    @Test("The list's VoiceOver hears the marks as words, never c. or ?", arguments: [
         ("1985%", "Approximate, Uncertain, 1985"),
         ("1980-03?", "Uncertain, March 1980"),
         ("1985~/1990", "Approximate, 1985 — 1990"),

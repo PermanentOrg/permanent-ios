@@ -57,7 +57,7 @@ open class DateUtils {
     static func shortDateText(year: Int, month: Int?, day: Int?) -> String {
         let yearText = String(format: "%04d", year)
         guard let month, (1...12).contains(month) else { return yearText }
-        guard let day else { return monthNames[month - 1] + " " + yearText }
+        guard let day else { return monthName(month) + " " + yearText }
         return "\(shortMonthName(month)) \(day), \(yearText)"
     }
 
@@ -67,10 +67,14 @@ open class DateUtils {
         return names.indices.contains(month - 1) ? names[month - 1] : ""
     }
 
-    private static let monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ]
+    /// "January" to "December"; empty for a month outside 1-12.
+    static func monthName(_ month: Int) -> String {
+        let names = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ]
+        return names.indices.contains(month - 1) ? names[month - 1] : ""
+    }
 
     /// The list's text: an exact date with a clock reads "Jun. 24, 2026 • 12:56 AM CT", anything else the day of
     /// `listDate`. A `Z` time shows on the phone's clock.

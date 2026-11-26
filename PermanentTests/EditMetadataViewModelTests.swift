@@ -293,6 +293,30 @@ final class EditMetadataViewModelTests: XCTestCase {
         XCTAssertEqual(address, "Main St, US")
     }
 
+    // MARK: - Header and size texts
+
+    func testHeaderTitle_OneFileSaysEditFileMetadata() {
+        XCTAssertEqual(SectionHeaderView.title(fileCount: 1), "Edit file metadata")
+    }
+
+    func testHeaderTitle_SeveralFilesSayTheCount() {
+        XCTAssertEqual(SectionHeaderView.title(fileCount: 3), "Editing 3 items")
+    }
+
+    func testFileNamesSize_MatchesTheListText() {
+        XCTAssertEqual(FileModel.displaySize(5_882_511), "5.61 MB")
+        XCTAssertNil(MetadataEditFileNamesViewModel.sizePreview(for: []))
+        XCTAssertNil(MetadataEditFileNamesViewModel.sizePreview(for: [mockFile()]))
+    }
+
+    func testFileNamesSize_AFileOf5882511BytesShows561MB() throws {
+        let json = #"{ "displayName": "Scan.jpg", "type": "type.record.image", "size": 5882511 }"#
+        let item = try JSONDecoder().decode(ItemVO.self, from: try XCTUnwrap(json.data(using: .utf8)))
+        let file = FileModel(model: item, permissions: [], accessRole: .owner)
+
+        XCTAssertEqual(MetadataEditFileNamesViewModel.sizePreview(for: [file]), "5.61 MB")
+    }
+
     func testFilesMetadata_GetAddressString_AllNil() {
         let vm = FilesMetadataViewModel(files: [])
 

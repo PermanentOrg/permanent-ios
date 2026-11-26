@@ -39,7 +39,7 @@ struct ComplexDateTests {
     }
 
     @Test("A list row shows a complex date as written on web", arguments: [
-        ("1985~", "c. 1985"), ("1985/1990", "1985 — 1990"), ("../1990", "Before 1990"), ("198X", "1980s")
+        ("1985~", "c. 1985"), ("1985/1990", "1985 — 1990"), ("../1990", "Before 1990"), ("198X", "198X"), ("198X?", "198X ?")
     ])
     func listRowShowsComplexDate(displayTime: String, expected: String) {
         var file = FileModel.mockFile()

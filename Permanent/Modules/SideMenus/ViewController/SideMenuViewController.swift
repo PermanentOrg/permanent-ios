@@ -215,8 +215,22 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             return
         }
         
-        selectedMenuOption = menuOption
+        if menuOption.keepsScreen {
+            tableView.deselectRow(at: indexPath, animated: true)
+            if let screenRow = row(of: selectedMenuOption) {
+                tableView.selectRow(at: screenRow, animated: false, scrollPosition: .none)
+            }
+        } else {
+            selectedMenuOption = menuOption
+        }
         handleMenuOptionTap(forOption: menuOption)
+    }
+
+    private func row(of option: DrawerOption) -> IndexPath? {
+        for (section, options) in tableViewData {
+            if let row = options.firstIndex(of: option) { return IndexPath(row: row, section: section.rawValue) }
+        }
+        return nil
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

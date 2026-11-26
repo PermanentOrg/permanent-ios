@@ -291,3 +291,5 @@
 "ComplexDateTo" = "To";
 "ComplexDateAM" = "AM";
 "ComplexDatePM" = "PM";
+"EditFileMetadataTitle" = "Edit file metadata";
+"EditingItemsCount" = "Editing %d items";

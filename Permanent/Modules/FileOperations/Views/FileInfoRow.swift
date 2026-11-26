@@ -31,18 +31,10 @@ struct FileInfoRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FileInfoRowModel.labelGap) {
-            HStack(spacing: FileInfoRowModel.boxPadding) {
-                Text(model.title)
-                    .font(FileInfoRowModel.labelFont)
-                    .foregroundColor(.white)
-                if let caption = model.caption {
-                    Text(caption)
-                        .font(FileInfoRowModel.captionFont)
-                        .foregroundColor(placeholderColor)
-                        .lineLimit(1)
-                }
-            }
-            .frame(minHeight: labelLineHeight)
+            Text(model.title)
+                .font(FileInfoRowModel.labelFont)
+                .foregroundColor(.white)
+                .frame(minHeight: labelLineHeight)
             value
         }
         .frame(maxWidth: .infinity, alignment: .leading)
