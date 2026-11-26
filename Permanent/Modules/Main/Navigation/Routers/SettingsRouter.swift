@@ -35,7 +35,7 @@ class SettingsRouter {
         // Reset scroll view appearance before dismissing current screen
         ScrollViewAppearanceManager.shared.reset()
         
-        if page != .settings {
+        if page != .settings && page != .memberChecklist {
             self.rootViewController.dismiss(animated: true)
         }
         currentPage = page
@@ -113,7 +113,28 @@ class SettingsRouter {
             AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
 
         case .memberChecklist:
-            NotificationCenter.default.post(name: Self.showMemberChecklistNotifName, object: nil, userInfo: nil)
+            self.rootViewController.dismiss(animated: true) { [weak self] in
+                self?.showMemberChecklistInPrivateFiles()
+            }
+        }
+    }
+
+    /// Files, Public Files and Shares open the checklist in place; any other screen first changes to Private Files.
+    private func showMemberChecklistInPrivateFiles() {
+        let post = { NotificationCenter.default.post(name: Self.showMemberChecklistNotifName, object: nil, userInfo: nil) }
+        guard DrawerViewController.workspace(of: rootViewController.viewControllers.first) == nil,
+              let privateFiles = UIViewController.create(withIdentifier: .main, from: .main) as? MainViewController else {
+            post()
+            return
+        }
+        privateFiles.viewModel = MyFilesViewModel()
+        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: privateFiles)
+        privateFiles.loadViewIfNeeded()
+        // A sheet presented while the screen slides in is dropped, so it waits for the slide to end.
+        if let transition = rootViewController.transitionCoordinator {
+            transition.animate(alongsideTransition: nil) { _ in post() }
+        } else {
+            DispatchQueue.main.async(execute: post)
         }
     }
     

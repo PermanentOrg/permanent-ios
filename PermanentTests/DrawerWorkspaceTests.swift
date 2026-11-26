@@ -47,6 +47,30 @@ final class DrawerWorkspaceTests: XCTestCase {
         XCTAssertNil(DrawerViewController.workspace(of: UIViewController()))
     }
 
+    func testRowsThatOpenOverTheScreen_KeepTheScreensRowLit() {
+        XCTAssertTrue(DrawerOption.legacyPlanning.keepsScreen)
+        XCTAssertTrue(DrawerOption.archiveSettings.keepsScreen)
+        for screen in [DrawerOption.files, .shares, .publicFiles, .manageMembers, .manageTags, .publicGallery, .archives] {
+            XCTAssertFalse(screen.keepsScreen, "\(screen) changes the screen")
+        }
+    }
+
+    func testTapOnArchiveSettings_KeepsTheOpenScreensRowLit() {
+        let menu = SideMenuViewController()
+        menu.selectedMenuOption = .publicFiles
+        let rows = MenuRowsStub()
+        let table = UITableView()
+        table.dataSource = rows
+        table.reloadData()
+        let archiveSettings = IndexPath(row: 0, section: LeftDrawerSection.archiveSettings.rawValue)
+        table.selectRow(at: archiveSettings, animated: false, scrollPosition: .none)
+
+        menu.tableView(table, didSelectRowAt: archiveSettings)
+
+        XCTAssertEqual(menu.selectedMenuOption, .publicFiles)
+        XCTAssertEqual(table.indexPathForSelectedRow, IndexPath(row: 2, section: LeftDrawerSection.files.rawValue))
+    }
+
     func testAnotherWorkspace_DropsThePickedFiles() {
         let drawer = drawer(showing: filesScreen(MyFilesViewModel()))
         pickPhotoForMove()
@@ -118,4 +142,11 @@ final class DrawerWorkspaceTests: XCTestCase {
 
         XCTAssertEqual(shares.selectedFiles?.count, 0)
     }
+}
+
+/// Gives the table as many rows as the side menu has, so a row can be selected without the menu's cells.
+private final class MenuRowsStub: NSObject, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int { 4 }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 3 }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { UITableViewCell() }
 }

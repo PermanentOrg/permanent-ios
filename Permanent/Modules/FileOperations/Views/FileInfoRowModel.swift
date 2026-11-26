@@ -36,7 +36,6 @@ struct FileInfoRowModel: Equatable {
     static let lineLabelWidth: CGFloat = 36
     static let lineLabelFont = SwiftUI.Font.custom("Usual-Regular", size: 10, relativeTo: .caption2)
     static let lineLabelTracking: CGFloat = 1.6
-    static let captionFont = SwiftUI.Font.custom("Usual-Regular", size: 12, relativeTo: .caption)
     static let boxPadding: CGFloat = 12
     static let boxCornerRadius: CGFloat = 12
     static let iconSize: CGFloat = 24
@@ -74,12 +73,6 @@ struct FileInfoRowModel: Equatable {
 
     /// The value lines: a range's From and To, else the value alone.
     var valueLineCount: Int { complexDate?.infoLines.count ?? 1 }
-
-    /// "Approximate  •  Uncertain" beside the label; nil without marks.
-    var caption: String? {
-        guard let qualifiers = complexDate?.qualifiers, !qualifiers.isEmpty else { return nil }
-        return qualifiers.joined(separator: ComplexDateText.separator)
-    }
 
     var title: String {
         switch kind {
@@ -124,7 +117,7 @@ struct FileInfoRowModel: Equatable {
 
     var accessibilityLabel: String {
         guard let complexDate else { return "\(title), \(text)" }
-        return ([title] + complexDate.qualifiers + [complexDate.infoText]).joined(separator: ", ")
+        return "\(title), \(complexDate.infoText)"
     }
 
     var accessibilityHint: String? {

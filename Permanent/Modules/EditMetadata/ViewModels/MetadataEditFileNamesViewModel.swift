@@ -36,11 +36,14 @@ class MetadataEditFileNamesViewModel: ObservableObject {
         
         imagePreviewURL = selectedFiles.first?.preferredThumbnailURL
         fileNamePreview = selectedFiles.first?.name
-        if let size = selectedFiles.first?.size {
-            fileSizePreview = size.bytesToReadableForm(useDecimal: true)
-        }
+        fileSizePreview = Self.sizePreview(for: selectedFiles)
     }
     
+    /// The first file's size as the file list shows it, "5.61 MB"; nil when the size is not known.
+    static func sizePreview(for files: [FileModel]) -> String? {
+        files.first.flatMap { FileModel.displaySize($0.size) }
+    }
+
     func applyChanges() {
         guard let updatedFiles = currentViewModel?.getSelectedFiles() else {
             return

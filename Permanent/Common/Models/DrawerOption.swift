@@ -88,4 +88,12 @@ enum DrawerOption {
         default: return false
         }
     }
+
+    /// True for a row that only opens a list or a sheet over the screen, so the menu keeps the screen's row lit.
+    var keepsScreen: Bool {
+        switch self {
+        case .archiveSettings, .legacyPlanning: return true
+        default: return false
+        }
+    }
 }
